@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Raw events - RahYaab{% endblock %}
+{% block content %}
+<p class="muted small"><a href="/">&larr; Dashboard</a></p>
+<h1>Raw telemetry events</h1>
+<p class="sub">Session <span class="mono">{{ session.session_id }}</span> &middot; player {{ session.player_name }} &middot; {{ session.status }}</p>
+<div class="row" style="margin-bottom:14px">
+  <label for="type">Event type</label><select id="type"><option value="">all</option></select>
+  <label for="level">Level</label><select id="level"><option value="">all</option><option>1</option><option>2</option><option>3</option><option>4</option></select>
+  <button id="prev">&larr; Prev</button><button id="next">Next &rarr;</button><span class="muted small" id="pos"></span>
+</div>
+<div class="card"><div id="tbl"></div></div>
+{% endblock %}
+{% block scripts %}
+<script>
+const E = RY.esc, SID = {{ session.session_id|tojson }}, PAGE = 100;
+let offset = 0, total = 0;
+async function loadTypes() {
+  const t = await RY.get('/api/sessions/' + encodeURIComponent(SID) + '/telemetry');
+  document.getElementById('type').insertAdjacentHTML('beforeend', Object.keys(t.event_counts).sort().map(k => `<option>${E(k)}</option>`).join(''));
+}
+async function load() {
+  const type = document.getElementById('type').value, level = document.getElementById('level').value;
+  let url = `/api/sessions/${encodeURIComponent(SID)}/events?limit=${PAGE}&offset=${offset}` + (type ? '&type=' + type : '') + (level ? '&level=' + level : '');
+  const d = await RY.get(url); total = d.total;
+  document.getElementById('tbl').innerHTML = d.events.length ? `<table><tr><th>#</th><th>t (s)</th><th>Level</th><th>Event</th><th>Action</th><th>Decision ms</th><th>Risk</th><th>Metadata</th></tr>${d.events.map(e =>
+    `<tr><td>${e.event_id}</td><td>${(e.t_ms / 1000).toFixed(1)}</td><td>${e.level_id ?? ''}</td><td><b>${E(e.event_type)}</b></td><td>${E(e.action ?? '')}</td><td>${e.decision_time_ms ?? ''}</td><td>${e.risk_level ?? ''}</td><td class="mono small" style="max-width:420px;overflow-wrap:anywhere">${E(JSON.stringify(e.metadata))}</td></tr>`).join('')}</table>` : '<div class="empty">No events match.</div>';
+  document.getElementById('pos').textContent = `showing ${d.events.length ? offset + 1 : 0}-${offset + d.events.length} (session total ${total})`;
+}
+['type', 'level'].forEach(id => document.getElementById(id).addEventListener('change', () => { offset = 0; load(); }));
+document.getElementById('prev').onclick = () => { offset = Math.max(0, offset - PAGE); load(); };
+document.getElementById('next').onclick = () => { if (offset + PAGE < total) { offset += PAGE; load(); } };
+loadTypes().then(load);
+</script>
+{% endblock %}
