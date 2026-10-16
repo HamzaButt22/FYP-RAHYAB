@@ -1,0 +1,8 @@
+# Environment variables and secrets
+.env
+.env.*
+!.env.example
+
+# Test and coverage output
+.coverage
+htmlcov/

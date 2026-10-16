@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block title %}Telemetry - RahYaab{% endblock %}
+{% block content %}
+<h1>Telemetry</h1>
+<p class="sub">Event counts, decision times and exploration / risk / social behavior for any session.</p>
+{% if not sessions %}
+  <div class="card empty">No sessions recorded yet.</div>
+{% else %}
+<div class="row" style="margin-bottom:16px">
+  <label for="sess">Session</label>
+  <select id="sess">
+    {% for s in sessions %}<option value="{{ s.session_id }}" {{ 'selected' if s.session_id == sid }}>{{ s.session_id }} - {{ s.player_name }} ({{ s.status }})</option>{% endfor %}
+  </select>
+  <a id="rawlink" href="#">Raw events &rarr;</a>
+</div>
+<div id="telemetry"></div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if sessions %}
+<script>
+const sel = document.getElementById('sess');
+async function show() {
+  document.getElementById('rawlink').href = '/sessions/' + encodeURIComponent(sel.value) + '/events';
+  renderTelemetry(document.getElementById('telemetry'), await RY.get('/api/sessions/' + sel.value + '/telemetry'));
+}
+sel.addEventListener('change', () => { history.replaceState(null, '', '?session=' + encodeURIComponent(sel.value)); show(); });
+show();
+</script>
+{% endif %}
+{% endblock %}
