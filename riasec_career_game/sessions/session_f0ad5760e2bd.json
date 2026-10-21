@@ -1,0 +1,595 @@
+{
+  "schema_version": 2,
+  "participant_id": "f0ad5760e2bd",
+  "meta": {
+    "age_band": "18-24",
+    "gender": "Male",
+    "language": "en",
+    "device": {
+      "type": "desktop",
+      "os": "Windows",
+      "screen": "1920x1080"
+    }
+  },
+  "summary": {
+    "zones": {
+      "R": {
+        "entries": 1,
+        "dwell": 72.393,
+        "early_exits": 0,
+        "completed": true,
+        "bonus_attempts": 0,
+        "bonus_successes": 0,
+        "retries": 0,
+        "last_failed": false
+      },
+      "I": {
+        "entries": 0,
+        "dwell": 0.0,
+        "early_exits": 0,
+        "completed": false,
+        "bonus_attempts": 0,
+        "bonus_successes": 0,
+        "retries": 0,
+        "last_failed": false
+      },
+      "A": {
+        "entries": 0,
+        "dwell": 0.0,
+        "early_exits": 0,
+        "completed": false,
+        "bonus_attempts": 0,
+        "bonus_successes": 0,
+        "retries": 0,
+        "last_failed": false
+      },
+      "S": {
+        "entries": 0,
+        "dwell": 0.0,
+        "early_exits": 0,
+        "completed": false,
+        "bonus_attempts": 0,
+        "bonus_successes": 0,
+        "retries": 0,
+        "last_failed": false
+      },
+      "E": {
+        "entries": 0,
+        "dwell": 0.0,
+        "early_exits": 0,
+        "completed": false,
+        "bonus_attempts": 0,
+        "bonus_successes": 0,
+        "retries": 0,
+        "last_failed": false
+      },
+      "C": {
+        "entries": 0,
+        "dwell": 0.0,
+        "early_exits": 0,
+        "completed": false,
+        "bonus_attempts": 0,
+        "bonus_successes": 0,
+        "retries": 0,
+        "last_failed": false
+      }
+    },
+    "choices": {
+      "R": 0,
+      "I": 0,
+      "A": 0,
+      "S": 0,
+      "E": 2,
+      "C": 0
+    },
+    "latencies": [
+      34.29,
+      31.38
+    ],
+    "n_decisions": 2,
+    "entry_order": [
+      "R"
+    ],
+    "duration_s": 143.32
+  },
+  "features": {
+    "R_choice_rate": 0.0,
+    "R_dwell_share": 1.0,
+    "R_returns": 0,
+    "R_bonus_attempts": 0,
+    "R_retries": 0,
+    "I_choice_rate": 0.0,
+    "I_dwell_share": 0.0,
+    "I_returns": 0,
+    "I_bonus_attempts": 0,
+    "I_retries": 0,
+    "A_choice_rate": 0.0,
+    "A_dwell_share": 0.0,
+    "A_returns": 0,
+    "A_bonus_attempts": 0,
+    "A_retries": 0,
+    "S_choice_rate": 0.0,
+    "S_dwell_share": 0.0,
+    "S_returns": 0,
+    "S_bonus_attempts": 0,
+    "S_retries": 0,
+    "E_choice_rate": 1.0,
+    "E_dwell_share": 0.0,
+    "E_returns": 0,
+    "E_bonus_attempts": 0,
+    "E_retries": 0,
+    "C_choice_rate": 0.0,
+    "C_dwell_share": 0.0,
+    "C_returns": 0,
+    "C_bonus_attempts": 0,
+    "C_retries": 0,
+    "mean_latency": 32.835,
+    "zones_visited": 1,
+    "early_exits": 0
+  },
+  "report": {
+    "scores": {
+      "R": 10.0,
+      "I": 0.0,
+      "A": 0.0,
+      "S": 0.0,
+      "E": 60.0,
+      "C": 0.0
+    },
+    "interval": {
+      "R": 20.4,
+      "I": 20.4,
+      "A": 20.4,
+      "S": 20.4,
+      "E": 20.4,
+      "C": 20.4
+    },
+    "code": "ERI",
+    "order": [
+      "E",
+      "R",
+      "I",
+      "A",
+      "S",
+      "C"
+    ],
+    "source": "heuristic",
+    "careers": [
+      [
+        "Entrepreneur",
+        0.9,
+        "EIA"
+      ],
+      [
+        "Sales Manager",
+        0.71,
+        "ECS"
+      ],
+      [
+        "Real Estate Agent",
+        0.68,
+        "ECS"
+      ],
+      [
+        "Project Manager",
+        0.59,
+        "ECS"
+      ],
+      [
+        "Marketing Specialist",
+        0.49,
+        "EAC"
+      ],
+      [
+        "HR Specialist",
+        0.35,
+        "SEC"
+      ],
+      [
+        "Financial Analyst",
+        0.29,
+        "CEI"
+      ],
+      [
+        "Compliance Officer",
+        0.19,
+        "CEI"
+      ]
+    ]
+  },
+  "questionnaire_source": "original placeholder items (NOT validated)",
+  "questionnaire_items": [
+    [
+      "R",
+      "Repair a bicycle or a small engine"
+    ],
+    [
+      "I",
+      "Conduct a science experiment"
+    ],
+    [
+      "A",
+      "Write a story or poem"
+    ],
+    [
+      "S",
+      "Teach someone a new skill"
+    ],
+    [
+      "E",
+      "Start my own business"
+    ],
+    [
+      "C",
+      "Keep accurate financial records"
+    ],
+    [
+      "R",
+      "Build something with hand tools"
+    ],
+    [
+      "I",
+      "Study how diseases spread"
+    ],
+    [
+      "A",
+      "Design a poster or logo"
+    ],
+    [
+      "S",
+      "Help people work through personal problems"
+    ],
+    [
+      "E",
+      "Persuade people to back an idea"
+    ],
+    [
+      "C",
+      "Organize files and data"
+    ],
+    [
+      "R",
+      "Operate machinery or heavy equipment"
+    ],
+    [
+      "I",
+      "Analyze data to find patterns"
+    ],
+    [
+      "A",
+      "Play or compose music"
+    ],
+    [
+      "S",
+      "Care for sick or injured people"
+    ],
+    [
+      "E",
+      "Lead a team toward a goal"
+    ],
+    [
+      "C",
+      "Check documents for errors"
+    ],
+    [
+      "R",
+      "Install electrical wiring"
+    ],
+    [
+      "I",
+      "Solve difficult logic puzzles"
+    ],
+    [
+      "A",
+      "Act in a play"
+    ],
+    [
+      "S",
+      "Volunteer at a community organization"
+    ],
+    [
+      "E",
+      "Negotiate a deal"
+    ],
+    [
+      "C",
+      "Follow clear procedures to finish a task"
+    ],
+    [
+      "R",
+      "Assemble furniture or equipment from parts"
+    ],
+    [
+      "I",
+      "Read about new scientific discoveries"
+    ],
+    [
+      "A",
+      "Take and edit photographs"
+    ],
+    [
+      "S",
+      "Work with children or older adults"
+    ],
+    [
+      "E",
+      "Run for a leadership position"
+    ],
+    [
+      "C",
+      "Use spreadsheets to track information"
+    ],
+    [
+      "R",
+      "Work outdoors with tools and materials"
+    ],
+    [
+      "I",
+      "Investigate why a machine or program failed"
+    ],
+    [
+      "A",
+      "Design the look of a room"
+    ],
+    [
+      "S",
+      "Lead a discussion so everyone takes part"
+    ],
+    [
+      "E",
+      "Give a persuasive presentation"
+    ],
+    [
+      "C",
+      "Schedule and coordinate appointments"
+    ]
+  ],
+  "questionnaire_answers": {},
+  "questionnaire_scores": null,
+  "events": [
+    {
+      "timestamp": "2026-10-06T14:25:08.830",
+      "elapsed_s": 0.0,
+      "delta_s": 0.0,
+      "event": "session_start",
+      "zone": null,
+      "action": "begin",
+      "evidence": "participant consented",
+      "riasec_points": {},
+      "extra": {
+        "age_band": "18-24",
+        "gender": "Male",
+        "language": "en",
+        "device": {
+          "type": "desktop",
+          "os": "Windows",
+          "screen": "1920x1080"
+        }
+      }
+    },
+    {
+      "timestamp": "2026-10-06T14:25:08.837",
+      "elapsed_s": 0.007,
+      "delta_s": 0.007,
+      "event": "hub_layout",
+      "zone": null,
+      "action": "shown",
+      "evidence": null,
+      "riasec_points": {},
+      "extra": {
+        "order": [
+          "R",
+          "I",
+          "S",
+          "C",
+          "A",
+          "E"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-10-06T14:25:46.503",
+      "elapsed_s": 37.673,
+      "delta_s": 37.666,
+      "event": "zone_enter",
+      "zone": "R",
+      "action": "enter",
+      "evidence": "voluntary first entry",
+      "riasec_points": {},
+      "extra": {
+        "entry_number": 1,
+        "voluntary_return": false
+      }
+    },
+    {
+      "timestamp": "2026-10-06T14:26:20.804",
+      "elapsed_s": 71.974,
+      "delta_s": 34.301,
+      "event": "decision",
+      "zone": "R",
+      "action": "Decide who leads the repair and set a deadline",
+      "evidence": "chose the Enterprising-type option over 5 alternatives of other interest types",
+      "riasec_points": {
+        "E": 2
+      },
+      "extra": {
+        "step": 0,
+        "chosen_letter": "E",
+        "option_order": [
+          "A",
+          "S",
+          "R",
+          "I",
+          "C",
+          "E"
+        ],
+        "chosen_position": 5,
+        "latency_s": 34.29
+      }
+    },
+    {
+      "timestamp": "2026-10-06T14:26:52.192",
+      "elapsed_s": 103.363,
+      "delta_s": 31.389,
+      "event": "decision",
+      "zone": "R",
+      "action": "Pitch a plan to buy more generators",
+      "evidence": "chose the Enterprising-type option over 5 alternatives of other interest types",
+      "riasec_points": {
+        "E": 2
+      },
+      "extra": {
+        "step": 1,
+        "chosen_letter": "E",
+        "option_order": [
+          "E",
+          "A",
+          "S",
+          "R",
+          "I",
+          "C"
+        ],
+        "chosen_position": 0,
+        "latency_s": 31.38
+      }
+    },
+    {
+      "timestamp": "2026-10-06T14:26:52.192",
+      "elapsed_s": 103.363,
+      "delta_s": 0.0,
+      "event": "zone_complete",
+      "zone": "R",
+      "action": "complete",
+      "evidence": "finished the zone's core decisions",
+      "riasec_points": {},
+      "extra": {}
+    },
+    {
+      "timestamp": "2026-10-06T14:26:58.896",
+      "elapsed_s": 110.066,
+      "delta_s": 6.703,
+      "event": "zone_exit",
+      "zone": "R",
+      "action": "back_to_hub",
+      "evidence": "left zone (back_to_hub)",
+      "riasec_points": {},
+      "extra": {
+        "dwell_s": 72.39
+      }
+    },
+    {
+      "timestamp": "2026-10-06T14:26:58.899",
+      "elapsed_s": 110.07,
+      "delta_s": 0.004,
+      "event": "hub_layout",
+      "zone": null,
+      "action": "shown",
+      "evidence": null,
+      "riasec_points": {},
+      "extra": {
+        "order": [
+          "S",
+          "E",
+          "R",
+          "C",
+          "I",
+          "A"
+        ]
+      }
+    },
+    {
+      "timestamp": "2026-10-06T14:27:16.889",
+      "elapsed_s": 128.06,
+      "delta_s": 17.99,
+      "event": "report_generated",
+      "zone": null,
+      "action": "finish",
+      "evidence": null,
+      "riasec_points": {},
+      "extra": {
+        "report": {
+          "scores": {
+            "R": 10.0,
+            "I": 0.0,
+            "A": 0.0,
+            "S": 0.0,
+            "E": 60.0,
+            "C": 0.0
+          },
+          "interval": {
+            "R": 20.4,
+            "I": 20.4,
+            "A": 20.4,
+            "S": 20.4,
+            "E": 20.4,
+            "C": 20.4
+          },
+          "code": "ERI",
+          "order": [
+            "E",
+            "R",
+            "I",
+            "A",
+            "S",
+            "C"
+          ],
+          "source": "heuristic",
+          "careers": [
+            [
+              "Entrepreneur",
+              0.9,
+              "EIA"
+            ],
+            [
+              "Sales Manager",
+              0.71,
+              "ECS"
+            ],
+            [
+              "Real Estate Agent",
+              0.68,
+              "ECS"
+            ],
+            [
+              "Project Manager",
+              0.59,
+              "ECS"
+            ],
+            [
+              "Marketing Specialist",
+              0.49,
+              "EAC"
+            ],
+            [
+              "HR Specialist",
+              0.35,
+              "SEC"
+            ],
+            [
+              "Financial Analyst",
+              0.29,
+              "CEI"
+            ],
+            [
+              "Compliance Officer",
+              0.19,
+              "CEI"
+            ]
+          ]
+        },
+        "questionnaire": null
+      }
+    },
+    {
+      "timestamp": "2026-10-06T14:27:32.152",
+      "elapsed_s": 143.323,
+      "delta_s": 15.263,
+      "event": "session_end",
+      "zone": null,
+      "action": "window_close",
+      "evidence": null,
+      "riasec_points": {},
+      "extra": {}
+    }
+  ]
+}
