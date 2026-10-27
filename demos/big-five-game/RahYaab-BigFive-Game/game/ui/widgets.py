@@ -10,6 +10,8 @@ from game import settings as S
 
 @lru_cache(maxsize=64)
 def font(size: int, bold: bool = False) -> pygame.font.Font:
+    if not pygame.font.get_init():           # levels 5-8 wrap text in game logic, also when run headless
+        pygame.font.init()
     f = pygame.font.Font(None, size)
     f.set_bold(bold)
     return f
