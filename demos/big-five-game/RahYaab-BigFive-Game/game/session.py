@@ -60,12 +60,14 @@ class GameSession:
         self.coins = 0
         self.trust = 0                 # 'village trust' earned by prosocial actions (game-side flavour only)
 
-    def start(self) -> None:
+    def start(self, plan=None) -> None:
+        """`plan` = the level ids this session intends to play (stored so results can show planned vs completed)."""
         if self.started:
             return
         self.started = True
+        extra = {"plan": [int(x) for x in plan]} if plan else {}
         self.logger.log(E.SESSION_START, level_id=None, action="start", game_version=S.GAME_VERSION,
-                        seed=self.seed, player_name=self.player_name)
+                        seed=self.seed, player_name=self.player_name, **extra)
 
     def pause(self) -> None:
         self.logger.log(E.GAME_PAUSED, action="pause")

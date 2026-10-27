@@ -1,5 +1,5 @@
 """Global game settings and colour palette."""
-GAME_VERSION = "0.1.0"
+GAME_VERSION = "0.2.0"
 TITLE = "RahYaab - Behavioral Assessment Game"
 
 SCREEN_W, SCREEN_H = 1100, 700

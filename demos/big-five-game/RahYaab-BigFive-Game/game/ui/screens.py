@@ -12,11 +12,20 @@ from game.ui import widgets as W
 
 INSTRUCTION_PAGES = 3
 LEVEL_BLURB = {
-    1: "Scenario 1 of 4  -  Exploration",
-    2: "Scenario 2 of 4  -  Planning with limited resources",
-    3: "Scenario 3 of 4  -  Social interaction",
-    4: "Scenario 4 of 4  -  Pressure and uncertainty",
+    1: "Level 1  -  Exploration",
+    2: "Level 2  -  Planning with limited resources",
+    3: "Level 3  -  Social interaction",
+    4: "Level 4  -  Pressure and uncertainty",
+    5: "Level 5  -  Multi-stage planning and replanning",
+    6: "Level 6  -  Adaptive decisions with shared resources",
+    7: "Level 7  -  Career exploration: hands-on activities",
+    8: "Level 8  -  Career exploration: one mission, many roles",
+    9: "Level 9  -  A living garden: routines, neighbours, surprises",
+    10: "Level 10  -  Route map: forced-choice roads and jobs",
 }
+RIASEC_NAMES = {"R": "Realistic", "I": "Investigative", "A": "Artistic", "S": "Social", "E": "Enterprising", "C": "Conventional"}
+RIASEC_COLORS = {"R": (251, 146, 60), "I": (96, 165, 250), "A": (232, 121, 249), "S": (52, 211, 153), "E": (251, 191, 36),
+                 "C": (148, 163, 184)}
 LABEL_COLORS = {"Low": (148, 163, 184), "Moderate": (251, 191, 36), "High": (52, 211, 153)}
 
 
@@ -41,18 +50,33 @@ def draw_menu(surf, app):
     _backdrop(surf, app)
     W.text(surf, "RahYaab", (S.SCREEN_W // 2, 130), 120, S.TEXT, anchor="center", bold=True)
     W.text(surf, "Behavioral Personality Assessment Game", (S.SCREEN_W // 2, 205), 40, S.ACCENT, anchor="center")
-    W.text(surf, "Play four short scenarios. Your behavior - not a questionnaire - is the evidence.",
+    W.text(surf, "Play short scenarios. Your choices - not a questionnaire - are the evidence.",
            (S.SCREEN_W // 2, 245), 26, S.TEXT_DIM, anchor="center")
     from game.app import MENU_ITEMS
     for i, item in enumerate(MENU_ITEMS):
-        r = pygame.Rect(0, 0, 460, 62)
-        r.center = (S.SCREEN_W // 2, 340 + i * 80)
+        r = pygame.Rect(0, 0, 560, 48)
+        r.center = (S.SCREEN_W // 2, 290 + i * 52)
         sel = i == app.menu_index
-        W.panel(surf, r, S.PANEL_LIGHT if sel else S.PANEL, S.ACCENT if sel else None, 14)
-        W.text(surf, item, r.center, 36, S.TEXT if sel else S.TEXT_DIM, anchor="center", bold=sel)
-    W.text(surf, "Up / Down + Enter", (S.SCREEN_W // 2, 600), 24, S.TEXT_DIM, anchor="center")
-    W.text(surf, "Prototype scoring - behavioral indicators, not a validated psychometric test.",
-           (S.SCREEN_W // 2, 660), 22, (120, 130, 160), anchor="center")
+        W.panel(surf, r, S.PANEL_LIGHT if sel else S.PANEL, S.ACCENT if sel else None, 12)
+        W.text(surf, item, r.center, 30, S.TEXT if sel else S.TEXT_DIM, anchor="center", bold=sel)
+    W.text(surf, "Up / Down + Enter, or press a number", (S.SCREEN_W // 2, 690 - 36), 22, S.TEXT_DIM, anchor="center")
+    W.text(surf, "Prototype: exploratory indicators, not validated psychometric or career tests.",
+           (S.SCREEN_W // 2, 690), 20, (120, 130, 160), anchor="center")
+
+
+def draw_levelselect(surf, app):
+    from game.app import LEVEL_CLASSES, LEVEL_TRACK
+    _backdrop(surf, app)
+    W.text(surf, "Level Select", (S.SCREEN_W // 2, 70), 60, S.TEXT, anchor="center", bold=True)
+    W.text(surf, "Play one level on its own. Results then cover only that level.", (S.SCREEN_W // 2, 120), 26, S.TEXT_DIM, anchor="center")
+    for i, (lid, cls) in enumerate(LEVEL_CLASSES.items()):
+        r = pygame.Rect(0, 0, 700, 44)
+        r.center = (S.SCREEN_W // 2, 170 + i * 50)
+        sel = i == app.select_index
+        W.panel(surf, r, S.PANEL_LIGHT if sel else S.PANEL, S.ACCENT if sel else None, 12)
+        W.text(surf, f"{lid}.  {cls.name}", (r.x + 24, r.centery), 30, S.TEXT if sel else S.TEXT_DIM, anchor="midleft", bold=sel)
+        W.text(surf, LEVEL_TRACK[lid], (r.right - 24, r.centery), 22, S.ACCENT_2 if LEVEL_TRACK[lid] == "Big Five" else S.WARN, anchor="midright")
+    W.text(surf, "Up / Down + Enter or number    Esc: back", (S.SCREEN_W // 2, 690), 22, S.TEXT_DIM, anchor="center")
 
 
 def draw_name(surf, app):
@@ -75,16 +99,16 @@ def draw_briefing(surf, app):
     box = pygame.Rect(150, 170, 800, 400)
     W.panel(surf, box, S.PANEL, S.ACCENT, 16)
     y = box.y + 24
-    y = W.paragraph(surf, "You are about to play 4 short game levels (about 8-12 minutes). There are no right or wrong "
-                    "answers - just play the way that feels natural to you.", (box.x + 30, y), 28, 740, S.TEXT) + 14
+    y = W.paragraph(surf, f"You are about to play {len(app.plan)} game level(s) (levels {', '.join(str(x) for x in app.plan)}). "
+                    "There are no right or wrong answers - just play the way that feels natural to you. You can pause or step away at any time.", (box.x + 30, y), 28, 740, S.TEXT) + 14
     for line in ("What the game records: movement, choices, timing, retries and mistakes (telemetry).",
-                 "What happens next: the telemetry becomes behavioral features, then an estimated Big Five profile.",
-                 "Important: this is a prototype. The result is a set of behavioral indicators, not a diagnosis."):
+                 "Levels 1-6 and 9 give exploratory Big Five indicators; levels 7, 8 and 10 give an exploratory career-interest (RIASEC) profile. The two are kept separate.",
+                 "Important: this is a prototype. Results are behavioral indicators, not a diagnosis, ability score or career test."):
         pygame.draw.circle(surf, S.ACCENT, (box.x + 38, y + 11), 4)
         y = W.paragraph(surf, line, (box.x + 56, y), 25, 700, S.TEXT_DIM) + 8
     W.text(surf, "Controls:  Move WASD / Arrow keys     Interact  E or Space     Choose  Up/Down + Enter or number     Pause  P",
            (S.SCREEN_W // 2, 520), 24, S.WARN, anchor="center")
-    W.text(surf, "Press Enter to begin Level 1", (S.SCREEN_W // 2, 625), 34, S.ACCENT_2, anchor="center", bold=True)
+    W.text(surf, f"Press Enter to begin Level {app.plan[0]}", (S.SCREEN_W // 2, 625), 34, S.ACCENT_2, anchor="center", bold=True)
 
 
 def draw_instructions(surf, app):
@@ -96,20 +120,23 @@ def draw_instructions(surf, app):
             "Press E or Space next to objects, villagers and stations to interact.",
             "When a choice appears, use Up/Down and Enter - or press the option's number.",
             "Press P at any time to pause. Nothing is timed while the game is paused.",
-            "There are 4 levels. If you fail a level you can try again (up to 3 attempts) or move on.",
+            "There are 10 levels. Levels 1-4 can be failed (try again up to 3 times, or move on); levels 5-10 cannot be failed.",
+            "In panels with numbered options, press the number. Level 7 panels: 8 = ask the mentor, 9 = step away. Levels 9 and 10 are played with a cursor (arrows + E).",
         ]),
-        ("The four scenarios", [
-            "1. The Whispering Valley - an open valley with a marked road and many optional places.",
-            "2. The Workshop - fill orders from a limited stock of materials.",
-            "3. Harbor Village - villagers who might ask for help, or wait for you to talk.",
-            "4. The Crumbling Vault - a countdown, uncertain locks and a laser corridor.",
-            "No question ever asks about your personality: your choices are the data.",
+        ("The ten levels", [
+            "1-4: Valley (exploration), Workshop (planning), Harbor Village (social), Crumbling Vault (pressure).",
+            "5. Strategic Expedition - pack, choose a route, adapt when conditions change.",
+            "6. Flood Response - action points, shared resources, neighbours with requests.",
+            "7. Career Workshop - six hands-on benches; choose what to try, how, and for how long.",
+            "8. Integrated Career Mission - one park, one budget, four teammates, many valid strategies.",
+            "9. Courtyard Garden - a living five-day garden: routines, a neighbour, pests, open day, hail (Big Five).",
+            "10. Crossroads Caravan - ten forks, three roads each, six jobs to try (career interests).",
         ]),
         ("What is recorded and how it is used", [
             "Every meaningful action becomes a telemetry event stored in a local SQLite database.",
-            "After level 4 the game automatically cleans the telemetry and calculates behavioral features.",
-            "A transparent weighted model turns those features into 0-100 Big Five (OCEAN) indicators.",
-            "The weights are prototype assumptions - NOT a validated psychometric instrument.",
+            "After the last level the game cleans the telemetry and calculates behavioral features.",
+            "Transparent rule-based models (not machine learning) turn them into Big Five indicators (levels 1-6 and 9) and a RIASEC interest profile (levels 7, 8 and 10).",
+            "Weights and mappings are documented prototype assumptions - NOT validated instruments. Speed and skill are not read as personality or interest.",
             "Open the dashboard (python run.py) to inspect the raw telemetry and the results.",
         ]),
     ]
@@ -127,10 +154,10 @@ def draw_instructions(surf, app):
 
 # ------------------------------------------------------------------ level screens
 def draw_intro(surf, app):
-    from game.app import INTRO_TEXT, LEVELS
+    from game.app import INTRO_TEXT, LEVEL_CLASSES
     _backdrop(surf, app, (30, 36, 70))
-    cls = LEVELS[app.level_idx]
-    W.text(surf, LEVEL_BLURB[cls.level_id], (S.SCREEN_W // 2, 120), 30, S.ACCENT, anchor="center")
+    cls = LEVEL_CLASSES[app.plan[app.level_idx]]
+    W.text(surf, LEVEL_BLURB[cls.level_id] + f"   ({app.level_idx + 1} of {len(app.plan)})", (S.SCREEN_W // 2, 120), 30, S.ACCENT, anchor="center")
     W.text(surf, cls.name, (S.SCREEN_W // 2, 190), 82, S.TEXT, anchor="center", bold=True)
     box = pygame.Rect(0, 0, 820, 200)
     box.center = (S.SCREEN_W // 2, 360)
@@ -195,7 +222,7 @@ def draw_processing(surf, app):
     _backdrop(surf, app, (24, 40, 70))
     W.text(surf, "Assessment complete", (S.SCREEN_W // 2, 180), 70, S.TEXT, anchor="center", bold=True)
     steps = ["Raw telemetry stored", "Cleaning events", "Extracting behavioral features",
-             "Estimating Big Five indicators", "Building your report"]
+             "Estimating indicators (Big Five and/or RIASEC)", "Building your report"]
     shown = min(len(steps), 1 + app.processing_frames // 12)
     for i in range(shown):
         done = i < shown - 1 or app.processing_frames > 60
@@ -210,8 +237,9 @@ def draw_results(surf, app):
     out = app.output
     pred = out.prediction
     _backdrop(surf, app, (20, 28, 56))
-    W.text(surf, "YOUR PERSONALITY PROFILE", (40, 24), 52, S.TEXT, bold=True)
-    W.text(surf, f"{app.session.player_name if app.session else ''}   -   estimated from your gameplay behavior (prototype model)",
+    W.text(surf, "BIG FIVE INDICATORS", (40, 24), 52, S.TEXT, bold=True)
+    used = ", ".join(str(x) for x in (out.contributions or {}).get("bigfive_levels", [])) or "-"
+    W.text(surf, f"{app.session.player_name if app.session else ''}   -   from levels {used} (prototype, exploratory)",
            (42, 74), 24, S.TEXT_DIM)
     y = 124
     for i, t in enumerate(TRAITS):
@@ -245,7 +273,8 @@ def draw_results(surf, app):
     W.paragraph(surf, ev["caveat"], (box.x + 24, box.bottom - 54), 20, 465, (160, 150, 120), 0)
     W.text(surf, "PROTOTYPE SCORING: weights are design assumptions, not a validated psychometric model.", (40, 612), 21, S.WARN)
     W.text(surf, "Scores summarise behavior in this one session; they are not a diagnosis.", (40, 636), 21, (140, 150, 180))
-    hint = "Up/Down: choose trait    Enter: telemetry analytics    X: save report (JSON)    M: main menu"
+    nxt = "career interests" if app._has_riasec() else "researcher analytics"
+    hint = f"Up/Down: choose trait    Enter: {nxt}    X: save report (JSON)    M: main menu"
     W.text(surf, hint, (S.SCREEN_W // 2, 676), 22, S.TEXT_DIM, anchor="center")
     if app.saved_report:
         W.text(surf, f"Saved: {app.saved_report.name}", (S.SCREEN_W - 40, 24), 22, S.ACCENT_2, anchor="topright")
@@ -259,12 +288,12 @@ def draw_analytics(surf, app):
     out = app.output
     sm = out.summary
     _backdrop(surf, app, (20, 28, 56))
-    W.text(surf, "TELEMETRY ANALYTICS", (40, 24), 52, S.TEXT, bold=True)
+    W.text(surf, "TELEMETRY ANALYTICS (researcher view)", (40, 24), 52, S.TEXT, bold=True)
     W.text(surf, f"Session {app.session.session_id}   -   {sm['total_events']} events stored in the database",
            (42, 76), 24, S.TEXT_DIM)
     mins, secs = divmod(int(sm["total_play_time_s"]), 60)
     tiles = [
-        ("Total play time", f"{mins}:{secs:02d}"), ("Levels completed", f"{sm['levels_completed']} / 4"),
+        ("Total play time", f"{mins}:{secs:02d}"), ("Levels completed", f"{sm['levels_completed']} / {sm.get('levels_planned', 4)}"),
         ("Decisions made", str(sm["decisions_made"])),
         ("Avg decision time", "n/a" if sm["average_decision_time_s"] is None else f"{sm['average_decision_time_s']:.1f}s"),
         ("Exploration rate", _fmt_pct(sm["exploration_rate"])), ("Risk-taking rate", _fmt_pct(sm["risk_taking_rate"])),
@@ -298,5 +327,46 @@ def draw_analytics(surf, app):
         W.text(surf, str(int(v)), (1010, yy), 22, S.TEXT)
     W.text(surf, f"Database: {app.repo.db_path}", (40, 650), 20, (120, 130, 160))
     W.text(surf, "Enter: back to results    X: save report (JSON)    M: main menu", (S.SCREEN_W // 2, 676), 22, S.TEXT_DIM, anchor="center")
+    if app.saved_report:
+        W.text(surf, f"Saved: {app.saved_report.name}", (S.SCREEN_W - 40, 24), 22, S.ACCENT_2, anchor="topright")
+
+
+# ------------------------------------------------------------------------ RIASEC results
+def draw_riasec(surf, app):
+    out = app.output
+    r = out.riasec
+    _backdrop(surf, app, (22, 30, 50))
+    W.text(surf, "CAREER INTEREST PROFILE (RIASEC)", (40, 24), 50, S.TEXT, bold=True)
+    used = ", ".join(str(x) for x in r.levels_used) or "none"
+    W.text(surf, f"Exploratory estimate from levels {used}. It shows what you chose and stayed with, not what you are good at.",
+           (42, 76), 22, S.TEXT_DIM)
+    y = 120
+    order = sorted(r.scores, key=lambda c: -r.scores[c])
+    for c in order:
+        W.text(surf, f"{RIASEC_NAMES[c]}", (46, y), 28, S.TEXT, bold=c in r.holland_code)
+        W.text(surf, f"{r.scores[c]:.0f}", (420, y), 32, RIASEC_COLORS[c], anchor="topright", bold=True)
+        W.bar(surf, (440, y + 6, 240, 22), r.scores[c] / 100, RIASEC_COLORS[c], radius=6)
+        y += 48
+    if r.flat_profile:
+        W.text(surf, "Flat profile: no category stands out.", (46, y + 6), 24, S.WARN)
+    elif r.holland_code:
+        W.text(surf, f"Top interests (Holland code): {r.holland_code}", (46, y + 6), 26, S.ACCENT_2, bold=True)
+    box = pygame.Rect(720, 118, 350, 420)
+    W.panel(surf, box, S.PANEL, S.ACCENT, 16)
+    W.text(surf, "How this was built", (box.x + 20, box.y + 16), 28, S.ACCENT, bold=True)
+    lines = ["Choice: which activities you picked on your own.", "Engagement: optional extras, revisits, staying with a task.",
+             "Finishing a task or doing it well is reported separately and does not raise the score.",
+             "Speed is never used as interest."]
+    yy = box.y + 56
+    for ln in lines:
+        yy = W.paragraph(surf, ln, (box.x + 20, yy), 21, 310, S.TEXT) + 8
+    for lid in sorted(r.level_status):
+        W.text(surf, f"Level {lid}: {r.level_status[lid].replace('_', ' ')}", (box.x + 20, yy), 21, S.TEXT_DIM)
+        yy += 24
+    W.text(surf, f"Levels agree: {r.agreement_label}", (box.x + 20, yy + 6), 20, S.TEXT_DIM)
+    W.paragraph(surf, "PROTOTYPE: mapping and weights are design assumptions, not a validated interest inventory or career advice.",
+                (40, 596), 21, 1000, S.WARN, 0)
+    hint = "Enter: researcher analytics    Left: back    X: save report (JSON)    M: main menu"
+    W.text(surf, hint, (S.SCREEN_W // 2, 676), 22, S.TEXT_DIM, anchor="center")
     if app.saved_report:
         W.text(surf, f"Saved: {app.saved_report.name}", (S.SCREEN_W - 40, 24), 22, S.ACCENT_2, anchor="topright")
