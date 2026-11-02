@@ -1,0 +1,728 @@
+{
+ "result": {
+  "assessment_id": 1,
+  "bigfive": {
+   "levels_played": [
+    1,
+    2,
+    3,
+    4,
+    5,
+    6
+   ],
+   "model_version": "WeightedScoringEngine 0.2-prototype",
+   "traits": [
+    {
+     "about": "curiosity and enjoying new ideas",
+     "description": "You liked some new things and also valued what is familiar.",
+     "key": "O",
+     "level": "Moderate",
+     "measured": true,
+     "name": "Openness",
+     "score": 44
+    },
+    {
+     "about": "planning and following through",
+     "description": "You planned sometimes and stayed flexible at other times.",
+     "key": "C",
+     "level": "Moderate",
+     "measured": true,
+     "name": "Conscientiousness",
+     "score": 67
+    },
+    {
+     "about": "energy from people and taking the lead",
+     "description": "You mixed working with others and working on your own.",
+     "key": "E",
+     "level": "Moderate",
+     "measured": true,
+     "name": "Extraversion",
+     "score": 47
+    },
+    {
+     "about": "helping and cooperating",
+     "description": "You often focused on your own goals and were direct in your choices.",
+     "key": "A",
+     "level": "Low",
+     "measured": true,
+     "name": "Agreeableness",
+     "score": 31
+    },
+    {
+     "about": "how strongly pressure is felt (Neuroticism)",
+     "description": "You tended to stay calm under time pressure.",
+     "key": "N",
+     "level": "Low",
+     "measured": true,
+     "name": "Emotional sensitivity",
+     "score": 32
+    }
+   ]
+  },
+  "completed_at": "2026-10-30T20:52:26",
+  "disclaimer": "RahYaab results come from short games and a questionnaire. They are guidance to help you explore, not a test you pass or fail and not a final career decision. The game-based personality scores are a prototype and have not yet been checked against standard personality questionnaires. Talk with a teacher, counsellor or parent before making decisions.",
+  "feedback": null,
+  "grade_band": "9-10",
+  "quality": {
+   "flags": [],
+   "message": null
+  },
+  "recommendations": [
+   {
+    "description": "Caring for people's health as a doctor, nurse, pharmacist or therapist.",
+    "field_id": 3,
+    "grade_band": "9-10",
+    "name": "Medicine and Healthcare",
+    "pathways": [
+     "Matric: Science group with Biology",
+     "Build strong study habits in Biology and Chemistry",
+     "Volunteer or learn first aid"
+    ],
+    "pct": 69,
+    "score": 0.6911999999999999,
+    "skills": [
+     "Biology and chemistry foundations",
+     "Talking with patients",
+     "Study habits for entry tests",
+     "Teamwork and first aid"
+    ],
+    "trace": {
+     "field_code": "ISR",
+     "formula": "score = interests_weight * sum(letter_weight * your_score) / 1.9 / 100 + personality_weight * (1 - mean |your_trait/100 - typical|)",
+     "interest_match": 0.63,
+     "letters": [
+      {
+       "code": "I",
+       "weight": 1.0,
+       "your_score": 63
+      },
+      {
+       "code": "S",
+       "weight": 0.6,
+       "your_score": 63
+      },
+      {
+       "code": "R",
+       "weight": 0.3,
+       "your_score": 63
+      }
+     ],
+     "personality_fit": 0.834,
+     "traits": [
+      {
+       "gap": 6,
+       "key": "O",
+       "typical": 50,
+       "yours": 44
+      },
+      {
+       "gap": 13,
+       "key": "C",
+       "typical": 80,
+       "yours": 67
+      },
+      {
+       "gap": 3,
+       "key": "E",
+       "typical": 50,
+       "yours": 47
+      },
+      {
+       "gap": 49,
+       "key": "A",
+       "typical": 80,
+       "yours": 31
+      },
+      {
+       "gap": 12,
+       "key": "N",
+       "typical": 20,
+       "yours": 32
+      }
+     ],
+     "weights": {
+      "interests": 0.7,
+      "personality": 0.3
+     }
+    },
+    "why": "This field mainly involves Investigative, Social and Realistic interests. With your scores (Investigative 63, Social 63, Realistic 63) your interest match is 63%, the main reason for this suggestion (70% of the ranking). Your game-based personality results fit this field's usual style 83% (30%), closest on Extraversion and Openness. This field may suit you; explore it before deciding."
+   },
+   {
+    "description": "Working with laws, rights and how governments make decisions.",
+    "field_id": 10,
+    "grade_band": "9-10",
+    "name": "Law and Public Policy",
+    "pathways": [
+     "Matric: any group; read widely in English and Urdu",
+     "Join debates or the student council",
+     "Follow the news"
+    ],
+    "pct": 69,
+    "score": 0.6911999999999999,
+    "skills": [
+     "Reading and writing",
+     "Debate and public speaking",
+     "Critical thinking",
+     "Following current affairs"
+    ],
+    "trace": {
+     "field_code": "EIS",
+     "formula": "score = interests_weight * sum(letter_weight * your_score) / 1.9 / 100 + personality_weight * (1 - mean |your_trait/100 - typical|)",
+     "interest_match": 0.63,
+     "letters": [
+      {
+       "code": "E",
+       "weight": 1.0,
+       "your_score": 63
+      },
+      {
+       "code": "I",
+       "weight": 0.6,
+       "your_score": 63
+      },
+      {
+       "code": "S",
+       "weight": 0.3,
+       "your_score": 63
+      }
+     ],
+     "personality_fit": 0.834,
+     "traits": [
+      {
+       "gap": 6,
+       "key": "O",
+       "typical": 50,
+       "yours": 44
+      },
+      {
+       "gap": 13,
+       "key": "C",
+       "typical": 80,
+       "yours": 67
+      },
+      {
+       "gap": 33,
+       "key": "E",
+       "typical": 80,
+       "yours": 47
+      },
+      {
+       "gap": 19,
+       "key": "A",
+       "typical": 50,
+       "yours": 31
+      },
+      {
+       "gap": 12,
+       "key": "N",
+       "typical": 20,
+       "yours": 32
+      }
+     ],
+     "weights": {
+      "interests": 0.7,
+      "personality": 0.3
+     }
+    },
+    "why": "This field mainly involves Enterprising, Investigative and Social interests. With your scores (Enterprising 63, Investigative 63, Social 63) your interest match is 63%, the main reason for this suggestion (70% of the ranking). Your game-based personality results fit this field's usual style 83% (30%), closest on Openness and Emotional sensitivity. This field may suit you; explore it before deciding."
+   },
+   {
+    "description": "Designing machines, power systems and electronics.",
+    "field_id": 4,
+    "grade_band": "9-10",
+    "name": "Engineering (Mechanical and Electrical)",
+    "pathways": [
+     "Matric: Science group (Computer Science or Biology)",
+     "Keep Maths and Physics strong",
+     "Build or repair small projects at home"
+    ],
+    "pct": 68,
+    "score": 0.6815684210526316,
+    "skills": [
+     "Physics and maths",
+     "Technical drawing",
+     "Hands-on workshop practice",
+     "Basic electronics"
+    ],
+    "trace": {
+     "field_code": "RIC",
+     "formula": "score = interests_weight * sum(letter_weight * your_score) / 1.9 / 100 + personality_weight * (1 - mean |your_trait/100 - typical|)",
+     "interest_match": 0.5905263157894737,
+     "letters": [
+      {
+       "code": "R",
+       "weight": 1.0,
+       "your_score": 63
+      },
+      {
+       "code": "I",
+       "weight": 0.6,
+       "your_score": 63
+      },
+      {
+       "code": "C",
+       "weight": 0.3,
+       "your_score": 38
+      }
+     ],
+     "personality_fit": 0.894,
+     "traits": [
+      {
+       "gap": 6,
+       "key": "O",
+       "typical": 50,
+       "yours": 44
+      },
+      {
+       "gap": 13,
+       "key": "C",
+       "typical": 80,
+       "yours": 67
+      },
+      {
+       "gap": 3,
+       "key": "E",
+       "typical": 50,
+       "yours": 47
+      },
+      {
+       "gap": 19,
+       "key": "A",
+       "typical": 50,
+       "yours": 31
+      },
+      {
+       "gap": 12,
+       "key": "N",
+       "typical": 20,
+       "yours": 32
+      }
+     ],
+     "weights": {
+      "interests": 0.7,
+      "personality": 0.3
+     }
+    },
+    "why": "This field mainly involves Realistic, Investigative and Conventional interests. With your scores (Realistic 63, Investigative 63, Conventional 38) your interest match is 59%, the main reason for this suggestion (70% of the ranking). Your game-based personality results fit this field's usual style 89% (30%), closest on Extraversion and Openness. This field may suit you; explore it before deciding."
+   },
+   {
+    "description": "Designing and building apps, websites and computer systems.",
+    "field_id": 1,
+    "grade_band": "9-10",
+    "name": "Software Engineering",
+    "pathways": [
+     "Matric: Science group with Computer Science",
+     "Keep Maths and Physics strong",
+     "Try a free beginner coding course or school coding club"
+    ],
+    "pct": 66,
+    "score": 0.6611684210526315,
+    "skills": [
+     "Programming basics (Python or JavaScript)",
+     "Logical problem solving",
+     "Maths for computing",
+     "Building small projects"
+    ],
+    "trace": {
+     "field_code": "IRC",
+     "formula": "score = interests_weight * sum(letter_weight * your_score) / 1.9 / 100 + personality_weight * (1 - mean |your_trait/100 - typical|)",
+     "interest_match": 0.5905263157894737,
+     "letters": [
+      {
+       "code": "I",
+       "weight": 1.0,
+       "your_score": 63
+      },
+      {
+       "code": "R",
+       "weight": 0.6,
+       "your_score": 63
+      },
+      {
+       "code": "C",
+       "weight": 0.3,
+       "your_score": 38
+      }
+     ],
+     "personality_fit": 0.826,
+     "traits": [
+      {
+       "gap": 36,
+       "key": "O",
+       "typical": 80,
+       "yours": 44
+      },
+      {
+       "gap": 17,
+       "key": "C",
+       "typical": 50,
+       "yours": 67
+      },
+      {
+       "gap": 3,
+       "key": "E",
+       "typical": 50,
+       "yours": 47
+      },
+      {
+       "gap": 19,
+       "key": "A",
+       "typical": 50,
+       "yours": 31
+      },
+      {
+       "gap": 12,
+       "key": "N",
+       "typical": 20,
+       "yours": 32
+      }
+     ],
+     "weights": {
+      "interests": 0.7,
+      "personality": 0.3
+     }
+    },
+    "why": "This field mainly involves Investigative, Realistic and Conventional interests. With your scores (Investigative 63, Realistic 63, Conventional 38) your interest match is 59%, the main reason for this suggestion (70% of the ranking). Your game-based personality results fit this field's usual style 83% (30%), closest on Extraversion and Emotional sensitivity. This field may suit you; explore it before deciding."
+   },
+   {
+    "description": "Understanding how people think and feel, and helping them cope.",
+    "field_id": 9,
+    "grade_band": "9-10",
+    "name": "Psychology and Counselling",
+    "pathways": [
+     "Matric: Science (Biology) or Humanities",
+     "Read about how people learn and feel",
+     "Practise listening and helping friends"
+    ],
+    "pct": 64,
+    "score": 0.6431684210526316,
+    "skills": [
+     "Active listening",
+     "Understanding behaviour",
+     "Research and writing",
+     "Managing stress"
+    ],
+    "trace": {
+     "field_code": "SIA",
+     "formula": "score = interests_weight * sum(letter_weight * your_score) / 1.9 / 100 + personality_weight * (1 - mean |your_trait/100 - typical|)",
+     "interest_match": 0.5905263157894737,
+     "letters": [
+      {
+       "code": "S",
+       "weight": 1.0,
+       "your_score": 63
+      },
+      {
+       "code": "I",
+       "weight": 0.6,
+       "your_score": 63
+      },
+      {
+       "code": "A",
+       "weight": 0.3,
+       "your_score": 38
+      }
+     ],
+     "personality_fit": 0.766,
+     "traits": [
+      {
+       "gap": 36,
+       "key": "O",
+       "typical": 80,
+       "yours": 44
+      },
+      {
+       "gap": 17,
+       "key": "C",
+       "typical": 50,
+       "yours": 67
+      },
+      {
+       "gap": 3,
+       "key": "E",
+       "typical": 50,
+       "yours": 47
+      },
+      {
+       "gap": 49,
+       "key": "A",
+       "typical": 80,
+       "yours": 31
+      },
+      {
+       "gap": 12,
+       "key": "N",
+       "typical": 20,
+       "yours": 32
+      }
+     ],
+     "weights": {
+      "interests": 0.7,
+      "personality": 0.3
+     }
+    },
+    "why": "This field mainly involves Social, Investigative and Artistic interests. With your scores (Social 63, Investigative 63, Artistic 38) your interest match is 59%, the main reason for this suggestion (70% of the ranking). Your game-based personality results fit this field's usual style 77% (30%), closest on Extraversion and Emotional sensitivity. This field may suit you; explore it before deciding."
+   }
+  ],
+  "riasec": {
+   "code": "RIS",
+   "types": [
+    {
+     "about": "hands-on, building and fixing things",
+     "key": "R",
+     "name": "Realistic",
+     "score": 63
+    },
+    {
+     "about": "thinking, researching and solving problems",
+     "key": "I",
+     "name": "Investigative",
+     "score": 63
+    },
+    {
+     "about": "creating, designing and expressing ideas",
+     "key": "A",
+     "name": "Artistic",
+     "score": 38
+    },
+    {
+     "about": "helping, teaching and caring for people",
+     "key": "S",
+     "name": "Social",
+     "score": 63
+    },
+    {
+     "about": "leading, persuading and starting things",
+     "key": "E",
+     "name": "Enterprising",
+     "score": 63
+    },
+    {
+     "about": "organising, records and clear procedures",
+     "key": "C",
+     "name": "Conventional",
+     "score": 38
+    }
+   ]
+  },
+  "versions": {
+   "bigfive_model": "WeightedScoringEngine 0.2-prototype",
+   "career_fields": 1,
+   "consent": "2026-10",
+   "recommendation_rules": "rec-1.0",
+   "riasec_items": 1
+  }
+ },
+ "items": {
+  "items": [
+   {
+    "item_id": 1,
+    "text": "Fix or build things with tools"
+   },
+   {
+    "item_id": 2,
+    "text": "Work with machines or electronics"
+   },
+   {
+    "item_id": 3,
+    "text": "Spend time outdoors with animals or plants"
+   },
+   {
+    "item_id": 4,
+    "text": "Repair a bike, phone or gadget"
+   },
+   {
+    "item_id": 5,
+    "text": "Do science experiments"
+   },
+   {
+    "item_id": 6,
+    "text": "Solve tricky maths problems"
+   },
+   {
+    "item_id": 7,
+    "text": "Research how things work"
+   },
+   {
+    "item_id": 8,
+    "text": "Look for patterns in data"
+   },
+   {
+    "item_id": 9,
+    "text": "Draw, paint or design things"
+   },
+   {
+    "item_id": 10,
+    "text": "Write stories or poems"
+   },
+   {
+    "item_id": 11,
+    "text": "Make music or videos"
+   },
+   {
+    "item_id": 12,
+    "text": "Act or perform on stage"
+   },
+   {
+    "item_id": 13,
+    "text": "Help classmates with their problems"
+   },
+   {
+    "item_id": 14,
+    "text": "Teach younger children"
+   },
+   {
+    "item_id": 15,
+    "text": "Volunteer in your community"
+   },
+   {
+    "item_id": 16,
+    "text": "Listen to people who feel worried"
+   },
+   {
+    "item_id": 17,
+    "text": "Lead a team or club"
+   },
+   {
+    "item_id": 18,
+    "text": "Start a small business"
+   },
+   {
+    "item_id": 19,
+    "text": "Convince others of your idea"
+   },
+   {
+    "item_id": 20,
+    "text": "Organise an event"
+   },
+   {
+    "item_id": 21,
+    "text": "Keep records neat and organised"
+   },
+   {
+    "item_id": 22,
+    "text": "Work with numbers and tables"
+   },
+   {
+    "item_id": 23,
+    "text": "Follow clear step-by-step rules"
+   },
+   {
+    "item_id": 24,
+    "text": "Plan schedules and budgets"
+   }
+  ],
+  "question": "How much would you enjoy this?",
+  "scale": [
+   "Not at all",
+   "A little",
+   "Somewhat",
+   "Quite a bit",
+   "Very much"
+  ],
+  "version": 1
+ },
+ "me": {
+  "age": 15,
+  "created_at": "2026-10-30T20:52:26",
+  "email": "ayesha@example.com",
+  "gender": null,
+  "grade": 10,
+  "login": "ayesha@example.com",
+  "must_change_password": false,
+  "name": "Ayesha Khan",
+  "org": null,
+  "role": "STUDENT",
+  "school_name": null,
+  "subscription": {
+   "active": true,
+   "source": "personal",
+   "until": "2026-12-29"
+  },
+  "user_id": 1
+ },
+ "assessments": {
+  "assessments": [
+   {
+    "assessment_id": 1,
+    "bigfive": {
+     "insufficient": [],
+     "levels": {
+      "A": "Low",
+      "C": "Moderate",
+      "E": "Moderate",
+      "N": "Low",
+      "O": "Moderate"
+     },
+     "levels_played": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6
+     ],
+     "model_version": "WeightedScoringEngine 0.2-prototype",
+     "scores": {
+      "A": 31,
+      "C": 67,
+      "E": 47,
+      "N": 32,
+      "O": 44
+     }
+    },
+    "completed_at": "2026-10-30T20:52:26",
+    "consent": {
+     "accepted": true,
+     "at": "2026-10-30T20:52:26",
+     "guardian": true,
+     "school": false,
+     "version": "2026-10"
+    },
+    "game": {
+     "done": true,
+     "session_id": "S20261030-205226-3c9562ef937e"
+    },
+    "holland_code": "RIS",
+    "levels": [
+     1,
+     2,
+     3,
+     4,
+     5,
+     6
+    ],
+    "player_id": 1,
+    "riasec_answers": {
+     "1": 5,
+     "10": 3,
+     "11": 1,
+     "12": 4,
+     "13": 5,
+     "14": 4,
+     "15": 2,
+     "16": 3,
+     "17": 1,
+     "18": 4,
+     "19": 5,
+     "2": 4,
+     "20": 4,
+     "21": 2,
+     "22": 3,
+     "23": 1,
+     "24": 4,
+     "3": 2,
+     "4": 3,
+     "5": 1,
+     "6": 4,
+     "7": 5,
+     "8": 4,
+     "9": 2
+    },
+    "started_at": "2026-10-30T20:52:26",
+    "status": "COMPLETED",
+    "top_field": "Medicine and Healthcare"
+   }
+  ]
+ }
+}
