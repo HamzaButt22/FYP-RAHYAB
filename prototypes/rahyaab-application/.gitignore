@@ -39,3 +39,13 @@ yarn-error.*
 # generated native folders
 /ios
 /android
+
+# RahYaab server settings (copy .env.example to .env)
+.env
+
+# browser E2E output
+e2e/shots/
+dist-web/
+
+# E2E outputs
+e2e/shots/
