@@ -1,0 +1,40 @@
+@startuml seq-05-staff-login
+!include ../_style/rahyaab-uml.iuml
+title Staff login with MFA, and password reset (UML sequence diagram)
+autonumber
+hide footbox
+actor Teacher
+participant ":Dashboard" as Dash
+participant ":API" as Api
+database ":PostgreSQL" as Db
+participant ":EmailService" as Mail
+Teacher -> Dash : email + password
+activate Dash
+Dash -> Api : POST /auth/staff/login
+activate Api
+Api -> Db : load staff_user; verify argon2id
+alt wrong or locked
+  Api --> Dash : 401 "Email or password is not right"
+else ok
+  Api --> Dash : mfa_challenge_id
+  Teacher -> Dash : 6-digit code
+  Dash -> Api : POST /auth/staff/mfa
+  Api --> Dash : 204 session cookie (SameSite=Strict)
+  Dash -> Api : GET /dash/classes/{id}/roster
+  Api -> Api : RBAC + tenant + consent filter
+  Api -> Db : SELECT roster; INSERT audit_log
+  Api --> Dash : roster and flags
+end
+deactivate Api
+== Forgot password ==
+Teacher -> Dash : "Forgot password?"
+Dash -> Api : POST /auth/staff/password-reset
+activate Api
+opt account exists
+  Api -> Db : INSERT password_reset (hash, 30 min)
+  Api -> Mail : single-use link
+end
+Api --> Dash : 202 (same answer for every email)
+deactivate Api
+deactivate Dash
+@enduml

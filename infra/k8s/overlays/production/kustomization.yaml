@@ -1,0 +1,46 @@
+# Production overlay. Render: kubectl kustomize infra/k8s/overlays/production
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: rahyaab
+resources:
+  - ../../base
+images:
+  - name: rahyaab-api
+    newName: ghcr.io/hamzabutt22/rahyaab-api
+    newTag: v0.1.0
+  - name: rahyaab-dashboard
+    newName: ghcr.io/hamzabutt22/rahyaab-dashboard
+    newTag: v0.1.0
+  - name: rahyaab-backup
+    newName: ghcr.io/hamzabutt22/rahyaab-backup
+    newTag: v0.1.0
+patches:
+  - target: { kind: Namespace, name: rahyaab }
+    patch: |-
+      - op: replace
+        path: /metadata/name
+        value: rahyaab
+  - target: { kind: ConfigMap, name: rahyaab-config }
+    patch: |-
+      - op: replace
+        path: /data/APP_ENV
+        value: production
+      - op: replace
+        path: /data/CORS_ALLOWED_ORIGINS
+        value: https://dashboard.rahyaab.pk
+  - target: { kind: HorizontalPodAutoscaler, name: api }
+    patch: |-
+      - op: replace
+        path: /spec/minReplicas
+        value: 2
+  - target: { kind: Ingress, name: rahyaab }
+    patch: |-
+      - op: replace
+        path: /spec/tls/0/hosts
+        value: [api.rahyaab.pk, dashboard.rahyaab.pk]
+      - op: replace
+        path: /spec/rules/0/host
+        value: api.rahyaab.pk
+      - op: replace
+        path: /spec/rules/1/host
+        value: dashboard.rahyaab.pk

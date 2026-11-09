@@ -1,0 +1,38 @@
+@startuml c4-3-components-app
+!include <C4/C4_Component>
+LAYOUT_WITH_LEGEND()
+title C4 level 3: Mobile app components
+
+Person(student, "Student")
+Container(api, "API", "FastAPI")
+Container_Boundary(app, "Mobile app (Expo, React Native)") {
+  Component(screens, "Screens", "expo-router", "S-00 to S-31")
+  Component(a11y, "Accessibility services", "expo-speech", "Read-aloud, settings, reduce motion")
+  Component(i18n, "i18n", "i18next", "en, ur, Roman Urdu, RTL")
+  Component(week, "Week loop controller", "TypeScript", "Planner, scenes, diary, letter")
+  Component(ink, "Story runtime bridge", "inkjs", "External functions to tasks and telemetry")
+  Component(tasks, "Task modules", "Skia, Reanimated", "6 families, TaskModule interface, button modes")
+  Component(tel, "Telemetry emitter", "TypeScript", "Envelope v3, UUIDv7")
+  Component(outbox, "Outbox repository", "expo-sqlite", "Encrypted queue")
+  Component(sync, "Sync worker", "TypeScript", "Batch, gzip, backoff")
+  Component(prov, "Provisional scorer", "TypeScript", "Offline baseline (parity-tested)")
+  Component(session, "Session and secure store", "expo-secure-store", "Tokens, PIN, DB key")
+  Component(client, "API client", "openapi-typescript", "Generated from the spec")
+}
+ComponentDb(db, "SQLite + SQLCipher", "on device")
+Rel(student, screens, "Uses")
+Rel(screens, a11y, "")
+Rel(screens, i18n, "")
+Rel(screens, week, "")
+Rel(week, ink, "")
+Rel(week, tasks, "")
+Rel(ink, tel, "")
+Rel(tasks, tel, "")
+Rel(tel, outbox, "")
+Rel(outbox, db, "")
+Rel(sync, outbox, "")
+Rel(sync, client, "")
+Rel(screens, prov, "")
+Rel(client, session, "")
+Rel(client, api, "HTTPS /v1")
+@enduml

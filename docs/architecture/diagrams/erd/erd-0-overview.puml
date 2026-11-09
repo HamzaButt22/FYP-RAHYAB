@@ -1,0 +1,76 @@
+@startuml erd-0-overview
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype ortho
+title ERD overview (all entities)
+entity school
+entity school_class
+entity staff_user
+entity staff_class
+entity student
+entity guardian_contact
+entity consent
+entity consent_slip
+entity device
+entity sitting
+entity game_run
+entity raw_event
+entity quarantine
+entity item
+entity content_pack
+entity trait_estimate
+entity recommendation
+entity model_version
+entity share_link
+entity stream
+entity eligibility_rule
+entity career
+entity saved_item
+entity note
+entity flag
+entity audit_log
+entity research_demographics
+entity password_reset
+entity otp_challenge
+entity relink_code
+entity staff_session
+entity rate_limit
+entity panel_label
+school ||--o{ school_class
+school |o--o{ staff_user
+staff_user ||--o{ staff_class
+school_class ||--o{ staff_class
+school_class |o--o{ student
+student ||--o| guardian_contact
+student ||--o{ consent
+school_class ||--o{ consent_slip
+consent_slip |o--o| consent
+staff_user ||--o{ consent_slip
+student ||--o{ device
+student ||--o{ sitting
+device ||--o{ sitting
+sitting ||--o{ game_run
+content_pack ||--o{ game_run
+game_run ||--o{ raw_event
+item |o--o{ raw_event
+student ||--o{ quarantine
+student ||--o{ trait_estimate
+student ||--o{ recommendation
+model_version ||--o{ recommendation
+recommendation |o--o{ share_link
+student ||--o{ share_link
+share_link ||--o{ otp_challenge
+student ||--o{ relink_code
+staff_user ||--o{ relink_code
+staff_user ||--o{ staff_session
+staff_user ||--o{ panel_label
+model_version ||--o{ trait_estimate
+stream ||--o{ eligibility_rule
+stream }o--o{ career
+student ||--o{ saved_item
+student ||--o{ note
+staff_user ||--o{ note
+student ||--o{ flag
+student ||--o| research_demographics
+staff_user ||--o{ password_reset
+@enduml

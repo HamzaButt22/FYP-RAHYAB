@@ -1,0 +1,61 @@
+# Production and staging overrides: TLS proxy, monitoring, no ports exposed except 80/443.
+# Use: docker compose -f docker-compose.yml -f docker-compose.prod.yml up -d
+services:
+  db:
+    ports: !reset []
+
+  api:
+    image: ghcr.io/hamzabutt22/rahyaab-api:${RELEASE_TAG}
+    build: !reset null
+    ports: !reset []
+    environment:
+      APP_ENV: production
+      DEBUG: "false"
+
+  jobs:
+    image: ghcr.io/hamzabutt22/rahyaab-api:${RELEASE_TAG}
+
+  migrate:
+    image: ghcr.io/hamzabutt22/rahyaab-api:${RELEASE_TAG}
+
+  backup:
+    image: ghcr.io/hamzabutt22/rahyaab-backup:${RELEASE_TAG}
+    build: !reset null
+    profiles: !reset []
+
+  caddy:
+    image: caddy:2-alpine
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+      - caddy_config:/config
+    depends_on:
+      - api
+      - dashboard
+
+  dashboard:
+    image: ghcr.io/hamzabutt22/rahyaab-dashboard:${RELEASE_TAG}
+    restart: unless-stopped
+    read_only: true
+    tmpfs: [/tmp]
+    user: "10001:10001"
+
+  glitchtip:
+    # Pinned by digest at the first staging deploy (`docker buildx imagetools inspect glitchtip/glitchtip:<version>`);
+    # CI fails if any compose file uses `:latest` or an unpinned tag (CI_CD.md, security.yml).
+    image: glitchtip/glitchtip@sha256:${GLITCHTIP_DIGEST:?set GLITCHTIP_DIGEST in .env}
+    restart: unless-stopped
+    env_file:
+      - path: .env.glitchtip
+        required: false
+
+  # Uptime Kuma is NOT run here: a monitor on the same VM cannot report that the VM is down.
+  # Run it on a second small machine (or a free external monitor) that checks /v1/health and TLS expiry.
+
+volumes:
+  caddy_data:
+  caddy_config:

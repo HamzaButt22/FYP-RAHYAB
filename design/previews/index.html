@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rahyaab Design Preview</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Plus+Jakarta+Sans:wght@500;600;700&family=Gulzar&display=swap">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+.only-dark{display:none}
+[data-theme="dark"] .only-dark{display:inline-block}[data-theme="dark"] .only-light{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .only-dark{display:inline-block}:root:not([data-theme="light"]) .only-light{display:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans)}
+.page{max-width:1200px;margin:0 auto;padding:32px max(16px, env(safe-area-inset-left)) 64px max(16px, env(safe-area-inset-right));display:flex;flex-direction:column;gap:28px}
+header{display:flex;flex-wrap:wrap;align-items:center;gap:16px;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:12px;font-family:var(--font-display);font-weight:800;font-size:40px;letter-spacing:-1.6px}
+.brand img{width:56px;height:56px}
+#theme{min-height:48px;padding:0 18px;border-radius:var(--radius-md);border:0;background:var(--primary);color:var(--on-primary);font:700 14px var(--font-sans);cursor:pointer}
+section{background:var(--surface);border-radius:var(--radius-xl);padding:24px;box-shadow:var(--shadow-card),inset 0 0 0 1px var(--border);display:flex;flex-direction:column;gap:16px;min-width:0}
+h2{margin:0;font-family:var(--font-display);font-weight:800;font-size:24px;letter-spacing:-0.3px}
+.lead{margin:0;color:var(--muted);max-width:65ch;line-height:1.55}
+.row{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:16px}
+figure{margin:0;display:flex;flex-direction:column;gap:8px;font-size:12.5px;color:var(--muted);min-width:0}
+figure img{width:100%;aspect-ratio:1;max-width:100%;background:var(--sunken);border-radius:var(--radius-lg);padding:12px}
+figure b{color:var(--text)}
+.sws{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:10px}
+.sw{display:flex;align-items:center;gap:10px;font-size:13px;min-width:0} .sw span{width:36px;height:36px;border-radius:10px;flex-shrink:0;box-shadow:inset 0 0 0 1px var(--border)} .sw code{margin-left:auto;color:var(--muted);font-size:11.5px}
+.ty{display:flex;flex-direction:column;gap:2px;padding:10px 0;border-top:1px solid var(--border)} .ty code{font-size:12px;color:var(--muted)}
+.comps{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+.btn{min-height:48px;padding:0 18px;border-radius:var(--radius-md);border:0;font:700 14px var(--font-sans)}
+.p{background:var(--primary);color:var(--on-primary)} .s{background:transparent;color:var(--secondary-text);box-shadow:inset 0 0 0 1.5px var(--secondary)}
+.ch{border-radius:var(--radius-lg);padding:14px;display:flex;flex-direction:column;gap:4px} .ch small{font-size:12px;font-weight:700;letter-spacing:.6px;text-transform:uppercase}
+.dil{background:var(--primary);color:var(--on-primary)} .dun{background:var(--secondary);color:var(--on-secondary)}
+.frames{display:flex;gap:20px;align-items:flex-end;overflow-x:auto;padding-bottom:8px}
+.fr{flex-shrink:0}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+</style>
+</head>
+<body>
+<div class="page">
+<header>
+  <div class="brand"><img class="only-light" src="../brand/logo/svg/branch-light.svg" alt=""><img class="only-dark" src="../brand/logo/svg/branch-dark.svg" alt="">rahyaab</div>
+  <button id="theme" type="button">Switch theme</button>
+</header>
+<p class="lead">The Rahyaab design files in this repository, shown live. Everything here reads from <code>design/tokens/tokens.css</code> and the SVGs in <code>design/brand</code>, so it updates when those files change. Use the button to switch between light and dark.</p>
+
+<section><h2>Logo</h2><div class="row">
+<figure><img src="../brand/logo/svg/branch-light.svg" alt="" style="background:#F6EFE3"><figcaption><b>branch-light</b> · light grounds</figcaption></figure>
+<figure><img src="../brand/logo/svg/branch-dark.svg" alt="" style="background:#121B1B"><figcaption><b>branch-dark</b> · dark grounds</figcaption></figure>
+<figure><img src="../brand/logo/svg/branch-on-terracotta.svg" alt="" style="background:#B54A2F"><figcaption><b>branch-on-terracotta</b></figcaption></figure>
+<figure><img src="../brand/logo/svg/branch-mono-black.svg" alt="" style="background:#FFFFFF"><figcaption><b>branch-mono-black</b> · print</figcaption></figure>
+</div></section>
+
+<section><h2>App icons</h2><div class="row"><figure><img src="../brand/app-icon/png/icon-ios-expo.png" alt="icon-ios-expo" style="border-radius:22%"><figcaption>icon-ios-expo</figcaption></figure><figure><img src="../brand/app-icon/png/icon-terracotta.png" alt="icon-terracotta" style="border-radius:22%"><figcaption>icon-terracotta</figcaption></figure><figure><img src="../brand/app-icon/png/icon-dark.png" alt="icon-dark" style="border-radius:22%"><figcaption>icon-dark</figcaption></figure><figure><img src="../brand/app-icon/png/favicon-512.png" alt="favicon-512" style="border-radius:22%"><figcaption>favicon-512</figcaption></figure></div></section>
+
+<section><h2>Mascot: Hudhud</h2><p class="lead">Each pose has a light and a dark file; this page swaps them with the theme.</p><div class="row"><figure><img class="only-light" src="../brand/mascot/svg/hudhud.svg" alt="hudhud"><img class="only-dark" src="../brand/mascot/svg/hudhud-dark.svg" alt="hudhud"><figcaption><b>default</b><br>Default, hero, onboarding</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-listening.svg" alt="hudhud-listening"><img class="only-dark" src="../brand/mascot/svg/hudhud-listening-dark.svg" alt="hudhud-listening"><figcaption><b>listening</b><br>While the student plays; calm</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-curious.svg" alt="hudhud-curious"><img class="only-dark" src="../brand/mascot/svg/hudhud-curious-dark.svg" alt="hudhud-curious"><figcaption><b>curious</b><br>After a surprising choice</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-thinking.svg" alt="hudhud-thinking"><img class="only-dark" src="../brand/mascot/svg/hudhud-thinking-dark.svg" alt="hudhud-thinking"><figcaption><b>thinking</b><br>Short waits, model updating</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-reading.svg" alt="hudhud-reading"><img class="only-dark" src="../brand/mascot/svg/hudhud-reading-dark.svg" alt="hudhud-reading"><figcaption><b>reading</b><br>Explore, course pages</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-headphones.svg" alt="hudhud-headphones"><img class="only-dark" src="../brand/mascot/svg/hudhud-headphones-dark.svg" alt="hudhud-headphones"><figcaption><b>headphones</b><br>Home, weekly recap</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-sleeping.svg" alt="hudhud-sleeping"><img class="only-dark" src="../brand/mascot/svg/hudhud-sleeping-dark.svg" alt="hudhud-sleeping"><figcaption><b>sleeping</b><br>Offline, waiting for parent consent</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-waving.svg" alt="hudhud-waving"><img class="only-dark" src="../brand/mascot/svg/hudhud-waving-dark.svg" alt="hudhud-waving"><figcaption><b>waving</b><br>First launch, back after a break</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-celebrating.svg" alt="hudhud-celebrating"><img class="only-dark" src="../brand/mascot/svg/hudhud-celebrating-dark.svg" alt="hudhud-celebrating"><figcaption><b>celebrating</b><br>Blueprint reveal only</figcaption></figure><figure><img class="only-light" src="../brand/mascot/svg/hudhud-messenger.svg" alt="hudhud-messenger"><img class="only-dark" src="../brand/mascot/svg/hudhud-messenger-dark.svg" alt="hudhud-messenger"><figcaption><b>messenger</b><br>Delivers the Blueprint, notifications</figcaption></figure></div></section>
+
+<section><h2>Colour tokens</h2><p class="lead">Swatches show the current theme. The codes show light / dark.</p><div class="sws"><div class="sw"><span style="background:var(--bg)"></span><b>bg</b><code>#F6EFE3 / #121B1B</code></div><div class="sw"><span style="background:var(--surface)"></span><b>surface</b><code>#FFFFFF / #1B2626</code></div><div class="sw"><span style="background:var(--sunken)"></span><b>sunken</b><code>#EDE3D3 / #233131</code></div><div class="sw"><span style="background:var(--border)"></span><b>border</b><code>#DDD0BC / #2F3E3E</code></div><div class="sw"><span style="background:var(--text)"></span><b>text</b><code>#1F2326 / #F3ECE1</code></div><div class="sw"><span style="background:var(--muted)"></span><b>muted</b><code>#5A5650 / #A9B3AE</code></div><div class="sw"><span style="background:var(--primary)"></span><b>primary</b><code>#B54A2F / #E07A5C</code></div><div class="sw"><span style="background:var(--on-primary)"></span><b>on-primary</b><code>#FFFFFF / #121B1B</code></div><div class="sw"><span style="background:var(--primary-text)"></span><b>primary-text</b><code>#A2401F / #F0957A</code></div><div class="sw"><span style="background:var(--secondary)"></span><b>secondary</b><code>#1F7A7A / #4FB3AE</code></div><div class="sw"><span style="background:var(--on-secondary)"></span><b>on-secondary</b><code>#FFFFFF / #121B1B</code></div><div class="sw"><span style="background:var(--secondary-text)"></span><b>secondary-text</b><code>#17696A / #6FCBC5</code></div><div class="sw"><span style="background:var(--accent)"></span><b>accent</b><code>#F2B33D / #F2B33D</code></div><div class="sw"><span style="background:var(--on-accent)"></span><b>on-accent</b><code>#1F2326 / #121B1B</code></div><div class="sw"><span style="background:var(--success)"></span><b>success</b><code>#2E7A52 / #6FCF97</code></div><div class="sw"><span style="background:var(--danger)"></span><b>danger</b><code>#B42318 / #FF8A80</code></div><div class="sw"><span style="background:var(--focus)"></span><b>focus</b><code>#1F7A7A / #6FCBC5</code></div><div class="sw"><span style="background:var(--logo-twig)"></span><b>logo-twig</b><code>#8A5A3A / #FBF3E6</code></div><div class="sw"><span style="background:var(--logo-leaf)"></span><b>logo-leaf</b><code>#3E8A5A / #6FCF97</code></div><div class="sw"><span style="background:var(--mascot-body)"></span><b>mascot-body</b><code>#B54A2F / #D9643F</code></div><div class="sw"><span style="background:var(--mascot-ink)"></span><b>mascot-ink</b><code>#1F2326 / #1F2326</code></div><div class="sw"><span style="background:var(--mascot-light)"></span><b>mascot-light</b><code>#F6EFE3 / #F6EFE3</code></div><div class="sw"><span style="background:var(--mascot-outline)"></span><b>mascot-outline</b><code>#F6EFE3 / #F3ECE1</code></div></div></section>
+
+<section><h2>Type</h2><div><div class="ty"><code>display-xl · 40px/44px</code><div class="display-xl">Play your year.</div></div><div class="ty"><code>display-l · 32px/36px</code><div class="display-l">Week 2</div></div><div class="ty"><code>heading · 24px/30px</code><div class="heading">The robot keeps drifting left.</div></div><div class="ty"><code>title · 18px/24px</code><div class="title">Pre-Engineering</div></div><div class="ty"><code>body-l · 17px/26px</code><div class="body-l">Every choice tells us something. None of them is wrong.</div></div><div class="ty"><code>body · 15px/22px</code><div class="body">Based on 4 weeks of play.</div></div><div class="ty"><code>label · 14px/20px</code><div class="label">Start week 2</div></div><div class="ty"><code>caption · 12px/16px</code><div class="caption">DIL · DUNIYA</div></div><div class="ty"><code>urdu-body · 18px/34px</code><div class="urdu-body" dir="rtl">اپنی راہ، اپنی کہانی</div></div></div></section>
+
+<section><h2>Components</h2><div class="comps">
+<div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center"><button class="btn p">Start week 2</button><button class="btn s">See paths</button></div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px"><div class="ch dil"><small>Dil</small>"Let me open it up."</div><div class="ch dun"><small>Duniya</small>"Split the team."</div></div>
+</div><p class="lead">Full specs: <code>design/specs/components.md</code>.</p></section>
+
+<section><h2>Responsive check</h2><p class="lead">The same Home screen (<code>home.html</code>) at four device widths. Open it directly and resize the browser to see it adapt.</p><div class="frames"><figure class="fr" style="width:160px"><div style="width:160px;height:320px;overflow:hidden;border-radius:16px;box-shadow:inset 0 0 0 1px var(--border)"><iframe title="Small phone" data-src="home.html" src="home.html" style="width:320px;height:640px;border:0;transform:scale(0.5);transform-origin:0 0"></iframe></div><figcaption>Small phone · 320px</figcaption></figure><figure class="fr" style="width:196px"><div style="width:196px;height:426px;overflow:hidden;border-radius:16px;box-shadow:inset 0 0 0 1px var(--border)"><iframe title="Phone" data-src="home.html" src="home.html" style="width:393px;height:852px;border:0;transform:scale(0.5);transform-origin:0 0"></iframe></div><figcaption>Phone · 393px</figcaption></figure><figure class="fr" style="width:288px"><div style="width:288px;height:396px;overflow:hidden;border-radius:16px;box-shadow:inset 0 0 0 1px var(--border)"><iframe title="Tablet" data-src="home.html" src="home.html" style="width:800px;height:1100px;border:0;transform:scale(0.36);transform-origin:0 0"></iframe></div><figcaption>Tablet · 800px</figcaption></figure><figure class="fr" style="width:451px"><div style="width:451px;height:284px;overflow:hidden;border-radius:16px;box-shadow:inset 0 0 0 1px var(--border)"><iframe title="Desktop" data-src="home.html" src="home.html" style="width:1366px;height:860px;border:0;transform:scale(0.33);transform-origin:0 0"></iframe></div><figcaption>Desktop · 1366px</figcaption></figure></div></section>
+</div>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search).get('theme');
+  if (q === 'light' || q === 'dark') document.documentElement.setAttribute('data-theme', q);
+  var b = document.getElementById('theme');
+  if (b) b.addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    b.textContent = next === 'dark' ? 'Switch to light' : 'Switch to dark';
+    // The preview frames always show home.html; the address is fixed, never read from the page (no DOM-to-URL flow).
+    document.querySelectorAll('iframe[data-src]').forEach(function (f) { f.src = 'home.html?theme=' + next; });
+  });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,1759 @@
+openapi: 3.1.0
+info:
+  title: Rahyaab API
+  version: 1.3.0-draft
+  summary: Pseudonymous accounts, consent, telemetry, scoring, library, sharing, dashboard and admin for Rahyaab.
+  description: |
+    Contract for the Rahyaab backend (FastAPI). It is the source of truth for client code generation
+    (`frontend/shared`) and for contract tests.
+
+    - All paths are under `/v1`. Breaking changes need a new major version (see `docs/api/README.md`).
+    - Errors use RFC 9457 `application/problem+json`.
+    - List endpoints use cursor pagination (`cursor`, `limit` ≤ 100).
+    - Every request may send `X-Request-Id`; the server echoes it.
+    - Student data is pseudonymous. No endpoint accepts a student's name, phone, email or photo.
+    - CORS: only the dashboard origin is allowed (exact allowlist, credentials on); the app and parent pages need none (SECURITY.md §5.1).
+    - Access rule: a wrong **role** gets `403`; an object of **another tenant** (school, class or student) gets `404`, so its existence is not revealed.
+    - Parent pages (`/p`, `/c`) are authorised by the 128-bit capability token in the path; it is never sent in a query string.
+  license:
+    name: Proprietary (FYP, Riphah International University)
+    identifier: LicenseRef-Rahyaab
+servers:
+  - url: https://api.rahyaab.pk/v1
+    description: Production (placeholder domain)
+  - url: https://staging.api.rahyaab.pk/v1
+    description: Staging
+  - url: http://localhost:8000/v1
+    description: Local development
+tags:
+  - name: auth
+    description: Student join, token refresh, staff login with MFA
+  - name: consent
+    description: Parental consent, assent and research opt-in
+  - name: profile
+    description: The student's own profile and data rights
+  - name: content
+    description: Signed content packs (RFC-0001)
+  - name: telemetry
+    description: Idempotent event batches (RFC-0002)
+  - name: results
+    description: Scoring and recommendations (RFC-0003)
+  - name: library
+    description: Streams, careers and the shortlist
+  - name: sharing
+    description: Parent share links (RFC-0004)
+  - name: parent
+    description: Server-rendered parent pages (HTML)
+  - name: dashboard
+    description: Teacher and counsellor views (RBAC, tenant-scoped)
+  - name: admin
+    description: Schools, codes, content packs, model registry, audit (MFA)
+  - name: research
+    description: Panel labelling and de-identified exports
+
+security:
+  - studentAuth: []
+
+paths:
+  /auth/student/join:
+    post:
+      tags: [auth]
+      operationId: joinWithClassCode
+      summary: Join a class with a code and create a pseudonymous profile
+      description: |
+        Rate limits (NFR-67), counted in PostgreSQL so all workers agree: 10 attempts per 15 minutes per
+        device, 30 failed attempts per hour per class code (then the code is paused and the teacher is told),
+        and a high per-IP ceiling of 300 per 15 minutes, because a whole class on school Wi-Fi or a mobile
+        network (CGNAT) shares one IP. A bad format gets `422` with a format hint; an unknown, expired or
+        paused code gets the same generic `404` message and similar timing. An optional `claim_code` binds
+        a signed paper consent slip to the new profile (FR-05a).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/JoinRequest' }
+      responses:
+        '201':
+          description: Profile created; device-bound token pair issued
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TokenPair' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '404':
+          description: Unknown or expired class code
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/student/individual:
+    post:
+      tags: [auth]
+      operationId: joinIndividually
+      summary: Create an individual profile (no school); consent follows by parent OTP (R2)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/IndividualJoinRequest' }
+      responses:
+        '201':
+          description: Profile created with consent pending
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TokenPair' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/student/relink:
+    post:
+      tags: [auth]
+      operationId: relinkDevice
+      summary: Move a profile to a new phone with a teacher-issued re-link code (FR-12)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [relink_code, device]
+              properties:
+                relink_code: { type: string, pattern: '^[A-Z0-9]{4}-[A-Z0-9]{4}$' }
+                device: { $ref: '#/components/schemas/DeviceInfo' }
+      responses:
+        '200':
+          description: New token pair; tokens on the old device are revoked
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TokenPair' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/refresh:
+    post:
+      tags: [auth]
+      operationId: refreshTokens
+      summary: Rotate the token pair
+      description: Reusing a refresh token revokes its whole token family (ADR-0011).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [refresh_token]
+              properties:
+                refresh_token: { type: string }
+      responses:
+        '200':
+          description: New token pair
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/TokenPair' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/staff/login:
+    post:
+      tags: [auth]
+      operationId: staffLogin
+      summary: Staff email + password; returns an MFA challenge
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [email, password]
+              properties:
+                email: { type: string, format: email, maxLength: 254 }
+                password: { type: string, minLength: 12, maxLength: 128, writeOnly: true }
+      responses:
+        '200':
+          description: Password accepted; MFA required
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [mfa_challenge_id]
+                properties:
+                  mfa_challenge_id: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/staff/mfa:
+    post:
+      tags: [auth]
+      operationId: staffMfa
+      summary: Complete staff login with a TOTP code; sets a SameSite=Strict session cookie
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mfa_challenge_id, code]
+              properties:
+                mfa_challenge_id: { type: string }
+                code: { type: string, pattern: '^[0-9]{6}$' }
+      responses:
+        '204':
+          description: Logged in
+          headers:
+            Set-Cookie:
+              description: '`__Host-rahyaab_session`; HttpOnly; Secure; SameSite=Strict'
+              schema: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/staff/password-reset:
+    post:
+      tags: [auth]
+      operationId: requestStaffPasswordReset
+      summary: Ask for a password reset link (always the same answer; FR-106)
+      description: Responds 202 whether or not the email has an account, with similar timing. Limited to 3 per hour per email and per IP.
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [email]
+              properties:
+                email: { type: string, format: email, maxLength: 254 }
+      responses:
+        '202': { description: 'If an account exists, a single-use link valid for 30 minutes was emailed' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/staff/password-reset:confirm:
+    post:
+      tags: [auth]
+      operationId: confirmStaffPasswordReset
+      summary: Set a new password with a reset token; revokes all sessions; MFA still needed at next login
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [token, new_password]
+              properties:
+                token: { type: string, pattern: '^[0-9A-Za-z]{22}$' }
+                new_password: { type: string, minLength: 12, maxLength: 128, writeOnly: true }
+      responses:
+        '204': { description: Password changed; every session and reset token for the account revoked }
+        '400':
+          description: '`reset_link_invalid`: expired, used or unknown token (one generic answer)'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/logout:
+    post:
+      tags: [auth]
+      operationId: logout
+      summary: Revoke the current tokens or staff session
+      security:
+        - studentAuth: []
+        - staffSession: []
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '204': { description: Logged out }
+
+  /consents:
+    get:
+      tags: [consent]
+      operationId: listMyConsents
+      summary: Consent records for the current student
+      responses:
+        '200':
+          description: Consents, newest first
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Consent' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [consent]
+      operationId: recordAssentOrOptIn
+      summary: Record the student's assent or research opt-in/out
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [type, granted, notice_version]
+              properties:
+                type: { type: string, enum: [assent, research, self], description: '`self` = adult (18+) self-consent (FR-100)' }
+                granted: { type: boolean }
+                notice_version: { type: string, examples: ['notice-2026.11'] }
+      responses:
+        '201':
+          description: Recorded
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Consent' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /c/{token}/otp:
+    post:
+      tags: [consent]
+      operationId: requestParentOtp
+      summary: Parent enters a phone number on the consent page and receives an SMS code (individual path, R2)
+      description: |
+        Caps against SMS-pumping and abuse: 3 codes per link per day, 3 per phone number per day and
+        20 per IP per hour. The response is the same whether or not an SMS was sent. The phone number is
+        stored encrypted in `guardian_contact` only after consent is granted.
+      security: []
+      servers:
+        - url: https://rahyaab.pk
+      parameters:
+        - { $ref: '#/components/parameters/ShareTokenPath' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [phone, relation, attests_guardian]
+              properties:
+                phone: { type: string, pattern: '^\+923[0-9]{9}$', description: Pakistani mobile in E.164 }
+                relation: { type: string, enum: [mother, father, guardian] }
+                attests_guardian: { type: boolean, const: true, description: '"I am this student''s parent or legal guardian"' }
+      responses:
+        '202': { description: 'If the link is valid, a code was sent' }
+        '410': { description: Link expired or revoked }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /c/{token}/otp/verify:
+    post:
+      tags: [consent]
+      operationId: verifyParentOtp
+      summary: Parent confirms or refuses consent with the SMS code (individual path, R2)
+      description: At most 5 attempts per code; codes expire after 10 minutes and are single use.
+      security: []
+      servers:
+        - url: https://rahyaab.pk
+      parameters:
+        - { $ref: '#/components/parameters/ShareTokenPath' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [otp, decision, notice_version]
+              properties:
+                otp: { type: string, pattern: '^[0-9]{6}$' }
+                decision: { type: string, enum: [grant, refuse, withdraw] }
+                research_opt_in: { type: boolean, default: false }
+                notice_version: { type: string }
+      responses:
+        '201':
+          description: Consent stored (method = otp)
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Consent' }
+        '400': { description: Wrong or expired code (one generic message) }
+        '410': { description: Link expired or revoked }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /me/profile:
+    get:
+      tags: [profile]
+      operationId: getProfile
+      summary: The current student's profile
+      responses:
+        '200':
+          description: Profile
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Profile' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    patch:
+      tags: [profile]
+      operationId: updateProfile
+      summary: Update nickname, board, group, district or marks
+      requestBody:
+        required: true
+        content:
+          application/merge-patch+json:
+            schema: { $ref: '#/components/schemas/ProfileUpdate' }
+      responses:
+        '200':
+          description: Updated profile
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Profile' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /me/export:
+    get:
+      tags: [profile]
+      operationId: exportMyData
+      summary: Download all of the student's data as JSON (FR-10)
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Export bundle
+          content:
+            application/json:
+              schema: { type: object, additionalProperties: true }
+
+  /me:
+    delete:
+      tags: [profile]
+      operationId: deleteMe
+      summary: Delete the profile and all linked data within 30 days (FR-10, NFR-46)
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '202': { description: Deletion scheduled; tokens revoked immediately }
+
+  /content/manifest:
+    get:
+      tags: [content]
+      operationId: getContentManifest
+      summary: The active content pack for this student's class mode
+      parameters:
+        - in: header
+          name: If-None-Match
+          schema: { type: string }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Manifest
+          headers:
+            ETag: { schema: { type: string } }
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ContentManifest' }
+        '304': { description: Not modified }
+
+  /content/packs/{packId}:
+    get:
+      tags: [content]
+      operationId: getContentPack
+      summary: Download a signed content pack (zip)
+      parameters:
+        - { in: path, name: packId, required: true, schema: { type: string, examples: ['story-2026.11.1'] } }
+      responses:
+        '200':
+          description: Pack archive
+          content:
+            application/zip:
+              schema: { type: string, contentMediaType: application/zip }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /events:batch:
+    post:
+      tags: [telemetry]
+      operationId: uploadEventBatch
+      summary: Upload up to 500 events (gzip, ≤ 1 MB); idempotent per event
+      description: |
+        Requires valid parental consent (NFR-45). The envelope is validated loosely (an array of objects)
+        so one bad event never fails the batch; each event is then validated on its own against `Event`.
+        Valid events are stored append-only. Final failures are quarantined and listed in `rejected`.
+        Order-dependent failures (the run is not known yet, or a sequence gap) are listed in `deferred`:
+        the app keeps them and retries after the earlier events arrive (RFC-0002).
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          required: true
+          schema: { type: string, format: uuid }
+        - in: header
+          name: Content-Encoding
+          schema: { type: string, enum: [gzip] }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [events]
+              properties:
+                events:
+                  type: array
+                  minItems: 1
+                  maxItems: 500
+                  items:
+                    description: Any object is accepted here; each event is then validated on its own against `Event`.
+                    anyOf:
+                      - { $ref: '#/components/schemas/Event' }
+                      - { type: object }
+      responses:
+        '200':
+          description: Per-event outcome
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/BatchResult' }
+        '400': { $ref: '#/components/responses/BadRequest' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403':
+          description: '`consent_required`: keep events locally and retry after consent'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '413': { description: Batch too large }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /results/compute:
+    post:
+      tags: [results]
+      operationId: computeResult
+      summary: Score the student's runs and store a recommendation
+      description: |
+        Synchronous: the response is sent after the result is stored (p95 ≤ 2 s, NFR-10). Deterministic for
+        the same `input_hash`, which covers the events, profile fields, mode, rule-set version and every
+        model version (RFC-0003); it returns the stored result if one already exists.
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                mode: { $ref: '#/components/schemas/ClassMode' }
+      responses:
+        '200':
+          description: Recommendation
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Recommendation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409':
+          description: '`insufficient_evidence`: more play is needed (FR-51)'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+
+  /results:
+    get:
+      tags: [results]
+      operationId: listResults
+      summary: The student's stored recommendations, newest first (ids for "Why this?" and sharing)
+      parameters:
+        - { $ref: '#/components/parameters/Cursor' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Page of results
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/Page' }
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/Recommendation' } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /results/latest:
+    get:
+      tags: [results]
+      operationId: getLatestResult
+      summary: The newest stored recommendation
+      responses:
+        '200':
+          description: Recommendation
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Recommendation' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /results/{resultId}/why:
+    get:
+      tags: [results]
+      operationId: getResultEvidence
+      summary: Evidence behind each path ("Why this?", FR-56)
+      parameters:
+        - { $ref: '#/components/parameters/ResultId' }
+      responses:
+        '200':
+          description: Contributions, rules applied and confidence inputs
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Evidence' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /streams:
+    get:
+      tags: [library]
+      operationId: listStreams
+      summary: Streams for a level
+      parameters:
+        - in: query
+          name: level
+          schema: { type: string, enum: [matric, inter, university, alevel] }
+        - { $ref: '#/components/parameters/Lang' }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Streams
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/Stream' }
+
+  /streams/{streamId}:
+    get:
+      tags: [library]
+      operationId: getStream
+      summary: One stream with subjects, doors, tests and Plan B
+      parameters:
+        - { in: path, name: streamId, required: true, schema: { type: string, examples: ['inter_ics'] } }
+        - { $ref: '#/components/parameters/Lang' }
+      responses:
+        '200':
+          description: Stream
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Stream' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /careers:
+    get:
+      tags: [library]
+      operationId: listCareers
+      summary: Careers linked to a stream (server-side O*NET cache)
+      parameters:
+        - { in: query, name: stream, schema: { type: string } }
+        - { $ref: '#/components/parameters/Cursor' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Page of careers
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/Page' }
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/Career' } }
+
+  /careers/{onetCode}:
+    get:
+      tags: [library]
+      operationId: getCareer
+      summary: One career page
+      parameters:
+        - { in: path, name: onetCode, required: true, schema: { type: string, pattern: '^[0-9]{2}-[0-9]{4}\.[0-9]{2}$' } }
+      responses:
+        '200':
+          description: Career
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Career' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /saved:
+    get:
+      tags: [library]
+      operationId: listSaved
+      summary: The student's shortlist
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Saved items
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/SavedItem' } }
+    post:
+      tags: [library]
+      operationId: saveItem
+      summary: Add a stream or career to the shortlist
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SavedItem' }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '201': { description: Saved }
+
+  /saved/{kind}/{refId}:
+    delete:
+      tags: [library]
+      operationId: unsaveItem
+      summary: Remove from the shortlist
+      parameters:
+        - { in: path, name: kind, required: true, schema: { type: string, enum: [stream, career] } }
+        - { in: path, name: refId, required: true, schema: { type: string } }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '204': { description: Removed }
+
+  /share-links:
+    get:
+      tags: [sharing]
+      operationId: listShareLinks
+      summary: The student's own links (no tokens), so old links can be revoked after a re-install
+      responses:
+        '200':
+          description: Links
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    id: { type: string, format: uuid }
+                    scope: { type: string, enum: [report, consent] }
+                    expires_at: { type: string, format: date-time }
+                    revoked: { type: boolean }
+                    views: { type: integer }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+    post:
+      tags: [sharing]
+      operationId: createShareLink
+      summary: Create a parent link (token shown once; only its hash is stored)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [scope]
+              description: '`recommendation_id` is required for `report` links and must be absent for `consent` links.'
+              properties:
+                recommendation_id: { type: string, format: uuid }
+                scope: { type: string, enum: [report, consent] }
+                show_task_strengths: { type: boolean, default: true }
+                lang: { type: string, enum: [ur, en], default: ur }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '201':
+          description: Link created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ShareLink' }
+
+  /share-links/{linkId}:
+    delete:
+      tags: [sharing]
+      operationId: revokeShareLink
+      summary: Revoke a link immediately
+      parameters:
+        - { in: path, name: linkId, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '204': { description: Revoked }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /p/{token}:
+    get:
+      tags: [parent]
+      operationId: viewParentReport
+      summary: Parent report page (P-01), server-rendered, Urdu first
+      security: []
+      servers:
+        - url: https://rahyaab.pk
+      parameters:
+        - { $ref: '#/components/parameters/ShareTokenPath' }
+        - in: query
+          name: lang
+          schema: { type: string, enum: [ur, en] }
+      responses:
+        '200':
+          description: HTML page (noindex, strict CSP, no-referrer)
+          content:
+            text/html:
+              schema: { type: string }
+        '410': { description: Link expired or revoked }
+
+  /p/{token}.pdf:
+    get:
+      tags: [parent]
+      operationId: downloadParentReport
+      summary: One-page PDF of the parent report (FR-69)
+      security: []
+      servers:
+        - url: https://rahyaab.pk
+      parameters:
+        - { $ref: '#/components/parameters/ShareTokenPath' }
+      responses:
+        '200':
+          description: PDF
+          content:
+            application/pdf:
+              schema: { type: string, contentMediaType: application/pdf }
+        '410': { description: Link expired or revoked }
+
+  /c/{token}:
+    get:
+      tags: [parent]
+      operationId: viewConsentPage
+      summary: Parent consent page (P-02)
+      security: []
+      servers:
+        - url: https://rahyaab.pk
+      parameters:
+        - { $ref: '#/components/parameters/ShareTokenPath' }
+      responses:
+        '200':
+          description: HTML page
+          content:
+            text/html:
+              schema: { type: string }
+        '410': { description: Link expired or revoked }
+
+  /dash/classes:
+    get:
+      tags: [dashboard]
+      operationId: listMyClasses
+      summary: Classes the staff member can see
+      security:
+        - staffSession: []
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Classes
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ClassSummary' } }
+
+  /dash/classes/{classId}/roster:
+    get:
+      tags: [dashboard]
+      operationId: getRoster
+      summary: Roster of consented students with progress and flags (FR-72, FR-78)
+      security:
+        - staffSession: []
+      parameters:
+        - { $ref: '#/components/parameters/ClassId' }
+        - { $ref: '#/components/parameters/Cursor' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '200':
+          description: Page of roster rows
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/Page' }
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/RosterRow' } }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /dash/classes/{classId}/export.csv:
+    get:
+      tags: [dashboard]
+      operationId: exportRoster
+      summary: CSV export (UTF-8 BOM), logged in the audit log (FR-77)
+      security:
+        - staffSession: []
+      parameters:
+        - { $ref: '#/components/parameters/ClassId' }
+      responses:
+        '200':
+          description: CSV
+          content:
+            text/csv:
+              schema: { type: string }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /dash/students/{studentId}/summary:
+    get:
+      tags: [dashboard]
+      operationId: getStudentSummary
+      summary: One-page summary for a consented student in the caller's class (FR-74)
+      security:
+        - staffSession: []
+      parameters:
+        - { in: path, name: studentId, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Summary
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StudentSummary' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /dash/students/{studentId}/relink-code:
+    post:
+      tags: [dashboard]
+      operationId: issueRelinkCode
+      summary: Issue a single-use re-link code (24 h) so a student can move to a new phone (FR-12)
+      security:
+        - staffSession: []
+          csrfToken: []
+      parameters:
+        - { in: path, name: studentId, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '201':
+          description: Code shown once to the teacher
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  relink_code: { type: string, pattern: '^[A-Z0-9]{4}-[A-Z0-9]{4}$' }
+                  expires_at: { type: string, format: date-time }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /dash/classes/{classId}/consent-slips:
+    post:
+      tags: [dashboard]
+      operationId: generateConsentSlips
+      summary: Print numbered consent forms, each with a one-time claim code on a tear-off slip (FR-05a)
+      security:
+        - staffSession: []
+          csrfToken: []
+      parameters:
+        - { $ref: '#/components/parameters/ClassId' }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [count]
+              properties:
+                count: { type: integer, minimum: 1, maximum: 60 }
+      responses:
+        '201':
+          description: Printable PDF of forms (form serial + claim code); codes are shown only in this PDF
+          content:
+            application/pdf:
+              schema: { type: string, contentMediaType: application/pdf }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /dash/consent-slips/{formSerial}:record:
+    post:
+      tags: [dashboard]
+      operationId: recordConsentSlip
+      summary: Record that a signed form came back (the teacher's name and the time go to the audit log)
+      security:
+        - staffSession: []
+          csrfToken: []
+      parameters:
+        - { in: path, name: formSerial, required: true, schema: { type: string, maxLength: 20 } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [signed, research_opt_in, notice_version]
+              properties:
+                signed: { type: boolean, const: true }
+                research_opt_in: { type: boolean }
+                notice_version: { type: string }
+      responses:
+        '200': { description: Recorded; the slip can now be claimed by one student at join }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /dash/flags:
+    get:
+      tags: [dashboard]
+      operationId: listFlags
+      summary: Open flags across the caller's classes (FR-73)
+      security:
+        - staffSession: []
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Flags
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/Flag' } }
+
+  /dash/notes:
+    post:
+      tags: [dashboard]
+      operationId: addNote
+      summary: Add a staff-only note (≤ 500 characters, FR-76)
+      security:
+        - staffSession: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [student_id, text]
+              properties:
+                student_id: { type: string, format: uuid }
+                text: { type: string, maxLength: 500 }
+      responses:
+        '201': { description: Saved }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /dash/flags/{flagId}:
+    patch:
+      tags: [dashboard]
+      operationId: resolveFlag
+      summary: Mark a flag as handled
+      security:
+        - staffSession: []
+          csrfToken: []
+      parameters:
+        - { in: path, name: flagId, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [resolved]
+              properties:
+                resolved: { type: boolean, const: true }
+      responses:
+        '200': { description: Resolved }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /admin/staff:
+    post:
+      tags: [admin]
+      operationId: inviteStaff
+      summary: Invite a staff user; TOTP enrolment happens at their first login (school admins invite for their own school)
+      security:
+        - staffSession: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [email, role]
+              properties:
+                email: { type: string, format: email, maxLength: 254 }
+                role: { type: string, enum: [teacher, counsellor, school_admin, admin, researcher] }
+                school_id: { type: string, format: uuid }
+                class_ids: { type: array, items: { type: string, format: uuid } }
+      responses:
+        '201': { description: Invitation email queued }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /admin/staff/{staffId}:
+    patch:
+      tags: [admin]
+      operationId: updateStaff
+      summary: Change classes, disable the account or force a password reset
+      security:
+        - staffSession: []
+          csrfToken: []
+      parameters:
+        - { in: path, name: staffId, required: true, schema: { type: string, format: uuid } }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              properties:
+                class_ids: { type: array, items: { type: string, format: uuid } }
+                disabled: { type: boolean }
+                force_password_reset: { type: boolean }
+      responses:
+        '200': { description: Updated; sessions revoked when disabled or reset }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+
+  /admin/schools:
+    post:
+      tags: [admin]
+      operationId: createSchool
+      summary: Create a school
+      security:
+        - staffSession: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/School' }
+      responses:
+        '201': { description: Created }
+        '403': { $ref: '#/components/responses/Forbidden' }
+
+  /admin/classes:
+    post:
+      tags: [admin]
+      operationId: createClass
+      summary: Create a class and its first code
+      security:
+        - staffSession: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [school_id, grade, section]
+              properties:
+                school_id: { type: string, format: uuid }
+                grade: { type: integer, minimum: 8, maximum: 12 }
+                section: { type: string, maxLength: 8 }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '201':
+          description: Created; the class code is shown once
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  class_id: { type: string, format: uuid }
+                  class_code: { type: string, examples: ['RYB-4K2'] }
+                  expires_at: { type: string, format: date-time }
+
+  /admin/codes:rotate:
+    post:
+      tags: [admin]
+      operationId: rotateClassCode
+      summary: Rotate a class code (old code stops working)
+      security:
+        - staffSession: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [class_id]
+              properties:
+                class_id: { type: string, format: uuid }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200': { description: New code returned once }
+
+  /admin/content-packs:
+    post:
+      tags: [admin]
+      operationId: activateContentPack
+      summary: Upload, validate and activate a signed content pack (FR-81)
+      security:
+        - staffSession: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [pack]
+              properties:
+                pack: { type: string, contentMediaType: application/zip }
+                activate: { type: boolean, default: false }
+      responses:
+        '201': { description: Stored (and activated if requested) }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+
+  /admin/models:
+    post:
+      tags: [admin]
+      operationId: registerModel
+      summary: Register a model version with its artifact, hashes and evaluation report (inactive until activated)
+      security:
+        - staffSession: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
+              required: [id, kind, class_mode, artifact_uri, artifact_sha256]
+              properties:
+                id: { type: string, examples: ['m3-congruence-2026.11.0'] }
+                kind: { type: string, enum: [irt, ability, values, congruence, ranker, rules, explainer] }
+                class_mode: { $ref: '#/components/schemas/ClassMode' }
+                artifact_uri: { type: string }
+                artifact_sha256: { type: string, pattern: '^[0-9a-f]{64}$' }
+                eval_report_uri: { type: string }
+                image_digest: { type: string }
+                lockfile_sha256: { type: string, pattern: '^[0-9a-f]{64}$' }
+      responses:
+        '201': { description: Registered }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409': { description: A model with this id already exists }
+
+  /admin/models/{modelId}:activate:
+    post:
+      tags: [admin]
+      operationId: activateModel
+      summary: Activate a registered model version (needs an evaluation report, FR-82)
+      security:
+        - staffSession: []
+          csrfToken: []
+      parameters:
+        - { in: path, name: modelId, required: true, schema: { type: string, examples: ['m3-congruence-2026.11.0'] } }
+      responses:
+        '200': { description: Activated; previous version deactivated }
+        '409': { description: Missing evaluation report or failed promotion rule }
+
+  /admin/audit:
+    get:
+      tags: [admin]
+      operationId: listAudit
+      summary: Audit log (FR-83)
+      security:
+        - staffSession: []
+      parameters:
+        - { $ref: '#/components/parameters/Cursor' }
+        - { $ref: '#/components/parameters/Limit' }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Page of audit entries
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - { $ref: '#/components/schemas/Page' }
+                  - type: object
+                    properties:
+                      items: { type: array, items: { $ref: '#/components/schemas/AuditEntry' } }
+
+  /research/vignettes:
+    get:
+      tags: [research]
+      operationId: listVignettes
+      summary: Blinded vignettes for the counsellor panel (FR-79)
+      security:
+        - staffSession: []
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: Vignettes
+          content:
+            application/json:
+              schema: { type: array, items: { type: object, additionalProperties: true } }
+
+  /research/labels:
+    post:
+      tags: [research]
+      operationId: submitLabel
+      summary: Submit a ranked top-3 for a vignette
+      security:
+        - staffSession: []
+          csrfToken: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [vignette_id, ranked_streams]
+              properties:
+                vignette_id: { type: string }
+                ranked_streams: { type: array, minItems: 3, maxItems: 3, items: { type: string } }
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '201': { description: Saved }
+
+  /research/export:
+    get:
+      tags: [research]
+      operationId: researchExport
+      summary: De-identified, opted-in export (FR-85); every call is audited
+      security:
+        - staffSession: []
+      responses:
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '200':
+          description: CSV bundle
+          content:
+            application/zip:
+              schema: { type: string, contentMediaType: application/zip }
+
+  /health:
+    get:
+      tags: [admin]
+      operationId: health
+      summary: Liveness (no version banner)
+      security: []
+      responses:
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+        '200': { description: OK }
+
+components:
+  securitySchemes:
+    studentAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: 15-minute access token bound to a device (ADR-0011).
+    staffSession:
+      type: apiKey
+      in: cookie
+      name: __Host-rahyaab_session
+      description: Set after password + TOTP; HttpOnly, Secure, SameSite=Strict.
+    csrfToken:
+      type: apiKey
+      in: header
+      name: X-CSRF-Token
+
+  parameters:
+    ResultId:
+      in: path
+      name: resultId
+      required: true
+      schema: { type: string, format: uuid }
+    ClassId:
+      in: path
+      name: classId
+      required: true
+      schema: { type: string, format: uuid }
+    ShareTokenPath:
+      in: path
+      name: token
+      required: true
+      schema: { type: string, pattern: '^[0-9A-Za-z]{22}$' }
+    Lang:
+      in: query
+      name: lang
+      schema: { type: string, enum: [ur, en], default: ur }
+    Cursor:
+      in: query
+      name: cursor
+      schema: { type: string }
+    Limit:
+      in: query
+      name: limit
+      schema: { type: integer, minimum: 1, maximum: 100, default: 25 }
+
+  responses:
+    BadRequest:
+      description: Malformed request
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unauthorized:
+      description: Missing or invalid credentials
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Forbidden:
+      description: Authenticated but the role (or missing consent) does not allow this. Objects of another tenant return 404 instead.
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    NotFound:
+      description: Not found (also used to avoid revealing that another tenant's object exists)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    Unprocessable:
+      description: Validation failed
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+    TooManyRequests:
+      description: Rate limited
+      headers:
+        Retry-After: { schema: { type: integer } }
+        RateLimit: { schema: { type: string }, description: 'IETF draft RateLimit header, e.g. `limit=5, remaining=0, reset=900`' }
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+
+  schemas:
+    Problem:
+      type: object
+      description: RFC 9457 problem details. `detail` never contains personal data or stack traces.
+      required: [type, title, status]
+      properties:
+        type: { type: string, format: uri, examples: ['https://rahyaab.pk/problems/consent-required'] }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        instance: { type: string }
+        code: { type: string, examples: [consent_required, insufficient_evidence, code_expired] }
+        request_id: { type: string }
+        errors:
+          type: array
+          description: 'Field-level help (FR-102). The client shows the localised text for `message_key`; input is never echoed (NFR-74)'
+          items:
+            type: object
+            required: [field, code, message_key]
+            properties:
+              field: { type: string, examples: [class_code] }
+              code: { type: string, examples: [format, too_short, contains_phone, not_allowed] }
+              message_key: { type: string, examples: [errors.class_code.format] }
+
+    Page:
+      type: object
+      required: [items]
+      properties:
+        items: { type: array, items: {} }
+        next_cursor: { type: [string, 'null'] }
+
+    ClassMode:
+      type: string
+      enum: [matric, inter, university, alevel]
+      description: 'Class 8 → matric; 9–10 → inter (or alevel for O-Level), with a current-group fit check; 11–12 → university, with a current-stream fit check (FR-50, FR-99)'
+
+    DeviceInfo:
+      type: object
+      description: Coarse device facts only (fairness across phone tiers, V6); no model name or hardware ID.
+      required: [device_tier, os_major, app_version, public_key]
+      properties:
+        device_tier: { type: string, enum: [low, mid, high], description: 'From RAM class on the phone (<=3 GB low, 4-6 GB mid, >=8 GB high)' }
+        os_major: { type: integer, minimum: 8, maximum: 30 }
+        app_version: { type: string, maxLength: 16 }
+        public_key: { type: string, maxLength: 200, description: 'Keystore-held key; refresh requests are signed with it (ADR-0011)' }
+        integrity_token: { type: string, description: 'Play Integrity token when available (NFR-68 policy in SECURITY.md §3)' }
+
+    JoinRequest:
+      type: object
+      additionalProperties: false
+      required: [class_code, grade, birth_year, birth_month, nickname, lang, device]
+      properties:
+        class_code: { type: string, pattern: '^[A-Z]{3}-[A-Z0-9]{3}$', examples: ['RYB-4K2'] }
+        grade: { type: integer, minimum: 8, maximum: 12 }
+        birth_year: { type: integer, minimum: 1950, description: 'With birth_month, used only to compute the age band (FR-100), then discarded. The server compares with today''s date (no fixed maximum); under 13 gets the neutral stop (422 age_out_of_range, same code as other out-of-range ages)' }
+        birth_month: { type: integer, minimum: 1, maximum: 12 }
+        claim_code: { type: string, pattern: '^[A-Z0-9]{4}-[A-Z0-9]{4}$', description: 'From a signed paper consent slip (FR-05a); optional' }
+        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{N}_ ]+$' }
+        lang: { type: string, enum: [ur, en] }
+        device: { $ref: '#/components/schemas/DeviceInfo' }
+
+    IndividualJoinRequest:
+      type: object
+      additionalProperties: false
+      required: [grade, birth_year, birth_month, nickname, lang, device]
+      properties:
+        grade: { type: integer, minimum: 8, maximum: 12 }
+        birth_year: { type: integer, minimum: 1950, description: 'Same rules as JoinRequest.birth_year' }
+        birth_month: { type: integer, minimum: 1, maximum: 12 }
+        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{N}_ ]+$' }
+        lang: { type: string, enum: [ur, en] }
+        device: { $ref: '#/components/schemas/DeviceInfo' }
+
+    TokenPair:
+      type: object
+      required: [access_token, refresh_token, expires_in, student_id, consent_state]
+      properties:
+        access_token: { type: string }
+        refresh_token: { type: string }
+        expires_in: { type: integer, examples: [900] }
+        student_id: { type: string, format: uuid }
+        consent_state: { type: string, enum: [pending, granted, withdrawn] }
+
+    Consent:
+      type: object
+      required: [id, type, method, notice_version, granted_at]
+      properties:
+        id: { type: string, format: uuid }
+        type: { type: string, enum: [parent, assent, research, teacher_visibility, self] }
+        method: { type: string, enum: [school_form, otp, in_app, self] }
+        notice_version: { type: string }
+        granted_at: { type: string, format: date-time }
+        withdrawn_at: { type: [string, 'null'], format: date-time }
+
+    Profile:
+      type: object
+      required: [student_id, nickname, grade]
+      properties:
+        student_id: { type: string, format: uuid }
+        nickname: { type: string }
+        grade: { type: integer, minimum: 8, maximum: 12 }
+        board: { type: string, enum: [FBISE, PUNJAB, SINDH, KPK, BALOCHISTAN, AJK, CAMBRIDGE, OTHER] }
+        current_group: { type: [string, 'null'] }
+        district: { type: [string, 'null'] }
+        marks: { type: [object, 'null'], additionalProperties: { type: number, minimum: 0, maximum: 100 } }
+        class_id: { type: [string, 'null'], format: uuid }
+        age_band: { type: string, enum: ['13-15', '16-17', '18-19', '20-24', '25+'] }
+        situation: { $ref: '#/components/schemas/Situation' }
+
+    ProfileUpdate:
+      type: object
+      additionalProperties: false
+      properties:
+        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{N}_ ]+$' }
+        board: { type: string }
+        current_group: { type: string }
+        district: { type: string }
+        marks: { type: object, additionalProperties: { type: number, minimum: 0, maximum: 100 } }
+        grade:
+          type: integer
+          minimum: 8
+          maximum: 12
+          description: 'Class check-in (FR-101): promotion or repeating. Changing it re-ranks for the new mode; old results are kept'
+        situation: { $ref: '#/components/schemas/Situation' }
+
+    Situation:
+      type: [string, 'null']
+      description: '"My situation" (FR-104)'
+      enum: [repeating_class, private_candidate, returning_learner, changed_board, o_a_level, dae, madrassa_or_foreign, null]
+
+    ContentManifest:
+      type: object
+      required: [pack_id, min_app, sha256, signature]
+      properties:
+        pack_id: { type: string, examples: ['story-2026.11.1'] }
+        min_app: { type: string }
+        size_bytes: { type: integer }
+        sha256: { type: string }
+        signature: { type: string, description: Ed25519 over the manifest }
+
+    Event:
+      type: object
+      description: Telemetry envelope v3.0.0 (SRS §12.5). No free text; ≤ 1 KB.
+      additionalProperties: false
+      required: [event_id, schema_version, session_id, run_id, seq, event_type, monotonic_ms, content_version]
+      properties:
+        event_id: { type: string, format: uuid, description: UUIDv7 }
+        schema_version: { type: string, const: '3.0.0' }
+        session_id: { type: string, format: uuid }
+        run_id: { type: string, format: uuid }
+        seq: { type: integer, minimum: 0 }
+        week: { type: integer, minimum: 0, maximum: 4 }
+        story_version: { type: string }
+        content_version: { type: string }
+        event_type:
+          type: string
+          enum: [session_start, session_end, run_start, help_opened, pause, resume, quit, plan_presented, plan_committed,
+                 scene_start, choice_made, reaction, value_choice, calibration_tap, task_item_presented,
+                 task_action, task_result, letter_update, week_complete, sim_complete, reflection]
+        monotonic_ms: { type: number, minimum: 0 }
+        wall_clock_utc_min: { type: string, pattern: '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z$' }
+        input_type: { type: string, enum: [touch, other], description: 'Never which assistive technology is used' }
+        a11y_mode: { type: boolean, default: false, description: 'Accessible task mode on, so the task is stored as not measured (FR-98)' }
+        practice: { type: boolean }
+        item_id: { type: string, maxLength: 64 }
+        data: { type: object, additionalProperties: true }
+
+    BatchResult:
+      type: object
+      required: [accepted, duplicates, deferred, rejected]
+      properties:
+        accepted: { type: array, items: { type: string, format: uuid } }
+        duplicates: { type: array, items: { type: string, format: uuid } }
+        deferred:
+          type: array
+          description: Order-dependent; keep locally and resend after earlier events (max 7 days)
+          items:
+            type: object
+            required: [id, reason]
+            properties:
+              id: { type: string, format: uuid }
+              reason: { type: string, enum: [unknown_run, sequence_gap] }
+        rejected:
+          type: array
+          items:
+            type: object
+            required: [id, reason]
+            properties:
+              id: { type: string, format: uuid }
+              reason: { type: string, enum: [schema, sequence, monotonic, size, unknown_version, unknown_item, clock] }
+
+    PathCard:
+      type: object
+      required: [stream_id, fit_band, reasons, doors, plan_b]
+      properties:
+        stream_id: { type: string }
+        fit_band: { type: string, enum: [strong, good, worth_a_look] }
+        reasons: { type: array, minItems: 2, maxItems: 3, items: { type: string } }
+        doors:
+          type: array
+          items:
+            type: object
+            properties:
+              label: { type: string }
+              state: { type: string, enum: [open, extra_step, closed] }
+              source_url: { type: string, format: uri }
+        plan_b: { type: array, minItems: 1, items: { type: string } }
+
+    Recommendation:
+      type: object
+      required: [id, mode, confidence, ranked, model_version, content_version, created_at]
+      properties:
+        id: { type: string, format: uuid }
+        mode: { $ref: '#/components/schemas/ClassMode' }
+        provisional: { type: boolean, default: false }
+        confidence: { type: string, enum: [high, medium, low] }
+        letter_readable_share: { type: number, minimum: 0, maximum: 1 }
+        archetype: { type: string, examples: ['builder'] }
+        ranked: { type: array, minItems: 3, maxItems: 3, items: { $ref: '#/components/schemas/PathCard' } }
+        tasks_measured: { type: array, items: { type: string, enum: [SPA, ABS, NUM, LOG, PLN, VRB] } }
+        current_fit: { $ref: '#/components/schemas/CurrentFit' }
+        model_version: { type: string }
+        content_version: { type: string }
+        input_hash: { type: string }
+        created_at: { type: string, format: date-time }
+
+    Evidence:
+      type: object
+      properties:
+        stream_id: { type: string }
+        contributions:
+          type: array
+          items:
+            type: object
+            properties:
+              feature: { type: string, examples: [theta_R, ability_SPA, marks_math] }
+              value: { type: number }
+              weight: { type: number }
+              contribution: { type: number }
+        choices_summary: { type: array, items: { type: string } }
+        rules_applied: { type: array, items: { type: string } }
+
+    CurrentFit:
+      type: object
+      description: 'Fit of the current Matric group (class 9-10) or Intermediate stream (class 11-12), with routes (FR-99)'
+      required: [current_id, fit_band, show_routes]
+      properties:
+        current_id: { type: string, examples: [matric_science_cs] }
+        fit_band: { type: string, enum: [strong, good, worth_a_look, weak] }
+        reasons: { type: array, items: { type: string } }
+        show_routes: { type: string, enum: [auto, on_request], description: 'auto only when the anti-push rule holds (EDGE_CASES.md section 3.3)' }
+        closed_path_id: { type: [string, 'null'] }
+        routes: { type: array, items: { $ref: '#/components/schemas/Route' } }
+
+    Route:
+      type: object
+      required: [id, label_key, cost]
+      properties:
+        id: { type: string, enum: [stay, switch_group_window, retake_class_9, additional_subject, switch_stream_window, alternative_route] }
+        label_key: { type: string }
+        cost:
+          type: object
+          properties:
+            extra_years: { type: integer }
+            extra_exams: { type: integer }
+            notes_key: { type: string }
+        who_decides: { type: array, items: { type: string, enum: [family, school, board, college] } }
+        verified: { type: boolean, description: 'false → show "Check with your board" instead of board-specific details' }
+        source_url: { type: [string, 'null'], format: uri }
+        last_verified: { type: [string, 'null'], format: date }
+
+    Stream:
+      type: object
+      required: [id, level, names]
+      properties:
+        id: { type: string }
+        level: { type: string, enum: [matric, inter, university, alevel] }
+        names: { type: object, properties: { ur: { type: string }, en: { type: string } } }
+        subjects: { type: array, items: { type: string } }
+        entry_tests: { type: array, items: { type: string } }
+        doors: { type: array, items: { type: string } }
+        plan_b: { type: array, items: { type: string } }
+        last_verified: { type: string, format: date }
+
+    Career:
+      type: object
+      required: [onet_code, title_en]
+      properties:
+        onet_code: { type: string }
+        title_en: { type: string }
+        title_ur: { type: string }
+        summary_ur: { type: string }
+        pk_route: { type: string }
+        stream_links: { type: array, items: { type: string } }
+        attribution: { type: string }
+
+    SavedItem:
+      type: object
+      required: [kind, ref_id]
+      properties:
+        kind: { type: string, enum: [stream, career] }
+        ref_id: { type: string }
+
+    ShareLink:
+      type: object
+      required: [id, url, expires_at]
+      properties:
+        id: { type: string, format: uuid }
+        url: { type: string, format: uri, description: Shown once; never stored in plain text }
+        expires_at: { type: string, format: date-time }
+
+    School:
+      type: object
+      required: [name, district, type, board]
+      properties:
+        name: { type: string, maxLength: 120 }
+        district: { type: string }
+        type: { type: string, enum: [govt, private, chain] }
+        board: { type: string }
+
+    ClassSummary:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        school: { type: string }
+        grade: { type: integer }
+        section: { type: string }
+        started: { type: integer }
+        enrolled: { type: integer }
+        blueprint_ready: { type: integer }
+
+    RosterRow:
+      type: object
+      properties:
+        student_id: { type: string, format: uuid }
+        nickname: { type: string }
+        week: { type: integer, minimum: 0, maximum: 4 }
+        top_path: { type: [string, 'null'] }
+        confidence: { type: [string, 'null'], enum: [high, medium, low, null] }
+        flags: { type: array, items: { type: string } }
+
+    StudentSummary:
+      type: object
+      properties:
+        roster: { $ref: '#/components/schemas/RosterRow' }
+        recommendation: { $ref: '#/components/schemas/Recommendation' }
+
+    Flag:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        student_id: { type: string, format: uuid }
+        type: { type: string, enum: [not_started, stalled, mixed_signals, low_confidence, quality, route_question, help_requested] }
+        created_at: { type: string, format: date-time }
+
+    AuditEntry:
+      type: object
+      properties:
+        id: { type: integer }
+        actor: { type: string }
+        action: { type: string }
+        object: { type: string }
+        at: { type: string, format: date-time }

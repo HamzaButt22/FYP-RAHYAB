@@ -1,0 +1,26 @@
+@startuml c4-1-context
+!include <C4/C4_Context>
+LAYOUT_WITH_LEGEND()
+title C4 level 1: System context
+
+Person(student, "Student", "Class 8-12, ages 13-18+. Plays the story game, reads results")
+Person(parent, "Parent or guardian", "Gives consent; reads the family report")
+Person(teacher, "Teacher or counsellor", "Onboards a class; reviews progress and flags")
+Person(admin, "Admin or researcher", "Runs schools, content, models and the study")
+System(rahyaab, "Rahyaab", "Game-based stream and career guidance, with parent and school views")
+System_Ext(play, "Google Play", "Distribution, Play Integrity")
+System_Ext(onet, "O*NET Web Services", "Occupation data")
+System_Ext(sms, "SMS gateway", "Parent OTP")
+System_Ext(email, "Email service", "Staff password reset")
+System_Ext(wa, "WhatsApp", "Carries the share link (OS share sheet)")
+Rel(student, rahyaab, "Plays, views results, shares", "HTTPS")
+Rel(parent, rahyaab, "Opens report, gives consent", "HTTPS")
+Rel(teacher, rahyaab, "Uses dashboard", "HTTPS")
+Rel(admin, rahyaab, "Configures, exports", "HTTPS + MFA")
+Rel(rahyaab, onet, "Fetches careers (no student data)")
+Rel(rahyaab, sms, "Sends OTP")
+Rel(rahyaab, email, "Sends reset links")
+Rel(rahyaab, play, "Installed from; verifies integrity")
+Rel(student, wa, "Sends link")
+Rel(wa, parent, "Delivers link")
+@enduml

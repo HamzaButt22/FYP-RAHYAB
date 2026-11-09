@@ -1,0 +1,54 @@
+{
+  "folders": [
+    {
+      "name": "rahyaab (root)",
+      "path": "."
+    },
+    {
+      "name": "backend/api",
+      "path": "backend/api"
+    },
+    {
+      "name": "backend/scoring",
+      "path": "backend/scoring"
+    },
+    {
+      "name": "frontend/mobile",
+      "path": "frontend/mobile"
+    },
+    {
+      "name": "frontend/dashboard",
+      "path": "frontend/dashboard"
+    }
+  ],
+  "settings": {
+    "python.terminal.activateEnvironment": true,
+    "files.exclude": {
+      "backend": true,
+      "frontend": true
+    }
+  },
+  "extensions": {
+    "recommendations": [
+      "dbaeumer.vscode-eslint",
+      "esbenp.prettier-vscode",
+      "expo.vscode-expo-tools",
+      "ms-python.python",
+      "charliermarsh.ruff",
+      "ms-python.debugpy",
+      "ms-python.mypy-type-checker",
+      "ms-azuretools.vscode-docker",
+      "redhat.vscode-yaml",
+      "42crunch.vscode-openapi",
+      "jebbs.plantuml",
+      "yzhang.markdown-all-in-one",
+      "streetsidesoftware.code-spell-checker",
+      "github.vscode-pull-request-github",
+      "eamodio.gitlens",
+      "continue.continue",
+      "google.geminicodeassist",
+      "github.vscode-github-actions",
+      "ms-kubernetes-tools.vscode-kubernetes-tools"
+    ]
+  }
+}

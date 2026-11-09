@@ -1,0 +1,24 @@
+@startuml state-consent
+!include ../_style/rahyaab-uml.iuml
+skinparam linetype polyline
+title Consent lifecycle (UML state machine)
+[*] --> AgeCheck : birth month and year picked
+AgeCheck --> [*] : under 13 / nothing stored
+AgeCheck --> Pending : 13-17
+AgeCheck --> Granted : 18+ / self-consent
+Pending --> Granted : claimed school slip or parent OTP
+Pending --> Refused : parent refuses
+Pending --> Expired : after 14 days
+Refused --> [*] : purge local data
+Expired --> [*] : purge local data
+state Granted {
+  [*] --> SyncAllowed
+  SyncAllowed --> ResearchOptIn : opt in
+  ResearchOptIn --> SyncAllowed : opt out
+}
+Granted --> Withdrawn : parent withdraws
+Granted --> DeletionRequested : delete my data
+Withdrawn --> DeletionRequested : schedule deletion
+DeletionRequested --> Deleted : [within 30 days] / hard delete;\nbackups expire in 90 days
+Deleted --> [*]
+@enduml

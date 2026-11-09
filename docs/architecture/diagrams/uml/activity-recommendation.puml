@@ -1,0 +1,40 @@
+@startuml activity-recommendation
+!include ../_style/rahyaab-uml.iuml
+title From events to a recommendation (UML activity diagram)
+start
+:Load runs and raw events;
+:Validity checks\n(completion, straight-lining, calibration);
+if (Evidence rule met?) then (no)
+  :Return "insufficient_evidence";
+  stop
+else (yes)
+endif
+fork
+  :M1 interests\n(Thurstonian IRT + GRM, EAP);
+fork again
+  :M2 abilities\n(staircase / Rasch);
+fork again
+  :Work values\n(Bradley-Terry counts);
+end fork
+:Confidence\n(SE, coverage, agreement);
+switch (Active recommender?)
+case (rules)
+  :AHP rule table;
+case (congruence)
+  :0.55 interest + 0.35 ability + 0.10 marks;
+case (ranker)
+  :LightGBM LambdaRank + SHAP;
+endswitch
+:Apply eligibility gates;
+if (Class 9-12 and a better path is closed?) then (yes)
+  if (Anti-push rule holds?) then (yes)
+    :Show routes; raise teacher flag;
+  else (no)
+    :Routes behind "See other routes";
+  endif
+else (no)
+endif
+:Attach Plan B and template explanations;
+:Store recommendation\n(model, content version, input_hash);
+stop
+@enduml

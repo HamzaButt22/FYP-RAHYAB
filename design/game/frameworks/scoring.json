@@ -1,0 +1,84 @@
+{
+  "version": "1.1.0",
+  "updated": "2026-11-07",
+  "framework": "Scoring settings for models M1-M3 (GDD section 12)",
+  "m1_interests": {
+    "model": "One joint model: Thurstonian IRT for forced choices and the planner ranking block + graded response model for reaction taps (3 categories), all loading on the same six traits",
+    "identification": "trait means 0 and variances 1 in the calibration sample; GRM thresholds give the absolute anchor",
+    "planner": "one ranking block (3 picked of 6); its 9 binary outcomes share option utilities, so they are not treated as independent",
+    "estimator": "MAP with an N(0, Sigma) prior; SE = posterior SD from the Laplace approximation. No full quadrature grid (41^6 points would be infeasible); quasi-Monte-Carlo EAP with 2,000 Sobol points is used only as a check in the simulation study",
+    "adaptive": "next scenes maximise expected information for the type with the largest SE, within pairs.json coverage and exposure caps",
+    "pre_calibration": "Open-Source Psychometrics RIASEC dataset via simulated game choices (feasibility only; parameters marked provisional)",
+    "recalibration": "pilot, with k-fold cross-validation so the same students are not used to fit and to evaluate"
+  },
+  "m2_abilities": {
+    "model": "Rasch (1PL) per family; 2PL only if n >= 300 for the family and item fit favours it",
+    "items_per_family_min": 12,
+    "adaptive": "staircase, 4 levels",
+    "first_attempt_only": true
+  },
+  "m3_recommender": {
+    "production_default": "congruence",
+    "congruence": {
+      "formula": "fit = w_interest * cosine(student_riasec_shifted, path_riasec) + w_ability * ability_support + w_marks * marks_support",
+      "weights": {
+        "interest": 0.55,
+        "ability": 0.35,
+        "marks": 0.1
+      },
+      "renormalise_when_marks_missing": true,
+      "definitions": {
+        "student_riasec_shifted": "theta_plus_k = Phi(theta_k), the standard normal CDF of each interest score, so every value is in (0, 1) and order is kept",
+        "path_riasec": "the path's RIASEC profile in streams.json, values in [0, 1] (to be replaced by O*NET-derived profiles: the mean O*NET interest profile of the occupations the path leads to, rescaled (score - 1) / 6, occupations listed and reviewed by counsellors)",
+        "ability_support": "sum over the families listed for the path of alpha_k * Phi(theta_ability_k); alpha_k equal and summing to 1; unmeasured families are dropped and the rest renormalised",
+        "marks_support": "mean of the path's relevant subject percentages / 100; absent marks -> term dropped and weights renormalised",
+        "range": "every term is in [0, 1], so fit is in [0, 1]",
+        "sensitivity_check": "report how often the top-3 changes if cosine is replaced by Pearson r (profile shape only)"
+      }
+    },
+    "candidates": [
+      "counsellor_rules_ahp",
+      "congruence",
+      "lightgbm_lambdarank_shap"
+    ],
+    "promotion_rule": "learned ranker replaces congruence only if NDCG@3 improves by >= .05 with CI excluding 0 and fairness checks pass",
+    "excluded_features": [
+      "gender",
+      "district",
+      "school_type",
+      "device"
+    ],
+    "tie_break": "Work values are not part of the fit score. If two paths' fit differs by less than 0.02, they are ordered by value match (share of the path's top O*NET work values that are among the student's top 2); otherwise by interest fit. A tie-break never moves a path by more than one place."
+  },
+  "confidence": {
+    "high": "all interest SE <= .35 and coverage 100% and top-1 vs top-4 margin >= delta",
+    "low": "any key SE > .50 or coverage < 80%",
+    "medium": "otherwise",
+    "delta": "set on the pilot: the smallest margin at which the top-1 path stays top-1 in >= 90% of 200 bootstrap resamples of the student's own choices; bands describe stability, never probabilities",
+    "margin": "fit(top-1) - fit(top-4)"
+  },
+  "letter_reveal": {
+    "source": "mean interest SE",
+    "map": "words revealed = clamp((1.0 - mean_SE) / (1.0 - 0.35), 0, 1)",
+    "can_go_down": true,
+    "note": "SE starts near 1.0 (the prior), so the letter starts unreadable; it is fully readable at mean SE <= 0.35, the same SE as the High-confidence rule"
+  },
+  "fairness": {
+    "matched_score_gap_max": 0.1,
+    "stem_top1_rate_gap_max": 0.1,
+    "dif_flag": "logistic-regression DIF, delta R^2 >= .035",
+    "primary_metric": "difference in STEM top-1 rate between gender groups at matched interest and ability scores (logistic regression), with a 95% CI"
+  },
+  "never": [
+    "reaction time as a score",
+    "Big Five in scoring",
+    "LLM ranking"
+  ],
+  "quality": {
+    "too_fast_choice_ms": 300,
+    "same_side_share": 0.9,
+    "same_side_min_choices": 10,
+    "repeated_pattern_len": 5,
+    "effect": "lowers confidence and may suggest one more week; never blocks or shames"
+  }
+}

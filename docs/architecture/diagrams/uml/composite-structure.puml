@@ -1,0 +1,36 @@
+@startuml composite-structure
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype polyline
+title Scoring service internals (UML composite structure diagram)
+component "ScoringService" as Svc {
+  portin "compute" as pIn
+  portout "store" as pOut
+  portout "registry" as pReg
+  component "loader : RunLoader" as Loader
+  component "validator : ValidityChecker" as Val
+  component "m1 : TIRTEstimator" as M1
+  component "m2 : AbilityEstimator" as M2
+  component "values : ValueCounter" as Vals
+  component "conf : ConfidenceCalculator" as Conf
+  component "ranker : Recommender [1]" as Rank
+  component "gates : GateEngine" as Gates
+  component "explainer : TemplateExplainer" as Expl
+  pIn --> Loader
+  Loader --> Val
+  Val --> M1 : choices, taps
+  Val --> M2 : task results
+  Val --> Vals : dilemmas
+  M1 --> Conf
+  M2 --> Conf
+  Conf --> Rank : features
+  Vals --> Rank : tie-breaks
+  Rank --> Gates : ranked paths
+  Gates --> Expl : top 3 + Plan B
+  Expl --> pOut
+  Rank ..> pReg : active model
+}
+[API] --> pIn : ScoringInput
+pOut --> [PostgreSQL] : Recommendation
+pReg --> [Model registry]
+@enduml

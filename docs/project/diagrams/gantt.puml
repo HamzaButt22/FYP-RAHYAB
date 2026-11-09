@@ -1,0 +1,52 @@
+@startgantt gantt
+title Rahyaab FYP plan (re-planned 9 Nov 2026)
+skinparam defaultFontName "Segoe UI"
+printscale weekly
+Project starts 2026-11-02
+saturday are closed
+sunday are closed
+2026-12-28 to 2027-01-01 are closed
+2027-01-18 to 2027-01-29 are named [Exams and break (buffer)]
+2027-01-18 to 2027-01-29 are colored in LightGray
+-- Management and ethics --
+[Ethics package] as [EP] starts 2026-11-02 and lasts 15 days
+[Ethics approval (waiting)] as [EA] starts at [EP]'s end and lasts 50 days
+[Ethics approval deadline] as [EAD] happens 2027-02-15
+[FYP-1 report] starts 2026-12-14 and lasts 20 days
+[Final report and demo] as [FR] starts 2027-05-31 and lasts 15 days
+[Buffer before submission] starts at [FR]'s end and lasts 5 days
+-- Platform --
+[Monorepo, CI, API skeleton] starts 2026-11-02 and lasts 10 days
+[Resilience tests (FYP-1)] starts 2027-01-04 and lasts 5 days
+[Staging, production, backups] starts 2027-03-01 and lasts 10 days
+-- Backend and scoring --
+[Join, consent slips, events] as [JC] starts 2026-11-02 and lasts 20 days
+[V1 simulation] starts 2026-11-16 and lasts 35 days
+[Congruence, gates, routes] starts 2026-11-30 and lasts 19 days
+[Parent page, dashboard API, MFA, reset] as [PD] starts 2027-02-15 and lasts 10 days
+[Psychometrics, M1-M2, V2-V6] as [PSY] starts 2027-05-17 and lasts 10 days
+[M3 comparison, fairness, V8] starts at [PSY]'s end and lasts 10 days
+-- Mobile app --
+[Shell, onboarding, field help] starts 2026-11-02 and lasts 10 days
+[Week loop, story, outbox] as [WL] starts 2026-11-16 and lasts 10 days
+[Planning task, then logic and numerical] as [T1] starts at [WL]'s end and lasts 10 days
+[Results, letter, library] as [RES] starts at [T1]'s end and lasts 10 days
+[FYP-1 demo] as [DEMO] happens 2027-01-15
+[Tasks (3 more), Urdu, all class modes] as [T2] starts 2027-02-01 and lasts 10 days
+[Fit check, check-in, share, accessibility] as [FC] starts at [T2]'s end and lasts 10 days
+[Feature freeze] as [FF] happens 2027-02-26
+[Pentest on frozen build] as [PT] starts 2027-03-01 and lasts 10 days
+[Fix sprint] as [FIX] starts at [PT]'s end and lasts 10 days
+[Pilot build] as [PB] happens 2027-03-26
+-- Content and research --
+[Ink script F1 (prologue + 4 short weeks)] starts 2026-11-16 and ends 2026-12-18
+[Ink script F2 (3 scenes a week)] starts 2027-02-01 and lasts 20 days
+[Stream data verification] starts 2026-11-30 and ends 2027-02-26
+[School recruitment and consent drives] starts 2027-01-04 and ends 2027-03-26
+[Usability round 1] as [U1] starts 2027-02-22 and lasts 5 days
+[Pilot in schools, classes 8-10] as [PIL] starts 2027-04-05 and ends 2027-05-14
+[Usability round 2] starts 2027-04-12 and lasts 5 days
+[PSY] starts at [PIL]'s end
+[PT] starts at [FF]'s end
+[PIL] starts at [PB]'s end
+@endgantt

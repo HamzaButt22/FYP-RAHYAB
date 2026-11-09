@@ -1,0 +1,255 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-11-04",
+  "framework": "Forced-choice RIASEC pairs (Dil vs Duniya), scored with Thurstonian IRT in model M1",
+  "pairs": [
+    "R-I",
+    "R-A",
+    "R-S",
+    "R-E",
+    "R-C",
+    "I-A",
+    "I-S",
+    "I-E",
+    "I-C",
+    "A-S",
+    "A-E",
+    "A-C",
+    "S-E",
+    "S-C",
+    "E-C"
+  ],
+  "coverage_targets": {
+    "each_pair_min": 2,
+    "each_type_min": 10,
+    "per_week": [
+      8,
+      8,
+      7,
+      7
+    ],
+    "total": 30
+  },
+  "counterbalancing": "Round 2 of every pair swaps screen side; which voice (Dil or Duniya) argues for which type alternates, so neither voice stands for one interest.",
+  "type_exposure": {
+    "R": 10,
+    "I": 10,
+    "A": 10,
+    "S": 10,
+    "E": 10,
+    "C": 10
+  },
+  "target_schedule": [
+    {
+      "week": 1,
+      "slot": 1,
+      "left": "E",
+      "right": "S",
+      "dil_argues": "S"
+    },
+    {
+      "week": 1,
+      "slot": 2,
+      "left": "C",
+      "right": "A",
+      "dil_argues": "C"
+    },
+    {
+      "week": 1,
+      "slot": 3,
+      "left": "R",
+      "right": "I",
+      "dil_argues": "I"
+    },
+    {
+      "week": 1,
+      "slot": 4,
+      "left": "I",
+      "right": "E",
+      "dil_argues": "I"
+    },
+    {
+      "week": 1,
+      "slot": 5,
+      "left": "C",
+      "right": "R",
+      "dil_argues": "R"
+    },
+    {
+      "week": 1,
+      "slot": 6,
+      "left": "R",
+      "right": "E",
+      "dil_argues": "R"
+    },
+    {
+      "week": 1,
+      "slot": 7,
+      "left": "A",
+      "right": "R",
+      "dil_argues": "R"
+    },
+    {
+      "week": 1,
+      "slot": 8,
+      "left": "A",
+      "right": "I",
+      "dil_argues": "A"
+    },
+    {
+      "week": 2,
+      "slot": 1,
+      "left": "S",
+      "right": "I",
+      "dil_argues": "S"
+    },
+    {
+      "week": 2,
+      "slot": 2,
+      "left": "I",
+      "right": "R",
+      "dil_argues": "R"
+    },
+    {
+      "week": 2,
+      "slot": 3,
+      "left": "S",
+      "right": "A",
+      "dil_argues": "S"
+    },
+    {
+      "week": 2,
+      "slot": 4,
+      "left": "C",
+      "right": "S",
+      "dil_argues": "S"
+    },
+    {
+      "week": 2,
+      "slot": 5,
+      "left": "S",
+      "right": "R",
+      "dil_argues": "S"
+    },
+    {
+      "week": 2,
+      "slot": 6,
+      "left": "I",
+      "right": "C",
+      "dil_argues": "C"
+    },
+    {
+      "week": 2,
+      "slot": 7,
+      "left": "S",
+      "right": "E",
+      "dil_argues": "S"
+    },
+    {
+      "week": 2,
+      "slot": 8,
+      "left": "E",
+      "right": "I",
+      "dil_argues": "I"
+    },
+    {
+      "week": 3,
+      "slot": 1,
+      "left": "I",
+      "right": "S",
+      "dil_argues": "S"
+    },
+    {
+      "week": 3,
+      "slot": 2,
+      "left": "I",
+      "right": "A",
+      "dil_argues": "I"
+    },
+    {
+      "week": 3,
+      "slot": 3,
+      "left": "S",
+      "right": "C",
+      "dil_argues": "C"
+    },
+    {
+      "week": 3,
+      "slot": 4,
+      "left": "A",
+      "right": "E",
+      "dil_argues": "A"
+    },
+    {
+      "week": 3,
+      "slot": 5,
+      "left": "C",
+      "right": "E",
+      "dil_argues": "E"
+    },
+    {
+      "week": 3,
+      "slot": 6,
+      "left": "R",
+      "right": "S",
+      "dil_argues": "R"
+    },
+    {
+      "week": 3,
+      "slot": 7,
+      "left": "R",
+      "right": "C",
+      "dil_argues": "C"
+    },
+    {
+      "week": 4,
+      "slot": 1,
+      "left": "C",
+      "right": "I",
+      "dil_argues": "C"
+    },
+    {
+      "week": 4,
+      "slot": 2,
+      "left": "A",
+      "right": "C",
+      "dil_argues": "C"
+    },
+    {
+      "week": 4,
+      "slot": 3,
+      "left": "E",
+      "right": "R",
+      "dil_argues": "E"
+    },
+    {
+      "week": 4,
+      "slot": 4,
+      "left": "R",
+      "right": "A",
+      "dil_argues": "A"
+    },
+    {
+      "week": 4,
+      "slot": 5,
+      "left": "E",
+      "right": "C",
+      "dil_argues": "E"
+    },
+    {
+      "week": 4,
+      "slot": 6,
+      "left": "E",
+      "right": "A",
+      "dil_argues": "A"
+    },
+    {
+      "week": 4,
+      "slot": 7,
+      "left": "A",
+      "right": "S",
+      "dil_argues": "A"
+    }
+  ],
+  "note": "This is the target. At run time the storylet picker fills slots adaptively (most uncertain types first) while keeping these coverage targets."
+}

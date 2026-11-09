@@ -1,0 +1,12 @@
+# Build context is the repository root for the API image (it needs backend/ and database/).
+# Everything is excluded except what the image needs.
+*
+!backend/api/pyproject.toml
+!backend/api/uv.lock
+!backend/api/alembic.ini
+!backend/api/src/
+!backend/api/migrations/
+!backend/scoring/pyproject.toml
+!backend/scoring/src/
+!database/schema.sql
+**/__pycache__

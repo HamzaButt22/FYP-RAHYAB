@@ -1,0 +1,110 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Rahyaab Home sample</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,800&family=Plus+Jakarta+Sans:wght@500;600;700&family=Gulzar&display=swap">
+<link rel="stylesheet" href="../tokens/tokens.css">
+<style>
+.only-dark{display:none}
+[data-theme="dark"] .only-dark{display:inline-block}[data-theme="dark"] .only-light{display:none}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .only-dark{display:inline-block}:root:not([data-theme="light"]) .only-light{display:none}}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--font-sans);min-height:100vh}
+.app{display:flex;min-height:100vh}
+.side{display:none}
+main{flex:1;min-width:0;padding:0 max(16px, env(safe-area-inset-left)) 96px;}
+.wrap{max-width:640px;margin:0 auto;display:flex;flex-direction:column;gap:var(--space-5)}
+.top{height:56px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:center;gap:8px;font-family:var(--font-display);font-weight:800;font-size:22px;letter-spacing:-0.8px}
+.brand img{width:28px;height:28px}
+.chip{background:var(--sunken);border-radius:var(--radius-pill);padding:6px 12px;font-size:12px;font-weight:700}
+.avatar{width:40px;height:40px;border-radius:20px;background:var(--accent);color:var(--on-accent);display:grid;place-items:center;font-weight:700}
+h1{margin:0;font-family:var(--font-display);font-weight:800;font-size:32px;line-height:36px;letter-spacing:-0.6px}
+.sub{color:var(--muted);font-size:15px;line-height:22px;margin-top:6px}
+.grid{display:grid;grid-template-columns:1fr;gap:var(--space-4)}
+.card{background:var(--surface);border-radius:var(--radius-lg);padding:var(--space-4);box-shadow:var(--shadow-card),inset 0 0 0 1px var(--border);display:flex;flex-direction:column;gap:12px}
+.card h2{margin:0;font-size:18px;line-height:24px}
+.slot{display:flex;align-items:center;gap:12px;min-height:56px;border-radius:var(--radius-md);background:var(--sunken);padding:8px 12px}
+.slot b{font-size:15px} .slot span{font-size:12px;color:var(--muted)}
+.dot{width:12px;height:12px;border-radius:6px;background:var(--border);flex-shrink:0} .done .dot{background:var(--success)} .next .dot{background:var(--primary)}
+.next{box-shadow:inset 0 0 0 2px var(--primary)}
+.meter{display:flex;gap:4px} .meter i{flex:1;height:12px;border-radius:4px;background:var(--sunken)} .meter i.on{background:var(--text)}
+.note{display:flex;align-items:center;gap:10px;background:var(--sunken);border-radius:var(--radius-lg);padding:6px 14px 6px 4px}
+.note img{width:56px;height:56px} .note div{font-size:15px;line-height:22px;font-weight:600}
+.cta{min-height:48px;border:0;border-radius:var(--radius-md);background:var(--primary);color:var(--on-primary);font:700 15px var(--font-sans);width:100%}
+:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+.tabs{position:fixed;left:0;right:0;bottom:0;height:calc(64px + env(safe-area-inset-bottom));padding-bottom:env(safe-area-inset-bottom);background:var(--surface);border-top:1px solid var(--border);display:flex}
+.tabs a{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12px;font-weight:700;color:var(--muted);text-decoration:none;min-height:48px}
+.tabs a.on{color:var(--primary-text)} .tabs svg{width:24px;height:24px}
+@media (max-width:359px){ h1{font-size:27px;line-height:31px} .note img{display:none} }
+@media (min-width:600px){ main{padding:0 24px 104px} }
+@media (min-width:1024px){
+  .tabs{display:none}
+  .side{display:flex;flex-direction:column;gap:4px;width:248px;flex-shrink:0;background:var(--surface);border-right:1px solid var(--border);padding:20px 16px}
+  .side .brand{margin:0 8px 20px}
+  .side a{display:flex;align-items:center;gap:10px;min-height:48px;padding:0 12px;border-radius:var(--radius-md);color:var(--muted);text-decoration:none;font-weight:700;font-size:14px}
+  .side a.on{background:var(--sunken);color:var(--text)}
+  .top .brand{visibility:hidden}
+  main{padding:0 32px 40px}
+  .wrap{max-width:1200px}
+  .grid{grid-template-columns:2fr 1fr;align-items:start}
+}
+</style>
+</head>
+<body>
+<div class="app">
+<nav class="side" aria-label="Main">
+  <div class="brand"><img class="only-light" src="../brand/logo/svg/branch-light.svg" alt=""><img class="only-dark" src="../brand/logo/svg/branch-dark.svg" alt="">rahyaab</div>
+  <a class="on" href="#">Home</a><a href="#">Explore</a><a href="#">Family</a><a href="#">You</a>
+</nav>
+<main>
+<div class="wrap">
+  <header class="top">
+    <div class="brand"><img class="only-light" src="../brand/logo/svg/branch-light.svg" alt="Rahyaab"><img class="only-dark" src="../brand/logo/svg/branch-dark.svg" alt="Rahyaab">rahyaab</div>
+    <span class="chip">Week 2 of 4</span>
+    <span class="avatar" aria-label="Ayesha">A</span>
+  </header>
+  <section>
+    <h1>Salaam, Ayesha</h1>
+    <div class="sub">Two scenes left this week. Take your time.</div>
+  </section>
+  <div class="grid">
+    <section class="card wide">
+      <h2>This week</h2>
+      <div class="slot done"><span class="dot"></span><div><b>Robotics club</b><br><span>Monday · done</span></div></div>
+      <div class="slot next"><span class="dot"></span><div><b>Thrift stall</b><br><span>Wednesday · next</span></div></div>
+      <div class="slot"><span class="dot"></span><div><b>Clinic visit</b><br><span>Saturday</span></div></div>
+      <button class="cta">Continue week 2</button>
+    </section>
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;font-size:14px"><b>Rahyaab knows you</b><span style="color:var(--muted)">7 of 12</span></div>
+      <div class="meter" role="meter" aria-valuemin="0" aria-valuemax="12" aria-valuenow="7" aria-label="Rahyaab knows you"><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i class="on"></i><i></i><i></i><i></i><i></i><i></i></div>
+      <div class="note"><img class="only-light" src="../brand/mascot/svg/hudhud.svg" alt=""><img class="only-dark" src="../brand/mascot/svg/hudhud-dark.svg" alt=""><div>The robotics club told me a lot about you.</div></div>
+    </section>
+  </div>
+</div>
+</main>
+</div>
+<nav class="tabs" aria-label="Main">
+  <a class="on" href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"><path d="M4 11 12 4l8 7v9H4z"/></svg>Home</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="m20 20-4-4"/></svg>Explore</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 20c0-3 3-5 6-5s6 2 6 5M15 15c3 0 6 1.5 6 4.5"/></svg>Family</a>
+  <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>You</a>
+</nav>
+<script>
+(function () {
+  var q = new URLSearchParams(location.search).get('theme');
+  if (q === 'light' || q === 'dark') document.documentElement.setAttribute('data-theme', q);
+  var b = document.getElementById('theme');
+  if (b) b.addEventListener('click', function () {
+    var cur = document.documentElement.getAttribute('data-theme') || (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+    var next = cur === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    b.textContent = next === 'dark' ? 'Switch to light' : 'Switch to dark';
+  });
+})();
+</script>
+</body>
+</html>

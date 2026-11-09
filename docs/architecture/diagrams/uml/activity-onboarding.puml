@@ -1,0 +1,41 @@
+@startuml activity-onboarding
+!include ../_style/rahyaab-uml.iuml
+title Onboarding (UML activity diagram)
+start
+:Choose language;
+:Read welcome cards;
+repeat
+  if (Has a class code?) then (yes)
+    :Enter code (auto-formatted);
+    if (Valid?) then (yes)
+      break
+    else (no)
+      :Show field help\n(what is wrong, how to fix, example);
+    endif
+  else (no)
+    :Individual path\n(parent OTP later);
+    break
+  endif
+repeat while (Try again?) is (yes)
+if (Age 13 or over?) then (no)
+  :Neutral stop, nothing stored;
+  stop
+else (yes)
+endif
+if (Usual age for this class?) then (no)
+  :Soft check "Is that right?"\nolder-learner routes noted;
+else (yes)
+endif
+:Assent screen (read aloud available);
+:Nickname, PIN, board, group, district;
+:Build avatar;
+if (Age 18 or over?) then (yes)
+  :Self-consent;
+elseif (Parent consent granted?) then (yes)
+  :Sync enabled;
+else (no)
+  :"Waiting for your family's OK"\nplay stays on the phone;
+endif
+:Prologue: Hudhud brings the letter;
+stop
+@enduml

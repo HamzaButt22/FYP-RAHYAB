@@ -1,0 +1,16 @@
+@startuml state-outbox-event
+!include ../_style/rahyaab-uml.iuml
+skinparam linetype polyline
+title A gameplay event in the outbox (UML state machine)
+[*] --> Queued : committed to SQLite
+Queued --> Held : [consent pending]
+Held --> Queued : consent granted
+Held --> Purged : after 14 days
+Queued --> Sending : batch picked
+Sending --> Acked : accepted / duplicate
+Sending --> Rejected : schema or order error
+Sending --> Queued : offline, 429, 5xx /\nbackoff with jitter
+Acked --> Purged : after 7 days
+Rejected --> Purged : after 7 days
+Purged --> [*]
+@enduml

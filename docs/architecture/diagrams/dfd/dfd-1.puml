@@ -1,0 +1,76 @@
+@startuml dfd-1
+!include ../_style/rahyaab-uml.iuml
+skinparam linetype polyline
+skinparam usecase {
+  BackgroundColor #DCEEF8
+  BorderColor #2C7FA3
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #222222
+  BorderThickness 2
+}
+skinparam storage {
+  BackgroundColor #FFF6E5
+  BorderColor #B8652A
+}
+title DFD level 1
+rectangle "Student" as student
+rectangle "Parent" as parent
+rectangle "Teacher" as teacher
+rectangle "Admin" as admin
+rectangle "O*NET" as onet
+rectangle "SMS aggregator" as sms
+usecase "1.0\nManage identity\nand consent" as p1
+usecase "2.0\nDeliver\ncontent" as p2
+usecase "3.0\nCapture\ngameplay" as p3
+usecase "4.0\nScore and\nrecommend" as p4
+usecase "5.0\nShare with\nfamily" as p5
+usecase "6.0\nServe\ndashboard" as p6
+usecase "7.0\nAdminister\nand govern" as p7
+usecase "8.0\nExplore\nlibrary" as p8
+storage "D1 | Students and consent" as d1
+storage "D2 | Raw events" as d2
+storage "D3 | Content packs" as d3
+storage "D4 | Results" as d4
+storage "D5 | Share links" as d5
+storage "D6 | Staff and audit" as d6
+storage "D7 | Streams and careers" as d7
+storage "D8 | Model registry" as d8
+student --> p1 : class code, profile
+parent --> p1 : consent, OTP
+teacher --> p1 : consent slips recorded
+p1 --> sms : OTP (individual path)
+sms --> parent : OTP
+p1 --> d1
+d3 --> p2
+p2 --> student : signed pack
+student --> p3 : event batches
+d1 --> p3 : consent check
+p3 --> d2 : valid events
+d2 --> p4
+student --> p4 : compute request
+d3 --> p4 : item parameters
+d8 --> p4 : model versions
+d7 --> p4 : profiles, rules
+p4 --> d4 : recommendation
+p4 --> student : results, why
+student --> p5 : share request
+d4 --> p5
+p5 --> d5
+p5 --> parent : report page
+d1 --> p6
+d2 --> p6 : progress
+d4 --> p6
+teacher --> p6 : notes, flags handled
+p6 --> teacher : roster, flags
+p6 --> d6 : reads logged
+admin --> p7 : packs, models, schools
+p7 --> d3
+p7 --> d8
+p7 --> d6
+p7 --> admin : exports
+onet --> p8 : occupations
+p8 --> d7
+p8 --> student : stream and career pages
+@enduml

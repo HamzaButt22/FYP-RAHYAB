@@ -1,0 +1,23 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule: { interval: weekly }
+  - package-ecosystem: uv
+    directories: [/backend/api, /backend/scoring]
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    directory: /frontend/dashboard
+    schedule: { interval: weekly }
+  - package-ecosystem: npm
+    directory: /frontend/mobile
+    schedule: { interval: weekly }
+    # Expo and React Native move together: upgrade them with `npx expo install --fix`, not one by one.
+    ignore:
+      - dependency-name: "expo*"
+      - dependency-name: "react-native*"
+      - dependency-name: "react"
+      - dependency-name: "@types/react"
+  - package-ecosystem: docker
+    directories: [/backend/api, /frontend/dashboard, /infra/backup]
+    schedule: { interval: weekly }

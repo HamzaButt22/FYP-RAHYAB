@@ -1,0 +1,604 @@
+{
+  "light": {
+    "bg": {
+      "$type": "color",
+      "$value": "#F6EFE3",
+      "$description": "Screen background (parchment in light, deep teal night in dark)."
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#FFFFFF",
+      "$description": "Cards, sheets, bottom bar."
+    },
+    "sunken": {
+      "$type": "color",
+      "$value": "#EDE3D3",
+      "$description": "Inputs, meter tracks, chips, the Hudhud note strip."
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#DDD0BC",
+      "$description": "Hairline dividers and card outlines (decorative, not for controls)."
+    },
+    "text": {
+      "$type": "color",
+      "$value": "#1F2326",
+      "$description": "Body and headings on bg, surface and sunken."
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "#5A5650",
+      "$description": "Secondary text and control borders on bg, surface and sunken."
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "#B54A2F",
+      "$description": "Terracotta. Primary button, Dil choice, selected states."
+    },
+    "on-primary": {
+      "$type": "color",
+      "$value": "#FFFFFF",
+      "$description": "Text and icons on primary."
+    },
+    "primary-text": {
+      "$type": "color",
+      "$value": "#A2401F",
+      "$description": "Terracotta text and links on bg and surface."
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "#1F7A7A",
+      "$description": "Teal. Secondary button, Duniya choice, info."
+    },
+    "on-secondary": {
+      "$type": "color",
+      "$value": "#FFFFFF",
+      "$description": "Text and icons on secondary."
+    },
+    "secondary-text": {
+      "$type": "color",
+      "$value": "#17696A",
+      "$description": "Teal text, 'strong fit' labels on bg and surface."
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "#F2B33D",
+      "$description": "Saffron. Highlights only: new dots, celebration, the mascot's crown. Never a text colour."
+    },
+    "on-accent": {
+      "$type": "color",
+      "$value": "#1F2326",
+      "$description": "Text on accent."
+    },
+    "success": {
+      "$type": "color",
+      "$value": "#2E7A52",
+      "$description": "Success text and icons on bg and surface."
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "#B42318",
+      "$description": "Error text and icons on bg and surface."
+    },
+    "focus": {
+      "$type": "color",
+      "$value": "#1F7A7A",
+      "$description": "Focus ring, 2px solid, 2px offset."
+    },
+    "logo-twig": {
+      "$type": "color",
+      "$value": "#8A5A3A",
+      "$description": "Branch logo stem and twig. Adapts per background (see Logo)."
+    },
+    "logo-leaf": {
+      "$type": "color",
+      "$value": "#3E8A5A",
+      "$description": "Branch logo leaves and dots."
+    },
+    "mascot-body": {
+      "$type": "color",
+      "$value": "#B54A2F",
+      "$description": "Hudhud body and crest. Brighter on dark so it does not sink."
+    },
+    "mascot-ink": {
+      "$type": "color",
+      "$value": "#1F2326",
+      "$description": "Hudhud wing, beak, tail, legs, crest tips. Same in both themes."
+    },
+    "mascot-light": {
+      "$type": "color",
+      "$value": "#F6EFE3",
+      "$description": "Hudhud wing bars, tail band, belly."
+    },
+    "mascot-outline": {
+      "$type": "color",
+      "$value": "#F6EFE3",
+      "$description": "1.5px die-cut edge around Hudhud on dark grounds only."
+    }
+  },
+  "dark": {
+    "bg": {
+      "$type": "color",
+      "$value": "#121B1B",
+      "$description": "Screen background (parchment in light, deep teal night in dark)."
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#1B2626",
+      "$description": "Cards, sheets, bottom bar."
+    },
+    "sunken": {
+      "$type": "color",
+      "$value": "#233131",
+      "$description": "Inputs, meter tracks, chips, the Hudhud note strip."
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#2F3E3E",
+      "$description": "Hairline dividers and card outlines (decorative, not for controls)."
+    },
+    "text": {
+      "$type": "color",
+      "$value": "#F3ECE1",
+      "$description": "Body and headings on bg, surface and sunken."
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "#A9B3AE",
+      "$description": "Secondary text and control borders on bg, surface and sunken."
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "#E07A5C",
+      "$description": "Terracotta. Primary button, Dil choice, selected states."
+    },
+    "on-primary": {
+      "$type": "color",
+      "$value": "#121B1B",
+      "$description": "Text and icons on primary."
+    },
+    "primary-text": {
+      "$type": "color",
+      "$value": "#F0957A",
+      "$description": "Terracotta text and links on bg and surface."
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "#4FB3AE",
+      "$description": "Teal. Secondary button, Duniya choice, info."
+    },
+    "on-secondary": {
+      "$type": "color",
+      "$value": "#121B1B",
+      "$description": "Text and icons on secondary."
+    },
+    "secondary-text": {
+      "$type": "color",
+      "$value": "#6FCBC5",
+      "$description": "Teal text, 'strong fit' labels on bg and surface."
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "#F2B33D",
+      "$description": "Saffron. Highlights only: new dots, celebration, the mascot's crown. Never a text colour."
+    },
+    "on-accent": {
+      "$type": "color",
+      "$value": "#121B1B",
+      "$description": "Text on accent."
+    },
+    "success": {
+      "$type": "color",
+      "$value": "#6FCF97",
+      "$description": "Success text and icons on bg and surface."
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "#FF8A80",
+      "$description": "Error text and icons on bg and surface."
+    },
+    "focus": {
+      "$type": "color",
+      "$value": "#6FCBC5",
+      "$description": "Focus ring, 2px solid, 2px offset."
+    },
+    "logo-twig": {
+      "$type": "color",
+      "$value": "#FBF3E6",
+      "$description": "Branch logo stem and twig. Adapts per background (see Logo)."
+    },
+    "logo-leaf": {
+      "$type": "color",
+      "$value": "#6FCF97",
+      "$description": "Branch logo leaves and dots."
+    },
+    "mascot-body": {
+      "$type": "color",
+      "$value": "#D9643F",
+      "$description": "Hudhud body and crest. Brighter on dark so it does not sink."
+    },
+    "mascot-ink": {
+      "$type": "color",
+      "$value": "#1F2326",
+      "$description": "Hudhud wing, beak, tail, legs, crest tips. Same in both themes."
+    },
+    "mascot-light": {
+      "$type": "color",
+      "$value": "#F6EFE3",
+      "$description": "Hudhud wing bars, tail band, belly."
+    },
+    "mascot-outline": {
+      "$type": "color",
+      "$value": "#F3ECE1",
+      "$description": "1.5px die-cut edge around Hudhud on dark grounds only."
+    }
+  },
+  "space": {
+    "space-1": {
+      "$type": "dimension",
+      "$value": "4px",
+      "$description": "Icon to label."
+    },
+    "space-2": {
+      "$type": "dimension",
+      "$value": "8px",
+      "$description": "Inside chips, between stacked labels."
+    },
+    "space-3": {
+      "$type": "dimension",
+      "$value": "12px",
+      "$description": "Between related controls."
+    },
+    "space-4": {
+      "$type": "dimension",
+      "$value": "16px",
+      "$description": "Screen side gutter, card padding."
+    },
+    "space-5": {
+      "$type": "dimension",
+      "$value": "24px",
+      "$description": "Between sections in a screen."
+    },
+    "space-6": {
+      "$type": "dimension",
+      "$value": "32px",
+      "$description": "Top of screen to title, big breaks."
+    }
+  },
+  "radius": {
+    "radius-sm": {
+      "$type": "dimension",
+      "$value": "10px",
+      "$description": "Chips, meter segments, small tags."
+    },
+    "radius-md": {
+      "$type": "dimension",
+      "$value": "14px",
+      "$description": "Buttons, inputs."
+    },
+    "radius-lg": {
+      "$type": "dimension",
+      "$value": "20px",
+      "$description": "Cards, choice cards."
+    },
+    "radius-xl": {
+      "$type": "dimension",
+      "$value": "28px",
+      "$description": "Sheets, Blueprint slides."
+    },
+    "radius-pill": {
+      "$type": "dimension",
+      "$value": "999px",
+      "$description": "Avatar, toggles."
+    }
+  },
+  "size": {
+    "touch-min": {
+      "$type": "dimension",
+      "$value": "48px",
+      "$description": "Minimum height and width of every tappable control."
+    },
+    "screen-gutter": {
+      "$type": "dimension",
+      "$value": "16px",
+      "$description": "Left and right padding of every phone screen."
+    }
+  },
+  "breakpoint": {
+    "compact": {
+      "$type": "dimension",
+      "$value": "0px",
+      "$description": "Small phones under 360px (older Androids). Single column, 16px gutter, scale display type down one step."
+    },
+    "phone": {
+      "$type": "dimension",
+      "$value": "360px",
+      "$description": "Most phones 360–599px. Single column, 16px gutter, bottom tab bar."
+    },
+    "tablet": {
+      "$type": "dimension",
+      "$value": "600px",
+      "$description": "Tablets and foldables 600–1023px. Content max 640px centred, 24px gutter, two-column cards where useful."
+    },
+    "desktop": {
+      "$type": "dimension",
+      "$value": "1024px",
+      "$description": "Web dashboard for teachers and schools, 1024px and up. Side navigation, 12-column grid, content max 1200px."
+    }
+  },
+  "font": {
+    "display": {
+      "$type": "fontFamily",
+      "$value": "Bricolage Grotesque"
+    },
+    "sans": {
+      "$type": "fontFamily",
+      "$value": "Plus Jakarta Sans"
+    },
+    "urdu": {
+      "$type": "fontFamily",
+      "$value": "Gulzar"
+    },
+    "reading": {
+      "$type": "fontFamily",
+      "$value": [
+        "Atkinson Hyperlegible",
+        "Plus Jakarta Sans",
+        "system-ui",
+        "sans-serif"
+      ]
+    }
+  },
+  "typography": {
+    "display-xl": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.display}",
+        "fontSize": "40px",
+        "lineHeight": "44px",
+        "fontWeight": 800,
+        "letterSpacing": "-0.8px"
+      },
+      "$description": "Blueprint reveals, onboarding hero. One per screen."
+    },
+    "display-l": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.display}",
+        "fontSize": "32px",
+        "lineHeight": "36px",
+        "fontWeight": 800,
+        "letterSpacing": "-0.6px"
+      },
+      "$description": "Screen titles."
+    },
+    "heading": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.display}",
+        "fontSize": "24px",
+        "lineHeight": "30px",
+        "fontWeight": 800,
+        "letterSpacing": "-0.3px"
+      },
+      "$description": "Scene narration, card titles."
+    },
+    "title": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.sans}",
+        "fontSize": "18px",
+        "lineHeight": "24px",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "$description": "List titles, section titles."
+    },
+    "body-l": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.sans}",
+        "fontSize": "17px",
+        "lineHeight": "26px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$description": "Choice text, reading text."
+    },
+    "body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.sans}",
+        "fontSize": "15px",
+        "lineHeight": "22px",
+        "fontWeight": 500,
+        "letterSpacing": "0px"
+      },
+      "$description": "Default UI text."
+    },
+    "label": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.sans}",
+        "fontSize": "14px",
+        "lineHeight": "20px",
+        "fontWeight": 700,
+        "letterSpacing": "0px"
+      },
+      "$description": "Buttons, tabs, chips."
+    },
+    "caption": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.sans}",
+        "fontSize": "12px",
+        "lineHeight": "16px",
+        "fontWeight": 600,
+        "letterSpacing": "0.4px"
+      },
+      "$description": "Small caps labels, meta. Minimum size."
+    },
+    "urdu-title": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.urdu}",
+        "fontSize": "24px",
+        "lineHeight": "44px",
+        "fontWeight": 400
+      }
+    },
+    "urdu-body-l": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.urdu}",
+        "fontSize": "21px",
+        "lineHeight": "38px",
+        "fontWeight": 400
+      }
+    },
+    "urdu-body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.urdu}",
+        "fontSize": "19px",
+        "lineHeight": "34px",
+        "fontWeight": 400
+      }
+    },
+    "urdu-label": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.urdu}",
+        "fontSize": "17px",
+        "lineHeight": "30px",
+        "fontWeight": 400
+      }
+    },
+    "reading-body": {
+      "$type": "typography",
+      "$value": {
+        "fontFamily": "{font.reading}",
+        "fontSize": "17px",
+        "lineHeight": "26px",
+        "fontWeight": 400
+      }
+    }
+  },
+  "contrast": {
+    "bg": {
+      "$type": "color",
+      "$value": "#FFFFFF",
+      "$description": "Screen background (parchment in light, deep teal night in dark)."
+    },
+    "surface": {
+      "$type": "color",
+      "$value": "#FFFFFF",
+      "$description": "Cards, sheets, bottom bar."
+    },
+    "sunken": {
+      "$type": "color",
+      "$value": "#F0F0F0",
+      "$description": "Inputs, meter tracks, chips, the Hudhud note strip."
+    },
+    "border": {
+      "$type": "color",
+      "$value": "#4D4D4D",
+      "$description": "Hairline dividers and card outlines (decorative, not for controls)."
+    },
+    "text": {
+      "$type": "color",
+      "$value": "#000000",
+      "$description": "Body and headings on bg, surface and sunken."
+    },
+    "muted": {
+      "$type": "color",
+      "$value": "#2B2B2B",
+      "$description": "Secondary text and control borders on bg, surface and sunken."
+    },
+    "primary": {
+      "$type": "color",
+      "$value": "#8A2A12",
+      "$description": "Terracotta. Primary button, Dil choice, selected states."
+    },
+    "on-primary": {
+      "$type": "color",
+      "$value": "#FFFFFF",
+      "$description": "Text and icons on primary."
+    },
+    "primary-text": {
+      "$type": "color",
+      "$value": "#7A2410",
+      "$description": "Terracotta text and links on bg and surface."
+    },
+    "secondary": {
+      "$type": "color",
+      "$value": "#0A4D4D",
+      "$description": "Teal. Secondary button, Duniya choice, info."
+    },
+    "on-secondary": {
+      "$type": "color",
+      "$value": "#FFFFFF",
+      "$description": "Text and icons on secondary."
+    },
+    "secondary-text": {
+      "$type": "color",
+      "$value": "#0A4D4D",
+      "$description": "Teal text, 'strong fit' labels on bg and surface."
+    },
+    "accent": {
+      "$type": "color",
+      "$value": "#F2B33D",
+      "$description": "Saffron. Highlights only: new dots, celebration, the mascot's crown. Never a text colour."
+    },
+    "on-accent": {
+      "$type": "color",
+      "$value": "#000000",
+      "$description": "Text on accent."
+    },
+    "success": {
+      "$type": "color",
+      "$value": "#145232",
+      "$description": "Success text and icons on bg and surface."
+    },
+    "danger": {
+      "$type": "color",
+      "$value": "#8A1A10",
+      "$description": "Error text and icons on bg and surface."
+    },
+    "focus": {
+      "$type": "color",
+      "$value": "#0A4D4D",
+      "$description": "Focus ring, 2px solid, 2px offset."
+    },
+    "logo-twig": {
+      "$type": "color",
+      "$value": "#8A5A3A",
+      "$description": "Branch logo stem and twig. Adapts per background (see Logo)."
+    },
+    "logo-leaf": {
+      "$type": "color",
+      "$value": "#3E8A5A",
+      "$description": "Branch logo leaves and dots."
+    },
+    "mascot-body": {
+      "$type": "color",
+      "$value": "#B54A2F",
+      "$description": "Hudhud body and crest. Brighter on dark so it does not sink."
+    },
+    "mascot-ink": {
+      "$type": "color",
+      "$value": "#1F2326",
+      "$description": "Hudhud wing, beak, tail, legs, crest tips. Same in both themes."
+    },
+    "mascot-light": {
+      "$type": "color",
+      "$value": "#F6EFE3",
+      "$description": "Hudhud wing bars, tail band, belly."
+    },
+    "mascot-outline": {
+      "$type": "color",
+      "$value": "#F6EFE3",
+      "$description": "1.5px die-cut edge around Hudhud on dark grounds only."
+    }
+  }
+}

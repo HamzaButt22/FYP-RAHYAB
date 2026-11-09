@@ -1,0 +1,29 @@
+@startuml state-week-run
+!include ../_style/rahyaab-uml.iuml
+skinparam linetype polyline
+title A week of play (UML state machine)
+[*] --> NotStarted
+NotStarted --> Playing : open week
+state Playing {
+  [*] --> Planning
+  Planning --> Scene : 3 activities locked
+  state Scene {
+    [*] --> Dialogue
+    Dialogue --> ChoiceMoment : Dil and Duniya speak
+    ChoiceMoment --> Dialogue : choice committed
+    Dialogue --> Task : scene has a task
+    Task --> Dialogue : result committed /\nor "ask a friend"
+    Dialogue --> Reaction : scene ends
+    Reaction --> [*]
+  }
+  Scene --> Scene : next scene [scenes < 3]
+  Scene --> ValueMoment : [3 scenes done]
+  ValueMoment --> StoryBeat
+  StoryBeat --> Diary
+  Diary --> [*] : letter updated
+}
+Playing --> Complete
+Complete --> [*]
+Playing --> Paused : app left or killed\n(any substate)
+Paused --> Playing[H*] : resume at the last\ncommitted event
+@enduml

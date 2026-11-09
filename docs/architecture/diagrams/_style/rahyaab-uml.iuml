@@ -1,0 +1,127 @@
+' Shared look for every Rahyaab UML diagram.
+' Classic UML notation, as in the GeeksforGeeks and Visual Paradigm references:
+'   - green headers for classes, objects, packages and components;
+'   - orange use cases;
+'   - blue lifelines and activation bars;
+'   - black start and end nodes in activities and states.
+!pragma layout dot
+skinparam dpi 110
+skinparam shadowing false
+skinparam roundCorner 6
+skinparam defaultFontName "Segoe UI"
+skinparam defaultFontSize 13
+skinparam titleFontSize 18
+skinparam titleFontStyle bold
+skinparam ArrowColor #333333
+skinparam ArrowThickness 1.1
+skinparam linetype ortho
+skinparam nodesep 40
+skinparam ranksep 55
+skinparam backgroundColor #FFFFFF
+
+' ---- class, object, entity
+hide circle
+hide empty members
+skinparam classAttributeIconSize 0
+skinparam class {
+  BackgroundColor #FFFFFF
+  HeaderBackgroundColor #D5E8D4
+  BorderColor #82B366
+  FontStyle bold
+  AttributeFontSize 12
+  StereotypeFontSize 11
+}
+skinparam object {
+  BackgroundColor #EAF4E6
+  HeaderBackgroundColor #D5E8D4
+  BorderColor #82B366
+}
+skinparam entity {
+  BackgroundColor #FFFFFF
+  HeaderBackgroundColor #D5E8D4
+  BorderColor #82B366
+}
+
+' ---- package, component, node, artifact
+skinparam package {
+  BackgroundColor #F4FAF2
+  BorderColor #82B366
+  FontStyle bold
+}
+skinparam component {
+  BackgroundColor #D5E8D4
+  BorderColor #82B366
+  Style uml2
+}
+skinparam interface {
+  BackgroundColor #FFFFFF
+  BorderColor #333333
+}
+skinparam node {
+  BackgroundColor #EAF4E6
+  BorderColor #5E8C4A
+}
+skinparam artifact {
+  BackgroundColor #FFFFFF
+  BorderColor #82B366
+}
+skinparam database {
+  BackgroundColor #FFFFFF
+  BorderColor #82B366
+}
+skinparam rectangle {
+  BorderColor #555555
+}
+
+' ---- use case
+skinparam usecase {
+  BackgroundColor #FBE3CC
+  BorderColor #B8652A
+}
+skinparam actor {
+  BackgroundColor #FBE3CC
+  BorderColor #7A3F12
+}
+
+' ---- sequence
+skinparam sequence {
+  ParticipantBackgroundColor #A9DDF3
+  ParticipantBorderColor #2C7FA3
+  ActorBackgroundColor #FBE3CC
+  ActorBorderColor #7A3F12
+  LifeLineBorderColor #555555
+  LifeLineBackgroundColor #7FCBEA
+  GroupBorderColor #333333
+  GroupBackgroundColor #FFFFFF
+  GroupHeaderFontStyle bold
+  DividerBackgroundColor #F2F2F2
+  BoxBorderColor #999999
+}
+skinparam sequenceMessageAlign left
+skinparam responseMessageBelowArrow true
+
+' ---- activity and state
+skinparam activity {
+  BackgroundColor #FFFFFF
+  BorderColor #222222
+  DiamondBackgroundColor #FFFFFF
+  DiamondBorderColor #222222
+  StartColor #111111
+  EndColor #111111
+  BarColor #111111
+}
+skinparam partition {
+  BorderColor #888888
+  BackgroundColor #FFFFFF
+}
+skinparam state {
+  BackgroundColor #FFFFFF
+  BorderColor #222222
+  StartColor #111111
+  EndColor #111111
+  AttributeFontSize 12
+}
+skinparam note {
+  BackgroundColor #FFF8DC
+  BorderColor #C9A227
+}

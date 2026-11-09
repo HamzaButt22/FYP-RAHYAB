@@ -1,0 +1,130 @@
+# Rahyaab .gitignore
+# Ignored files never reach GitHub. Files that were committed before a rule was added stay tracked
+# until they are removed from the index (git rm --cached); see docs/devops/REPOSITORY.md section 3.
+# CI fails if a tracked file matches a rule here (git ls-files -ci --exclude-standard).
+
+# ---------------------------------------------------------------- dependencies and caches
+node_modules/
+.pnpm-store/
+.yarn/
+.npm/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.hypothesis/
+.tox/
+.nox/
+*.egg-info/
+.eggs/
+venv/
+.venv/
+env/
+
+# ---------------------------------------------------------------- build output
+dist/
+build/
+web-build/
+out/
+*.tsbuildinfo
+coverage/
+htmlcov/
+.coverage
+.coverage.*
+coverage.xml
+junit*.xml
+playwright-report/
+test-results/
+.maestro/screenshots/
+
+# ---------------------------------------------------------------- Expo, React Native, EAS
+.expo/
+expo-env.d.ts
+.metro-health-check*
+.kotlin/
+*.orig.*
+# generated native folders (Continuous Native Generation)
+frontend/mobile/ios/
+frontend/mobile/android/
+# app binaries
+*.apk
+*.aab
+*.ipa
+*.hprof
+
+# ---------------------------------------------------------------- secrets and keys (never commit)
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.jks
+*.keystore
+*.p8
+*.p12
+*.mobileprovision
+*.age
+google-services.json
+GoogleService-Info.plist
+*service-account*.json
+secrets/
+
+# ---------------------------------------------------------------- personal data of the team (phone numbers in filled university templates)
+docs/university/*.docx
+
+# ---------------------------------------------------------------- local review tooling and its findings (kept on this machine only)
+review/
+
+# ---------------------------------------------------------------- Docker secret files (keys, backup credentials)
+**/secrets/
+
+# ---------------------------------------------------------------- participant and session data (minors) - never commit
+pilot_logs/
+pilot_exports/
+research_exports/
+**/sessions/*
+!**/sessions/.gitkeep
+*.sqlite
+*.sqlite3
+*.db
+*.dump
+*.sql.gz
+backups/
+
+# ---------------------------------------------------------------- logs and temporary files
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+pnpm-debug.log*
+tmp/
+tmp_*
+*.tmp
+*.bak
+*.swp
+~$*
+
+# ---------------------------------------------------------------- operating system and editors
+.DS_Store
+Thumbs.db
+ehthumbs.db
+desktop.ini
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+*.code-workspace
+!rahyaab.code-workspace
+
+# ---------------------------------------------------------------- local AI-assistant files (kept on this machine only)
+# Tool-specific names you don't want in this file go in your own .git/info/exclude (never committed).
+AGENTS.md
+.cursor/
+.cursorrules
+.aider*
+.continue/
+.windsurf/
+repository_map.txt

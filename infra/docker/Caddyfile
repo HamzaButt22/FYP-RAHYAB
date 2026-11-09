@@ -1,0 +1,33 @@
+# Rahyaab reverse proxy (template). Domains are placeholders.
+{
+	email admin@rahyaab.pk
+}
+
+(security_headers) {
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		X-Frame-Options "DENY"
+		Referrer-Policy "no-referrer"
+		Permissions-Policy "camera=(), microphone=(), geolocation=()"
+		-Server
+	}
+}
+
+{$API_HOST:api.rahyaab.pk} {
+	import security_headers
+	encode zstd gzip
+	request_body {
+		max_size 2MB
+	}
+	reverse_proxy api:8000
+}
+
+# The same file serves staging and production: set API_ORIGIN and DASHBOARD_HOST per environment
+# (e.g. https://staging.api.rahyaab.pk). The Vite build must emit no inline scripts or styles
+# (checked in CI), so script-src 'self' needs no nonce.
+{$DASHBOARD_HOST:dashboard.rahyaab.pk} {
+	import security_headers
+	header Content-Security-Policy "default-src 'self'; connect-src 'self' {$API_ORIGIN:https://api.rahyaab.pk}; img-src 'self' data:; style-src 'self'; script-src 'self'; frame-ancestors 'none'"
+	reverse_proxy dashboard:8080
+}

@@ -1,0 +1,163 @@
+/* Rahyaab tokens for web (teacher dashboard, previews). Source: tokens.json. */
+:root {
+  --bg: #F6EFE3;
+  --surface: #FFFFFF;
+  --sunken: #EDE3D3;
+  --border: #DDD0BC;
+  --text: #1F2326;
+  --muted: #5A5650;
+  --primary: #B54A2F;
+  --on-primary: #FFFFFF;
+  --primary-text: #A2401F;
+  --secondary: #1F7A7A;
+  --on-secondary: #FFFFFF;
+  --secondary-text: #17696A;
+  --accent: #F2B33D;
+  --on-accent: #1F2326;
+  --success: #2E7A52;
+  --danger: #B42318;
+  --focus: #1F7A7A;
+  --logo-twig: #8A5A3A;
+  --logo-leaf: #3E8A5A;
+  --mascot-body: #B54A2F;
+  --mascot-ink: #1F2326;
+  --mascot-light: #F6EFE3;
+  --mascot-outline: #F6EFE3;
+  --shadow-card: 0 1px 2px rgba(31, 35, 38, 0.06), 0 4px 12px rgba(31, 35, 38, 0.06);
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --radius-sm: 10px;
+  --radius-md: 14px;
+  --radius-lg: 20px;
+  --radius-xl: 28px;
+  --radius-pill: 999px;
+  --touch-min: 48px;
+  --screen-gutter: 16px;
+  --font-display: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+  --font-urdu: Gulzar, "Noto Nastaliq Urdu", serif;
+  --font-reading: "Atkinson Hyperlegible", "Plus Jakarta Sans", system-ui, sans-serif;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+  --bg: #121B1B;
+  --surface: #1B2626;
+  --sunken: #233131;
+  --border: #2F3E3E;
+  --text: #F3ECE1;
+  --muted: #A9B3AE;
+  --primary: #E07A5C;
+  --on-primary: #121B1B;
+  --primary-text: #F0957A;
+  --secondary: #4FB3AE;
+  --on-secondary: #121B1B;
+  --secondary-text: #6FCBC5;
+  --accent: #F2B33D;
+  --on-accent: #121B1B;
+  --success: #6FCF97;
+  --danger: #FF8A80;
+  --focus: #6FCBC5;
+  --logo-twig: #FBF3E6;
+  --logo-leaf: #6FCF97;
+  --mascot-body: #D9643F;
+  --mascot-ink: #1F2326;
+  --mascot-light: #F6EFE3;
+  --mascot-outline: #F3ECE1;
+  --shadow-card: none;
+  color-scheme: dark;
+  }
+}
+:root[data-theme="dark"], [data-theme="dark"] {
+  --bg: #121B1B;
+  --surface: #1B2626;
+  --sunken: #233131;
+  --border: #2F3E3E;
+  --text: #F3ECE1;
+  --muted: #A9B3AE;
+  --primary: #E07A5C;
+  --on-primary: #121B1B;
+  --primary-text: #F0957A;
+  --secondary: #4FB3AE;
+  --on-secondary: #121B1B;
+  --secondary-text: #6FCBC5;
+  --accent: #F2B33D;
+  --on-accent: #121B1B;
+  --success: #6FCF97;
+  --danger: #FF8A80;
+  --focus: #6FCBC5;
+  --logo-twig: #FBF3E6;
+  --logo-leaf: #6FCF97;
+  --mascot-body: #D9643F;
+  --mascot-ink: #1F2326;
+  --mascot-light: #F6EFE3;
+  --mascot-outline: #F3ECE1;
+  --shadow-card: none;
+  color-scheme: dark;
+}
+[data-theme="light"] {
+  --bg: #F6EFE3;
+  --surface: #FFFFFF;
+  --sunken: #EDE3D3;
+  --border: #DDD0BC;
+  --text: #1F2326;
+  --muted: #5A5650;
+  --primary: #B54A2F;
+  --on-primary: #FFFFFF;
+  --primary-text: #A2401F;
+  --secondary: #1F7A7A;
+  --on-secondary: #FFFFFF;
+  --secondary-text: #17696A;
+  --accent: #F2B33D;
+  --on-accent: #1F2326;
+  --success: #2E7A52;
+  --danger: #B42318;
+  --focus: #1F7A7A;
+  --logo-twig: #8A5A3A;
+  --logo-leaf: #3E8A5A;
+  --mascot-body: #B54A2F;
+  --mascot-ink: #1F2326;
+  --mascot-light: #F6EFE3;
+  --mascot-outline: #F6EFE3;
+  --shadow-card: 0 1px 2px rgba(31, 35, 38, 0.06), 0 4px 12px rgba(31, 35, 38, 0.06);
+  color-scheme: light;
+}
+
+.display-xl { font-family: var(--font-display); font-size: 40px; line-height: 44px; font-weight: 800; letter-spacing: -0.8px; }
+.display-l { font-family: var(--font-display); font-size: 32px; line-height: 36px; font-weight: 800; letter-spacing: -0.6px; }
+.heading { font-family: var(--font-display); font-size: 24px; line-height: 30px; font-weight: 800; letter-spacing: -0.3px; }
+.title { font-family: var(--font-sans); font-size: 18px; line-height: 24px; font-weight: 700; }
+.body-l { font-family: var(--font-sans); font-size: 17px; line-height: 26px; font-weight: 500; }
+.body { font-family: var(--font-sans); font-size: 15px; line-height: 22px; font-weight: 500; }
+.label { font-family: var(--font-sans); font-size: 14px; line-height: 20px; font-weight: 700; }
+.caption { font-family: var(--font-sans); font-size: 12px; line-height: 16px; font-weight: 600; letter-spacing: 0.4px; }
+/* High contrast (NFR-64): set data-theme="contrast" on <html>. */
+:root[data-theme="contrast"] {
+  --bg: #FFFFFF;
+  --surface: #FFFFFF;
+  --sunken: #F0F0F0;
+  --border: #4D4D4D;
+  --text: #000000;
+  --muted: #2B2B2B;
+  --primary: #8A2A12;
+  --on-primary: #FFFFFF;
+  --primary-text: #7A2410;
+  --secondary: #0A4D4D;
+  --on-secondary: #FFFFFF;
+  --secondary-text: #0A4D4D;
+  --accent: #F2B33D;
+  --on-accent: #000000;
+  --success: #145232;
+  --danger: #8A1A10;
+  --focus: #0A4D4D;
+  color-scheme: light;
+}
+.urdu-title { font-family: var(--font-urdu); font-size: 24px; line-height: 44px; }
+.urdu-body-l { font-family: var(--font-urdu); font-size: 21px; line-height: 38px; }
+.urdu-body { font-family: var(--font-urdu); font-size: 19px; line-height: 34px; }
+.urdu-label { font-family: var(--font-urdu); font-size: 17px; line-height: 30px; }
+.reading-body { font-family: var(--font-reading); font-size: 17px; line-height: 26px; font-weight: 400; }

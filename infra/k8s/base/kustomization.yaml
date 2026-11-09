@@ -1,0 +1,18 @@
+# Rahyaab on Kubernetes (Kustomize). Render: kubectl kustomize infra/k8s/overlays/staging
+# Secrets are NOT in Git: create them with the commands in infra/k8s/README.md.
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: rahyaab
+    includeSelectors: false
+resources:
+  - namespace.yaml
+  - configmap.yaml
+  - postgres.yaml
+  - api.yaml
+  - jobs.yaml
+  - dashboard.yaml
+  - ingress.yaml
+  - networkpolicy.yaml
+# Image names (rahyaab-api, rahyaab-dashboard, rahyaab-backup) are placeholders; each overlay sets the registry and tag.

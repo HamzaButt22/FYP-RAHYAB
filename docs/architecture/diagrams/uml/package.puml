@@ -1,0 +1,45 @@
+@startuml package
+!include ../_style/rahyaab-uml.iuml
+title Monorepo and module structure (UML package diagram)
+package rahyaab <<monorepo>> {
+  package apps {
+    package mobile <<Expo, TypeScript>> {
+      package screens
+      package game <<week loop, inkjs, tasks>>
+      package data <<outbox, sync, secure store>>
+      package i18n_a11y <<i18n, read-aloud>>
+    }
+    package dashboard <<React + Vite>>
+  }
+  package services {
+    package api <<FastAPI>> {
+      package routers
+      package policy <<auth, RBAC, consent gate>>
+      package repositories
+    }
+  }
+  package packages {
+    package scoring <<Python>>
+    package shared_ts <<types from OpenAPI>>
+  }
+  package content {
+    package ink_story
+    package frameworks <<JSON>>
+    package fixtures
+  }
+  package infra <<compose, Caddy>>
+}
+screens ..> game : <<import>>
+game ..> data : <<import>>
+screens ..> i18n_a11y : <<import>>
+mobile ..> shared_ts : <<import>>
+dashboard ..> shared_ts : <<import>>
+routers ..> policy : <<import>>
+routers ..> repositories : <<import>>
+api ..> scoring : <<import>>
+game ..> ink_story : <<use>>
+scoring ..> frameworks : <<use>>
+mobile ..> frameworks : <<use>>
+scoring ..> fixtures : <<test>>
+infra ..> api : <<deploy>>
+@enduml

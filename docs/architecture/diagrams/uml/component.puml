@@ -1,0 +1,41 @@
+@startuml component
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+title Rahyaab components and interfaces (UML component diagram)
+package "Student phone" {
+  [Mobile app] as App
+  [Local store\n(SQLite + SQLCipher)] as Store
+  () "IOutbox" as IOutbox
+  Store - IOutbox
+  App ..> IOutbox : use
+}
+package "Server" {
+  [API\n(FastAPI)] as Api
+  [Parent views\n(Jinja2)] as Views
+  [rahyaab_scoring] as Scoring
+  [Jobs worker] as Jobs
+  [PostgreSQL] as Pg
+  () "REST /v1" as IRest
+  () "HTML /p /c" as IHtml
+  () "IScoring" as IScoring
+  () "SQL" as ISql
+  Api - IRest
+  Views - IHtml
+  Scoring - IScoring
+  Pg - ISql
+  Api ..> IScoring : use
+  Jobs ..> IScoring : use
+  Api ..> ISql : use
+  Jobs ..> ISql : use
+  Views ..> ISql : use
+}
+[Dashboard SPA] as Dash
+[O*NET Web Services] <<external>> as Onet
+() "O*NET API" as IOnet
+Onet - IOnet
+App ..> IRest : use
+Dash ..> IRest : use
+Jobs ..> IOnet : use
+actor Parent
+Parent ..> IHtml : open link
+@enduml

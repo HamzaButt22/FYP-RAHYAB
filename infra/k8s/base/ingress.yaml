@@ -1,0 +1,28 @@
+# TLS certificates come from cert-manager (ClusterIssuer "letsencrypt"). Hostnames are set per overlay.
+# The ingress class defaults to Traefik (k3s); set ingressClassName in the overlay for another controller.
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rahyaab
+  annotations:
+    cert-manager.io/cluster-issuer: letsencrypt
+spec:
+  ingressClassName: traefik
+  tls:
+    - hosts: [api.example.invalid, dashboard.example.invalid]
+      secretName: rahyaab-tls
+  rules:
+    - host: api.example.invalid
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: api, port: { name: http } }
+    - host: dashboard.example.invalid
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service: { name: dashboard, port: { name: http } }

@@ -1,0 +1,7 @@
+allowBuilds:
+  unrs-resolver: true
+minimumReleaseAgeExclude:
+  - expo-router@58.0.27
+overrides:
+  # GHSA-86w9-cpqp-85rv and related: node-forge <=1.4.0 (pulled in by @expo/cli). 1.4.1 is inside Expo's ^1.4.0 range.
+  node-forge: ^1.4.1

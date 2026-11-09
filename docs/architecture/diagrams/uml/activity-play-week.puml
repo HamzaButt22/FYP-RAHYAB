@@ -1,0 +1,40 @@
+@startuml activity-play-week
+!include ../_style/rahyaab-uml.iuml
+title Play a week (UML activity diagram with swimlanes)
+|Student|
+start
+:Pick 3 of 6 activities;
+|App|
+:Commit plan_committed;
+repeat
+  |App|
+  :Show the next scene line\n(read aloud if on);
+  |Student|
+  if (Choice moment?) then (yes)
+    :Pick Dil or Duniya;
+    |App|
+    :Commit choice_made;
+  elseif (Task here?) then (yes)
+    |Student|
+    :Play task (buttons or drag, no timer);
+    |App|
+    :Commit task_result;
+  else (scene over)
+    |Student|
+    :Tap reaction (meh / okay / loved it);
+  endif
+  |App|
+repeat while (More scenes this week?) is (yes) not (no)
+|Student|
+:Value moment;
+|App|
+:Story beat, Sunday diary, update the letter;
+if (Online and consented?) then (yes)
+  |Server|
+  :Receive batch, validate, store;
+else (no)
+  |App|
+  :Keep events queued;
+endif
+stop
+@enduml
