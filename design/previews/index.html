@@ -77,7 +77,8 @@ figure b{color:var(--text)}
     var next = cur === 'dark' ? 'light' : 'dark';
     document.documentElement.setAttribute('data-theme', next);
     b.textContent = next === 'dark' ? 'Switch to light' : 'Switch to dark';
-    document.querySelectorAll('iframe[data-src]').forEach(function (f) { f.src = f.getAttribute('data-src') + '?theme=' + next; });
+    // The preview frames always show home.html; the address is fixed, never read from the page (no DOM-to-URL flow).
+    document.querySelectorAll('iframe[data-src]').forEach(function (f) { f.src = 'home.html?theme=' + next; });
   });
 })();
 </script>

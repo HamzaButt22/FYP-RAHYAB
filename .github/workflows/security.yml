@@ -49,7 +49,7 @@ jobs:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: actions/dependency-review-action@2031cfc080254a8a887f58cffee85186f0e49e48 # v4
         with:
-          fail-on-severity: high
+          config-file: ./.github/dependency-review-config.yml
 
   audit:
     name: dependency audits
