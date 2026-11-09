@@ -1,0 +1,59 @@
+{
+  "files.eol": "\n",
+  "files.insertFinalNewline": true,
+  "files.trimTrailingWhitespace": true,
+  "editor.formatOnSave": true,
+  "[python]": {
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.codeActionsOnSave": {
+      "source.organizeImports": "explicit",
+      "source.fixAll": "explicit"
+    }
+  },
+  "[markdown]": {
+    "editor.formatOnSave": false,
+    "files.trimTrailingWhitespace": false
+  },
+  "python.testing.pytestEnabled": true,
+  "mypy-type-checker.args": [
+    "--strict"
+  ],
+  "eslint.workingDirectories": [
+    {
+      "directory": "frontend/mobile"
+    },
+    {
+      "directory": "frontend/dashboard"
+    }
+  ],
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/.venv": true,
+    "**/dist": true,
+    "archive/**": true,
+    "docs/api/api-reference.html": true,
+    "design/figma/*.html": true
+  },
+  "yaml.schemas": {
+    "https://json.schemastore.org/github-workflow.json": ".github/workflows/*.yml"
+  },
+  "cSpell.words": [
+    "Rahyaab",
+    "RIASEC",
+    "Duniya",
+    "Hudhud",
+    "Thurstonian",
+    "Matric",
+    "FSc",
+    "Caddy",
+    "Kustomize",
+    "psycopg",
+    "uvicorn"
+  ]
+}

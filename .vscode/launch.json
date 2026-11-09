@@ -1,0 +1,86 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "API: FastAPI (debug on :8001, Docker DB)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "rahyaab_api.main:app",
+        "--port",
+        "8001"
+      ],
+      "cwd": "${workspaceFolder}/backend/api",
+      "python": "${workspaceFolder}/backend/api/.venv/Scripts/python.exe",
+      "env": {
+        "APP_ENV": "development",
+        "DEBUG": "true",
+        "DATABASE_URL": "postgresql+psycopg://api_rw:change-me-locally@localhost:5432/rahyaab",
+        "CORS_ALLOWED_ORIGINS": "http://localhost:5173"
+      },
+      "jinja": true,
+      "justMyCode": true,
+      "preLaunchTask": "db: start"
+    },
+    {
+      "name": "API: debug tests (current file)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "-q",
+        "${file}"
+      ],
+      "cwd": "${workspaceFolder}/backend/api",
+      "python": "${workspaceFolder}/backend/api/.venv/Scripts/python.exe",
+      "env": {
+        "APP_ENV": "test"
+      },
+      "justMyCode": false
+    },
+    {
+      "name": "Scoring: debug tests (current file)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "pytest",
+      "args": [
+        "-q",
+        "${file}"
+      ],
+      "cwd": "${workspaceFolder}/backend/scoring",
+      "python": "${workspaceFolder}/backend/scoring/.venv/Scripts/python.exe",
+      "justMyCode": false
+    },
+    {
+      "name": "Dashboard: debug in Edge",
+      "type": "msedge",
+      "request": "launch",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/frontend/dashboard",
+      "preLaunchTask": "dashboard: dev server"
+    },
+    {
+      "name": "Jobs worker (debug)",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "rahyaab_api.jobs",
+      "cwd": "${workspaceFolder}/backend/api",
+      "python": "${workspaceFolder}/backend/api/.venv/Scripts/python.exe",
+      "env": {
+        "APP_ENV": "development",
+        "DATABASE_URL": "postgresql+psycopg://jobs:change-me-locally@localhost:5432/rahyaab"
+      }
+    }
+  ],
+  "compounds": [
+    {
+      "name": "Full stack: API + dashboard",
+      "configurations": [
+        "API: FastAPI (debug on :8001, Docker DB)",
+        "Dashboard: debug in Edge"
+      ],
+      "stopAll": true
+    }
+  ]
+}

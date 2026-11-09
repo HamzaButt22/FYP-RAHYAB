@@ -1,0 +1,162 @@
+@startuml class-domain
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+title Rahyaab domain model (UML class diagram)
+package "Schools" {
+  class School {
+    +id: UUID
+    +name: String
+    +district: String
+    +type: SchoolType
+    +board: Board
+  }
+  class SchoolClass {
+    +id: UUID
+    +grade: Int {8..12}
+    +section: String
+    -codeHash: String
+    +codeExpiresAt: DateTime
+    +rotateCode(): String
+  }
+  class StaffUser {
+    +id: UUID
+    +email: String
+    -passwordHash: String
+    +role: Role
+    +login(email, password): MfaChallenge
+  }
+  class ConsentSlip {
+    +formSerial: String
+    -claimCodeHash: String
+    +researchOptIn: Boolean
+    +claimedAt: DateTime
+    +claim(code): Consent
+  }
+  class AuditLog <<appendOnly>> {
+    +actor: String
+    +action: String
+    +object: String
+    +at: DateTime
+  }
+}
+package "Students and consent" {
+  class Student <<pseudonymous>> {
+    +id: UUID
+    +nickname: String
+    +grade: Int
+    +board: Board
+    +currentGroup: String
+    +ageBand: AgeBand
+    +situation: Situation
+    +mode(): ClassMode
+    +canSync(): Boolean
+  }
+  class GuardianContact <<restricted>> {
+    -phoneEncrypted: Bytes
+    +relation: String
+  }
+  class Consent {
+    +type: ConsentType
+    +method: ConsentMethod
+    +noticeVersion: String
+    +grantedAt: DateTime
+    +withdrawnAt: DateTime
+    +isValid(at): Boolean
+  }
+  class Device {
+    +deviceTier: DeviceTier
+    +osMajor: Int
+    -publicKey: String
+  }
+}
+package "Gameplay" {
+  class Sitting {
+    +startedAt: DateTime
+    +calibration: Json
+  }
+  class GameRun {
+    +week: Int {0..4}
+    +contentVersion: String
+    +practice: Boolean
+    +completed: Boolean
+  }
+  class RawEvent <<appendOnly>> {
+    +eventId: UUIDv7
+    +seq: Int
+    +type: EventType
+    +monotonicMs: Float
+    +data: Json
+  }
+  class Item {
+    +id: String
+    +contentVersion: String
+    +kind: ItemKind
+    +construct: String
+    +params: Json
+  }
+}
+package "Results and library" {
+  class TraitEstimate {
+    +construct: String
+    +inputHash: String
+    +theta: Float
+    +se: Float
+    +band: Band
+  }
+  class Recommendation <<immutable>> {
+    +mode: ClassMode
+    +confidence: Confidence
+    +inputHash: String
+    +top(n): PathCard[]
+  }
+  class PathCard {
+    +streamId: String
+    +band: FitBand
+    +reasons: String[]
+    +planB: String[]
+  }
+  class Stream {
+    +id: String
+    +level: Level
+    +riasecProfile: Float[6]
+  }
+  class EligibilityRule {
+    +condition: Json
+    +effect: Effect
+    +sourceUrl: String
+  }
+  class ShareLink {
+    -tokenHash: String
+    +expiresAt: DateTime
+    +isActive(now): Boolean
+  }
+  class ModelVersion {
+    +id: String
+    +kind: ModelKind
+    +active: Boolean
+  }
+}
+School "1" *-- "1..*" SchoolClass : has >
+School "0..1" o-- "*" StaffUser : employs >
+StaffUser "*" -- "*" SchoolClass : teaches >
+SchoolClass "0..1" o-- "*" Student : enrols >
+Student "1" *-- "0..1" GuardianContact
+Student "1" *-- "0..*" Consent : gives >
+SchoolClass "1" *-- "*" ConsentSlip : prints >
+ConsentSlip "0..1" <-- "0..1" Consent : from >
+StaffUser "1" -- "*" ConsentSlip : records >
+StaffUser "1" --> "*" AuditLog : writes >
+Student "1" *-- "*" Device : uses >
+Student "1" *-- "*" Sitting
+Sitting "1" *-- "*" GameRun
+GameRun "1" *-- "*" RawEvent : logs >
+RawEvent "*" --> "0..1" Item : about >
+Student "1" *-- "*" TraitEstimate
+Student "1" *-- "*" Recommendation : receives >
+Recommendation "1" *-- "3" PathCard
+PathCard "*" --> "1" Stream
+Stream "1" o-- "*" EligibilityRule : gated by >
+Recommendation "0..1" -- "*" ShareLink : shared via >
+Student "1" *-- "*" ShareLink : creates >
+Recommendation "*" --> "1" ModelVersion : produced by >
+@enduml

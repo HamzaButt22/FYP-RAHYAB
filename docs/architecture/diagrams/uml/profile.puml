@@ -1,0 +1,55 @@
+@startuml profile
+!include ../_style/rahyaab-uml.iuml
+title Rahyaab data-protection profile (UML profile diagram)
+package "Rahyaab Data Protection" <<profile>> as Prof {
+  class Class <<metaclass>>
+  class Property <<metaclass>>
+  class Pseudonymous <<stereotype>> {
+    keyType: String = "UUID"
+    directIdentifiers: Boolean = false
+  }
+  class Restricted <<stereotype>> {
+    encryption: String = "AES-256-GCM"
+    dbRole: String
+  }
+  class AppendOnly <<stereotype>> {
+    retentionMonths: Int = 12
+  }
+  class Immutable <<stereotype>> {
+    versioned: Boolean = true
+  }
+  class ResearchOnly <<stereotype>> {
+    optIn: Boolean = true
+    reader: String = "research_ro"
+  }
+  Class <|-- Pseudonymous : <<extend>>
+  Class <|-- Restricted : <<extend>>
+  Class <|-- AppendOnly : <<extend>>
+  Class <|-- Immutable : <<extend>>
+  Property <|-- ResearchOnly : <<extend>>
+}
+package "Students and consent" as P1 {
+  class Student <<Pseudonymous>>
+  class GuardianContact <<Restricted>>
+}
+package "Gameplay" as P2 {
+  class RawEvent <<AppendOnly>>
+}
+package "Results and library" as P3 {
+  class Recommendation <<Immutable>>
+}
+package "Research" as P4 {
+  class ResearchDemographics {
+    <<ResearchOnly>> gender
+  }
+}
+P1 ..> Prof : <<apply>>
+P2 ..> Prof : <<apply>>
+P3 ..> Prof : <<apply>>
+P4 ..> Prof : <<apply>>
+note bottom of Prof
+  Student <<Pseudonymous>>, GuardianContact <<Restricted>>,
+  RawEvent and AuditLog <<AppendOnly>>, Recommendation <<Immutable>>,
+  research_demographics.gender <<ResearchOnly>>
+end note
+@enduml

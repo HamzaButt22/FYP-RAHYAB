@@ -1,0 +1,7 @@
+# Used by BuildKit for frontend/dashboard/Dockerfile (build context = repository root).
+*
+!design/tokens/tokens.css
+!frontend/dashboard/
+frontend/dashboard/node_modules
+frontend/dashboard/dist
+!infra/docker/Caddyfile.dashboard

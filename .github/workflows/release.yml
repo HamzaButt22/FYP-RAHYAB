@@ -1,0 +1,121 @@
+# Continuous delivery: build and push the images, then deploy.
+#   push to main  -> images tagged latest-main + sha -> deploy to STAGING
+#   tag v*        -> images tagged with the version   -> deploy to PRODUCTION (needs approval in the
+#                    "production" GitHub environment)
+# Deployment target per environment (GitHub variable DEPLOY_TARGET): "compose" (one VM over SSH, the
+# pilot default) or "k8s" (kubectl with a kubeconfig secret). Unset = build only, no deploy.
+name: release
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  images:
+    name: build ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write
+    strategy:
+      matrix:
+        include:
+          - image: rahyaab-api
+            context: .
+            file: backend/api/Dockerfile
+          - image: rahyaab-dashboard
+            context: .
+            file: frontend/dashboard/Dockerfile
+          - image: rahyaab-backup
+            context: infra/backup
+            file: infra/backup/Dockerfile
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
+      - uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - id: meta
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5
+        with:
+          images: ghcr.io/${{ github.repository_owner }}/${{ matrix.image }}
+          tags: |
+            type=raw,value=latest-main,enable={{is_default_branch}}
+            type=sha,prefix=sha-
+            type=semver,pattern=v{{version}}
+      - uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.file }}
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          provenance: true
+          sbom: true
+          cache-from: type=gha,scope=${{ matrix.image }}
+          cache-to: type=gha,mode=max,scope=${{ matrix.image }}
+
+  deploy:
+    name: deploy to ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || 'staging' }}
+    needs: images
+    runs-on: ubuntu-latest
+    environment: ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || 'staging' }}
+    if: vars.DEPLOY_TARGET == 'compose' || vars.DEPLOY_TARGET == 'k8s'
+    env:
+      TAG: ${{ startsWith(github.ref, 'refs/tags/v') && github.ref_name || 'latest-main' }}
+      OVERLAY: ${{ startsWith(github.ref, 'refs/tags/v') && 'production' || 'staging' }}
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+
+      # ---- one VM with Docker Compose (pilot default) ----
+      - name: Deploy with Docker Compose over SSH
+        if: vars.DEPLOY_TARGET == 'compose'
+        env:
+          SSH_KEY: ${{ secrets.DEPLOY_SSH_KEY }}
+          SSH_HOST: ${{ vars.DEPLOY_HOST }}
+          SSH_KNOWN_HOSTS: ${{ secrets.DEPLOY_KNOWN_HOSTS }}
+        run: |
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$SSH_KEY" > ~/.ssh/id_deploy && chmod 600 ~/.ssh/id_deploy
+          printf '%s\n' "$SSH_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          ssh -i ~/.ssh/id_deploy "deploy@${SSH_HOST}" "cd /srv/rahyaab && \
+            export RELEASE_TAG=${TAG} COMPOSE_FILE=docker-compose.yml:docker-compose.prod.yml && \
+            docker compose pull && docker compose --profile migrate run --rm migrate && docker compose up -d"
+
+      # ---- Kubernetes ----
+      - uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4
+        if: vars.DEPLOY_TARGET == 'k8s'
+      - name: Deploy with kubectl
+        if: vars.DEPLOY_TARGET == 'k8s'
+        env:
+          KUBECONFIG_DATA: ${{ secrets.KUBECONFIG }}
+        run: |
+          printf '%s' "$KUBECONFIG_DATA" > "$RUNNER_TEMP/kubeconfig" && export KUBECONFIG="$RUNNER_TEMP/kubeconfig"
+          cd "infra/k8s/overlays/$OVERLAY"
+          kubectl kustomize . \
+            | sed -E "s#(ghcr.io/[^/]+/rahyaab-(api|dashboard|backup)):[A-Za-z0-9._-]+#\1:${TAG}#" > "$RUNNER_TEMP/rendered.yaml"
+          NS=$(grep -m1 -A6 '^kind: Namespace' "$RUNNER_TEMP/rendered.yaml" | sed -n 's/^  name: //p')
+          kubectl -n "$NS" delete job migrate --ignore-not-found
+          kubectl apply -f "$RUNNER_TEMP/rendered.yaml"
+          kubectl -n "$NS" wait --for=condition=complete job/migrate --timeout=300s
+          kubectl -n "$NS" rollout status deployment/api --timeout=300s
+          kubectl -n "$NS" rollout status deployment/dashboard --timeout=300s
+
+      - name: Smoke test
+        env:
+          API_URL: ${{ vars.API_URL }}
+        run: |
+          if [ -n "$API_URL" ]; then curl --fail --retry 5 --retry-delay 10 "$API_URL/v1/health"; fi

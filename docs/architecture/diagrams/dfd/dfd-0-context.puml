@@ -1,0 +1,37 @@
+@startuml dfd-0-context
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype polyline
+skinparam usecase {
+  BackgroundColor #DCEEF8
+  BorderColor #2C7FA3
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #222222
+  BorderThickness 2
+}
+skinparam storage {
+  BackgroundColor #FFF6E5
+  BorderColor #B8652A
+}
+title DFD level 0: context
+rectangle "Student" as student
+rectangle "Parent" as parent
+rectangle "Teacher /\ncounsellor" as teacher
+rectangle "Admin /\nresearcher" as admin
+rectangle "O*NET" as onet
+rectangle "SMS gateway" as sms
+usecase "0\nRahyaab\nsystem" as p0
+student --> p0 : profile, choices, task actions
+p0 --> student : story, results, share link
+parent --> p0 : consent, OTP
+p0 --> parent : family report
+teacher --> p0 : roster consent, notes
+p0 --> teacher : roster, flags, CSV
+admin --> p0 : schools, packs, models
+p0 --> admin : audit log, de-identified exports
+p0 --> onet : occupation query
+onet --> p0 : occupation data
+p0 --> sms : OTP message
+@enduml

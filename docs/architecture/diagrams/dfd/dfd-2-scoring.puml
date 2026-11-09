@@ -1,0 +1,54 @@
+@startuml dfd-2-scoring
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype polyline
+skinparam usecase {
+  BackgroundColor #DCEEF8
+  BorderColor #2C7FA3
+}
+skinparam rectangle {
+  BackgroundColor #FFFFFF
+  BorderColor #222222
+  BorderThickness 2
+}
+skinparam storage {
+  BackgroundColor #FFF6E5
+  BorderColor #B8652A
+}
+title DFD level 2: process 4.0, Score and recommend
+rectangle "Mobile app" as app
+storage "D2 | Raw events" as d2
+storage "D3 | Content (item parameters)" as d3
+storage "D8 | Model registry" as d8
+storage "D7 | Streams and rules" as d7
+storage "D4 | Results" as d4
+usecase "4.1\nLoad and\nvalidate runs" as p41
+usecase "4.2\nEstimate\ninterests (M1)" as p42
+usecase "4.3\nEstimate\nabilities (M2)" as p43
+usecase "4.4\nCount work\nvalues" as p44
+usecase "4.5\nCompute\nconfidence" as p45
+usecase "4.6\nRank paths\n(M3)" as p46
+usecase "4.7\nGates, routes\nand Plan B" as p47
+usecase "4.8\nExplain" as p48
+usecase "4.9\nStore\nresult" as p49
+app --> p41 : compute request
+d2 --> p41 : events
+p41 --> p42 : choices, taps
+p41 --> p43 : task results
+p41 --> p44 : value choices
+d3 --> p42 : TIRT and GRM item params
+d3 --> p43 : item difficulty
+d8 --> p42 : active model version
+d8 --> p43 : active model version
+p42 --> p45 : interest theta, SE
+p43 --> p45 : ability bands
+p45 --> p46 : features, confidence
+p44 --> p46 : tie-breaks
+d7 --> p46 : stream profiles
+p46 --> p47 : ranked paths
+d7 --> p47 : eligibility rules, routes
+p47 --> p48 : gated top 3
+p48 --> p49 : reasons
+p49 --> d4
+p49 --> app : recommendation
+@enduml

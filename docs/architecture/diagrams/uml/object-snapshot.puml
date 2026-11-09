@@ -1,0 +1,67 @@
+@startuml object-snapshot
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+title One student mid-pilot (UML object diagram)
+object "school1 : School" as school1 {
+  name = "Govt. Girls High School"
+  district = "Sahiwal"
+  board = PUNJAB
+}
+object "class9B : SchoolClass" as class9B {
+  grade = 9
+  section = "B"
+}
+object "ayesha : Student" as ayesha {
+  nickname = "Ayesha_10"
+  grade = 9
+  currentGroup = "Science (Computer)"
+  ageBand = "13-15"
+}
+object "consent1 : Consent" as consent1 {
+  type = parent
+  method = school_form
+  noticeVersion = "notice-2026.11"
+}
+object "run2 : GameRun" as run2 {
+  week = 2
+  contentVersion = "story-2026.11.1"
+  completed = true
+}
+object "ev41 : RawEvent" as ev41 {
+  seq = 41
+  type = choice_made
+  data = {pair: "R-S", picked: "R"}
+}
+object "thetaR : TraitEstimate" as thetaR {
+  construct = "R"
+  theta = 0.82
+  se = 0.31
+}
+object "rec1 : Recommendation" as rec1 {
+  mode = inter
+  confidence = medium
+  modelVersion = "m3-congruence-2026.11.0"
+}
+object "card1 : PathCard" as card1 {
+  streamId = "pre_engineering"
+  band = strong
+}
+object "card2 : PathCard" as card2 {
+  streamId = "dae"
+  band = strong
+}
+object "link1 : ShareLink" as link1 {
+  expiresAt = 2026-12-20
+  revokedAt = null
+}
+school1 -- class9B
+class9B -- ayesha
+ayesha -- consent1
+ayesha -- run2
+run2 -- ev41
+ayesha -- thetaR
+ayesha -- rec1
+rec1 -- card1
+rec1 -- card2
+rec1 -- link1
+@enduml

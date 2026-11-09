@@ -1,0 +1,95 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-11-04",
+  "framework": "Cognitive ability task families modelled on ICAR item types (our own items; ICAR items are not shipped)",
+  "role": "core input; supports or cautions a path (GDD sections 8.3, 11, 12 M2)",
+  "families": [
+    {
+      "id": "spatial",
+      "icar_family": "3D rotation",
+      "task": "Fit the robot bracket / pack the car boot",
+      "interaction": "drag and rotate pieces",
+      "supports": [
+        "pre_engineering",
+        "dae",
+        "engineering",
+        "arts_design"
+      ]
+    },
+    {
+      "id": "abstract",
+      "icar_family": "Matrix reasoning",
+      "task": "Complete the mehndi or tile pattern",
+      "interaction": "pick the missing tile",
+      "supports": [
+        "ics",
+        "pre_engineering",
+        "computer_science",
+        "natural_sciences"
+      ]
+    },
+    {
+      "id": "numerical",
+      "icar_family": "Numerical reasoning",
+      "task": "Split the chai bill / price the stall",
+      "interaction": "drag coins, set prices",
+      "supports": [
+        "icom",
+        "pre_engineering",
+        "ics",
+        "business",
+        "engineering"
+      ]
+    },
+    {
+      "id": "logic",
+      "icar_family": "Letter-number series / deduction",
+      "task": "Who took the cricket bat?",
+      "interaction": "rule people out from clues",
+      "supports": [
+        "ics",
+        "computer_science",
+        "law"
+      ]
+    },
+    {
+      "id": "planning",
+      "icar_family": "Executive function (not an ICAR family)",
+      "task": "Order the iftar cooking steps / route the class trip",
+      "interaction": "drag steps into order",
+      "supports": [
+        "pre_medical",
+        "icom",
+        "business",
+        "medicine"
+      ]
+    },
+    {
+      "id": "verbal",
+      "icar_family": "Verbal reasoning",
+      "task": "Pick the message that calms the group-chat fight",
+      "interaction": "choose or edit a message",
+      "supports": [
+        "fa_humanities",
+        "law",
+        "social_sciences",
+        "media",
+        "education"
+      ]
+    }
+  ],
+  "levels": 4,
+  "scoring": {
+    "model": "Rasch / 2PL IRT per family (M2)",
+    "first_attempt_only": true,
+    "timed": false,
+    "reaction_time_scored": false,
+    "ask_a_friend": "missing data, not failure",
+    "bands": [
+      "developing",
+      "solid",
+      "strong"
+    ],
+    "band_rule": "pilot tertiles of theta"
+  }
+}

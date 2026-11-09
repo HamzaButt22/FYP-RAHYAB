@@ -1,0 +1,38 @@
+# Android builds with EAS (manual): "preview" gives an installable APK for testers and the pilot,
+# "production" gives a Play Store app bundle. Needs the EXPO_TOKEN secret.
+name: mobile-build
+
+on:
+  workflow_dispatch:
+    inputs:
+      profile:
+        description: EAS build profile
+        type: choice
+        options: [preview, production]
+        default: preview
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/mobile
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 12
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/mobile/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - uses: expo/expo-github-action@c7b66a9c327a43a8fa7c0158e7f30d6040d2481e # v8
+        with:
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+      - run: eas build --platform android --profile ${{ inputs.profile }} --non-interactive --no-wait

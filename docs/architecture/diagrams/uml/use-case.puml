@@ -1,0 +1,54 @@
+@startuml use-case
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype polyline
+title Rahyaab use cases (UML use case diagram)
+actor Student
+actor "Parent /\nGuardian" as Parent
+actor "Teacher /\nCounsellor" as Teacher
+actor Admin
+actor Researcher
+actor "O*NET\nWeb Services" as Onet
+rectangle "Rahyaab" #FFFFFF {
+  usecase "Register and\ngive assent" as UC01
+  usecase "Record parental\nconsent" as UC02
+  usecase "Play a week" as UC03
+  usecase "Record and sync\ntelemetry" as UC04
+  usecase "View results" as UC05
+  usecase "Compute\nrecommendation" as UC06
+  usecase "See routes for my\ncurrent group" as UC18
+  usecase "Explore streams\nand careers" as UC07
+  usecase "Share with\nparent" as UC08
+  usecase "View parent\nreport" as UC09
+  usecase "Reassess" as UC10
+  usecase "Manage my data" as UC11
+  usecase "Check in my class\nor situation" as UC17
+  usecase "Use read-aloud and\naccessibility" as UC16
+  usecase "Review class progress\nand flags" as UC12
+  usecase "Manage schools,\ncodes, content" as UC13
+  usecase "Activate a\nmodel version" as UC14
+  usecase "Panel labels and\nresearch export" as UC15
+}
+Student -- UC01
+Student -- UC03
+Student -- UC05
+Student -- UC07
+Student -- UC08
+Student -- UC11
+Student -- UC17
+Student -- UC16
+Student -- UC10
+Parent -- UC09
+Parent -- UC02
+Teacher -- UC12
+Teacher -- UC02
+Admin -- UC13
+Admin -- UC14
+Researcher -- UC15
+UC01 ..> UC02 : <<include>>
+UC03 ..> UC04 : <<include>>
+UC05 ..> UC06 : <<include>>
+UC10 ..> UC03 : <<extend>>
+UC18 ..> UC05 : <<extend>>\n{if a better path is closed}
+UC07 -- Onet
+@enduml

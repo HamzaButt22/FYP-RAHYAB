@@ -1,0 +1,132 @@
+# Continuous integration: every pull request and every push to main.
+# Actions are pinned to commit SHAs (Dependabot keeps them current).
+name: ci
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  api:
+    name: backend/api (lint, types, tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/api
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          python-version: "3.13"
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy src
+      - run: uv run pytest -q
+
+  scoring:
+    name: backend/scoring (lint, types, tests)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend/scoring
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: astral-sh/setup-uv@d0cc045d04ccac9d8b7881df0226f9e82c39688e # v6
+        with:
+          python-version: "3.13"
+      - run: uv sync --frozen
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy src
+      - run: uv run pytest -q
+
+  mobile:
+    name: frontend/mobile (types, lint)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/mobile
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 12
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/mobile/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm lint
+
+  dashboard:
+    name: frontend/dashboard (types, tests, build)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: frontend/dashboard
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+        with:
+          version: 12
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+          cache: pnpm
+          cache-dependency-path: frontend/dashboard/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm typecheck
+      - run: pnpm test
+      - run: pnpm build
+      - name: No inline scripts (the CSP forbids them)
+        run: "! grep -E '<script>[^<]' dist/index.html"
+
+  design-and-config:
+    name: docs, database, tokens and infrastructure checks
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@a0853c24544627f65ddf259abe73b1d18a591444 # v5
+        with:
+          node-version: 24
+      - name: OpenAPI spec lint
+        run: npx --yes @redocly/cli@2 lint docs/api/openapi.yaml
+      - name: Database schema parses (PostgreSQL parser)
+        run: pip install pglast && python -c "import pglast,sys; pglast.parse_sql(open('database/schema.sql',encoding='utf-8').read()); print('schema ok')"
+      - name: Docs audit (links and requirement, test, ADR and RFC IDs)
+        run: python tools/docs_audit.py
+      - name: Design tokens are in sync
+        run: python design/tokens/check_tokens.py
+      - name: Kubernetes overlays render and match the API schemas
+        run: |
+          mkdir -p /tmp/k8s
+          kubectl kustomize infra/k8s/overlays/staging > /tmp/k8s/staging.yaml
+          kubectl kustomize infra/k8s/overlays/production > /tmp/k8s/production.yaml
+          docker run --rm -v /tmp/k8s:/w ghcr.io/yannh/kubeconform:v0.6.7 -strict -summary -kubernetes-version 1.31.0 /w/staging.yaml /w/production.yaml
+      - name: Docker Compose files are valid
+        working-directory: infra/docker
+        run: |
+          cp .env.example .env
+          mkdir -p secrets && touch secrets/data_key_wrapper secrets/backup.env
+          echo "GLITCHTIP_DIGEST=0000000000000000000000000000000000000000000000000000000000000000" >> .env
+          echo "RELEASE_TAG=ci" >> .env
+          docker compose -f docker-compose.yml config -q
+          docker compose -f docker-compose.yml -f docker-compose.prod.yml config -q
+      - name: No ':latest' images in Compose files
+        run: "! grep -nE 'image: [^ ]+:latest\\b' infra/docker/*.yml"
+      - name: No tracked files that .gitignore ignores
+        run: test -z "$(git ls-files -ci --exclude-standard)"

@@ -1,0 +1,41 @@
+@startuml pipeline
+!include ../_style/rahyaab-uml.iuml
+title CI/CD pipeline (UML activity diagram)
+start
+:Push feature branch;
+:Open pull request;
+fork
+  :CI: lint, types, unit, parity, contract;
+fork again
+  :Security: gitleaks, CodeQL,\nSemgrep, Bandit, dependency review;
+fork again
+  :Content: Ink compile, pair coverage,\nstrings, rule sources;
+end fork
+if (All green and 1 review?) then (no)
+  :Fix and push again;
+  stop
+else (yes)
+endif
+:Merge to main;
+fork
+  :Build API image, SBOM, Trivy scan;
+  :Deploy to staging (automatic);
+  :Nightly: Maestro E2E, ZAP, Locust,\nmonkey, restore check;
+fork again
+  :EAS internal APK, MobSF, size check;
+end fork
+:Tag release vX.Y.Z;
+if (Manual approval?) then (yes)
+  fork
+    :Deploy production (blue/green, smoke test);
+    if (Health check passes?) then (no)
+      :Roll back to the previous image;
+    else (yes)
+    endif
+  fork again
+    :EAS AAB to Play internal / closed track;
+  end fork
+else (no)
+endif
+stop
+@enduml

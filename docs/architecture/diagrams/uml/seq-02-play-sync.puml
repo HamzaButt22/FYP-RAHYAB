@@ -1,0 +1,45 @@
+@startuml seq-02-play-sync
+!include ../_style/rahyaab-uml.iuml
+title Play a week and sync events (UML sequence diagram)
+autonumber
+hide footbox
+actor Student
+participant ":WeekLoop" as Week
+participant ":InkRuntime" as Ink
+participant ":TaskModule" as Task
+participant ":Outbox" as Out
+participant ":SyncWorker" as Sync
+participant ":API" as Api
+database ":PostgreSQL" as Db
+Student -> Week : lockPlan(3 of 6)
+activate Week
+Week -> Out : append(plan_committed)
+loop for each of the 3 scenes
+  Week -> Ink : continueStory()
+  activate Ink
+  Ink --> Student : line (read aloud if on)
+  Student -> Ink : choose(Dil | Duniya)
+  Ink -> Out : append(choice_made)
+  opt scene has a task
+    Ink -> Task : launch(family, level)
+    activate Task
+    Student -> Task : act (drag or buttons)
+    Task -> Out : append(task_result)
+    deactivate Task
+  end
+  deactivate Ink
+  Student -> Week : reaction(meh | okay | loved it)
+end
+Week --> Student : Sunday diary and the letter
+deactivate Week
+Sync -> Out : take(≤ 500 queued)
+activate Sync
+Sync -> Api : POST /events:batch (gzip, Idempotency-Key)
+activate Api
+Api -> Api : auth, consent gate, schema, order
+Api -> Db : INSERT raw_event ON CONFLICT DO NOTHING
+Api --> Sync : accepted, duplicates, rejected
+deactivate Api
+Sync -> Out : markAcked() / markRejected()
+deactivate Sync
+@enduml

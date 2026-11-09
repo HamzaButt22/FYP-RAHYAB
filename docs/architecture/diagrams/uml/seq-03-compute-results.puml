@@ -1,0 +1,39 @@
+@startuml seq-03-compute-results
+!include ../_style/rahyaab-uml.iuml
+title Compute results (UML sequence diagram)
+autonumber
+hide footbox
+actor Student
+participant ":MobileApp" as App
+participant ":API" as Api
+participant ":ScoringService" as Sc
+participant ":ModelRegistry" as Reg
+database ":PostgreSQL" as Db
+Student -> App : open the letter (after week 4)
+activate App
+App -> Api : POST /results/compute
+activate Api
+Api -> Db : load runs and events
+Api -> Sc : run(ScoringInput)
+activate Sc
+Sc -> Reg : activeModels(mode)
+Sc -> Sc : validity checks, evidence rule
+alt not enough evidence
+  Sc --> Api : insufficient_evidence
+  Api --> App : 409
+  App --> Student : "One more week will make it surer"
+else enough evidence
+  Sc -> Sc : M1 interests, M2 abilities, values
+  Sc -> Sc : confidence, M3 rank, gates, Plan B
+  opt classes 9-12
+    Sc -> Sc : current-group fit, routes (anti-push rule)
+  end
+  Sc --> Api : ScoringResult (input_hash)
+  Api -> Db : INSERT trait_estimate, recommendation
+  Api --> App : 200 Recommendation
+  App --> Student : Blueprint, then your paths
+end
+deactivate Sc
+deactivate Api
+deactivate App
+@enduml

@@ -1,0 +1,79 @@
+@startuml c4-4-code-scoring
+!include ../_style/rahyaab-uml.iuml
+title C4 level 4: Code of the scoring package (UML class diagram)
+class ScoringPipeline {
+  +registry: ModelRegistry
+  +run(input: ScoringInput): ScoringResult
+  -validate(runs): ValidityReport
+}
+class ScoringInput {
+  +studentId: UUID
+  +mode: ClassMode
+  +events: RawEvent[]
+  +marks: Map
+  +inputHash(): String
+}
+interface Estimator {
+  +score(events, params): TraitEstimate[]
+}
+class TIRTEstimator
+class GRMEstimator
+class StaircaseEstimator
+class RaschEstimator
+class ValueCounter {
+  +bradleyTerry(choices): Map
+}
+class ConfidenceCalculator {
+  +level(se, coverage, rho, margin): Confidence
+}
+interface Recommender {
+  +rank(features, streams): RankedPath[]
+}
+class RuleTableRecommender
+class CongruenceRecommender {
+  +weights = (0.55, 0.35, 0.10)
+}
+class LambdaRankRecommender {
+  +shap(features): Map
+}
+class GateEngine {
+  +apply(paths, profile, rules): RankedPath[]
+}
+class RouteAdvisor {
+  +routes(current, closedPath): Route[]
+}
+interface Explainer {
+  +explain(path, contributions, lang): String[]
+}
+class TemplateExplainer
+class LLMExplainer <<optional>>
+class ModelRegistry {
+  +active(kind, mode): ModelVersion
+}
+class ScoringResult {
+  +traits: TraitEstimate[]
+  +ranked: RankedPath[3]
+  +confidence: Confidence
+  +letterShare: Float
+  +inputHash: String
+}
+Estimator <|.. TIRTEstimator
+Estimator <|.. GRMEstimator
+Estimator <|.. StaircaseEstimator
+Estimator <|.. RaschEstimator
+Recommender <|.. RuleTableRecommender
+Recommender <|.. CongruenceRecommender
+Recommender <|.. LambdaRankRecommender
+Explainer <|.. TemplateExplainer
+Explainer <|.. LLMExplainer
+ScoringPipeline --> ScoringInput : consumes
+ScoringPipeline o-- "1..*" Estimator
+ScoringPipeline o-- ValueCounter
+ScoringPipeline o-- ConfidenceCalculator
+ScoringPipeline o-- Recommender
+ScoringPipeline o-- GateEngine
+ScoringPipeline o-- RouteAdvisor
+ScoringPipeline o-- Explainer
+ScoringPipeline --> ModelRegistry : loads params
+ScoringPipeline --> ScoringResult : produces
+@enduml

@@ -1,0 +1,135 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-11-04",
+  "framework": "Holland RIASEC vocational interests",
+  "role": "core input to the stream recommendation (GDD section 11)",
+  "types": [
+    {
+      "code": "R",
+      "name": "Realistic",
+      "plain": "Building, fixing and working with tools, machines, plants or animals",
+      "student_label": "Hands-on maker"
+    },
+    {
+      "code": "I",
+      "name": "Investigative",
+      "plain": "Finding out how and why things work; science, research, problem solving",
+      "student_label": "Curious investigator"
+    },
+    {
+      "code": "A",
+      "name": "Artistic",
+      "plain": "Creating, designing, writing, performing; open-ended self-expression",
+      "student_label": "Creator"
+    },
+    {
+      "code": "S",
+      "name": "Social",
+      "plain": "Helping, teaching, caring for and working with people",
+      "student_label": "Helper"
+    },
+    {
+      "code": "E",
+      "name": "Enterprising",
+      "plain": "Leading, persuading, selling, starting things",
+      "student_label": "Leader and starter"
+    },
+    {
+      "code": "C",
+      "name": "Conventional",
+      "plain": "Organising, keeping records, working with numbers and clear systems",
+      "student_label": "Organiser"
+    }
+  ],
+  "activities": [
+    {
+      "id": "robotics_club",
+      "title": "Robotics club",
+      "primary": "R",
+      "secondary": "I",
+      "character": "zain"
+    },
+    {
+      "id": "bike_repair",
+      "title": "Bike repair at Ustad Karim's workshop",
+      "primary": "R",
+      "secondary": "E",
+      "character": "karim"
+    },
+    {
+      "id": "science_fair",
+      "title": "Science fair project",
+      "primary": "I",
+      "secondary": "R",
+      "character": "zain"
+    },
+    {
+      "id": "code_jam",
+      "title": "Code jam",
+      "primary": "I",
+      "secondary": "C",
+      "character": "bilal"
+    },
+    {
+      "id": "magazine_cover",
+      "title": "School magazine cover",
+      "primary": "A",
+      "secondary": "E",
+      "character": "hira"
+    },
+    {
+      "id": "video_edit",
+      "title": "Music video edit for a friend",
+      "primary": "A",
+      "secondary": "S",
+      "character": "hira"
+    },
+    {
+      "id": "clinic_volunteer",
+      "title": "Clinic volunteering",
+      "primary": "S",
+      "secondary": "I",
+      "character": "dr_amna"
+    },
+    {
+      "id": "tutoring",
+      "title": "Tutoring younger kids",
+      "primary": "S",
+      "secondary": "A",
+      "character": "nani"
+    },
+    {
+      "id": "thrift_stall",
+      "title": "Thrift stall",
+      "primary": "E",
+      "secondary": "C",
+      "character": "sara"
+    },
+    {
+      "id": "debate_team",
+      "title": "Debate team",
+      "primary": "E",
+      "secondary": "S",
+      "character": "hira"
+    },
+    {
+      "id": "trip_budget",
+      "title": "Organise the class trip budget",
+      "primary": "C",
+      "secondary": "E",
+      "character": "sara"
+    },
+    {
+      "id": "library_catalogue",
+      "title": "Library catalogue helper",
+      "primary": "C",
+      "secondary": "I",
+      "character": "bilal"
+    }
+  ],
+  "rules": [
+    "Players never see type codes or the mapping.",
+    "Each week shows 6 activities: every type at least once, screen positions randomised.",
+    "Each game option is mapped to one or more Open-Source Psychometrics RIASEC marker items for pre-calibration (mapping file to be added: option_item_map.json)."
+  ]
+}

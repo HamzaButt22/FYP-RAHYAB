@@ -1,0 +1,35 @@
+@startuml c4-2-containers
+!include <C4/C4_Container>
+LAYOUT_WITH_LEGEND()
+title C4 level 2: Containers
+
+Person(student, "Student")
+Person(parent, "Parent")
+Person(staff, "Teacher, admin, researcher")
+System_Boundary(sys, "Rahyaab") {
+  Container(app, "Mobile app", "Expo SDK 58, React Native, TypeScript", "Week loop, inkjs story, Skia tasks, results, read-aloud")
+  ContainerDb(local, "Local database", "SQLite + SQLCipher", "Outbox, progress, content cache")
+  Container(caddy, "Reverse proxy", "Caddy", "TLS, HSTS, rate limits, static dashboard")
+  Container(api, "API", "FastAPI, Python 3.13", "Auth, consent, events, scoring, sharing, dashboard, admin; parent pages (Jinja2)")
+  Container(jobs, "Jobs worker", "Python (same image)", "Rescore, retention, O*NET cache, backups")
+  Container(dash, "Dashboard", "React + Vite SPA", "Roster, flags, consent records, admin console")
+  ContainerDb(pg, "Database", "PostgreSQL 16", "Profiles, consent, events, results, audit")
+  Container(gt, "Error tracking", "GlitchTip (self-hosted)", "Crashes, PII scrubbed")
+}
+System_Ext(onet, "O*NET Web Services")
+System_Ext(sms, "SMS gateway")
+System_Ext(backup, "Off-site backup store", "age-encrypted dumps")
+Rel(student, app, "Uses")
+Rel(app, local, "Reads/writes")
+Rel(app, caddy, "JSON", "HTTPS /v1")
+Rel(parent, caddy, "HTML", "HTTPS /p, /c")
+Rel(staff, dash, "Uses", "HTTPS")
+Rel(dash, caddy, "JSON + cookie", "HTTPS")
+Rel(caddy, api, "Proxies")
+Rel(api, pg, "SQL")
+Rel(jobs, pg, "SQL")
+Rel(api, gt, "Errors")
+Rel(jobs, onet, "Careers, no student data")
+Rel(api, sms, "OTP")
+Rel(jobs, backup, "Nightly dump")
+@enduml

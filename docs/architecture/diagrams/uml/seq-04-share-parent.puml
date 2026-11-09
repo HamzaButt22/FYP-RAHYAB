@@ -1,0 +1,37 @@
+@startuml seq-04-share-parent
+!include ../_style/rahyaab-uml.iuml
+title Share with a parent (UML sequence diagram)
+autonumber
+hide footbox
+actor Student
+participant ":MobileApp" as App
+participant ":API" as Api
+database ":PostgreSQL" as Db
+participant ":WhatsApp" as Wa
+actor Parent
+participant ":ParentView" as View
+Student -> App : share with family
+activate App
+App -> Api : POST /share-links (scope, lang)
+activate Api
+Api -> Api : new 128-bit token
+Api -> Db : INSERT share_link (sha256, 30 days)
+Api --> App : 201 url (shown once)
+deactivate Api
+App -> Wa : open share sheet
+deactivate App
+Wa --> Parent : message with link
+Parent -> View : GET /p/{token}
+activate View
+View -> Db : look up hash; check expiry, revoked
+alt link active
+  View -> Db : load stored recommendation
+  View --> Parent : Urdu-first report, Listen
+  opt parent taps "Save to this phone"
+    View --> Parent : added to "My children" (browser only)
+  end
+else expired or revoked
+  View --> Parent : 410 "Ask for a new link"
+end
+deactivate View
+@enduml

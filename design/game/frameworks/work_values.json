@@ -1,0 +1,83 @@
+{
+  "version": "1.0.0",
+  "updated": "2026-11-04",
+  "framework": "O*NET Work Values (six), measured through story dilemmas",
+  "role": "secondary: explanations, tie-breaks between close paths (fit difference < 0.02, see scoring.json tie_break), career suggestions inside a stream; never part of the fit score. With only 4-6 dilemmas these are shown as 'what you chose in the dilemmas', not as a measured trait.",
+  "values": [
+    {
+      "id": "achievement",
+      "name": "Achievement",
+      "plain": "Using your strengths and seeing results"
+    },
+    {
+      "id": "independence",
+      "name": "Independence",
+      "plain": "Working your own way, making your own decisions"
+    },
+    {
+      "id": "recognition",
+      "name": "Recognition",
+      "plain": "Respect, status and chances to move up"
+    },
+    {
+      "id": "relationships",
+      "name": "Relationships",
+      "plain": "Helping people and working with people you like"
+    },
+    {
+      "id": "support",
+      "name": "Support",
+      "plain": "A fair, supportive place to work"
+    },
+    {
+      "id": "working_conditions",
+      "name": "Working Conditions",
+      "plain": "Security, good pay and comfortable conditions"
+    }
+  ],
+  "dilemmas": [
+    {
+      "id": "weekend_job",
+      "week": 1,
+      "a": "working_conditions",
+      "b": "relationships",
+      "story": "Paid weekend shifts at the shop, or helping at Dr Amna's clinic for free?"
+    },
+    {
+      "id": "team_lead",
+      "week": 2,
+      "a": "recognition",
+      "b": "independence",
+      "story": "Lead the robotics team on stage, or build your own side project quietly?"
+    },
+    {
+      "id": "fair_coach",
+      "week": 2,
+      "a": "support",
+      "b": "achievement",
+      "story": "Join the friendly club with a patient coach, or the tough one that wins every year?"
+    },
+    {
+      "id": "stall_profit",
+      "week": 3,
+      "a": "achievement",
+      "b": "relationships",
+      "story": "Push the stall to beat last year's sales, or give your best spot to a friend who needs it?"
+    },
+    {
+      "id": "own_way",
+      "week": 3,
+      "a": "independence",
+      "b": "working_conditions",
+      "story": "Freelance editing with no fixed pay, or a steady monthly job at your cousin's office?"
+    },
+    {
+      "id": "credit",
+      "week": 4,
+      "a": "recognition",
+      "b": "support",
+      "story": "Your name on the winning poster, or the whole team thanked equally?"
+    }
+  ],
+  "scoring": "Bradley-Terry scores from the pairwise picks; shown as words, never numbers"
+}

@@ -1,0 +1,52 @@
+@startuml seq-01-join-consent
+!include ../_style/rahyaab-uml.iuml
+title Join with a class code and a signed consent slip (UML sequence diagram)
+autonumber
+hide footbox
+actor Teacher
+actor Parent
+actor Student
+participant ":Dashboard" as Dash
+participant ":MobileApp" as App
+participant ":API" as Api
+database ":PostgreSQL" as Db
+Teacher -> Dash : print consent forms (count)
+activate Dash
+Dash -> Api : POST /dash/classes/{id}/consent-slips
+activate Api
+Api -> Db : INSERT consent_slip x n (serial, claim code hash)
+Api --> Dash : PDF (serial + claim code per form)
+deactivate Api
+deactivate Dash
+Teacher -> Parent : form A with a tear-off slip
+Parent --> Teacher : signed form (child keeps the slip)
+Teacher -> Dash : record signed form by serial
+activate Dash
+Dash -> Api : POST /dash/consent-slips/{serial}:record
+activate Api
+Api -> Db : UPDATE consent_slip; INSERT audit_log (teacher, time)
+deactivate Api
+deactivate Dash
+Student -> App : class code, claim code, class,\nbirth month and year, nickname
+activate App
+App -> Api : POST /auth/student/join
+activate Api
+Api -> Api : rate limits, validate code, age band
+alt code valid
+  Api -> Db : INSERT student, device (public key)
+  opt claim code recorded and unclaimed
+    Api -> Db : INSERT consent (school_form, slip_id, recorded_by);\nmark slip claimed
+  end
+  Api --> App : 201 tokens, consent_state
+  alt consent_state = granted
+    App --> Student : prologue starts; sync on
+  else consent_state = pending
+    App --> Student : "Waiting for your family's OK"
+  end
+else code invalid, expired or paused
+  Api --> App : 404 (same message for every bad code)
+  App --> Student : field help + "Ask your teacher"
+end
+deactivate Api
+deactivate App
+@enduml

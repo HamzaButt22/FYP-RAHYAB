@@ -1,0 +1,995 @@
+{
+  "version": "1.2.0",
+  "updated": "2026-11-05",
+  "framework": "Pakistani education paths with RIASEC profiles, ability support and eligibility gates",
+  "status": "Initial heuristic profiles. Replace with O*NET-derived profiles (occupations each path leads to) and counsellor AHP weights before the pilot. Re-check every gate every year. v1.2.0 adds technical, vocational, health, professional and uniformed-service paths; every new path is marked verify.",
+  "by_class": {
+    "8": {
+      "decision": "Matric group",
+      "paths": [
+        {
+          "id": "matric_science_bio",
+          "name": "Science (Biology)",
+          "riasec": {
+            "R": 0.4,
+            "I": 0.9,
+            "A": 0.1,
+            "S": 0.7,
+            "E": 0.2,
+            "C": 0.4
+          },
+          "abilities": [
+            "planning",
+            "verbal",
+            "numerical"
+          ],
+          "opens": [
+            "pre_medical",
+            "pre_engineering",
+            "ics",
+            "general_science"
+          ]
+        },
+        {
+          "id": "matric_science_cs",
+          "name": "Science (Computer Science)",
+          "riasec": {
+            "R": 0.6,
+            "I": 0.8,
+            "A": 0.2,
+            "S": 0.1,
+            "E": 0.2,
+            "C": 0.7
+          },
+          "abilities": [
+            "logic",
+            "abstract",
+            "numerical"
+          ],
+          "opens": [
+            "pre_engineering",
+            "ics",
+            "general_science"
+          ],
+          "gate_note": "Without Biology at Matric, FSc Pre-Medical and medicine are usually closed."
+        },
+        {
+          "id": "matric_humanities",
+          "name": "Humanities / Arts",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.3,
+            "A": 0.8,
+            "S": 0.8,
+            "E": 0.6,
+            "C": 0.3
+          },
+          "abilities": [
+            "verbal"
+          ],
+          "opens": [
+            "fa_humanities",
+            "icom"
+          ]
+        },
+        {
+          "id": "matric_technical",
+          "name": "Matric Technical (science with a technical subject)",
+          "riasec": {
+            "R": 0.9,
+            "I": 0.6,
+            "A": 0.2,
+            "S": 0.1,
+            "E": 0.2,
+            "C": 0.4
+          },
+          "abilities": [
+            "spatial",
+            "planning",
+            "numerical"
+          ],
+          "opens": [
+            "dae",
+            "pre_engineering",
+            "ics",
+            "tech_vocational"
+          ],
+          "availability": "Offered by some boards and technical high schools only",
+          "verify": true
+        }
+      ]
+    },
+    "9-10": {
+      "decision": "Intermediate stream, A Level bundle, diploma (DAE) or technical and vocational route",
+      "paths": [
+        {
+          "id": "pre_medical",
+          "name": "FSc Pre-Medical",
+          "riasec": {
+            "R": 0.3,
+            "I": 0.9,
+            "A": 0.1,
+            "S": 0.8,
+            "E": 0.2,
+            "C": 0.3
+          },
+          "abilities": [
+            "planning",
+            "verbal",
+            "numerical"
+          ],
+          "requires": [
+            "Biology at Matric"
+          ]
+        },
+        {
+          "id": "pre_engineering",
+          "name": "FSc Pre-Engineering",
+          "riasec": {
+            "R": 0.9,
+            "I": 0.9,
+            "A": 0.2,
+            "S": 0.1,
+            "E": 0.2,
+            "C": 0.4
+          },
+          "abilities": [
+            "spatial",
+            "numerical",
+            "abstract"
+          ]
+        },
+        {
+          "id": "ics",
+          "name": "ICS (Computer Science)",
+          "riasec": {
+            "R": 0.5,
+            "I": 0.8,
+            "A": 0.3,
+            "S": 0.1,
+            "E": 0.3,
+            "C": 0.8
+          },
+          "abilities": [
+            "logic",
+            "abstract",
+            "numerical"
+          ]
+        },
+        {
+          "id": "icom",
+          "name": "I.Com (Commerce)",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.3,
+            "A": 0.1,
+            "S": 0.3,
+            "E": 0.8,
+            "C": 0.9
+          },
+          "abilities": [
+            "numerical",
+            "planning"
+          ]
+        },
+        {
+          "id": "fa_humanities",
+          "name": "FA / Humanities",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.3,
+            "A": 0.8,
+            "S": 0.8,
+            "E": 0.6,
+            "C": 0.2
+          },
+          "abilities": [
+            "verbal"
+          ]
+        },
+        {
+          "id": "general_science",
+          "name": "General Science",
+          "riasec": {
+            "R": 0.4,
+            "I": 0.8,
+            "A": 0.2,
+            "S": 0.3,
+            "E": 0.2,
+            "C": 0.6
+          },
+          "abilities": [
+            "numerical",
+            "logic"
+          ]
+        },
+        {
+          "id": "dae",
+          "name": "DAE (Diploma of Associate Engineering)",
+          "riasec": {
+            "R": 0.9,
+            "I": 0.5,
+            "A": 0.2,
+            "S": 0.1,
+            "E": 0.3,
+            "C": 0.4
+          },
+          "abilities": [
+            "spatial",
+            "planning"
+          ]
+        },
+        {
+          "id": "tech_vocational",
+          "name": "Technical and vocational certificate (TEVTA, NAVTTC, PBTE/KPBTE/SBTE trades)",
+          "riasec": {
+            "R": 0.9,
+            "I": 0.3,
+            "A": 0.3,
+            "S": 0.3,
+            "E": 0.4,
+            "C": 0.4
+          },
+          "abilities": [
+            "spatial",
+            "planning"
+          ],
+          "examples": [
+            "electrician",
+            "solar technician",
+            "mobile repair",
+            "welding",
+            "automotive",
+            "IT support",
+            "beauty and fashion",
+            "hospitality"
+          ],
+          "duration": "3 months to 2 years",
+          "opens": [
+            "work",
+            "dae",
+            "b_tech_later"
+          ],
+          "verify": true
+        },
+        {
+          "id": "a_level",
+          "name": "A Level subject bundle (after O Level)",
+          "riasec": {
+            "R": 0.4,
+            "I": 0.8,
+            "A": 0.4,
+            "S": 0.4,
+            "E": 0.5,
+            "C": 0.5
+          },
+          "abilities": [
+            "verbal",
+            "numerical",
+            "abstract"
+          ],
+          "notes": "Bundles mirror FSc streams; IBCC equivalence needed for local admissions",
+          "verify": true
+        },
+        {
+          "id": "nursing_diploma_early",
+          "name": "Allied health and nursing pathways after Matric (where offered)",
+          "riasec": {
+            "R": 0.3,
+            "I": 0.6,
+            "A": 0.1,
+            "S": 0.9,
+            "E": 0.2,
+            "C": 0.4
+          },
+          "abilities": [
+            "planning",
+            "verbal"
+          ],
+          "notes": "Many nursing and allied health programmes now need Intermediate first; check PNMC and provincial rules",
+          "verify": true
+        }
+      ]
+    },
+    "11-12": {
+      "decision": "University field, professional or technical route, and entry tests",
+      "paths": [
+        {
+          "id": "medicine",
+          "name": "Medicine and allied health",
+          "riasec": {
+            "R": 0.3,
+            "I": 0.9,
+            "A": 0.1,
+            "S": 0.9,
+            "E": 0.2,
+            "C": 0.3
+          },
+          "abilities": [
+            "planning",
+            "verbal",
+            "numerical"
+          ],
+          "tests": [
+            "MDCAT"
+          ]
+        },
+        {
+          "id": "engineering",
+          "name": "Engineering",
+          "riasec": {
+            "R": 0.9,
+            "I": 0.9,
+            "A": 0.2,
+            "S": 0.1,
+            "E": 0.3,
+            "C": 0.4
+          },
+          "abilities": [
+            "spatial",
+            "numerical",
+            "abstract"
+          ],
+          "tests": [
+            "ECAT",
+            "university tests"
+          ]
+        },
+        {
+          "id": "computer_science",
+          "name": "Computer science and IT",
+          "riasec": {
+            "R": 0.5,
+            "I": 0.9,
+            "A": 0.3,
+            "S": 0.1,
+            "E": 0.3,
+            "C": 0.7
+          },
+          "abilities": [
+            "logic",
+            "abstract",
+            "numerical"
+          ],
+          "tests": [
+            "NTS / university tests"
+          ]
+        },
+        {
+          "id": "business",
+          "name": "Business, accounting and finance",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.3,
+            "A": 0.2,
+            "S": 0.4,
+            "E": 0.9,
+            "C": 0.8
+          },
+          "abilities": [
+            "numerical",
+            "planning"
+          ]
+        },
+        {
+          "id": "natural_sciences",
+          "name": "Natural and mathematical sciences",
+          "riasec": {
+            "R": 0.4,
+            "I": 1.0,
+            "A": 0.2,
+            "S": 0.2,
+            "E": 0.1,
+            "C": 0.5
+          },
+          "abilities": [
+            "abstract",
+            "numerical",
+            "logic"
+          ]
+        },
+        {
+          "id": "arts_design",
+          "name": "Arts, design and architecture",
+          "riasec": {
+            "R": 0.4,
+            "I": 0.3,
+            "A": 1.0,
+            "S": 0.2,
+            "E": 0.3,
+            "C": 0.1
+          },
+          "abilities": [
+            "spatial",
+            "abstract"
+          ]
+        },
+        {
+          "id": "social_sciences",
+          "name": "Social sciences and psychology",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.7,
+            "A": 0.4,
+            "S": 0.9,
+            "E": 0.3,
+            "C": 0.2
+          },
+          "abilities": [
+            "verbal",
+            "logic"
+          ]
+        },
+        {
+          "id": "law",
+          "name": "Law",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.6,
+            "A": 0.3,
+            "S": 0.5,
+            "E": 0.8,
+            "C": 0.5
+          },
+          "abilities": [
+            "verbal",
+            "logic"
+          ],
+          "tests": [
+            "LAT"
+          ]
+        },
+        {
+          "id": "education",
+          "name": "Education and teaching",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.3,
+            "A": 0.4,
+            "S": 1.0,
+            "E": 0.3,
+            "C": 0.3
+          },
+          "abilities": [
+            "verbal",
+            "planning"
+          ]
+        },
+        {
+          "id": "media",
+          "name": "Media and communication",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.2,
+            "A": 0.9,
+            "S": 0.5,
+            "E": 0.7,
+            "C": 0.2
+          },
+          "abilities": [
+            "verbal"
+          ]
+        },
+        {
+          "id": "engineering_technology",
+          "name": "Engineering technology (B.Tech / BS Engineering Technology)",
+          "riasec": {
+            "R": 0.9,
+            "I": 0.7,
+            "A": 0.2,
+            "S": 0.1,
+            "E": 0.3,
+            "C": 0.4
+          },
+          "abilities": [
+            "spatial",
+            "planning",
+            "numerical"
+          ],
+          "routes_from": [
+            "dae",
+            "pre_engineering",
+            "ics"
+          ],
+          "tests": [
+            "university tests"
+          ],
+          "verify": true
+        },
+        {
+          "id": "nursing_allied",
+          "name": "Nursing and allied health (BSN, DPT, MLT, radiology, dental and lab technology)",
+          "riasec": {
+            "R": 0.4,
+            "I": 0.7,
+            "A": 0.1,
+            "S": 0.9,
+            "E": 0.2,
+            "C": 0.4
+          },
+          "abilities": [
+            "planning",
+            "verbal"
+          ],
+          "tests": [
+            "university or MDCAT-type tests (varies)"
+          ],
+          "verify": true
+        },
+        {
+          "id": "pharmacy",
+          "name": "Pharmacy (Pharm-D)",
+          "riasec": {
+            "R": 0.3,
+            "I": 0.9,
+            "A": 0.1,
+            "S": 0.6,
+            "E": 0.3,
+            "C": 0.6
+          },
+          "abilities": [
+            "numerical",
+            "verbal",
+            "planning"
+          ],
+          "tests": [
+            "university tests"
+          ],
+          "verify": true
+        },
+        {
+          "id": "agriculture_veterinary",
+          "name": "Agriculture, food and veterinary sciences",
+          "riasec": {
+            "R": 0.8,
+            "I": 0.8,
+            "A": 0.1,
+            "S": 0.4,
+            "E": 0.3,
+            "C": 0.4
+          },
+          "abilities": [
+            "planning",
+            "numerical"
+          ],
+          "tests": [
+            "university tests"
+          ],
+          "verify": true
+        },
+        {
+          "id": "accounting_professional",
+          "name": "Professional accounting (CA, ACCA, CMA)",
+          "riasec": {
+            "R": 0.1,
+            "I": 0.5,
+            "A": 0.1,
+            "S": 0.2,
+            "E": 0.6,
+            "C": 0.9
+          },
+          "abilities": [
+            "numerical",
+            "logic"
+          ],
+          "tests": [
+            "professional body entry"
+          ],
+          "verify": true
+        },
+        {
+          "id": "armed_forces",
+          "name": "Armed forces and uniformed services (ISSB route)",
+          "riasec": {
+            "R": 0.8,
+            "I": 0.4,
+            "A": 0.1,
+            "S": 0.6,
+            "E": 0.7,
+            "C": 0.5
+          },
+          "abilities": [
+            "spatial",
+            "planning",
+            "verbal"
+          ],
+          "tests": [
+            "ISSB and service tests"
+          ],
+          "notes": "Age, marks and medical limits apply; show as rules with sources",
+          "verify": true
+        },
+        {
+          "id": "hospitality_tourism",
+          "name": "Hospitality, culinary and tourism",
+          "riasec": {
+            "R": 0.6,
+            "I": 0.2,
+            "A": 0.5,
+            "S": 0.7,
+            "E": 0.7,
+            "C": 0.4
+          },
+          "abilities": [
+            "planning",
+            "verbal"
+          ],
+          "verify": true
+        },
+        {
+          "id": "it_skills",
+          "name": "IT skills and certifications (associate degrees, short professional certificates)",
+          "riasec": {
+            "R": 0.5,
+            "I": 0.8,
+            "A": 0.3,
+            "S": 0.1,
+            "E": 0.4,
+            "C": 0.8
+          },
+          "abilities": [
+            "logic",
+            "abstract"
+          ],
+          "notes": "A fast route to work; can lead to a degree later",
+          "verify": true
+        },
+        {
+          "id": "fine_arts_fashion",
+          "name": "Fine arts, fashion and textile design",
+          "riasec": {
+            "R": 0.5,
+            "I": 0.3,
+            "A": 0.95,
+            "S": 0.3,
+            "E": 0.5,
+            "C": 0.2
+          },
+          "abilities": [
+            "spatial",
+            "verbal"
+          ],
+          "tests": [
+            "portfolio or aptitude tests"
+          ],
+          "verify": true
+        }
+      ]
+    }
+  },
+  "gates": [
+    {
+      "id": "biology_for_medicine",
+      "rule": "MBBS/BDS and FSc Pre-Medical need Biology. Without Biology at Matric, the routes are re-taking class 9 in a Biology group or, where the board allows, passing Biology as an additional subject (verify)",
+      "applies_to": [
+        "pre_medical",
+        "medicine"
+      ],
+      "source": "PMDC rules via project research (R1 section 1)"
+    },
+    {
+      "id": "mbbs_marks",
+      "rule": "MBBS/BDS need 60% in FSc Pre-Medical (or IBCC equivalence) plus MDCAT pass marks",
+      "applies_to": [
+        "medicine"
+      ],
+      "source": "PMDC; ilmkidunya PMDC clarification"
+    },
+    {
+      "id": "engineering_marks",
+      "rule": "Engineering needs 60% in HSSC",
+      "applies_to": [
+        "engineering"
+      ],
+      "source": "PEC via project research"
+    },
+    {
+      "id": "ics_to_engineering",
+      "rule": "ICS students are eligible for all engineering programmes",
+      "applies_to": [
+        "engineering"
+      ],
+      "effect": "opens",
+      "source": "Eduvision PEC news"
+    },
+    {
+      "id": "premed_to_engineering",
+      "rule": "Pre-Medical students can move to engineering with Additional Mathematics",
+      "applies_to": [
+        "engineering"
+      ],
+      "effect": "opens_with_condition",
+      "source": "Eduvision PEC news"
+    },
+    {
+      "id": "a_level_equivalence",
+      "rule": "A Level students need IBCC equivalence (≥60% in pre-medical subjects for MBBS)",
+      "applies_to": [
+        "medicine"
+      ],
+      "source": "RMI admissions"
+    }
+  ],
+  "routes": {
+    "description": "Ways to reach a path that the current group or stream closes (FR-99). Shown only under the anti-push rule in docs/project/EDGE_CASES.md section 3.3. Every entry must be verified per board before the pilot.",
+    "anti_push": {
+      "min_confidence": "medium",
+      "delta_route": 0.15,
+      "note": "delta_route is on the fit scale and is set on pilot data"
+    },
+    "items": [
+      {
+        "id": "stay",
+        "label": "Stay and do well where you are",
+        "applies_in_classes": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "cost": {
+          "extra_years": 0,
+          "extra_exams": 0
+        },
+        "always_first": true
+      },
+      {
+        "id": "switch_group_window",
+        "label": "Switch Matric group now",
+        "applies_in_classes": [
+          9
+        ],
+        "window": "Early in class 9, inside the board's group-change window",
+        "cost": {
+          "extra_years": 0,
+          "extra_exams": 0,
+          "notes": "Catch up on the new subjects; school and board approval"
+        },
+        "who_decides": [
+          "school",
+          "board",
+          "family"
+        ],
+        "by_board": {
+          "FBISE": {
+            "verified": false,
+            "last_verified": null
+          },
+          "PUNJAB": {
+            "verified": false,
+            "last_verified": null
+          },
+          "SINDH": {
+            "verified": false,
+            "last_verified": null
+          },
+          "KPK": {
+            "verified": false,
+            "last_verified": null
+          },
+          "BALOCHISTAN": {
+            "verified": false,
+            "last_verified": null
+          },
+          "AJK": {
+            "verified": false,
+            "last_verified": null
+          }
+        }
+      },
+      {
+        "id": "retake_class_9",
+        "label": "Re-take class 9 in another group",
+        "applies_in_classes": [
+          9,
+          10
+        ],
+        "cost": {
+          "extra_years": 1,
+          "extra_exams": 0,
+          "notes": "Re-registration with the board; one extra school year"
+        },
+        "who_decides": [
+          "family",
+          "school",
+          "board"
+        ],
+        "by_board": {
+          "FBISE": {
+            "verified": false,
+            "last_verified": null
+          },
+          "PUNJAB": {
+            "verified": false,
+            "last_verified": null
+          },
+          "SINDH": {
+            "verified": false,
+            "last_verified": null
+          },
+          "KPK": {
+            "verified": false,
+            "last_verified": null
+          },
+          "BALOCHISTAN": {
+            "verified": false,
+            "last_verified": null
+          },
+          "AJK": {
+            "verified": false,
+            "last_verified": null
+          }
+        }
+      },
+      {
+        "id": "additional_subject",
+        "label": "Pass the missing subject as an additional subject",
+        "applies_in_classes": [
+          10,
+          11
+        ],
+        "example": "Biology for Pre-Medical",
+        "cost": {
+          "extra_years": 0,
+          "extra_exams": 1,
+          "notes": "Self-study or tuition; may delay the Intermediate start"
+        },
+        "who_decides": [
+          "board",
+          "college"
+        ],
+        "by_board": {
+          "FBISE": {
+            "verified": false,
+            "last_verified": null
+          },
+          "PUNJAB": {
+            "verified": false,
+            "last_verified": null
+          },
+          "SINDH": {
+            "verified": false,
+            "last_verified": null
+          },
+          "KPK": {
+            "verified": false,
+            "last_verified": null
+          },
+          "BALOCHISTAN": {
+            "verified": false,
+            "last_verified": null
+          },
+          "AJK": {
+            "verified": false,
+            "last_verified": null
+          }
+        }
+      },
+      {
+        "id": "switch_stream_window",
+        "label": "Switch Intermediate stream early",
+        "applies_in_classes": [
+          11
+        ],
+        "window": "First months of class 11, if the college allows",
+        "cost": {
+          "extra_years": 0,
+          "extra_exams": 0,
+          "notes": "Catch-up; college approval"
+        },
+        "who_decides": [
+          "college",
+          "board"
+        ],
+        "verified": false,
+        "last_verified": null
+      },
+      {
+        "id": "alternative_route",
+        "label": "Reach a related field from where you are",
+        "applies_in_classes": [
+          9,
+          10,
+          11,
+          12
+        ],
+        "examples": [
+          "Science (Computer) -> ICS -> BS Computer Science",
+          "Humanities -> FA -> law, media, social sciences, education",
+          "DAE -> B.Tech / BS Engineering Technology"
+        ],
+        "cost": {
+          "extra_years": 0,
+          "extra_exams": 0
+        },
+        "source": "stream doors and plan_b"
+      }
+    ]
+  },
+  "age_rules": {
+    "description": "Age handling (FR-100). Age is stored only as a band.",
+    "bands": [
+      "13-15",
+      "16-17",
+      "18-19",
+      "20-24",
+      "25+"
+    ],
+    "min_age": 13,
+    "consent": {
+      "13-15": "parent",
+      "16-17": "parent",
+      "18-19": "self",
+      "20-24": "self",
+      "25+": "self"
+    },
+    "typical_age_by_class": {
+      "8": [
+        12,
+        14
+      ],
+      "9": [
+        13,
+        15
+      ],
+      "10": [
+        14,
+        16
+      ],
+      "11": [
+        15,
+        17
+      ],
+      "12": [
+        16,
+        18
+      ]
+    },
+    "soft_check_if_older_than_typical_by_years": 3,
+    "older_learner_routes": [
+      "private_candidate",
+      "open_schooling",
+      "evening_programmes",
+      "technical_vocational"
+    ],
+    "research_inclusion": "14-18 only unless the ethics approval covers adults",
+    "program_age_limits": {
+      "note": "Some admissions have age limits. Store each as a rule with source_url and last_verified before showing it.",
+      "items": []
+    }
+  },
+  "situations": {
+    "description": "\"My situation\" options (FR-104). Each maps to rules and routes.",
+    "items": [
+      {
+        "id": "repeating_class",
+        "label": "I am repeating this class"
+      },
+      {
+        "id": "private_candidate",
+        "label": "I study privately (private candidate)"
+      },
+      {
+        "id": "returning_learner",
+        "label": "I left school and I am coming back"
+      },
+      {
+        "id": "changed_board",
+        "label": "I moved to another board or province"
+      },
+      {
+        "id": "o_a_level",
+        "label": "I study O-Level or A-Level"
+      },
+      {
+        "id": "dae",
+        "label": "I study for a diploma (DAE)"
+      },
+      {
+        "id": "madrassa_or_foreign",
+        "label": "I have a madrassa or foreign certificate",
+        "note": "IBCC equivalence (verify)"
+      }
+    ]
+  }
+}

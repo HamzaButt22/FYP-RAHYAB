@@ -1,0 +1,177 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "dev: setup local env",
+      "type": "shell",
+      "command": "python tools/dev.py setup",
+      "problemMatcher": []
+    },
+    {
+      "label": "db: start",
+      "type": "shell",
+      "command": "python tools/dev.py db",
+      "problemMatcher": []
+    },
+    {
+      "label": "db: migrate",
+      "type": "shell",
+      "command": "python tools/dev.py migrate",
+      "problemMatcher": []
+    },
+    {
+      "label": "db: set role passwords",
+      "type": "shell",
+      "command": "python tools/dev.py roles",
+      "problemMatcher": []
+    },
+    {
+      "label": "db: seed",
+      "type": "shell",
+      "command": "python tools/dev.py seed",
+      "problemMatcher": []
+    },
+    {
+      "label": "db: reset (delete local data)",
+      "type": "shell",
+      "command": "python tools/dev.py reset",
+      "problemMatcher": []
+    },
+    {
+      "label": "stack: up (db + api + jobs)",
+      "type": "shell",
+      "command": "python tools/dev.py up",
+      "problemMatcher": [],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "stack: down",
+      "type": "shell",
+      "command": "python tools/dev.py down",
+      "problemMatcher": []
+    },
+    {
+      "label": "stack: logs",
+      "type": "shell",
+      "command": "python tools/dev.py logs",
+      "problemMatcher": [],
+      "isBackground": true
+    },
+    {
+      "label": "check: tests",
+      "type": "shell",
+      "command": "python tools/dev.py test",
+      "problemMatcher": [],
+      "group": {
+        "kind": "test",
+        "isDefault": true
+      }
+    },
+    {
+      "label": "check: lint and types",
+      "type": "shell",
+      "command": "python tools/dev.py lint",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "check: everything (like CI)",
+      "type": "shell",
+      "command": "python tools/dev.py check",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "api: run tests",
+      "type": "shell",
+      "command": "uv run pytest -q",
+      "problemMatcher": [],
+      "group": "test",
+      "options": {
+        "cwd": "${workspaceFolder}/backend/api"
+      }
+    },
+    {
+      "label": "scoring: run tests",
+      "type": "shell",
+      "command": "uv run pytest -q",
+      "problemMatcher": [],
+      "group": "test",
+      "options": {
+        "cwd": "${workspaceFolder}/backend/scoring"
+      }
+    },
+    {
+      "label": "dashboard: dev server",
+      "type": "shell",
+      "command": "pnpm dev",
+      "isBackground": true,
+      "options": {
+        "cwd": "${workspaceFolder}/frontend/dashboard"
+      },
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": {
+          "regexp": "^__never__$"
+        },
+        "background": {
+          "beginsPattern": "VITE",
+          "endsPattern": "Local:"
+        }
+      }
+    },
+    {
+      "label": "mobile: start Expo",
+      "type": "shell",
+      "command": "pnpm start",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend/mobile"
+      },
+      "isBackground": true
+    },
+    {
+      "label": "mobile: typecheck",
+      "type": "shell",
+      "command": "pnpm typecheck",
+      "problemMatcher": [],
+      "group": "test",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend/mobile"
+      }
+    },
+    {
+      "label": "mobile: lint",
+      "type": "shell",
+      "command": "pnpm lint",
+      "problemMatcher": [],
+      "group": "test",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend/mobile"
+      }
+    },
+    {
+      "label": "docs: audit",
+      "type": "shell",
+      "command": "python tools/docs_audit.py",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "openapi: lint",
+      "type": "shell",
+      "command": "npx --yes @redocly/cli@2 lint docs/api/openapi.yaml",
+      "problemMatcher": [],
+      "group": "test"
+    },
+    {
+      "label": "k8s: render staging",
+      "type": "shell",
+      "command": "kubectl kustomize infra/k8s/overlays/staging",
+      "problemMatcher": []
+    }
+  ]
+}

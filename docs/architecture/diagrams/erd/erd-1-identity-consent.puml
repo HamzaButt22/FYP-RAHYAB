@@ -1,0 +1,106 @@
+@startuml erd-1-identity-consent
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype ortho
+title ERD: identity and consent
+entity "school" as school {
+  * id : uuid <<PK>>
+  --
+  * name : text
+  * district : text
+  * type : text
+  * board : text
+}
+entity "school_class" as sc {
+  * id : uuid <<PK>>
+  --
+  * school_id : uuid <<FK>>
+  * grade : smallint
+  * section : text
+  * code_hash : text <<UK>>
+  * code_expires_at : timestamptz
+}
+entity "student" as student {
+  * id : uuid <<PK>>
+  --
+  class_id : uuid <<FK>>
+  * nickname : text
+  * grade : smallint
+  board : text
+  current_group : text
+  district : text
+  * age_band : text
+  situation : text
+  * last_active_at : timestamptz
+}
+entity "guardian_contact" as gc <<restricted>> {
+  * id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * phone_e164_encrypted : bytea
+  * relation : text
+}
+entity "consent" as consent {
+  * id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * type : text
+  * method : text
+  * notice_version : text
+  * granted_at : timestamptz
+  withdrawn_at : timestamptz
+  recorded_by : uuid <<FK>>
+  slip_id : uuid <<FK>>
+}
+entity "consent_slip" as slip {
+  * id : uuid <<PK>>
+  --
+  * class_id : uuid <<FK>>
+  * form_serial : text
+  * claim_code_hash : text <<UK>>
+  * research_opt_in : boolean
+  * recorded_by : uuid <<FK>>
+  claimed_at : timestamptz
+  * expires_at : timestamptz
+}
+entity "otp_challenge" as otp {
+  * id : uuid <<PK>>
+  --
+  * share_link_id : uuid <<FK>>
+  * code_hash : text
+  * attempts : smallint (5 max)
+  * expires_at : timestamptz (10 min)
+}
+entity "relink_code" as rl {
+  * code_hash : text <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * issued_by : uuid <<FK>>
+  * expires_at : timestamptz (24 h)
+}
+entity "device" as device {
+  * id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * device_tier : text
+  * os_major : smallint
+  * public_key : text
+}
+entity "refresh_token" as rt {
+  * id : uuid <<PK>>
+  --
+  * device_id : uuid <<FK>>
+  * family_id : uuid
+  * token_hash : text <<UK>>
+  * expires_at : timestamptz
+}
+school ||--o{ sc
+sc |o--o{ student
+student ||--o| gc
+student ||--o{ consent
+sc ||--o{ slip
+slip |o--o| consent
+student ||--o{ rl
+student ||--o{ device
+device ||--o{ rt
+@enduml

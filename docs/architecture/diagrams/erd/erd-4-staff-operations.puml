@@ -1,0 +1,81 @@
+@startuml erd-4-staff-operations
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype ortho
+title ERD: staff, operations and research
+entity "staff_user" as su {
+  * id : uuid <<PK>>
+  --
+  school_id : uuid <<FK>>
+  * email : text <<UK>>
+  * password_hash : text (argon2id)
+  mfa_secret_encrypted : bytea (set at first login)
+  * role : text
+  disabled_at : timestamptz
+  locked_until : timestamptz
+}
+entity "staff_class" as sc {
+  * staff_id : uuid <<PK, FK>>
+  * class_id : uuid <<PK, FK>>
+}
+entity "password_reset" as pr {
+  * token_hash : text <<PK>>
+  --
+  * staff_id : uuid <<FK>>
+  * expires_at : timestamptz (30 min)
+  used_at : timestamptz
+}
+entity "note" as note {
+  * id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * staff_id : uuid <<FK>>
+  * text : text (500 max)
+}
+entity "flag" as flag {
+  * id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * type : text
+  resolved_at : timestamptz
+}
+entity "staff_session" as ss {
+  * id : uuid <<PK>>
+  --
+  * staff_id : uuid <<FK>>
+  * token_hash : text <<UK>>
+  mfa_passed_at : timestamptz
+  * expires_at : timestamptz (8 h)
+}
+entity "rate_limit" as rlim {
+  * key : text <<PK>>
+  * window_start : timestamptz <<PK>>
+  --
+  * hits : integer
+}
+entity "audit_log" as al <<append-only>> {
+  * id : bigint <<PK>>
+  --
+  * actor : text
+  * action : text
+  * object : text
+  * at : timestamptz
+}
+entity "research_demographics" as rd <<research-only>> {
+  * student_id : uuid <<PK, FK>>
+  --
+  gender : text
+  medium : text
+}
+entity "panel_label" as pl {
+  * vignette_id : text <<PK>>
+  * rater_id : uuid <<PK, FK>>
+  --
+  * ranked_streams : jsonb
+}
+su ||--o{ sc
+su ||--o{ pr
+su ||--o{ note
+su ||--o{ ss
+su ||--o{ pl
+@enduml

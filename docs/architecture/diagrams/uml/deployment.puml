@@ -1,0 +1,46 @@
+@startuml deployment
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype polyline
+title Rahyaab deployment (UML deployment diagram)
+node "<<device>>\nAndroid phone\n(Android 11+, 3-4 GB RAM)" as Phone {
+  node "<<execution environment>>\nExpo runtime (Hermes)" as Hermes {
+    artifact "rahyaab.aab" as Aab
+    artifact "content pack\nstory-YYYY.MM.N" as Pack
+  }
+  database "rahyaab.db\n(SQLCipher)" as LocalDb
+}
+node "<<device>>\nParent phone browser" as PBrowser {
+  artifact "P-01 report page" as P01
+}
+node "<<device>>\nStaff PC browser" as SBrowser {
+  artifact "dashboard bundle" as Spa
+}
+node "<<device>>\nLinux VM (Ubuntu LTS, 2 vCPU, 4 GB)" as Vm {
+  node "<<execution environment>>\nDocker Compose" as Compose {
+    node "caddy :443" as Caddy
+    node "api (uvicorn x2)" as ApiC
+    node "jobs" as JobsC
+    database "postgres 16\n(encrypted volume)" as PgC
+    node "glitchtip" as Gt
+    node "uptime-kuma" as Kuma
+  }
+}
+node "<<device>>\nOff-site object store" as Backup
+node "<<device>>\nGitHub Actions + GHCR" as Ci
+node "<<device>>\nEAS Build + Google Play" as Play
+node "<<device>>\nO*NET Web Services" as Onet
+Aab -- LocalDb
+Aab --> Caddy : HTTPS (TLS 1.3), JSON
+P01 --> Caddy : HTTPS
+Spa --> Caddy : HTTPS, cookie
+Caddy --> ApiC
+ApiC --> PgC : SQL
+JobsC --> PgC : SQL
+ApiC --> Gt : errors (scrubbed)
+Kuma --> Caddy : health
+JobsC --> Backup : age-encrypted dump
+JobsC --> Onet : HTTPS
+Ci --> Compose : SSH deploy (image digest)
+Play --> Aab : installs
+@enduml

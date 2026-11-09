@@ -1,0 +1,88 @@
+@startuml erd-3-results-library
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype ortho
+title ERD: results and library
+entity "trait_estimate" as te {
+  * id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * construct : text
+  theta : double
+  se : double
+  band : text
+  * model_version : text <<FK>>
+  * content_version : text
+  * input_hash : text
+}
+entity "recommendation" as rec <<immutable>> {
+  * id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * mode : text
+  * ranked : jsonb (exactly 3)
+  * contributions : jsonb
+  * confidence : text
+  * model_version : text <<FK>>
+  * model_versions : jsonb
+  * input_hash : text (UK with student_id)
+  supersedes : uuid <<FK>>
+}
+entity "model_version" as mv {
+  * id : text <<PK>>
+  --
+  * kind : text
+  * class_mode : text
+  * artifact_uri : text
+  eval_report_uri : text
+  * active : boolean
+}
+entity "share_link" as sl {
+  * id : uuid <<PK>>
+  --
+  * token_hash : text <<UK>>
+  * student_id : uuid <<FK>>
+  recommendation_id : uuid <<FK>>
+  * scope : text
+  * expires_at : timestamptz
+  revoked_at : timestamptz
+}
+entity "stream" as st {
+  * id : text <<PK>>
+  --
+  * level : text
+  * names : jsonb
+  * riasec_profile : double[6]
+  * last_verified : date
+}
+entity "eligibility_rule" as er {
+  * id : text <<PK>>
+  --
+  * stream_id : text <<FK>>
+  * board : text
+  * condition : jsonb
+  * effect : text
+  * source_url : text
+}
+entity "career" as ca {
+  * onet_code : text <<PK>>
+  --
+  * title_en : text
+  title_ur : text
+}
+entity "stream_career" as stc {
+  * stream_id : text <<PK, FK>>
+  * onet_code : text <<PK, FK>>
+}
+entity "saved_item" as si {
+  * student_id : uuid <<PK, FK>>
+  * kind : text <<PK>>
+  * ref_id : text <<PK>>
+}
+mv ||--o{ te
+mv ||--o{ rec
+rec |o--o{ sl
+st ||--o{ er
+st ||--o{ stc
+ca ||--o{ stc
+@enduml

@@ -1,0 +1,12 @@
+@startuml state-share-link
+!include ../_style/rahyaab-uml.iuml
+skinparam linetype polyline
+title A parent share link (UML state machine)
+[*] --> Active : student creates link
+Active --> Active : parent views / views + 1
+Active --> Revoked : student stops sharing
+Active --> Expired : after 30 days
+Revoked --> Deleted : retention job (30 days)
+Expired --> Deleted : retention job (30 days)
+Deleted --> [*]
+@enduml

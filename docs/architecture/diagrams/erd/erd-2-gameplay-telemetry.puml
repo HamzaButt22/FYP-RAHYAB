@@ -1,0 +1,72 @@
+@startuml erd-2-gameplay-telemetry
+!include ../_style/rahyaab-uml.iuml
+left to right direction
+skinparam linetype ortho
+title ERD: gameplay and telemetry
+entity "sitting" as sitting {
+  * id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  * device_id : uuid <<FK>>
+  * started_at : timestamptz
+  calibration : jsonb
+}
+entity "game_run" as run {
+  * id : uuid <<PK>>
+  --
+  * sitting_id : uuid <<FK>>
+  * week : smallint
+  * content_version : text <<FK>>
+  * practice : boolean
+  * completed : boolean
+}
+entity "raw_event" as ev <<append-only>> {
+  * event_id : uuid <<PK>> (UUIDv7, month partitions)
+  --
+  * run_id : uuid <<FK>>
+  * seq : integer
+  * type : text
+  * monotonic_ms : double
+  item_id : text (checked by the API)
+  * a11y_mode : boolean
+  * data : jsonb (1 KB max)
+  * received_at : timestamptz
+}
+entity "quarantine" as q {
+  * event_id : uuid <<PK>>
+  --
+  * student_id : uuid <<FK>>
+  run_id : uuid
+  * reason : text
+  * payload : jsonb (2 KB max)
+  * received_at : timestamptz (kept 30 days)
+}
+entity "student" as student {
+  * id : uuid <<PK>>
+}
+entity "item" as item {
+  * id : text <<PK>>
+  * content_version : text <<PK, FK>>
+  --
+  * kind : text
+  * construct : text
+  pair : text
+  * params : jsonb
+}
+entity "content_pack" as pack {
+  * id : text <<PK>>
+  --
+  * min_app : text
+  * sha256 : text
+  * signature : text
+  * class_mode : text
+  * size_bytes : integer
+  * storage_uri : text
+  * active : boolean (one per class mode)
+}
+sitting ||--o{ run
+pack ||--o{ run
+run ||--o{ ev
+pack ||--o{ item
+student ||--o{ q
+@enduml
