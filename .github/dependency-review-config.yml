@@ -1,29 +1,6 @@
 # Settings for actions/dependency-review-action (.github/workflows/security.yml).
+# A PR fails if it adds a package with a high or critical advisory.
 #
-# allow-ghsas: advisories accepted on purpose. Each entry needs a reason and a removal date.
-#
-# Reason (9 Nov 2026): PR "chore/reorganise" moves the reference-only Expo 57 prototype from
-# "RahYaab Application/" to prototypes/rahyaab-application/ without changing its package-lock.json.
-# Dependency review treats moved packages as new. These advisories are already on main, the
-# prototype is never built or deployed, and fixing them needs an Expo 57 -> 58 upgrade of the
-# prototype (zod 3 has no patched release). The app we ship (frontend/mobile) is patched
-# separately and still checked by pnpm audit in the "dependency audits" job.
-#
-# Remove this list once that PR is merged: later PRs only report packages they change.
+# To accept an advisory on purpose, add an allow-ghsas list here with the GHSA ID, the reason and a
+# removal date. (A temporary list for the moved Expo 57 prototype was removed after PR #4 merged.)
 fail-on-severity: high
-allow-ghsas:
-  # node-forge <= 1.4.0 (via @expo/cli 57 in the prototype)
-  - GHSA-86w9-cpqp-85rv
-  - GHSA-4642-5mcj-2rqw
-  - GHSA-6wvx-3r32-xmcg
-  - GHSA-525v-9gp9-w22h
-  - GHSA-7wch-p9px-956x
-  - GHSA-h6cr-wjv9-3cpp
-  - GHSA-4487-j8r4-4g2f
-  - GHSA-5cwg-6vw7-rj6p
-  - GHSA-jc66-7q78-782g
-  - GHSA-8hrf-8g6f-7xwp
-  - GHSA-hqq3-7jhf-c5jx
-  - GHSA-5x38-2vff-x55p
-  # zod < 4.6.6 (zod 3.25 via @expo/cli 57 in the prototype)
-  - GHSA-mrhx-c7xc-m3w5
