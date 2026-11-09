@@ -1,6 +1,6 @@
 # Rahyaab dashboard image: build the static site, then serve it with Caddy (no Node at run time).
 # Build from the repository root: docker build -f frontend/dashboard/Dockerfile -t rahyaab-dashboard .
-FROM node:24-alpine AS build
+FROM node:26-alpine AS build
 RUN corepack enable
 WORKDIR /repo
 COPY design/tokens/tokens.css design/tokens/tokens.css
