@@ -3,11 +3,13 @@
 from typing import Any
 
 from fastapi.testclient import TestClient
+from support import make_device_key
 
 from rahyaab_api.main import create_app
 from rahyaab_api.settings import Settings
 
 URL = "/v1/auth/student/join"
+PUBLIC_KEY, _ = make_device_key()
 
 
 def client() -> TestClient:
@@ -28,11 +30,28 @@ def valid_body(**overrides: Any) -> dict[str, Any]:
             "device_tier": "low",
             "os_major": 13,
             "app_version": "0.1.0",
-            "public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE-test-key",
+            "public_key": PUBLIC_KEY,
         },
     }
     body.update(overrides)
     return body
+
+
+def test_a_key_the_server_cannot_use_is_refused_at_join() -> None:  # ADR-0011
+    device = valid_body()["device"] | {"public_key": "MFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE-not-a-key"}
+    r = client().post(URL, json=valid_body(device=device))
+    assert r.status_code == 422
+    assert {
+        "field": "device.public_key",
+        "code": "format",
+        "message_key": "errors.device.public_key.format",
+    } in r.json()["errors"]
+
+
+def test_refresh_needs_both_fields() -> None:
+    r = client().post("/v1/auth/refresh", json={"refresh_token": "x" * 43})
+    assert r.status_code == 422
+    assert r.json()["errors"][0]["field"] == "signature"
 
 
 def test_identifying_fields_are_refused() -> None:  # TC-ONB-02

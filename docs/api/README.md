@@ -26,7 +26,7 @@ The SRS (§12.7) lists the endpoints. This spec is the detailed version and wins
 
 | Caller | Scheme | Details |
 |---|---|---|
-| Student app | `Authorization: Bearer <JWT>` | 15-minute access token bound to the device. The refresh token rotates, and reusing one revokes the whole token family (ADR-0011). It comes from `/auth/student/join`, `/auth/student/individual` or `/auth/student/relink`. |
+| Student app | `Authorization: Bearer <JWT>` | 15-minute access token bound to the device. The refresh token rotates and every refresh is signed with the device's Keystore key (EC P-256, format in `openapi.yaml` `refreshTokens`); reusing a token or signing with another key revokes the whole token family (ADR-0011). It comes from `/auth/student/join`, `/auth/student/individual` or `/auth/student/relink`. |
 | Staff (teacher, counsellor, admin, researcher) | `__Host-rahyaab_session` cookie | Set after password (argon2id) + TOTP. HttpOnly, Secure, SameSite=Strict. State-changing calls also need `X-CSRF-Token`. |
 | Parent | Capability token in the URL path (`/p/{token}`, `/c/{token}`) | 128-bit random token, stored hashed, expires in 30 days, revocable (RFC-0004). |
 

@@ -16,6 +16,7 @@ We must not collect names, phone numbers, emails, CNIC/B-form numbers or photos 
 - **Joining:** a student joins with a **class code** (or, on the individual path, a parent OTP) and picks a nickname.
 - **Tokens:** the server issues a **UUID student ID** and a device-bound token pair: a 15-minute access JWT and a rotating refresh token. If a refresh token is reused, the whole token family is revoked.
 - **Device binding:** at join, the app creates a key pair in the Android Keystore (non-exportable) and sends the public key. Every refresh request is signed with that key, so a refresh token copied to another device is useless.
+- **Key and signature format (added 10 Nov 2026 with the refresh endpoint):** an EC P-256 key, because the Android Keystore offers Ed25519 only from Android 13. The app sends the public key as base64 DER (SubjectPublicKeyInfo) and signs `rahyaab-refresh-v1:` + refresh token with SHA256withECDSA. A signature from another key revokes the token family (TC-SEC-18).
 - **Shared phones:** a 4-digit PIN per profile, required as soon as a second profile is added to the phone (FR-07). Failed tries are counted in the encrypted database, so restarting the app does not reset them; after 10 failures the profile can only be reopened with a teacher re-link code or a parent OTP.
 - **Staff:** sign in with email, an argon2id password and TOTP MFA.
 

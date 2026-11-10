@@ -138,7 +138,12 @@ paths:
       tags: [auth]
       operationId: refreshTokens
       summary: Rotate the token pair
-      description: Reusing a refresh token revokes its whole token family (ADR-0011).
+      description: |
+        The old refresh token works once. The request is signed with the device key created at join
+        (ADR-0011): SHA256withECDSA (EC P-256) over the UTF-8 bytes of `rahyaab-refresh-v1:` followed by
+        the refresh token, sent as base64 of the DER signature. A second use of a token, or a signature
+        from any other key (a copied token, TC-SEC-18), revokes the whole token family; the student then
+        re-links the phone. Unknown, expired, revoked, reused and wrongly signed tokens all get the same `401`.
       security: []
       requestBody:
         required: true
@@ -146,9 +151,11 @@ paths:
           application/json:
             schema:
               type: object
-              required: [refresh_token]
+              additionalProperties: false
+              required: [refresh_token, signature]
               properties:
-                refresh_token: { type: string }
+                refresh_token: { type: string, minLength: 20, maxLength: 100 }
+                signature: { type: string, minLength: 16, maxLength: 200, description: 'base64 DER ECDSA signature (see above)' }
       responses:
         '200':
           description: New token pair
@@ -156,6 +163,8 @@ paths:
             application/json:
               schema: { $ref: '#/components/schemas/TokenPair' }
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
 
   /auth/staff/login:
     post:
@@ -1438,7 +1447,7 @@ components:
         device_tier: { type: string, enum: [low, mid, high], description: 'From RAM class on the phone (<=3 GB low, 4-6 GB mid, >=8 GB high)' }
         os_major: { type: integer, minimum: 8, maximum: 30 }
         app_version: { type: string, maxLength: 16 }
-        public_key: { type: string, maxLength: 200, description: 'Keystore-held key; refresh requests are signed with it (ADR-0011)' }
+        public_key: { type: string, maxLength: 200, description: 'Keystore-held EC P-256 key, base64 of the DER SubjectPublicKeyInfo (Java PublicKey.getEncoded()); refresh requests are signed with it (ADR-0011). Any other key is refused with 422.' }
         integrity_token: { type: string, description: 'Play Integrity token when available (NFR-68 policy in SECURITY.md §3)' }
 
     JoinRequest:

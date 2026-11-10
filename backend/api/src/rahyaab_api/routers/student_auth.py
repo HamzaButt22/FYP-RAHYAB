@@ -1,15 +1,21 @@
-"""Student join with a class code (POST /v1/auth/student/join).
+"""Student sign-in: join with a class code (POST /v1/auth/student/join) and refresh (POST /v1/auth/refresh).
 
-Contract: docs/api/openapi.yaml `joinWithClassCode`. Rules: FR-03, FR-04, FR-05a, FR-100, FR-102,
-NFR-44, NFR-67, NFR-74 and ADR-0011. Tests: tests/test_join_rules.py, tests/test_join_api.py.
+Contract: docs/api/openapi.yaml `joinWithClassCode` and `refreshTokens`. Rules: FR-03, FR-04, FR-05a,
+FR-100, FR-102, NFR-39, NFR-44, NFR-67, NFR-74 and ADR-0011.
+Tests: tests/test_join_rules.py, test_join_validation.py, test_join_api.py, test_device_keys.py,
+test_refresh_api.py.
 
-Order of checks, chosen so that failures reveal and store as little as possible:
+Join: order of checks, chosen so that failures reveal and store as little as possible:
 1. Request shape (Pydantic, strict, extra fields forbidden) -> 422 with errors[].
 2. Age: under 13 -> 422 age_out_of_range, before anything touches the database.
 3. Rate limits per device key (10 / 15 min) and per IP (300 / 15 min) -> 429.
 4. A class code with 30 failed attempts this hour is paused.
 5. Unknown, expired or paused codes and bad claim codes all get the same generic 404 (NFR-74).
 6. One transaction creates the student, device, refresh token and consent records.
+
+Refresh: the old token is single use and the request must be signed with the device key (device_keys.py).
+A wrong signature (a copied token, TC-SEC-18) or a second use of a token (TC-ONB-10) revokes the whole
+token family, so the student re-links the phone with a teacher's code. Every refusal is the same 401.
 """
 
 from datetime import datetime
@@ -19,9 +25,10 @@ from uuid import UUID
 from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_core import PydanticCustomError
-from sqlalchemy import Engine, text
+from sqlalchemy import Connection, Engine, text
 
 from rahyaab_api.db import get_engine
+from rahyaab_api.device_keys import load_public_key, verify_refresh_signature
 from rahyaab_api.join_rules import (
     MIN_AGE,
     PAKISTAN,
@@ -36,11 +43,12 @@ from rahyaab_api.ratelimit import Limit, digest, enforce, hit, peek
 from rahyaab_api.settings import Settings
 from rahyaab_api.tokens import access_token, new_refresh_token
 
-router = APIRouter(prefix="/auth/student", tags=["auth"])
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 DEVICE_LIMIT = Limit("join:dev", 10, 15 * 60)
 IP_LIMIT = Limit("join:ip", 300, 15 * 60)
 CODE_FAILURES = Limit("join:codefail", 30, 60 * 60)
+REFRESH_IP_LIMIT = Limit("refresh:ip", 300, 60)  # the general ceiling (docs/api/README.md §3)
 
 
 class DeviceInfo(BaseModel):
@@ -51,6 +59,14 @@ class DeviceInfo(BaseModel):
     app_version: str = Field(min_length=1, max_length=16)
     public_key: str = Field(min_length=16, max_length=200)
     integrity_token: str | None = Field(default=None, max_length=4096)
+
+    @field_validator("public_key")
+    @classmethod
+    def _p256(cls, value: str) -> str:
+        # A key the server cannot use would make every later refresh fail, so refuse it at join.
+        if load_public_key(value) is None:
+            raise PydanticCustomError("format", "public_key must be a base64 DER EC P-256 key")
+        return value
 
 
 class JoinRequest(BaseModel):
@@ -83,6 +99,38 @@ class TokenPair(BaseModel):
     consent_state: Literal["pending", "granted", "withdrawn"]
 
 
+class RefreshRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid", strict=True)
+
+    refresh_token: str = Field(min_length=20, max_length=100)
+    signature: str = Field(
+        min_length=16,
+        max_length=200,
+        description="base64 DER SHA256withECDSA over 'rahyaab-refresh-v1:' + refresh_token (device_keys.py)",
+    )
+
+
+def _store_refresh_token(
+    conn: Connection, settings: Settings, device_id: UUID, family_id: UUID | None
+) -> str:
+    """Stores a new refresh token (only its hash) and returns the token for the app.
+
+    `family_id=None` starts a new family (at join); a refresh continues the old family.
+    """
+    token, token_hash = new_refresh_token()
+    conn.execute(
+        text(
+            """
+            INSERT INTO refresh_token (device_id, family_id, token_hash, expires_at)
+            VALUES (:d, COALESCE(CAST(:f AS uuid), gen_random_uuid()), :h,
+                    now() + make_interval(days => :days))
+            """
+        ),
+        {"d": device_id, "f": family_id, "h": token_hash, "days": settings.refresh_token_days},
+    )
+    return token
+
+
 class _CodeRejected(Exception):
     """Internal: the class code or claim code was not accepted (rolled back, then counted)."""
 
@@ -106,7 +154,7 @@ def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
 
-@router.post("/join", status_code=201, response_model=TokenPair)
+@router.post("/student/join", status_code=201, response_model=TokenPair)
 def join_with_class_code(
     body: JoinRequest,
     request: Request,
@@ -205,16 +253,7 @@ def _create_profile(
             },
         ).scalar_one()
 
-        refresh, refresh_hash = new_refresh_token()
-        conn.execute(
-            text(
-                """
-                INSERT INTO refresh_token (device_id, family_id, token_hash, expires_at)
-                VALUES (:d, gen_random_uuid(), :h, now() + make_interval(days => :days))
-                """
-            ),
-            {"d": device_id, "h": refresh_hash, "days": settings.refresh_token_days},
-        )
+        refresh = _store_refresh_token(conn, settings, device_id, family_id=None)
 
         consent_state: Literal["pending", "granted"] = "pending"
         if adult:
@@ -267,3 +306,78 @@ def _record_pause(engine: Engine, code_hash: str) -> None:
             ),
             {"o": f"code_hash:{code_hash[:16]}"},
         )
+
+
+def _unauthorized() -> ProblemError:
+    # One answer for unknown, expired, revoked, reused and wrongly signed tokens.
+    return ProblemError(401, "unauthorized", "Please sign in again")
+
+
+def _consent_state(conn: Connection, student_id: UUID) -> Literal["pending", "granted", "withdrawn"]:
+    row = conn.execute(
+        text(
+            """
+            SELECT bool_or(withdrawn_at IS NULL) AS active, count(*) AS total
+            FROM consent WHERE student_id = :s AND type IN ('parent', 'self')
+            """
+        ),
+        {"s": student_id},
+    ).one()
+    if row.active:
+        return "granted"
+    return "withdrawn" if row.total else "pending"
+
+
+@router.post("/refresh", response_model=TokenPair)
+def refresh_tokens(
+    body: RefreshRequest,
+    request: Request,
+    settings: Annotated[Settings, Depends(app_settings)],
+) -> TokenPair:
+    engine = get_engine(request)
+    enforce(engine, REFRESH_IP_LIMIT, _client_ip(request))
+
+    pair: TokenPair | None = None
+    with engine.begin() as conn:
+        row = conn.execute(
+            text(
+                """
+                SELECT rt.id, rt.family_id, rt.device_id, rt.used_at, rt.revoked_at,
+                       rt.expires_at > now() AS live, d.public_key, d.student_id
+                FROM refresh_token rt JOIN device d ON d.id = rt.device_id
+                WHERE rt.token_hash = :h
+                FOR UPDATE OF rt
+                """
+            ),
+            {"h": digest(body.refresh_token)},
+        ).one_or_none()
+
+        if row is None or row.revoked_at is not None or not row.live:
+            pass  # unknown, revoked or expired: refuse
+        elif row.used_at is not None or not verify_refresh_signature(
+            row.public_key, body.refresh_token, body.signature
+        ):
+            # A second use (TC-ONB-10) or a copied token signed by another key (TC-SEC-18): the family is
+            # no longer trustworthy, so every token in it stops working. Committed even though we refuse.
+            conn.execute(
+                text(
+                    "UPDATE refresh_token SET revoked_at = now() WHERE family_id = :f AND revoked_at IS NULL"
+                ),
+                {"f": row.family_id},
+            )
+        else:
+            conn.execute(text("UPDATE refresh_token SET used_at = now() WHERE id = :i"), {"i": row.id})
+            conn.execute(
+                text("UPDATE student SET last_active_at = now() WHERE id = :s"), {"s": row.student_id}
+            )
+            pair = TokenPair(
+                access_token=access_token(settings, row.student_id, row.device_id),
+                refresh_token=_store_refresh_token(conn, settings, row.device_id, row.family_id),
+                expires_in=settings.access_token_minutes * 60,
+                student_id=row.student_id,
+                consent_state=_consent_state(conn, row.student_id),
+            )
+
+    if pair is None:
+        raise _unauthorized()
+    return pair
