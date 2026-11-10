@@ -17,7 +17,8 @@
         "APP_ENV": "development",
         "DEBUG": "true",
         "DATABASE_URL": "postgresql+psycopg://api_rw:change-me-locally@localhost:5432/rahyaab",
-        "CORS_ALLOWED_ORIGINS": "http://localhost:5173"
+        "CORS_ALLOWED_ORIGINS": "http://localhost:5173",
+        "JWT_SIGNING_KEY": "local-debugging-only-not-a-secret-key"
       },
       "jinja": true,
       "justMyCode": true,

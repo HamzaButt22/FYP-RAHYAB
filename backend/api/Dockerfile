@@ -25,4 +25,7 @@ USER 10001
 EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
   CMD python -c "import urllib.request; urllib.request.urlopen('http://localhost:8000/v1/health')"
-CMD ["uvicorn", "rahyaab_api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2", "--proxy-headers"]
+# The API is reachable only through the reverse proxy (Caddy, or the Kubernetes ingress), which sets
+# X-Forwarded-For itself. Trusting it from any address on the private network gives the per-IP rate
+# limits the student's real IP instead of the proxy's. Never publish port 8000 to the internet.
+CMD ["uvicorn", "rahyaab_api.main:app", "--host", "0.0.0.0", "--port", "8000", "--workers", "2", "--proxy-headers", "--forwarded-allow-ips", "*"]

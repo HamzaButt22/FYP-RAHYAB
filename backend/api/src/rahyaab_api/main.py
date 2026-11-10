@@ -1,5 +1,7 @@
 """FastAPI application factory. Routers are added module by module (ADR-0012, modular monolith)."""
 
+import logging
+
 from fastapi import FastAPI, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,17 +9,15 @@ from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
 from rahyaab_api import __version__
-from rahyaab_api.routers import health
+from rahyaab_api.db import make_engine
+from rahyaab_api.problems import FIELD_CODES, ProblemError, field_error, problem_response
+from rahyaab_api.routers import health, student_auth
 from rahyaab_api.settings import Settings, get_settings
 
-PROBLEM = "application/problem+json"
+log = logging.getLogger("rahyaab.api")
 
-
-def _problem(status: int, code: str, title: str, errors: list[dict[str, str]] | None = None) -> JSONResponse:
-    body: dict[str, object] = {"type": "about:blank", "status": status, "code": code, "title": title}
-    if errors:
-        body["errors"] = errors
-    return JSONResponse(status_code=status, content=body, media_type=PROBLEM)
+# Our own field-error codes (raised by validators); everything else is mapped through FIELD_CODES.
+CUSTOM_FIELD_CODES = {"contains_phone", "too_short", "too_long", "format"}
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:
@@ -31,6 +31,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         redoc_url=None,
         openapi_url="/v1/openapi.json" if docs else None,
     )
+    app.state.settings = settings
+    app.state.engine = make_engine(settings.database_url)
 
     app.add_middleware(
         CORSMiddleware,
@@ -41,22 +43,33 @@ def create_app(settings: Settings | None = None) -> FastAPI:
         max_age=600,
     )
 
+    @app.exception_handler(ProblemError)
+    async def problem(_: Request, exc: ProblemError) -> JSONResponse:
+        return problem_response(exc.status, exc.code, exc.title, exc.errors, exc.headers)
+
     @app.exception_handler(StarletteHTTPException)
     async def http_error(_: Request, exc: StarletteHTTPException) -> JSONResponse:
-        return _problem(exc.status_code, "http_error", str(exc.detail))
+        return problem_response(exc.status_code, "http_error", str(exc.detail))
 
     @app.exception_handler(RequestValidationError)
     async def validation_error(_: Request, exc: RequestValidationError) -> JSONResponse:
-        # Field keys only; the submitted value is never echoed back (forms-and-errors.md §4).
-        errors = [{"field": ".".join(str(p) for p in e["loc"][1:]), "code": e["type"]} for e in exc.errors()]
-        return _problem(422, "validation_error", "Some fields need fixing", errors)
+        # Field paths, codes and message keys only; the submitted value is never echoed (NFR-74, FR-102).
+        errors = []
+        for e in exc.errors():
+            field = ".".join(str(p) for p in e["loc"][1:]) or "body"
+            kind = str(e["type"])
+            code = kind if kind in CUSTOM_FIELD_CODES else FIELD_CODES.get(kind, "format")
+            errors.append(field_error(field, code))
+        return problem_response(422, "validation_error", "Some fields need fixing", errors)
 
     @app.exception_handler(Exception)
-    async def unexpected(_: Request, __: Exception) -> JSONResponse:
-        # Details go to the server log only (SECURITY.md §3, verbose errors).
-        return _problem(500, "internal_error", "Something went wrong on our side")
+    async def unexpected(_: Request, exc: Exception) -> JSONResponse:
+        # Details go to the server log only (SECURITY.md §3, verbose errors); never to the client.
+        log.exception("unhandled error: %s", type(exc).__name__)
+        return problem_response(500, "internal_error", "Something went wrong on our side")
 
     app.include_router(health.router, prefix="/v1")
+    app.include_router(student_auth.router, prefix="/v1")
     return app
 
 

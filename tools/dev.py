@@ -49,6 +49,12 @@ def setup() -> None:
     if not env.exists():
         shutil.copyfile(DOCKER / ".env.example", env)
         print("created infra/docker/.env from .env.example (git-ignored)")
+    # The API signs tokens even in development, so give the local .env a random signing key once.
+    lines = env.read_text(encoding="utf-8").splitlines()
+    if "JWT_SIGNING_KEY=" in lines:
+        lines[lines.index("JWT_SIGNING_KEY=")] = f"JWT_SIGNING_KEY={secrets.token_urlsafe(48)}"
+        env.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        print("added a random JWT_SIGNING_KEY to infra/docker/.env (local only)")
     sec = DOCKER / "secrets"
     sec.mkdir(exist_ok=True)
     key = sec / "data_key_wrapper"
@@ -128,9 +134,14 @@ def _pnpm(app: str, *args: str) -> None:
 
 
 def test() -> None:
+    # The API's database tests use the local Docker database when it is running, and skip otherwise.
+    os.environ.setdefault("TEST_DATABASE_URL", f"postgresql+psycopg://api_rw:{DEV_PW}@127.0.0.1:5432/rahyaab")
+    os.environ.setdefault(
+        "TEST_ADMIN_DATABASE_URL", f"postgresql+psycopg://rahyaab_admin:{DEV_PW}@127.0.0.1:5432/rahyaab"
+    )
     for pkg in ("api", "scoring"):
         run(["uv", "sync", "--frozen"], cwd=ROOT / "backend" / pkg)
-        _uv(pkg, "pytest", "-q")
+        _uv(pkg, "pytest", "-q", "-rs")
     _pnpm("dashboard", "install", "--frozen-lockfile")
     _pnpm("dashboard", "test")
 
