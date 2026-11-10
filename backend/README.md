@@ -27,10 +27,12 @@ cd backend/scoring && uv sync && uv run pytest
 
 The same checks CI runs: `uv run ruff check .`, `uv run ruff format --check .`, `uv run mypy src`, `uv run pytest`.
 
+The database tests (`tests/test_join_api.py`) need `TEST_DATABASE_URL` (role `api_rw`) and `TEST_ADMIN_DATABASE_URL`; `python tools/dev.py test` sets both for the local Docker database, and they skip when it is not running. CI runs them against a throwaway PostgreSQL.
+
 ## What exists and what comes next
 
-- **Exists:** application factory, `/v1/health`, an API-inventory test (every route must be in `docs/api/openapi.yaml`), settings that fail closed, exact-origin CORS, problem+json errors that never echo input, settings that refuse unsafe production values, the jobs worker shell, migration `0001` (applies `database/schema.sql`), the congruence ranking with tests.
-- **Next (FYP-1 demo slice):** join with class code and consent slip, `/events:batch`, results compute; then the interest and ability estimators. The contract is `docs/api/openapi.yaml`; the rules are in `docs/security/SECURITY.md`.
+- **Exists:** application factory, `/v1/health`, an API-inventory test (every route must be in `docs/api/openapi.yaml`), settings that fail closed, exact-origin CORS, problem+json errors that never echo input, settings that refuse unsafe production values, the jobs worker shell, migration `0001` (applies `database/schema.sql`), the congruence ranking with tests, and **`POST /v1/auth/student/join`** (class code, optional consent-slip claim code, age rules, PostgreSQL rate limits, device-bound tokens) with unit and database tests.
+- **Next (FYP-1 demo slice):** token refresh with signed requests (ADR-0011), `/events:batch`, results compute; then the interest and ability estimators. The contract is `docs/api/openapi.yaml`; the rules are in `docs/security/SECURITY.md`.
 
 ## Docker image
 

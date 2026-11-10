@@ -21,6 +21,21 @@ jobs:
     defaults:
       run:
         working-directory: backend/api
+    services:
+      # Throwaway database for the integration tests; the password exists only inside this job.
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: rahyaab_admin
+          POSTGRES_PASSWORD: ci-only-password
+          POSTGRES_DB: rahyaab
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U rahyaab_admin -d rahyaab"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_ADMIN_DATABASE_URL: postgresql+psycopg://rahyaab_admin:ci-only-password@localhost:5432/rahyaab
+      TEST_DATABASE_URL: postgresql+psycopg://api_rw:ci-only-password@localhost:5432/rahyaab
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5
       - uses: astral-sh/setup-uv@68559e99cc807c1eb7e9238fd43a15bba460eec2 # v10.3.3
@@ -30,7 +45,16 @@ jobs:
       - run: uv run ruff check .
       - run: uv run ruff format --check .
       - run: uv run mypy src
-      - run: uv run pytest -q
+      - name: Migrate the test database and set the API role's password
+        env:
+          DATABASE_URL: ${{ env.TEST_ADMIN_DATABASE_URL }}
+        run: |
+          uv run alembic upgrade head
+          uv run python -c "import psycopg; c = psycopg.connect('postgresql://rahyaab_admin:ci-only-password@localhost:5432/rahyaab', autocommit=True); c.execute(\"ALTER ROLE api_rw PASSWORD 'ci-only-password'\")"
+      - name: Tests (the database tests must run, not skip)
+        run: |
+          uv run pytest -q -rs | tee /tmp/pytest.txt
+          ! grep -q "SKIPPED" /tmp/pytest.txt
 
   scoring:
     name: backend/scoring (lint, types, tests)

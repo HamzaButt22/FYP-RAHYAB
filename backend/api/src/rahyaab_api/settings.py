@@ -19,7 +19,10 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:5173"]
     )
     access_token_minutes: int = Field(default=15, ge=5, le=60)
-    jwt_signing_key: str = ""  # required outside development and test; checked at start-up
+    refresh_token_days: int = Field(default=60, ge=1, le=365)
+    jwt_signing_key: str = ""  # required outside test (at least 32 characters); checked at start-up
+    # Version of the privacy notice an adult (18+) agrees to when self-consenting at join (FR-100).
+    consent_notice_version: str = Field(default="2026-11", max_length=20)
     data_key_wrapper_file: str = "/run/secrets/data_key_wrapper"
 
     @field_validator("cors_allowed_origins", mode="before")
@@ -31,13 +34,15 @@ class Settings(BaseSettings):
         return v
 
     def validate_for_runtime(self) -> None:
-        if not self.database_url and self.app_env != "test":
-            raise ValueError("DATABASE_URL must be set")
+        if self.app_env != "test":
+            if not self.database_url:
+                raise ValueError("DATABASE_URL must be set")
+            # Development signs real tokens too, so it needs a key (tools/dev.py setup creates one).
+            if len(self.jwt_signing_key) < 32:
+                raise ValueError("JWT_SIGNING_KEY must be set (at least 32 characters)")
         if self.app_env in ("staging", "production"):
             if self.debug:
                 raise ValueError("DEBUG must be false in staging and production")
-            if len(self.jwt_signing_key) < 32:
-                raise ValueError("JWT_SIGNING_KEY must be set (at least 32 characters)")
             if any(o == "*" or not o.startswith("https://") for o in self.cors_allowed_origins):
                 raise ValueError("CORS_ALLOWED_ORIGINS must be exact https origins")
 

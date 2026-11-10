@@ -1451,7 +1451,7 @@ components:
         birth_year: { type: integer, minimum: 1950, description: 'With birth_month, used only to compute the age band (FR-100), then discarded. The server compares with today''s date (no fixed maximum); under 13 gets the neutral stop (422 age_out_of_range, same code as other out-of-range ages)' }
         birth_month: { type: integer, minimum: 1, maximum: 12 }
         claim_code: { type: string, pattern: '^[A-Z0-9]{4}-[A-Z0-9]{4}$', description: 'From a signed paper consent slip (FR-05a); optional' }
-        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{N}_ ]+$' }
+        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{M}\p{N}_ ]+$', description: 'Letters (Urdu vowel marks allowed), numbers, _ and spaces; zero-width and bidi characters are stripped first' }
         lang: { type: string, enum: [ur, en] }
         device: { $ref: '#/components/schemas/DeviceInfo' }
 
@@ -1463,7 +1463,7 @@ components:
         grade: { type: integer, minimum: 8, maximum: 12 }
         birth_year: { type: integer, minimum: 1950, description: 'Same rules as JoinRequest.birth_year' }
         birth_month: { type: integer, minimum: 1, maximum: 12 }
-        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{N}_ ]+$' }
+        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{M}\p{N}_ ]+$', description: 'Letters (Urdu vowel marks allowed), numbers, _ and spaces; zero-width and bidi characters are stripped first' }
         lang: { type: string, enum: [ur, en] }
         device: { $ref: '#/components/schemas/DeviceInfo' }
 
@@ -1507,7 +1507,7 @@ components:
       type: object
       additionalProperties: false
       properties:
-        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{N}_ ]+$' }
+        nickname: { type: string, minLength: 2, maxLength: 20, pattern: '^[\p{L}\p{M}\p{N}_ ]+$', description: 'Letters (Urdu vowel marks allowed), numbers, _ and spaces; zero-width and bidi characters are stripped first' }
         board: { type: string }
         current_group: { type: string }
         district: { type: string }

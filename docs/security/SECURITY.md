@@ -249,13 +249,13 @@ An honest status for each check, so nobody mistakes a design for a working contr
 | Trusting the front end | The server re-validates every input and computes every result from raw events; the app never decides access or scores (§3, ADR-0004) | Designed |
 | Broken access control | Deny by default; role, tenant and ownership checked on every route; other tenants' objects return 404 (§5.5, TC-SEC-05) | Designed. Database side **tested**: `api_rw` cannot read `guardian_contact`, drop or create tables, or change `audit_log` |
 | Not checking who, what and which resource | Each request resolves the caller (token or session), the action (route and role) and the object (ownership query) before any work | Designed |
-| Business-logic abuse | Whole journeys are guarded, not single calls: no upload without consent (NFR-45); no ranking without enough evidence (FR-51); results only from server-side events; claim codes and re-link codes are single use; share links only for the caller's own results; a class code pauses after 30 failures | Designed; tests specified (TC-ONB, TC-SCORE, TC-SEC-19) |
+| Business-logic abuse | Whole journeys are guarded, not single calls: no upload without consent (NFR-45); no ranking without enough evidence (FR-51); results only from server-side events; claim codes and re-link codes are single use; share links only for the caller's own results; a class code pauses after 30 failures | Designed; tests specified (TC-ONB, TC-SCORE, TC-SEC-19). Join part **built and tested**: claim codes single use and class-bound, adults self-consent (TC-SEC-19, TC-EDGE-07) |
 | Trusting external APIs | O*NET, SMS and email responses are schema-validated, size-capped and time-limited, with fallbacks (§5.6, API10) | Designed |
 | SSRF | No user-supplied URL is ever fetched; only the jobs container calls out, to an allowlist; private IP ranges blocked; Kubernetes egress policy (§5.6, TC-SEC-16) | Designed; egress NetworkPolicy **built** and schema-validated |
 | Security misconfiguration | No default accounts; the API refuses DEBUG, a weak JWT key or wildcard CORS in staging and production; docs endpoints off outside development; a missing `APP_ENV` falls back to production rules; containers non-root with read-only file systems | **Built and tested** (unit tests; containers run non-root and read-only) |
 | No API inventory | `docs/api/openapi.yaml` is the contract; a test fails the build if the app serves any route not in it | **Built and tested** (`backend/api/tests/test_api_inventory.py`) |
-| No rate limiting | Shared PostgreSQL counters per device, code, account, phone and IP (§3, `rate_limit` table) | Designed; table **built and tested** in the schema; middleware not built |
-| No input validation | Pydantic strict models, `extra="forbid"`, length and range limits; database CHECK constraints; errors never echo input (§5.4) | Partly **built**: error handler that never echoes input; database CHECKs **tested** (invalid rankings and non-UUIDv7 IDs rejected). Request models not built |
+| No rate limiting | Shared PostgreSQL counters per device, code, account, phone and IP (§3, `rate_limit` table) | **Built and tested for join** (per device, per class code with pause, per IP; TC-ONB-04 against PostgreSQL). Other routes: designed |
+| No input validation | Pydantic strict models, `extra="forbid"`, length and range limits; database CHECK constraints; errors never echo input (§5.4) | **Built and tested for join**: strict Pydantic models with `extra="forbid"`, field errors with message keys, nickname cleaning (TC-ONB-02, TC-VAL-05/06/07). Error handler that never echoes input; database CHECKs **tested** |
 | Exposing sensitive data | Explicit output models; nicknames only; restricted columns encrypted; generic 500 errors | Generic 500 handler **built**; the rest designed |
 
 ### 9.2 Before anyone can sign up
@@ -271,12 +271,12 @@ An honest status for each check, so nobody mistakes a design for a working contr
 | Secrets only on the server | Secrets come from env variables, Docker secrets or Kubernetes secrets; `EXPO_PUBLIC_*` values hold only the API URL; each container gets only its own variables | **Built and tested** (the API container cannot see the admin database password) |
 | Keep `.env` off GitHub | `.gitignore`, `git add --dry-run` check, gitleaks in CI | `.gitignore` **tested**; gitleaks written, runs after the first push |
 | No secrets in logs | No personal data or credentials in logs; database URLs are not logged | Designed; current code logs none |
-| Parameterised SQL | SQLAlchemy only; no string-built SQL | Designed (only static SQL exists today) |
-| Validate form inputs | Client format help plus server validation (`design/specs/forms-and-errors.md`) | Designed |
+| Parameterised SQL | SQLAlchemy only; no string-built SQL | **Built**: all join queries are bound parameters through SQLAlchemy `text()`; ruff's SQL-injection check (S608) runs in CI |
+| Validate form inputs | Client format help plus server validation (`design/specs/forms-and-errors.md`) | Server side **built and tested for join**; app side designed |
 | Block XSS | React and Jinja2 auto-escaping; strict CSP without inline scripts; CI fails if the dashboard build has an inline script | CSP and CI check **built**; dashboard build **tested** |
 | Validate uploads | The only upload is an admin content pack: signature, size and path checks before extraction (TC-SEC-15) | Designed |
 | Verify webhooks | No webhooks in the MVP. If SMS delivery receipts are added, verify their signature and timestamp before trusting them | Not applicable yet |
-| Rate-limit requests | As 9.1 | Designed |
+| Rate-limit requests | As 9.1 | As 9.1 (join **built and tested**) |
 | Tighten CORS | Exact origin allowlist with credentials; no wildcard, no reflection | **Built and tested** (TC-SEC-09 as a unit test) |
 | Production debug off | Settings refuse DEBUG in staging and production; docs endpoints off | **Built and tested** |
 | Patch dependencies | Lockfiles, Dependabot, `pip-audit` and `pnpm audit` in CI | Configured; runs after the first push |
