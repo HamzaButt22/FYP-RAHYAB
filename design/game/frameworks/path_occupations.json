@@ -1,43 +1,265 @@
 {
-  "version": "0.1.0",
+  "version": "0.2.0",
   "updated": "2026-11-11",
-  "status": "Draft. Titles are checked against the O*NET database by tools/onet_profiles.py (it stops on any title that does not match exactly) and the lists are reviewed by the counsellor panel before the pilot. Occupations are chosen as the main destinations a student reaches through each path in Pakistan; each list should be cross-checked with the NCES CIP-to-SOC crosswalk for the matching field of study.",
+  "status": "Draft, all titles matched to O*NET 31.0 on 2026-11-11. Titles are checked against the O*NET database by tools/onet_profiles.py (it stops on any title that does not match exactly) and the lists are reviewed by the counsellor panel before the pilot. Occupations are chosen as the main destinations a student reaches through each path in Pakistan; each list should be cross-checked with the NCES CIP-to-SOC crosswalk for the matching field of study.",
   "method": "A path's RIASEC profile = mean O*NET Occupational Interest profile of these occupations (tools/onet_profiles.py).",
   "paths": {
-    "matric_science_bio": ["Registered Nurses", "Pharmacists", "Dentists, General", "Family Medicine Physicians", "Medical and Clinical Laboratory Technologists", "Physical Therapists", "Biochemists and Biophysicists"],
-    "matric_science_cs": ["Software Developers", "Computer Systems Analysts", "Electrical Engineers", "Computer Network Support Specialists", "Mechanical Engineers", "Database Administrators"],
-    "matric_humanities": ["Lawyers", "Secondary School Teachers, Except Special and Career/Technical Education", "Writers and Authors", "Graphic Designers", "Child, Family, and School Social Workers", "Public Relations Specialists"],
-    "matric_technical": ["Electricians", "Automotive Service Technicians and Mechanics", "Mechanical Engineering Technologists and Technicians", "Electrical and Electronic Engineering Technologists and Technicians", "Welders, Cutters, Solderers, and Brazers", "Heating, Air Conditioning, and Refrigeration Mechanics and Installers"],
-
-    "pre_medical": ["Family Medicine Physicians", "General Internal Medicine Physicians", "Dentists, General", "Pharmacists", "Registered Nurses", "Physical Therapists", "Medical and Clinical Laboratory Technologists"],
-    "pre_engineering": ["Civil Engineers", "Mechanical Engineers", "Electrical Engineers", "Chemical Engineers", "Industrial Engineers", "Aerospace Engineers"],
-    "ics": ["Software Developers", "Computer Systems Analysts", "Database Administrators", "Information Security Analysts", "Computer Network Architects", "Web Developers"],
-    "icom": ["Accountants and Auditors", "Budget Analysts", "Loan Officers", "Management Analysts", "Bookkeeping, Accounting, and Auditing Clerks", "Sales Managers"],
-    "fa_humanities": ["Lawyers", "Secondary School Teachers, Except Special and Career/Technical Education", "Writers and Authors", "Clinical and Counseling Psychologists", "Child, Family, and School Social Workers", "Editors"],
-    "general_science": ["Chemists", "Physicists", "Mathematicians", "Statisticians", "Environmental Scientists and Specialists, Including Health", "Secondary School Teachers, Except Special and Career/Technical Education"],
-    "dae": ["Civil Engineering Technologists and Technicians", "Mechanical Engineering Technologists and Technicians", "Electrical and Electronic Engineering Technologists and Technicians", "Industrial Engineering Technologists and Technicians", "Computer Network Support Specialists"],
-    "tech_vocational": ["Electricians", "Plumbers, Pipefitters, and Steamfitters", "Automotive Service Technicians and Mechanics", "Welders, Cutters, Solderers, and Brazers", "Carpenters", "Heating, Air Conditioning, and Refrigeration Mechanics and Installers"],
-    "a_level": ["Lawyers", "Software Developers", "Accountants and Auditors", "Civil Engineers", "Family Medicine Physicians", "Economists"],
-    "nursing_diploma_early": ["Registered Nurses", "Licensed Practical and Licensed Vocational Nurses", "Medical Assistants", "Pharmacy Technicians", "Radiologic Technologists and Technicians"],
-
-    "medicine": ["Family Medicine Physicians", "General Internal Medicine Physicians", "Pediatricians, General", "Dentists, General", "Psychiatrists", "Obstetricians and Gynecologists"],
-    "engineering": ["Civil Engineers", "Mechanical Engineers", "Electrical Engineers", "Chemical Engineers", "Industrial Engineers", "Aerospace Engineers"],
-    "computer_science": ["Software Developers", "Computer and Information Research Scientists", "Computer Systems Analysts", "Information Security Analysts", "Database Architects", "Computer Network Architects"],
-    "business": ["Accountants and Auditors", "Management Analysts", "Marketing Managers", "Financial Managers", "Human Resources Specialists", "General and Operations Managers"],
-    "natural_sciences": ["Chemists", "Physicists", "Mathematicians", "Statisticians", "Biochemists and Biophysicists", "Zoologists and Wildlife Biologists"],
-    "arts_design": ["Graphic Designers", "Architects, Except Landscape and Naval", "Interior Designers", "Fine Artists, Including Painters, Sculptors, and Illustrators", "Art Directors", "Industrial Designers"],
-    "social_sciences": ["Clinical and Counseling Psychologists", "Sociologists", "Economists", "Political Scientists", "Child, Family, and School Social Workers", "Urban and Regional Planners"],
-    "law": ["Lawyers", "Judges, Magistrate Judges, and Magistrates", "Paralegals and Legal Assistants", "Arbitrators, Mediators, and Conciliators"],
-    "education": ["Secondary School Teachers, Except Special and Career/Technical Education", "Elementary School Teachers, Except Special Education", "Educational, Guidance, and Career Counselors and Advisors", "Instructional Coordinators", "Special Education Teachers, Secondary School"],
-    "media": ["Editors", "Writers and Authors", "Public Relations Specialists", "Film and Video Editors", "Producers and Directors", "Broadcast Announcers and Radio Disc Jockeys"],
-    "engineering_technology": ["Civil Engineering Technologists and Technicians", "Mechanical Engineering Technologists and Technicians", "Electrical and Electronic Engineering Technologists and Technicians", "Industrial Engineering Technologists and Technicians", "Manufacturing Engineers"],
-    "nursing_allied": ["Registered Nurses", "Physical Therapists", "Medical and Clinical Laboratory Technologists", "Radiologic Technologists and Technicians", "Dental Hygienists", "Occupational Therapists"],
-    "pharmacy": ["Pharmacists", "Pharmacy Technicians", "Medical Scientists, Except Epidemiologists", "Chemists"],
-    "agriculture_veterinary": ["Veterinarians", "Soil and Plant Scientists", "Animal Scientists", "Food Scientists and Technologists", "Agricultural Engineers", "Farmers, Ranchers, and Other Agricultural Managers"],
-    "accounting_professional": ["Accountants and Auditors", "Financial Examiners", "Tax Examiners and Collectors, and Revenue Agents", "Budget Analysts", "Financial Managers"],
-    "armed_forces": ["Military Officer Special and Tactical Operations Leaders", "Police and Sheriff's Patrol Officers", "Firefighters", "First-Line Supervisors of Police and Detectives", "Airline Pilots, Copilots, and Flight Engineers"],
-    "hospitality_tourism": ["Chefs and Head Cooks", "Lodging Managers", "Food Service Managers", "Travel Agents", "Concierges", "Meeting, Convention, and Event Planners"],
-    "it_skills": ["Computer User Support Specialists", "Computer Network Support Specialists", "Web Developers", "Network and Computer Systems Administrators", "Database Administrators"],
-    "fine_arts_fashion": ["Fashion Designers", "Fine Artists, Including Painters, Sculptors, and Illustrators", "Graphic Designers", "Interior Designers", "Craft Artists", "Set and Exhibit Designers"]
+    "matric_science_bio": [
+      "Registered Nurses",
+      "Pharmacists",
+      "Dentists, General",
+      "Family Medicine Physicians",
+      "Medical and Clinical Laboratory Technologists",
+      "Physical Therapists",
+      "Biochemists and Biophysicists"
+    ],
+    "matric_science_cs": [
+      "Software Developers",
+      "Computer Systems Analysts",
+      "Electrical Engineers",
+      "Computer Network Support Specialists",
+      "Mechanical Engineers",
+      "Database Administrators"
+    ],
+    "matric_humanities": [
+      "Lawyers",
+      "Secondary School Teachers, Except Special and Career/Technical Education",
+      "Writers and Authors",
+      "Graphic Designers",
+      "Child, Family, and School Social Workers",
+      "Public Relations Specialists"
+    ],
+    "matric_technical": [
+      "Electricians",
+      "Automotive Service Technicians and Mechanics",
+      "Mechanical Engineering Technologists and Technicians",
+      "Electrical and Electronic Engineering Technologists and Technicians",
+      "Welders, Cutters, Solderers, and Brazers",
+      "Heating, Air Conditioning, and Refrigeration Mechanics and Installers"
+    ],
+    "pre_medical": [
+      "Family Medicine Physicians",
+      "General Internal Medicine Physicians",
+      "Dentists, General",
+      "Pharmacists",
+      "Registered Nurses",
+      "Physical Therapists",
+      "Medical and Clinical Laboratory Technologists"
+    ],
+    "pre_engineering": [
+      "Civil Engineers",
+      "Mechanical Engineers",
+      "Electrical Engineers",
+      "Chemical Engineers",
+      "Industrial Engineers",
+      "Aerospace Engineers"
+    ],
+    "ics": [
+      "Software Developers",
+      "Computer Systems Analysts",
+      "Database Administrators",
+      "Information Security Analysts",
+      "Computer Network Architects",
+      "Web Developers"
+    ],
+    "icom": [
+      "Accountants and Auditors",
+      "Budget Analysts",
+      "Loan Officers",
+      "Management Analysts",
+      "Bookkeeping, Accounting, and Auditing Clerks",
+      "Sales Managers"
+    ],
+    "fa_humanities": [
+      "Lawyers",
+      "Secondary School Teachers, Except Special and Career/Technical Education",
+      "Writers and Authors",
+      "Clinical and Counseling Psychologists",
+      "Child, Family, and School Social Workers",
+      "Editors"
+    ],
+    "general_science": [
+      "Chemists",
+      "Physicists",
+      "Mathematicians",
+      "Statisticians",
+      "Environmental Scientists and Specialists, Including Health",
+      "Secondary School Teachers, Except Special and Career/Technical Education"
+    ],
+    "dae": [
+      "Civil Engineering Technologists and Technicians",
+      "Mechanical Engineering Technologists and Technicians",
+      "Electrical and Electronic Engineering Technologists and Technicians",
+      "Industrial Engineering Technologists and Technicians",
+      "Computer Network Support Specialists"
+    ],
+    "tech_vocational": [
+      "Electricians",
+      "Plumbers, Pipefitters, and Steamfitters",
+      "Automotive Service Technicians and Mechanics",
+      "Welders, Cutters, Solderers, and Brazers",
+      "Carpenters",
+      "Heating, Air Conditioning, and Refrigeration Mechanics and Installers"
+    ],
+    "a_level": [
+      "Lawyers",
+      "Software Developers",
+      "Accountants and Auditors",
+      "Civil Engineers",
+      "Family Medicine Physicians",
+      "Economists"
+    ],
+    "nursing_diploma_early": [
+      "Registered Nurses",
+      "Licensed Practical and Licensed Vocational Nurses",
+      "Medical Assistants",
+      "Pharmacy Technicians",
+      "Radiologic Technologists and Technicians"
+    ],
+    "medicine": [
+      "Family Medicine Physicians",
+      "General Internal Medicine Physicians",
+      "Pediatricians, General",
+      "Dentists, General",
+      "Psychiatrists",
+      "Obstetricians and Gynecologists"
+    ],
+    "engineering": [
+      "Civil Engineers",
+      "Mechanical Engineers",
+      "Electrical Engineers",
+      "Chemical Engineers",
+      "Industrial Engineers",
+      "Aerospace Engineers"
+    ],
+    "computer_science": [
+      "Software Developers",
+      "Computer and Information Research Scientists",
+      "Computer Systems Analysts",
+      "Information Security Analysts",
+      "Database Architects",
+      "Computer Network Architects"
+    ],
+    "business": [
+      "Accountants and Auditors",
+      "Management Analysts",
+      "Marketing Managers",
+      "Financial Managers",
+      "Human Resources Specialists",
+      "General and Operations Managers"
+    ],
+    "natural_sciences": [
+      "Chemists",
+      "Physicists",
+      "Mathematicians",
+      "Statisticians",
+      "Biochemists and Biophysicists",
+      "Zoologists and Wildlife Biologists"
+    ],
+    "arts_design": [
+      "Graphic Designers",
+      "Architects, Except Landscape and Naval",
+      "Interior Designers",
+      "Fine Artists, Including Painters, Sculptors, and Illustrators",
+      "Art Directors",
+      "Commercial and Industrial Designers"
+    ],
+    "social_sciences": [
+      "Clinical and Counseling Psychologists",
+      "Sociologists",
+      "Economists",
+      "Political Scientists",
+      "Child, Family, and School Social Workers",
+      "Urban and Regional Planners"
+    ],
+    "law": [
+      "Lawyers",
+      "Judges, Magistrate Judges, and Magistrates",
+      "Paralegals and Legal Assistants",
+      "Arbitrators, Mediators, and Conciliators"
+    ],
+    "education": [
+      "Secondary School Teachers, Except Special and Career/Technical Education",
+      "Elementary School Teachers, Except Special Education",
+      "Educational, Guidance, and Career Counselors and Advisors",
+      "Instructional Coordinators",
+      "Special Education Teachers, Secondary School"
+    ],
+    "media": [
+      "Editors",
+      "Writers and Authors",
+      "Public Relations Specialists",
+      "Film and Video Editors",
+      "Producers and Directors",
+      "Broadcast Announcers and Radio Disc Jockeys"
+    ],
+    "engineering_technology": [
+      "Civil Engineering Technologists and Technicians",
+      "Mechanical Engineering Technologists and Technicians",
+      "Electrical and Electronic Engineering Technologists and Technicians",
+      "Industrial Engineering Technologists and Technicians",
+      "Manufacturing Engineers"
+    ],
+    "nursing_allied": [
+      "Registered Nurses",
+      "Physical Therapists",
+      "Medical and Clinical Laboratory Technologists",
+      "Radiologic Technologists and Technicians",
+      "Dental Hygienists",
+      "Occupational Therapists"
+    ],
+    "pharmacy": [
+      "Pharmacists",
+      "Pharmacy Technicians",
+      "Medical Scientists, Except Epidemiologists",
+      "Chemists"
+    ],
+    "agriculture_veterinary": [
+      "Veterinarians",
+      "Soil and Plant Scientists",
+      "Animal Scientists",
+      "Food Scientists and Technologists",
+      "Agricultural Engineers",
+      "Farmers, Ranchers, and Other Agricultural Managers"
+    ],
+    "accounting_professional": [
+      "Accountants and Auditors",
+      "Financial Examiners",
+      "Tax Examiners and Collectors, and Revenue Agents",
+      "Budget Analysts",
+      "Financial Managers"
+    ],
+    "armed_forces": [
+      "Police and Sheriff's Patrol Officers",
+      "Firefighters",
+      "First-Line Supervisors of Police and Detectives",
+      "Airline Pilots, Copilots, and Flight Engineers"
+    ],
+    "hospitality_tourism": [
+      "Chefs and Head Cooks",
+      "Lodging Managers",
+      "Food Service Managers",
+      "Travel Agents",
+      "Concierges",
+      "Meeting, Convention, and Event Planners"
+    ],
+    "it_skills": [
+      "Computer User Support Specialists",
+      "Computer Network Support Specialists",
+      "Web Developers",
+      "Network and Computer Systems Administrators",
+      "Database Administrators"
+    ],
+    "fine_arts_fashion": [
+      "Fashion Designers",
+      "Fine Artists, Including Painters, Sculptors, and Illustrators",
+      "Graphic Designers",
+      "Interior Designers",
+      "Craft Artists",
+      "Set and Exhibit Designers"
+    ]
+  },
+  "notes": {
+    "armed_forces": "O*NET 31.0 has no interest data for military occupations (55-xxxx), so this profile uses the related uniformed and aviation roles that have data. The counsellor panel should judge whether it is a fair stand-in."
   }
 }

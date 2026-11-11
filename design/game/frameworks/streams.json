@@ -1,8 +1,8 @@
 {
-  "version": "1.3.0",
+  "version": "1.3.1",
   "updated": "2026-11-11",
   "framework": "Pakistani education paths with RIASEC profiles, ability support and eligibility gates",
-  "status": "RIASEC profiles are still heuristic: tools/onet_profiles.py replaces them with profiles derived from O*NET occupational interest data (the occupations each path leads to, listed in path_occupations.json) once the O*NET data file is added. Gates carry a verification level and source; see verification_policy.",
+  "status": "RIASEC profiles derived from O*NET 31.0 occupational interest data on 2026-11-11 (tools/onet_profiles.py; occupations per path in path_occupations.json, to be reviewed by the counsellor panel). Gates carry a verification level and source; see verification_policy. Board-specific routes are being verified.",
   "by_class": {
     "8": {
       "decision": "Matric group",
@@ -11,12 +11,12 @@
           "id": "matric_science_bio",
           "name": "Science (Biology)",
           "riasec": {
-            "R": 0.4,
-            "I": 0.9,
+            "R": 0.56,
+            "I": 0.78,
             "A": 0.1,
-            "S": 0.7,
-            "E": 0.2,
-            "C": 0.4
+            "S": 0.59,
+            "E": 0.19,
+            "C": 0.52
           },
           "abilities": [
             "planning",
@@ -28,18 +28,31 @@
             "pre_engineering",
             "ics",
             "general_science"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "29-1141.00",
+              "29-1051.00",
+              "29-1021.00",
+              "29-1215.00",
+              "29-2011.00",
+              "29-1123.00",
+              "19-1021.00"
+            ]
+          }
         },
         {
           "id": "matric_science_cs",
           "name": "Science (Computer Science)",
           "riasec": {
-            "R": 0.6,
-            "I": 0.8,
-            "A": 0.2,
-            "S": 0.1,
-            "E": 0.2,
-            "C": 0.7
+            "R": 0.57,
+            "I": 0.73,
+            "A": 0.13,
+            "S": 0.15,
+            "E": 0.22,
+            "C": 0.75
           },
           "abilities": [
             "logic",
@@ -51,18 +64,30 @@
             "ics",
             "general_science"
           ],
-          "gate_note": "Without Biology at Matric, FSc Pre-Medical and medicine are usually closed."
+          "gate_note": "Without Biology at Matric, FSc Pre-Medical and medicine are usually closed.",
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "15-1252.00",
+              "15-1211.00",
+              "17-2071.00",
+              "15-1231.00",
+              "17-2141.00",
+              "15-1242.00"
+            ]
+          }
         },
         {
           "id": "matric_humanities",
           "name": "Humanities / Arts",
           "riasec": {
-            "R": 0.1,
-            "I": 0.3,
-            "A": 0.8,
-            "S": 0.8,
-            "E": 0.6,
-            "C": 0.3
+            "R": 0.14,
+            "I": 0.38,
+            "A": 0.6,
+            "S": 0.56,
+            "E": 0.54,
+            "C": 0.46
           },
           "abilities": [
             "verbal"
@@ -70,18 +95,30 @@
           "opens": [
             "fa_humanities",
             "icom"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "23-1011.00",
+              "25-2031.00",
+              "27-3043.00",
+              "27-1024.00",
+              "21-1021.00",
+              "27-3031.00"
+            ]
+          }
         },
         {
           "id": "matric_technical",
           "name": "Matric Technical (science with a technical subject)",
           "riasec": {
-            "R": 0.9,
-            "I": 0.6,
-            "A": 0.2,
-            "S": 0.1,
-            "E": 0.2,
-            "C": 0.4
+            "R": 0.96,
+            "I": 0.44,
+            "A": 0.07,
+            "S": 0.06,
+            "E": 0.07,
+            "C": 0.56
           },
           "abilities": [
             "spatial",
@@ -95,7 +132,19 @@
             "tech_vocational"
           ],
           "availability": "Offered by some boards and technical high schools only",
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "47-2111.00",
+              "49-3023.00",
+              "17-3027.00",
+              "17-3023.00",
+              "51-4121.00",
+              "49-9021.00"
+            ]
+          }
         }
       ]
     },
@@ -106,12 +155,12 @@
           "id": "pre_medical",
           "name": "FSc Pre-Medical",
           "riasec": {
-            "R": 0.3,
-            "I": 0.9,
-            "A": 0.1,
-            "S": 0.8,
+            "R": 0.54,
+            "I": 0.78,
+            "A": 0.08,
+            "S": 0.69,
             "E": 0.2,
-            "C": 0.3
+            "C": 0.52
           },
           "abilities": [
             "planning",
@@ -120,115 +169,199 @@
           ],
           "requires": [
             "Biology at Matric"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "29-1215.00",
+              "29-1216.00",
+              "29-1021.00",
+              "29-1051.00",
+              "29-1141.00",
+              "29-1123.00",
+              "29-2011.00"
+            ]
+          }
         },
         {
           "id": "pre_engineering",
           "name": "FSc Pre-Engineering",
           "riasec": {
-            "R": 0.9,
-            "I": 0.9,
-            "A": 0.2,
-            "S": 0.1,
-            "E": 0.2,
-            "C": 0.4
+            "R": 0.83,
+            "I": 0.74,
+            "A": 0.17,
+            "S": 0.06,
+            "E": 0.24,
+            "C": 0.62
           },
           "abilities": [
             "spatial",
             "numerical",
             "abstract"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "17-2051.00",
+              "17-2141.00",
+              "17-2071.00",
+              "17-2041.00",
+              "17-2112.00",
+              "17-2011.00"
+            ]
+          }
         },
         {
           "id": "ics",
           "name": "ICS (Computer Science)",
           "riasec": {
-            "R": 0.5,
-            "I": 0.8,
-            "A": 0.3,
-            "S": 0.1,
-            "E": 0.3,
-            "C": 0.8
+            "R": 0.4,
+            "I": 0.75,
+            "A": 0.17,
+            "S": 0.18,
+            "E": 0.28,
+            "C": 0.79
           },
           "abilities": [
             "logic",
             "abstract",
             "numerical"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "15-1252.00",
+              "15-1211.00",
+              "15-1242.00",
+              "15-1212.00",
+              "15-1241.00",
+              "15-1254.00"
+            ]
+          }
         },
         {
           "id": "icom",
           "name": "I.Com (Commerce)",
           "riasec": {
-            "R": 0.1,
-            "I": 0.3,
-            "A": 0.1,
-            "S": 0.3,
-            "E": 0.8,
-            "C": 0.9
+            "R": 0.06,
+            "I": 0.36,
+            "A": 0.05,
+            "S": 0.27,
+            "E": 0.62,
+            "C": 0.91
           },
           "abilities": [
             "numerical",
             "planning"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "13-2011.00",
+              "13-2031.00",
+              "13-2072.00",
+              "13-1111.00",
+              "43-3031.00",
+              "11-2022.00"
+            ]
+          }
         },
         {
           "id": "fa_humanities",
           "name": "FA / Humanities",
           "riasec": {
-            "R": 0.1,
-            "I": 0.3,
-            "A": 0.8,
-            "S": 0.8,
-            "E": 0.6,
-            "C": 0.2
+            "R": 0.07,
+            "I": 0.46,
+            "A": 0.51,
+            "S": 0.65,
+            "E": 0.47,
+            "C": 0.48
           },
           "abilities": [
             "verbal"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "23-1011.00",
+              "25-2031.00",
+              "27-3043.00",
+              "19-3033.00",
+              "21-1021.00",
+              "27-3041.00"
+            ]
+          }
         },
         {
           "id": "general_science",
           "name": "General Science",
           "riasec": {
-            "R": 0.4,
-            "I": 0.8,
-            "A": 0.2,
+            "R": 0.49,
+            "I": 0.87,
+            "A": 0.25,
             "S": 0.3,
-            "E": 0.2,
-            "C": 0.6
+            "E": 0.16,
+            "C": 0.63
           },
           "abilities": [
             "numerical",
             "logic"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "19-2031.00",
+              "19-2012.00",
+              "15-2021.00",
+              "15-2041.00",
+              "19-2041.00",
+              "25-2031.00"
+            ]
+          }
         },
         {
           "id": "dae",
           "name": "DAE (Diploma of Associate Engineering)",
           "riasec": {
-            "R": 0.9,
-            "I": 0.5,
-            "A": 0.2,
-            "S": 0.1,
-            "E": 0.3,
-            "C": 0.4
+            "R": 0.77,
+            "I": 0.69,
+            "A": 0.13,
+            "S": 0.11,
+            "E": 0.14,
+            "C": 0.69
           },
           "abilities": [
             "spatial",
             "planning"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "17-3022.00",
+              "17-3027.00",
+              "17-3023.00",
+              "17-3026.00",
+              "15-1231.00"
+            ]
+          }
         },
         {
           "id": "tech_vocational",
           "name": "Technical and vocational certificate (TEVTA, NAVTTC, PBTE/KPBTE/SBTE trades)",
           "riasec": {
-            "R": 0.9,
-            "I": 0.3,
-            "A": 0.3,
-            "S": 0.3,
-            "E": 0.4,
-            "C": 0.4
+            "R": 0.99,
+            "I": 0.26,
+            "A": 0.05,
+            "S": 0.07,
+            "E": 0.08,
+            "C": 0.49
           },
           "abilities": [
             "spatial",
@@ -250,18 +383,30 @@
             "dae",
             "b_tech_later"
           ],
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "47-2111.00",
+              "47-2152.00",
+              "49-3023.00",
+              "51-4121.00",
+              "47-2031.00",
+              "49-9021.00"
+            ]
+          }
         },
         {
           "id": "a_level",
           "name": "A Level subject bundle (after O Level)",
           "riasec": {
-            "R": 0.4,
-            "I": 0.8,
-            "A": 0.4,
-            "S": 0.4,
-            "E": 0.5,
-            "C": 0.5
+            "R": 0.32,
+            "I": 0.73,
+            "A": 0.17,
+            "S": 0.33,
+            "E": 0.39,
+            "C": 0.67
           },
           "abilities": [
             "verbal",
@@ -269,25 +414,48 @@
             "abstract"
           ],
           "notes": "Bundles mirror FSc streams; IBCC equivalence needed for local admissions",
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "23-1011.00",
+              "15-1252.00",
+              "13-2011.00",
+              "17-2051.00",
+              "29-1215.00",
+              "19-3011.00"
+            ]
+          }
         },
         {
           "id": "nursing_diploma_early",
           "name": "Allied health and nursing pathways after Matric (where offered)",
           "riasec": {
-            "R": 0.3,
-            "I": 0.6,
-            "A": 0.1,
-            "S": 0.9,
-            "E": 0.2,
-            "C": 0.4
+            "R": 0.57,
+            "I": 0.5,
+            "A": 0.01,
+            "S": 0.59,
+            "E": 0.17,
+            "C": 0.74
           },
           "abilities": [
             "planning",
             "verbal"
           ],
           "notes": "Many nursing and allied health programmes now need Intermediate first; check PNMC and provincial rules",
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "29-1141.00",
+              "29-2061.00",
+              "31-9092.00",
+              "29-2052.00",
+              "29-2034.00"
+            ]
+          }
         }
       ]
     },
@@ -298,12 +466,12 @@
           "id": "medicine",
           "name": "Medicine and allied health",
           "riasec": {
-            "R": 0.3,
-            "I": 0.9,
-            "A": 0.1,
-            "S": 0.9,
-            "E": 0.2,
-            "C": 0.3
+            "R": 0.5,
+            "I": 0.85,
+            "A": 0.11,
+            "S": 0.79,
+            "E": 0.21,
+            "C": 0.45
           },
           "abilities": [
             "planning",
@@ -312,18 +480,30 @@
           ],
           "tests": [
             "MDCAT"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "29-1215.00",
+              "29-1216.00",
+              "29-1221.00",
+              "29-1021.00",
+              "29-1223.00",
+              "29-1218.00"
+            ]
+          }
         },
         {
           "id": "engineering",
           "name": "Engineering",
           "riasec": {
-            "R": 0.9,
-            "I": 0.9,
-            "A": 0.2,
-            "S": 0.1,
-            "E": 0.3,
-            "C": 0.4
+            "R": 0.83,
+            "I": 0.74,
+            "A": 0.17,
+            "S": 0.06,
+            "E": 0.24,
+            "C": 0.62
           },
           "abilities": [
             "spatial",
@@ -333,18 +513,30 @@
           "tests": [
             "ECAT",
             "university tests"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "17-2051.00",
+              "17-2141.00",
+              "17-2071.00",
+              "17-2041.00",
+              "17-2112.00",
+              "17-2011.00"
+            ]
+          }
         },
         {
           "id": "computer_science",
           "name": "Computer science and IT",
           "riasec": {
-            "R": 0.5,
-            "I": 0.9,
-            "A": 0.3,
-            "S": 0.1,
-            "E": 0.3,
-            "C": 0.7
+            "R": 0.41,
+            "I": 0.83,
+            "A": 0.2,
+            "S": 0.16,
+            "E": 0.26,
+            "C": 0.77
           },
           "abilities": [
             "logic",
@@ -353,83 +545,143 @@
           ],
           "tests": [
             "NTS / university tests"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "15-1252.00",
+              "15-1221.00",
+              "15-1211.00",
+              "15-1212.00",
+              "15-1243.00",
+              "15-1241.00"
+            ]
+          }
         },
         {
           "id": "business",
           "name": "Business, accounting and finance",
           "riasec": {
-            "R": 0.1,
-            "I": 0.3,
-            "A": 0.2,
-            "S": 0.4,
-            "E": 0.9,
-            "C": 0.8
+            "R": 0.06,
+            "I": 0.37,
+            "A": 0.09,
+            "S": 0.33,
+            "E": 0.82,
+            "C": 0.78
           },
           "abilities": [
             "numerical",
             "planning"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "13-2011.00",
+              "13-1111.00",
+              "11-2021.00",
+              "11-3031.00",
+              "13-1071.00",
+              "11-1021.00"
+            ]
+          }
         },
         {
           "id": "natural_sciences",
           "name": "Natural and mathematical sciences",
           "riasec": {
-            "R": 0.4,
-            "I": 1.0,
-            "A": 0.2,
-            "S": 0.2,
-            "E": 0.1,
-            "C": 0.5
+            "R": 0.57,
+            "I": 0.98,
+            "A": 0.23,
+            "S": 0.16,
+            "E": 0.12,
+            "C": 0.61
           },
           "abilities": [
             "abstract",
             "numerical",
             "logic"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "19-2031.00",
+              "19-2012.00",
+              "15-2021.00",
+              "15-2041.00",
+              "19-1021.00",
+              "19-1023.00"
+            ]
+          }
         },
         {
           "id": "arts_design",
           "name": "Arts, design and architecture",
           "riasec": {
-            "R": 0.4,
-            "I": 0.3,
-            "A": 1.0,
-            "S": 0.2,
-            "E": 0.3,
-            "C": 0.1
+            "R": 0.5,
+            "I": 0.37,
+            "A": 0.84,
+            "S": 0.23,
+            "E": 0.45,
+            "C": 0.43
           },
           "abilities": [
             "spatial",
             "abstract"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "27-1024.00",
+              "17-1011.00",
+              "27-1025.00",
+              "27-1013.00",
+              "27-1011.00",
+              "27-1021.00"
+            ]
+          }
         },
         {
           "id": "social_sciences",
           "name": "Social sciences and psychology",
           "riasec": {
-            "R": 0.1,
-            "I": 0.7,
-            "A": 0.4,
-            "S": 0.9,
-            "E": 0.3,
-            "C": 0.2
+            "R": 0.11,
+            "I": 0.79,
+            "A": 0.37,
+            "S": 0.57,
+            "E": 0.41,
+            "C": 0.46
           },
           "abilities": [
             "verbal",
             "logic"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "19-3033.00",
+              "19-3041.00",
+              "19-3011.00",
+              "19-3094.00",
+              "21-1021.00",
+              "19-3051.00"
+            ]
+          }
         },
         {
           "id": "law",
           "name": "Law",
           "riasec": {
             "R": 0.1,
-            "I": 0.6,
-            "A": 0.3,
-            "S": 0.5,
-            "E": 0.8,
-            "C": 0.5
+            "I": 0.54,
+            "A": 0.21,
+            "S": 0.45,
+            "E": 0.64,
+            "C": 0.6
           },
           "abilities": [
             "verbal",
@@ -437,49 +689,82 @@
           ],
           "tests": [
             "LAT"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "23-1011.00",
+              "23-1023.00",
+              "23-2011.00",
+              "23-1022.00"
+            ]
+          }
         },
         {
           "id": "education",
           "name": "Education and teaching",
           "riasec": {
-            "R": 0.1,
-            "I": 0.3,
-            "A": 0.4,
-            "S": 1.0,
-            "E": 0.3,
-            "C": 0.3
+            "R": 0.18,
+            "I": 0.42,
+            "A": 0.44,
+            "S": 0.97,
+            "E": 0.35,
+            "C": 0.47
           },
           "abilities": [
             "verbal",
             "planning"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "25-2031.00",
+              "25-2021.00",
+              "21-1012.00",
+              "25-9031.00",
+              "25-2058.00"
+            ]
+          }
         },
         {
           "id": "media",
           "name": "Media and communication",
           "riasec": {
-            "R": 0.1,
-            "I": 0.2,
-            "A": 0.9,
-            "S": 0.5,
-            "E": 0.7,
-            "C": 0.2
+            "R": 0.11,
+            "I": 0.25,
+            "A": 0.78,
+            "S": 0.33,
+            "E": 0.61,
+            "C": 0.44
           },
           "abilities": [
             "verbal"
-          ]
+          ],
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "27-3041.00",
+              "27-3043.00",
+              "27-3031.00",
+              "27-4032.00",
+              "27-2012.00",
+              "27-3011.00"
+            ]
+          }
         },
         {
           "id": "engineering_technology",
           "name": "Engineering technology (B.Tech / BS Engineering Technology)",
           "riasec": {
-            "R": 0.9,
-            "I": 0.7,
-            "A": 0.2,
-            "S": 0.1,
-            "E": 0.3,
-            "C": 0.4
+            "R": 0.8,
+            "I": 0.69,
+            "A": 0.18,
+            "S": 0.09,
+            "E": 0.16,
+            "C": 0.65
           },
           "abilities": [
             "spatial",
@@ -494,18 +779,29 @@
           "tests": [
             "university tests"
           ],
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "17-3022.00",
+              "17-3027.00",
+              "17-3023.00",
+              "17-3026.00",
+              "17-2112.03"
+            ]
+          }
         },
         {
           "id": "nursing_allied",
           "name": "Nursing and allied health (BSN, DPT, MLT, radiology, dental and lab technology)",
           "riasec": {
-            "R": 0.4,
-            "I": 0.7,
-            "A": 0.1,
-            "S": 0.9,
-            "E": 0.2,
-            "C": 0.4
+            "R": 0.62,
+            "I": 0.65,
+            "A": 0.11,
+            "S": 0.64,
+            "E": 0.14,
+            "C": 0.54
           },
           "abilities": [
             "planning",
@@ -514,18 +810,30 @@
           "tests": [
             "university or MDCAT-type tests (varies)"
           ],
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "29-1141.00",
+              "29-1123.00",
+              "29-2011.00",
+              "29-2034.00",
+              "29-1292.00",
+              "29-1122.00"
+            ]
+          }
         },
         {
           "id": "pharmacy",
           "name": "Pharmacy (Pharm-D)",
           "riasec": {
-            "R": 0.3,
-            "I": 0.9,
+            "R": 0.54,
+            "I": 0.77,
             "A": 0.1,
-            "S": 0.6,
-            "E": 0.3,
-            "C": 0.6
+            "S": 0.36,
+            "E": 0.21,
+            "C": 0.67
           },
           "abilities": [
             "numerical",
@@ -535,18 +843,28 @@
           "tests": [
             "university tests"
           ],
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "29-1051.00",
+              "29-2052.00",
+              "19-1042.00",
+              "19-2031.00"
+            ]
+          }
         },
         {
           "id": "agriculture_veterinary",
           "name": "Agriculture, food and veterinary sciences",
           "riasec": {
-            "R": 0.8,
-            "I": 0.8,
-            "A": 0.1,
-            "S": 0.4,
-            "E": 0.3,
-            "C": 0.4
+            "R": 0.79,
+            "I": 0.79,
+            "A": 0.13,
+            "S": 0.21,
+            "E": 0.28,
+            "C": 0.46
           },
           "abilities": [
             "planning",
@@ -555,18 +873,30 @@
           "tests": [
             "university tests"
           ],
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "29-1131.00",
+              "19-1013.00",
+              "19-1011.00",
+              "19-1012.00",
+              "17-2021.00",
+              "11-9013.00"
+            ]
+          }
         },
         {
           "id": "accounting_professional",
           "name": "Professional accounting (CA, ACCA, CMA)",
           "riasec": {
-            "R": 0.1,
-            "I": 0.5,
-            "A": 0.1,
-            "S": 0.2,
-            "E": 0.6,
-            "C": 0.9
+            "R": 0.04,
+            "I": 0.36,
+            "A": 0.04,
+            "S": 0.27,
+            "E": 0.66,
+            "C": 0.93
           },
           "abilities": [
             "numerical",
@@ -575,18 +905,29 @@
           "tests": [
             "professional body entry"
           ],
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "13-2011.00",
+              "13-2061.00",
+              "13-2081.00",
+              "13-2031.00",
+              "11-3031.00"
+            ]
+          }
         },
         {
           "id": "armed_forces",
           "name": "Armed forces and uniformed services (ISSB route)",
           "riasec": {
-            "R": 0.8,
-            "I": 0.4,
-            "A": 0.1,
-            "S": 0.6,
-            "E": 0.7,
-            "C": 0.5
+            "R": 0.67,
+            "I": 0.3,
+            "A": 0.03,
+            "S": 0.38,
+            "E": 0.57,
+            "C": 0.57
           },
           "abilities": [
             "spatial",
@@ -597,53 +938,86 @@
             "ISSB and service tests"
           ],
           "notes": "Age, marks and medical limits apply; show as rules with sources",
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "33-3051.00",
+              "33-2011.00",
+              "33-1012.00",
+              "53-2011.00"
+            ]
+          }
         },
         {
           "id": "hospitality_tourism",
           "name": "Hospitality, culinary and tourism",
           "riasec": {
-            "R": 0.6,
-            "I": 0.2,
-            "A": 0.5,
-            "S": 0.7,
-            "E": 0.7,
-            "C": 0.4
+            "R": 0.29,
+            "I": 0.08,
+            "A": 0.18,
+            "S": 0.53,
+            "E": 0.8,
+            "C": 0.65
           },
           "abilities": [
             "planning",
             "verbal"
           ],
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "35-1011.00",
+              "11-9081.00",
+              "11-9051.00",
+              "41-3041.00",
+              "39-6012.00",
+              "13-1121.00"
+            ]
+          }
         },
         {
           "id": "it_skills",
           "name": "IT skills and certifications (associate degrees, short professional certificates)",
           "riasec": {
-            "R": 0.5,
-            "I": 0.8,
-            "A": 0.3,
-            "S": 0.1,
-            "E": 0.4,
-            "C": 0.8
+            "R": 0.45,
+            "I": 0.58,
+            "A": 0.08,
+            "S": 0.24,
+            "E": 0.31,
+            "C": 0.81
           },
           "abilities": [
             "logic",
             "abstract"
           ],
           "notes": "A fast route to work; can lead to a degree later",
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "15-1232.00",
+              "15-1231.00",
+              "15-1254.00",
+              "15-1244.00",
+              "15-1242.00"
+            ]
+          }
         },
         {
           "id": "fine_arts_fashion",
           "name": "Fine arts, fashion and textile design",
           "riasec": {
-            "R": 0.5,
-            "I": 0.3,
-            "A": 0.95,
-            "S": 0.3,
-            "E": 0.5,
-            "C": 0.2
+            "R": 0.54,
+            "I": 0.26,
+            "A": 0.92,
+            "S": 0.23,
+            "E": 0.4,
+            "C": 0.36
           },
           "abilities": [
             "spatial",
@@ -652,7 +1026,19 @@
           "tests": [
             "portfolio or aptitude tests"
           ],
-          "verify": true
+          "verify": true,
+          "riasec_source": {
+            "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",
+            "onet_version": "31.0",
+            "onet_codes": [
+              "27-1022.00",
+              "27-1013.00",
+              "27-1024.00",
+              "27-1025.00",
+              "27-1012.00",
+              "27-1027.00"
+            ]
+          }
         }
       ]
     }
@@ -660,7 +1046,7 @@
   "gates": [
     {
       "id": "biology_for_medicine",
-      "rule": "MBBS/BDS need HSSC Pre-Medical (Biology and Chemistry, with Physics) or an IBCC-equivalent qualification. Without Biology at Matric, the routes are re-taking class 9 in a Biology group or, where the board allows, passing Biology as an additional subject (board routes are listed under routes and are unverified).",
+      "rule": "MBBS/BDS need HSSC Pre-Medical (Biology and Chemistry, with Physics) or an IBCC-equivalent qualification. A student without Biology at Matric can change group early in class 9 (board deadlines, see routes) or re-take class 9 in a Biology group; after FSc Pre-Engineering, Biology can be passed as an additional subject (route additional_subject).",
       "applies_to": [
         "pre_medical",
         "medicine"
@@ -786,34 +1172,50 @@
         ],
         "by_board": {
           "FBISE": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "rule": "Apply on FBISE's change of subject/group form by 30 November; no change after the admission form is finally submitted; a granted change cannot be withdrawn.",
+            "verification": "reported",
+            "last_verified": "2026-11-11",
+            "source_url": "https://www.fbise.edu.pk/Downloads/Change-of-Subjects-Group-new.pdf",
+            "source": "FBISE change of subject(s)/group form and the SSC fee notification of 15 Jul 2025 (https://www.fbise.edu.pk/notifications/ssc/Fee%20Notification%202nd%20Annual%202025%20(Pakistan).pdf), as quoted by a search engine; fbise.edu.pk refused a direct read"
           },
           "PUNJAB": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "rule": "Punjab has nine boards with their own rules. BISE Multan: a candidate can change subjects or group up to 30 days before the examination begins. Other Punjab boards: not yet verified.",
+            "verification": "reported",
+            "last_verified": "2026-11-11",
+            "applies_to_boards": [
+              "BISE Multan"
+            ],
+            "source_url": "https://web.bisemultan.edu.pk/faqs/",
+            "source": "BISE Multan FAQ (official site), as quoted by a search engine"
+          },
+          "KPK": {
+            "rule": "BISE Peshawar, session 2026: the school may change a class 9 student's group up to 15 October 2026 (fee Rs 230; subject change Rs 115); after that, no group change. Other KPK boards set their own dates.",
+            "verification": "primary",
+            "last_verified": "2026-11-11",
+            "applies_to_boards": [
+              "BISE Peshawar"
+            ],
+            "session": "2026",
+            "source_url": "https://www.bisep.edu.pk/downloads/ssc/Notification%20-%20Online%20Enrollment%20-%209th%20Class%20-%202026.pdf",
+            "source": "BISE Peshawar Notification No. 33/Gen/Enrol/BISEP, dated 03/06/2026, item 2"
           },
           "SINDH": {
             "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
-          },
-          "KPK": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "last_verified": "2026-11-11",
+            "source_url": null,
+            "note": "No official source found online on 2026-11-11. The app says: ask your school before the board's deadline."
           },
           "BALOCHISTAN": {
             "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "last_verified": "2026-11-11",
+            "source_url": null,
+            "note": "Only a 2020 exam schedule on a third-party site was found (no change after the admission form is submitted); not accepted as a source. The app says: ask your school."
           },
           "AJK": {
             "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "last_verified": "2026-11-11",
+            "source_url": null,
+            "note": "No official source found online on 2026-11-11. The app says: ask your school before the board's deadline."
           }
         }
       },
@@ -837,33 +1239,46 @@
         "by_board": {
           "FBISE": {
             "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "last_verified": "2026-11-11",
+            "source_url": null,
+            "note": "No official source found online on 2026-11-11. The app says: ask your school before the board's deadline."
           },
           "PUNJAB": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "rule": "Punjab boards run a class 9 re-admission each session (2026-28: BISE Multan by 17 Sep 2026; BISE Faisalabad 3 Sep - 2 Oct 2026). Students who have already sat the class 10 exam cannot re-register for class 9 (reported for BISE Rawalpindi).",
+            "verification": "reported",
+            "last_verified": "2026-11-11",
+            "applies_to_boards": [
+              "BISE Multan",
+              "BISE Faisalabad",
+              "BISE Rawalpindi"
+            ],
+            "session": "2026-28",
+            "source_url": "https://propakistani.pk/2026/09/07/punjab-boards-announce-class-9-re-admission-schedule/",
+            "source": "ProPakistani, 7 Sep 2026; BISE Rawalpindi condition via schoolsti.org.pk (third party)"
           },
           "SINDH": {
             "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "last_verified": "2026-11-11",
+            "source_url": null,
+            "note": "No official source found online on 2026-11-11. The app says: ask your school before the board's deadline."
           },
           "KPK": {
             "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "last_verified": "2026-11-11",
+            "source_url": null,
+            "note": "No official source found online on 2026-11-11. The app says: ask your school before the board's deadline."
           },
           "BALOCHISTAN": {
             "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "last_verified": "2026-11-11",
+            "source_url": null,
+            "note": "No official source found online on 2026-11-11. The app says: ask your school before the board's deadline."
           },
           "AJK": {
             "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
+            "last_verified": "2026-11-11",
+            "source_url": null,
+            "note": "No official source found online on 2026-11-11. The app says: ask your school before the board's deadline."
           }
         }
       },
@@ -871,10 +1286,10 @@
         "id": "additional_subject",
         "label": "Pass the missing subject as an additional subject",
         "applies_in_classes": [
-          10,
-          11
+          11,
+          12
         ],
-        "example": "Biology for Pre-Medical",
+        "example": "After FSc Pre-Engineering, pass Biology as an additional subject to qualify for Pre-Medical routes",
         "cost": {
           "extra_years": 0,
           "extra_exams": 1,
@@ -884,38 +1299,11 @@
           "board",
           "college"
         ],
-        "by_board": {
-          "FBISE": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
-          },
-          "PUNJAB": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
-          },
-          "SINDH": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
-          },
-          "KPK": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
-          },
-          "BALOCHISTAN": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
-          },
-          "AJK": {
-            "verification": "unverified",
-            "last_verified": null,
-            "source_url": null
-          }
-        }
+        "scope_note": "Verified only at Intermediate level. No official route was found for adding Biology at Matric level to enter FSc Pre-Medical, so for class 9-10 students the app shows the group-change and re-take routes instead.",
+        "verification": "reported",
+        "last_verified": "2026-11-11",
+        "source_url": "https://www.dawn.com/news/1514917",
+        "source": "Ministry of Federal Education and Professional Training notification of 31 Oct 2019, with National Curriculum Council approval, as reported by Dawn (5 Nov 2019). FBISE noted the 200 practical hours of FSc Biology were still to be arranged. The reverse route (Pre-Medical + additional Mathematics to engineering) is now covered by gate premed_to_engineering"
       },
       {
         "id": "switch_stream_window",
@@ -1057,7 +1445,8 @@
     "rules": [
       "Every gate and route has verification, last_verified and, unless unverified, source_url.",
       "Numbers that change every session (MDCAT pass marks, merit cut-offs) are never hard-coded; the app says who sets them.",
-      "Re-check every gate before each school year and before the pilot (tools/check_streams.py fails CI on a missing field)."
+      "Re-check every gate before each school year and before the pilot (tools/check_streams.py fails CI on a missing field).",
+      "Board rules are per board and per session: each entry names the boards it covers (applies_to_boards) and, when dated, the session. A province with several boards is not verified by one board's rule."
     ]
   }
 }
