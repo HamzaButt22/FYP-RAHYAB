@@ -62,7 +62,7 @@ jobs:
           for d in backend/api backend/scoring; do
             (cd "$d" && uv export --frozen --no-dev --no-emit-project --no-emit-package rahyaab-scoring --no-hashes > /tmp/req.txt && uvx pip-audit -r /tmp/req.txt --strict)
           done
-      - uses: pnpm/action-setup@b906affcce14559ad1aafd4ab0e942779e9f58b1 # v4
+      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6.1.1
         with:
           version: 12
       - name: pnpm audit (frontend)
