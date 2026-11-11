@@ -1,12 +1,13 @@
-"""Liveness endpoint for Docker, Kubernetes and the external uptime monitor."""
+"""Liveness endpoint for Docker, Kubernetes and the external uptime monitor.
+
+No version banner (docs/api/openapi.yaml `health`): the version would help an attacker match known flaws.
+"""
 
 from fastapi import APIRouter
-
-from rahyaab_api import __version__
 
 router = APIRouter(tags=["health"])
 
 
 @router.get("/health")
 def health() -> dict[str, str]:
-    return {"status": "ok", "version": __version__}
+    return {"status": "ok"}

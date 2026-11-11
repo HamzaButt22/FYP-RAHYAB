@@ -96,7 +96,7 @@ def roles() -> None:
 def seed() -> None:
     sql = (ROOT / "database" / "seed" / "dev_seed.sql").read_bytes()
     compose("exec", "-T", "db", "psql", "-q", "-v", "ON_ERROR_STOP=1", "-U", "rahyaab_admin", "-d", "rahyaab", stdin=sql)
-    print("development seed loaded (class codes RYB-4K2 and RYB-7Q9)")
+    print("development seed loaded (class codes RYB-4K2 and RYB-7Q9; claim codes in database/seed/dev_seed.sql)")
 
 
 def reset() -> None:
@@ -163,6 +163,7 @@ def check() -> None:
     test()
     run([sys.executable, "design/tokens/check_tokens.py"])
     run([sys.executable, "tools/docs_audit.py"])
+    run([sys.executable, "tools/check_streams.py"])
     if shutil.which("kubectl"):
         for overlay in ("staging", "production"):
             print(f"\n$ kubectl kustomize infra/k8s/overlays/{overlay}", flush=True)

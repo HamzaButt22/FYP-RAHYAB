@@ -153,7 +153,7 @@ A change is done only when all of the following hold:
 
 ## Key references
 
-- [`SRS.md`](./SRS.md) v1.3: requirements (106 FRs, 77 NFRs), the game's requirements view, UX and visual system, architecture, ML experiments M1–M4, test plan, risks, traceability, research instruments.
+- [`SRS.md`](./SRS.md) v1.5: requirements (108 FRs, 77 NFRs), the game's requirements view, UX and visual system, architecture, ML experiments M1–M4, test plan, risks, traceability, research instruments.
 - [`SCREENS.md`](./SCREENS.md): every screen per user, with IDs matching the SRS.
 - [`design/game/GAME_DESIGN.md`](../../design/game/GAME_DESIGN.md): the final game design, frameworks, models and datasets.
 - [`docs/research/`](../research/): the three research reports and all research notes.

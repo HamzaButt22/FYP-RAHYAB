@@ -29,3 +29,6 @@ updates:
       # CI, the dashboard image and Expo use Node.js 24; move them to a new major version together.
       - dependency-name: "node"
         update-types: ["version-update:semver-major"]
+      # The API image's Python must match the version CI tests on (3.13); move both together, by hand.
+      - dependency-name: "python"
+        update-types: ["version-update:semver-major", "version-update:semver-minor"]

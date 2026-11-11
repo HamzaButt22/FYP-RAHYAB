@@ -1,23 +1,34 @@
 """Student sign-in: join with a class code (POST /v1/auth/student/join) and refresh (POST /v1/auth/refresh).
 
 Contract: docs/api/openapi.yaml `joinWithClassCode` and `refreshTokens`. Rules: FR-03, FR-04, FR-05a,
-FR-100, FR-102, NFR-39, NFR-44, NFR-67, NFR-74 and ADR-0011.
+FR-100, FR-102, FR-107, NFR-39, NFR-44, NFR-67, NFR-74, ADR-0011 and ADR-0015.
 Tests: tests/test_join_rules.py, test_join_validation.py, test_join_api.py, test_device_keys.py,
 test_refresh_api.py.
 
 Join: order of checks, chosen so that failures reveal and store as little as possible:
 1. Request shape (Pydantic, strict, extra fields forbidden) -> 422 with errors[].
-2. Age: under 13 -> 422 age_out_of_range, before anything touches the database.
+2. Age: under 13 by the student's own answer -> 422 age_out_of_range, before anything touches the database.
 3. Rate limits per device key (10 / 15 min) and per IP (300 / 15 min) -> 429.
-4. A class code with 30 failed attempts this hour is paused.
-5. Unknown, expired or paused codes and bad claim codes all get the same generic 404 (NFR-74).
-6. One transaction creates the student, device, refresh token and consent records.
+4. Unknown or expired class codes and bad claim codes get the same generic 404 (NFR-74).
+5. The school must hold an active pilot or institution licence with a free seat -> otherwise 403 (FR-107).
+6. A class with 30 failed claim codes this hour stops accepting claim codes for the rest of the hour;
+   joining without a claim code still works (one student cannot block a class).
+7. One transaction creates the student, device, refresh token and consent records.
+
+Age assurance (FR-100, docs/security/AGE_ASSURANCE.md): the student's own birth-year answer only stops
+under-13s and sets a provisional band. Consent is granted only by a recorded paper slip, and the teacher
+copies the age band from the school's admission register when recording it; that band wins. A mismatch
+raises an `age_mismatch` flag for the teacher.
 
 Refresh: the old token is single use and the request must be signed with the device key (device_keys.py).
-A wrong signature (a copied token, TC-SEC-18) or a second use of a token (TC-ONB-10) revokes the whole
-token family, so the student re-links the phone with a teacher's code. Every refusal is the same 401.
+- Wrong signature (a copied token, TC-SEC-18): the whole token family is revoked.
+- Second use with the right signature: if it comes within the grace period and nothing newer in the family
+  has been used, it is the same phone retrying after a lost response, so it gets a fresh pair and the
+  undelivered pair is revoked. Otherwise the family is revoked (TC-ONB-10).
+Every refusal is the same 401.
 """
 
+import json
 from datetime import datetime
 from typing import Annotated, Literal
 from uuid import UUID
@@ -26,13 +37,13 @@ from fastapi import APIRouter, Depends, Request
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_core import PydanticCustomError
 from sqlalchemy import Connection, Engine, text
+from sqlalchemy.engine import Row
 
 from rahyaab_api.db import get_engine
 from rahyaab_api.device_keys import load_public_key, verify_refresh_signature
 from rahyaab_api.join_rules import (
     MIN_AGE,
     PAKISTAN,
-    SELF_CONSENT_AGE,
     age_band,
     age_in_months,
     clean_nickname,
@@ -47,8 +58,10 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 DEVICE_LIMIT = Limit("join:dev", 10, 15 * 60)
 IP_LIMIT = Limit("join:ip", 300, 15 * 60)
-CODE_FAILURES = Limit("join:codefail", 30, 60 * 60)
+CLAIM_FAILURES = Limit("join:claimfail", 30, 60 * 60)  # per class
 REFRESH_IP_LIMIT = Limit("refresh:ip", 300, 60)  # the general ceiling (docs/api/README.md §3)
+
+ConsentState = Literal["pending", "granted", "withdrawn"]
 
 
 class DeviceInfo(BaseModel):
@@ -73,7 +86,7 @@ class JoinRequest(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
     class_code: str = Field(pattern=r"^[A-Z]{3}-[A-Z0-9]{3}$")
-    grade: int = Field(ge=8, le=12)
+    grade: int = Field(ge=8, le=12)  # the app's picker; the server stores the class's own grade
     birth_year: int = Field(ge=1950, le=9999)
     birth_month: int = Field(ge=1, le=12)
     claim_code: str | None = Field(default=None, pattern=r"^[A-Z0-9]{4}-[A-Z0-9]{4}$")
@@ -96,7 +109,7 @@ class TokenPair(BaseModel):
     refresh_token: str
     expires_in: int
     student_id: UUID
-    consent_state: Literal["pending", "granted", "withdrawn"]
+    consent_state: ConsentState
 
 
 class RefreshRequest(BaseModel):
@@ -108,6 +121,47 @@ class RefreshRequest(BaseModel):
         max_length=200,
         description="base64 DER SHA256withECDSA over 'rahyaab-refresh-v1:' + refresh_token (device_keys.py)",
     )
+
+
+class _CodeRejected(Exception):
+    """Internal: unknown or expired class code (rolled back)."""
+
+
+class _ClaimRejected(Exception):
+    """Internal: a claim code that is unknown, unrecorded, used, expired or from another class."""
+
+    def __init__(self, class_id: UUID) -> None:
+        super().__init__("claim rejected")
+        self.class_id = class_id
+
+
+def app_settings(request: Request) -> Settings:
+    settings: Settings = request.app.state.settings
+    return settings
+
+
+def _not_accepted() -> ProblemError:
+    # One message for unknown and expired class codes and every bad claim code (forms-and-errors.md §2, §4).
+    return ProblemError(
+        404,
+        "code_not_accepted",
+        "That code didn't work",
+        errors=[field_error("class_code", "not_accepted")],
+    )
+
+
+def _no_school_access() -> ProblemError:
+    # Only reachable with a valid class code, so it reveals nothing a student doesn't already have.
+    return ProblemError(
+        403,
+        "school_access_inactive",
+        "Your school's Rahyaab access isn't active right now. Please tell your teacher.",
+        errors=[field_error("class_code", "access_inactive")],
+    )
+
+
+def _client_ip(request: Request) -> str:
+    return request.client.host if request.client else "unknown"
 
 
 def _store_refresh_token(
@@ -131,29 +185,7 @@ def _store_refresh_token(
     return token
 
 
-class _CodeRejected(Exception):
-    """Internal: the class code or claim code was not accepted (rolled back, then counted)."""
-
-
-def app_settings(request: Request) -> Settings:
-    settings: Settings = request.app.state.settings
-    return settings
-
-
-def _not_accepted() -> ProblemError:
-    # One message for unknown, expired and paused codes and for bad claim codes (forms-and-errors.md §2, §4).
-    return ProblemError(
-        404,
-        "code_not_accepted",
-        "That code didn't work",
-        errors=[field_error("class_code", "not_accepted")],
-    )
-
-
-def _client_ip(request: Request) -> str:
-    return request.client.host if request.client else "unknown"
-
-
+# ------------------------------------------------------------------------------------------------ join
 @router.post("/student/join", status_code=201, response_model=TokenPair)
 def join_with_class_code(
     body: JoinRequest,
@@ -169,72 +201,76 @@ def join_with_class_code(
             "Rahyaab is for students aged 13 and over",
             errors=[field_error("birth_year", "age_out_of_range")],
         )
-    years = months // 12
+    declared_band = age_band(months // 12)
 
     engine = get_engine(request)
     enforce(engine, DEVICE_LIMIT, body.device.public_key)
     enforce(engine, IP_LIMIT, _client_ip(request))
 
-    code_hash = digest(body.class_code)
-    failures_key = f"{CODE_FAILURES.name}:{code_hash}"
-    if peek(engine, failures_key, CODE_FAILURES.window_s)[0] >= CODE_FAILURES.max_hits:
-        raise _not_accepted()  # paused: same answer as an unknown code
-
     try:
-        result = _create_profile(engine, settings, body, code_hash, years)
+        return _create_profile(engine, settings, body, declared_band)
     except _CodeRejected:
-        failures, _ = hit(engine, failures_key, CODE_FAILURES.window_s)
-        if failures == CODE_FAILURES.max_hits:
-            _record_pause(engine, code_hash)
         raise _not_accepted() from None
-    return result
+    except _ClaimRejected as rejected:
+        key = f"{CLAIM_FAILURES.name}:{rejected.class_id}"
+        failures, _ = hit(engine, key, CLAIM_FAILURES.window_s)
+        if failures == CLAIM_FAILURES.max_hits:
+            _audit(engine, "claim_codes.paused", f"class:{rejected.class_id}")
+        raise _not_accepted() from None
 
 
-def _create_profile(
-    engine: Engine, settings: Settings, body: JoinRequest, code_hash: str, years: int
-) -> TokenPair:
-    adult = years >= SELF_CONSENT_AGE
+def _create_profile(engine: Engine, settings: Settings, body: JoinRequest, declared_band: str) -> TokenPair:
     with engine.begin() as conn:
         school_class = conn.execute(
             text(
                 """
-                SELECT c.id, s.board FROM school_class c JOIN school s ON s.id = c.school_id
+                SELECT c.id, c.school_id, c.grade, s.board
+                FROM school_class c JOIN school s ON s.id = c.school_id
                 WHERE c.code_hash = :h AND c.code_expires_at > now()
                 """
             ),
-            {"h": code_hash},
+            {"h": digest(body.class_code)},
         ).one_or_none()
         if school_class is None:
             raise _CodeRejected
 
+        _check_licence(conn, school_class.school_id)
+
         slip = None
-        if body.claim_code and not adult:  # adults consent for themselves; a slip is not needed
+        if body.claim_code:
+            paused = peek(engine, f"{CLAIM_FAILURES.name}:{school_class.id}", CLAIM_FAILURES.window_s)[0]
+            if paused >= CLAIM_FAILURES.max_hits:
+                raise _not_accepted()  # not counted again; the class can still join without a claim code
             slip = conn.execute(
                 text(
                     """
                     UPDATE consent_slip SET claimed_at = now()
-                    WHERE claim_code_hash = :h AND class_id = :c AND claimed_at IS NULL AND expires_at > now()
-                    RETURNING id, recorded_by, notice_version, research_opt_in
+                    WHERE claim_code_hash = :h AND class_id = :c AND claimed_at IS NULL
+                      AND recorded_at IS NOT NULL AND expires_at > now()
+                    RETURNING id, kind, verified_age_band, recorded_by, notice_version, research_opt_in
                     """
                 ),
                 {"h": digest(body.claim_code), "c": school_class.id},
             ).one_or_none()
             if slip is None:
-                raise _CodeRejected
+                raise _ClaimRejected(school_class.id)
 
+        # The school's record wins over the student's own answer (age assurance).
+        band = slip.verified_age_band if slip is not None else declared_band
         student_id: UUID = conn.execute(
             text(
                 """
-                INSERT INTO student (class_id, nickname, grade, board, age_band)
-                VALUES (:class_id, :nickname, :grade, :board, :band) RETURNING id
+                INSERT INTO student (class_id, nickname, grade, board, age_band, age_verified)
+                VALUES (:class_id, :nickname, :grade, :board, :band, :verified) RETURNING id
                 """
             ),
             {
                 "class_id": school_class.id,
                 "nickname": body.nickname,
-                "grade": body.grade,
+                "grade": school_class.grade,  # the class's own grade, not the picker (wrong mode otherwise)
                 "board": school_class.board,
-                "band": age_band(years),
+                "band": band,
+                "verified": slip is not None,
             },
         ).scalar_one()
         device_id: UUID = conn.execute(
@@ -252,40 +288,23 @@ def _create_profile(
                 "ver": body.device.app_version,
             },
         ).scalar_one()
-
         refresh = _store_refresh_token(conn, settings, device_id, family_id=None)
 
-        consent_state: Literal["pending", "granted"] = "pending"
-        if adult:
-            conn.execute(
-                text(
-                    """
-                    INSERT INTO consent (student_id, type, method, notice_version)
-                    VALUES (:s, 'self', 'self', :v)
-                    """
-                ),
-                {"s": student_id, "v": settings.consent_notice_version},
-            )
+        consent_state: ConsentState = "pending"
+        if slip is not None:
+            _record_slip_consent(conn, student_id, slip)
             consent_state = "granted"
-        elif slip is not None:
-            types = ["parent", "research"] if slip.research_opt_in else ["parent"]
-            for consent_type in types:
+            if band != declared_band:
                 conn.execute(
                     text(
-                        """
-                        INSERT INTO consent (student_id, type, method, notice_version, recorded_by, slip_id)
-                        VALUES (:s, :t, 'school_form', :v, :by, :slip)
-                        """
+                        "INSERT INTO flag (student_id, type, details) "
+                        "VALUES (:s, 'age_mismatch', CAST(:d AS jsonb))"
                     ),
                     {
                         "s": student_id,
-                        "t": consent_type,
-                        "v": slip.notice_version,
-                        "by": slip.recorded_by,
-                        "slip": slip.id,
+                        "d": json.dumps({"declared_band": declared_band, "verified_band": band}),
                     },
                 )
-            consent_state = "granted"
 
     return TokenPair(
         access_token=access_token(settings, student_id, device_id),
@@ -296,24 +315,73 @@ def _create_profile(
     )
 
 
-def _record_pause(engine: Engine, code_hash: str) -> None:
-    # The teacher notification reads this audit entry (dashboard work, FYP-2). Only a hash prefix is kept.
-    with engine.begin() as conn:
+def _check_licence(conn: Connection, school_id: UUID) -> None:
+    """The school needs an active pilot or institution licence with a free seat (FR-107, ADR-0015)."""
+    licence = conn.execute(
+        text(
+            """
+            SELECT id, seats FROM licence
+            WHERE school_id = :s AND kind IN ('pilot', 'institution')
+              AND starts_at <= now() AND ends_at > now()
+            ORDER BY seats IS NOT NULL, seats DESC
+            LIMIT 1
+            FOR UPDATE
+            """
+        ),
+        {"s": school_id},
+    ).one_or_none()
+    if licence is None:
+        raise _no_school_access()
+    if licence.seats is not None:
+        used = conn.execute(
+            text(
+                "SELECT count(*) FROM student st JOIN school_class c ON c.id = st.class_id "
+                "WHERE c.school_id = :s"
+            ),
+            {"s": school_id},
+        ).scalar_one()
+        if used >= licence.seats:
+            raise _no_school_access()
+
+
+def _record_slip_consent(conn: Connection, student_id: UUID, slip: Row[tuple[object, ...]]) -> None:
+    # Form A (kind 'parent') is a parent's consent; Form C (kind 'self') is an adult student's own consent.
+    # Both are school forms recorded by a teacher: method 'school_form', with the slip and the teacher.
+    types = [slip.kind] + (["research"] if slip.research_opt_in else [])
+    for consent_type in types:
         conn.execute(
             text(
-                "INSERT INTO audit_log (actor, action, object) "
-                "VALUES ('system:join', 'class_code.paused', :o)"
+                """
+                INSERT INTO consent (student_id, type, method, notice_version, recorded_by, slip_id)
+                VALUES (:s, :t, 'school_form', :v, :by, :slip)
+                """
             ),
-            {"o": f"code_hash:{code_hash[:16]}"},
+            {
+                "s": student_id,
+                "t": consent_type,
+                "v": slip.notice_version,
+                "by": slip.recorded_by,
+                "slip": slip.id,
+            },
         )
 
 
+def _audit(engine: Engine, action: str, obj: str) -> None:
+    # The teacher notification reads these entries (dashboard work, FYP-2).
+    with engine.begin() as conn:
+        conn.execute(
+            text("INSERT INTO audit_log (actor, action, object) VALUES ('system:join', :a, :o)"),
+            {"a": action, "o": obj},
+        )
+
+
+# --------------------------------------------------------------------------------------------- refresh
 def _unauthorized() -> ProblemError:
     # One answer for unknown, expired, revoked, reused and wrongly signed tokens.
     return ProblemError(401, "unauthorized", "Please sign in again")
 
 
-def _consent_state(conn: Connection, student_id: UUID) -> Literal["pending", "granted", "withdrawn"]:
+def _consent_state(conn: Connection, student_id: UUID) -> ConsentState:
     row = conn.execute(
         text(
             """
@@ -343,30 +411,38 @@ def refresh_tokens(
             text(
                 """
                 SELECT rt.id, rt.family_id, rt.device_id, rt.used_at, rt.revoked_at,
-                       rt.expires_at > now() AS live, d.public_key, d.student_id
+                       rt.expires_at > now() AS live,
+                       rt.used_at > now() - make_interval(secs => :grace) AS used_recently,
+                       NOT EXISTS (SELECT 1 FROM refresh_token o
+                                   WHERE o.family_id = rt.family_id AND o.used_at > rt.used_at)
+                         AS newest_used,
+                       d.public_key, d.student_id
                 FROM refresh_token rt JOIN device d ON d.id = rt.device_id
                 WHERE rt.token_hash = :h
                 FOR UPDATE OF rt
                 """
             ),
-            {"h": digest(body.refresh_token)},
+            {"h": digest(body.refresh_token), "grace": settings.refresh_reuse_grace_seconds},
         ).one_or_none()
 
         if row is None or row.revoked_at is not None or not row.live:
             pass  # unknown, revoked or expired: refuse
-        elif row.used_at is not None or not verify_refresh_signature(
-            row.public_key, body.refresh_token, body.signature
-        ):
-            # A second use (TC-ONB-10) or a copied token signed by another key (TC-SEC-18): the family is
-            # no longer trustworthy, so every token in it stops working. Committed even though we refuse.
-            conn.execute(
-                text(
-                    "UPDATE refresh_token SET revoked_at = now() WHERE family_id = :f AND revoked_at IS NULL"
-                ),
-                {"f": row.family_id},
-            )
+        elif not verify_refresh_signature(row.public_key, body.refresh_token, body.signature):
+            _revoke_family(conn, row.family_id)  # a copied token used on another device (TC-SEC-18)
+        elif row.used_at is not None and not (row.used_recently and row.newest_used):
+            _revoke_family(conn, row.family_id)  # an old token used again (TC-ONB-10)
         else:
-            conn.execute(text("UPDATE refresh_token SET used_at = now() WHERE id = :i"), {"i": row.id})
+            if row.used_at is None:
+                conn.execute(text("UPDATE refresh_token SET used_at = now() WHERE id = :i"), {"i": row.id})
+            else:
+                # The same phone retrying after it lost the response: the pair it never received is revoked.
+                conn.execute(
+                    text(
+                        "UPDATE refresh_token SET revoked_at = now() "
+                        "WHERE family_id = :f AND used_at IS NULL AND revoked_at IS NULL"
+                    ),
+                    {"f": row.family_id},
+                )
             conn.execute(
                 text("UPDATE student SET last_active_at = now() WHERE id = :s"), {"s": row.student_id}
             )
@@ -378,6 +454,13 @@ def refresh_tokens(
                 consent_state=_consent_state(conn, row.student_id),
             )
 
-    if pair is None:
+    if pair is None:  # raised after the commit, so a revocation is kept
         raise _unauthorized()
     return pair
+
+
+def _revoke_family(conn: Connection, family_id: UUID) -> None:
+    conn.execute(
+        text("UPDATE refresh_token SET revoked_at = now() WHERE family_id = :f AND revoked_at IS NULL"),
+        {"f": family_id},
+    )

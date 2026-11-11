@@ -25,7 +25,7 @@ This folder holds the documents. The code and infrastructure live next to it at 
 
 | Artifact | Document |
 |---|---|
-| **Requirements and scope:** SRS | `project/SRS.md` (v1.3: 106 FRs, 77 NFRs, MoSCoW in §4.2, use cases, RTM) |
+| **Requirements and scope:** SRS | `project/SRS.md` (v1.5: 108 FRs, 77 NFRs, MoSCoW in §4.2, use cases, RTM) |
 | **Planning:** WBS and Gantt chart | `project/PLAN.md` |
 | **Scope:** MVP for both semesters | `project/MVP.md` |
 | **Scope:** exceptions and edge cases | `project/EDGE_CASES.md` |
@@ -39,6 +39,7 @@ This folder holds the documents. The code and infrastructure live next to it at 
 | **Security:** compliance mapping | `security/COMPLIANCE.md` |
 | **Security:** data retention and encryption policies | `security/DATA_GOVERNANCE.md` |
 | **Security:** Data Protection Impact Assessment | `security/DPIA.md` |
+| **Security:** age assurance (the committee's "how do you know the age is right?") | `security/AGE_ASSURANCE.md` |
 | **Legal and ethics:** privacy policy, terms, consent forms | `legal/`, `ethics/CONSENT_FORMS.md` |
 | **Testing:** test strategy and plan | `testing/TEST_STRATEGY.md` (includes load, stress, spike, soak, break-point, monkey and chaos tests) |
 | **Testing:** test cases and acceptance criteria | `testing/TEST_CASES.md` (Gherkin + 131 cases + authorisation matrix) |

@@ -11,6 +11,7 @@ entity student
 entity guardian_contact
 entity consent
 entity consent_slip
+entity licence
 entity device
 entity sitting
 entity game_run
@@ -37,6 +38,8 @@ entity staff_session
 entity rate_limit
 entity panel_label
 school ||--o{ school_class
+school ||--o{ licence
+student |o--o{ licence
 school |o--o{ staff_user
 staff_user ||--o{ staff_class
 school_class ||--o{ staff_class

@@ -62,11 +62,19 @@ paths:
       summary: Join a class with a code and create a pseudonymous profile
       description: |
         Rate limits (NFR-67), counted in PostgreSQL so all workers agree: 10 attempts per 15 minutes per
-        device, 30 failed attempts per hour per class code (then the code is paused and the teacher is told),
-        and a high per-IP ceiling of 300 per 15 minutes, because a whole class on school Wi-Fi or a mobile
-        network (CGNAT) shares one IP. A bad format gets `422` with a format hint; an unknown, expired or
-        paused code gets the same generic `404` message and similar timing. An optional `claim_code` binds
-        a signed paper consent slip to the new profile (FR-05a).
+        device, 30 wrong claim codes per hour per class (then claim codes pause for that class and the teacher
+        is told; joining without a claim code still works), and a high per-IP ceiling of 300 per 15 minutes,
+        because a whole class on school Wi-Fi or a mobile network (CGNAT) shares one IP. A bad format gets
+        `422` with a format hint; an unknown or expired class code and every bad claim code get the same
+        generic `404` message. A valid code whose school has no active licence or no free seat gets `403
+        school_access_inactive` (FR-107, ADR-0015).
+
+        An optional `claim_code` binds a **recorded** paper consent slip to the new profile (FR-05a). Age
+        assurance (FR-100, `docs/security/AGE_ASSURANCE.md`): the slip's age band, copied by the teacher from
+        the school's admission register, is stored and decides the consent (Form A = parent, Form C = adult
+        student). Without a recorded slip, consent stays `pending` whatever age is entered, and the band is the
+        student's own answer (`age_verified = false`). `grade` is the app's picker value; the server stores
+        the class's own grade.
       security: []
       requestBody:
         required: true
@@ -81,7 +89,12 @@ paths:
               schema: { $ref: '#/components/schemas/TokenPair' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '404':
-          description: Unknown or expired class code
+          description: Unknown or expired class code, or a claim code that is unknown, unrecorded, used, expired, from another class or paused
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '403':
+          description: The school has no active licence or no free seat (`school_access_inactive`)
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Problem' }
@@ -141,9 +154,12 @@ paths:
       description: |
         The old refresh token works once. The request is signed with the device key created at join
         (ADR-0011): SHA256withECDSA (EC P-256) over the UTF-8 bytes of `rahyaab-refresh-v1:` followed by
-        the refresh token, sent as base64 of the DER signature. A second use of a token, or a signature
-        from any other key (a copied token, TC-SEC-18), revokes the whole token family; the student then
-        re-links the phone. Unknown, expired, revoked, reused and wrongly signed tokens all get the same `401`.
+        the refresh token, sent as base64 of the DER signature. A signature from any other key (a copied
+        token, TC-SEC-18) revokes the whole token family; the student then re-links the phone. A second use
+        with the right signature within 2 minutes, when nothing newer in the family has been used, is the
+        same phone retrying after a lost response: it gets a fresh pair and the undelivered pair is revoked
+        (TC-ONB-11). Any other second use revokes the family (TC-ONB-10). Refresh tokens last 90 days from
+        the last refresh. Unknown, expired, revoked, reused and wrongly signed tokens all get the same `401`.
       security: []
       requestBody:
         required: true

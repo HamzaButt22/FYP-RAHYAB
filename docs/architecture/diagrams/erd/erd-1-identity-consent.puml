@@ -30,6 +30,7 @@ entity "student" as student {
   current_group : text
   district : text
   * age_band : text
+  * age_verified : boolean (band from the school register)
   situation : text
   * last_active_at : timestamptz
 }
@@ -56,12 +57,26 @@ entity "consent_slip" as slip {
   * id : uuid <<PK>>
   --
   * class_id : uuid <<FK>>
+  * kind : text (parent = Form A | self = Form C)
   * form_serial : text
   * claim_code_hash : text <<UK>>
   * research_opt_in : boolean
-  * recorded_by : uuid <<FK>>
-  claimed_at : timestamptz
+  * created_at : timestamptz (printed)
+  recorded_by : uuid <<FK>>
+  recorded_at : timestamptz
+  verified_age_band : text (from the admission register)
+  claimed_at : timestamptz (only if recorded)
   * expires_at : timestamptz
+}
+entity "licence" as lic {
+  * id : uuid <<PK>>
+  --
+  * kind : text (pilot | institution | individual)
+  school_id : uuid <<FK>>
+  student_id : uuid <<FK>>
+  seats : integer
+  * starts_at : timestamptz
+  * ends_at : timestamptz
 }
 entity "otp_challenge" as otp {
   * id : uuid <<PK>>
@@ -103,4 +118,6 @@ slip |o--o| consent
 student ||--o{ rl
 student ||--o{ device
 device ||--o{ rt
+school ||--o{ lic
+student |o--o{ lic
 @enduml

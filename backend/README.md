@@ -32,7 +32,7 @@ The database tests (`tests/test_join_api.py`) need `TEST_DATABASE_URL` (role `ap
 ## What exists and what comes next
 
 - **Exists:** application factory, `/v1/health`, an API-inventory test (every route must be in `docs/api/openapi.yaml`), settings that fail closed, exact-origin CORS, problem+json errors that never echo input, settings that refuse unsafe production values, the jobs worker shell, migration `0001` (applies `database/schema.sql`), the congruence ranking with tests, and **`POST /v1/auth/student/join`** (class code, optional consent-slip claim code, age rules, PostgreSQL rate limits, device-bound tokens) with unit and database tests.
-- **Also exists:** **`POST /v1/auth/refresh`**: single-use refresh tokens, requests signed with the device's P-256 key, family revoked on reuse or a wrong key.
+- **Also exists:** **`POST /v1/auth/refresh`**: single-use refresh tokens (90 days), requests signed with the device's P-256 key, a 2-minute retry for lost responses, family revoked on reuse or a wrong key. Age assurance from recorded consent slips, institution licences with seats (ADR-0015), secure code generation (`codes.py`), the jobs worker's rate-limit purge, and migration `0002` (schema v1.4).
 - **Next (FYP-1 demo slice):** `/events:batch`, results compute; then the interest and ability estimators. The contract is `docs/api/openapi.yaml`; the rules are in `docs/security/SECURITY.md`.
 
 ## Docker image
