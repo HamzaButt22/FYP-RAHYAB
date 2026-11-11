@@ -1,21 +1,19 @@
-The MIT License (MIT)
+Copyright (c) 2026 Hamza Butt, Zahid Bashir and Daniyal Sarwar. All rights reserved.
 
-Copyright (c) 2015-present 650 Industries, Inc. (aka Expo)
+Rahyaab (راہ یاب) is proprietary software. No part of this repository (source code, designs, documents,
+data files, images and other content) may be copied, modified, distributed, published, sublicensed or sold,
+in whole or in part, without the prior written permission of the copyright holders.
 
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
+Exceptions:
+- Third-party components keep their own licences, which are stated in their folders or package metadata
+  (for example prototypes/rahyaab-application/LICENSE for the Expo template code, the SIL OFL 1.1 fonts,
+  and the open-source libraries listed in each lockfile).
+- Data derived from the O*NET Database is used under CC BY 4.0: "This product includes information from the
+  O*NET 31.0 Database by the U.S. Department of Labor, Employment and Training Administration (USDOL/ETA),
+  used under the CC BY 4.0 licence. USDOL/ETA has not approved, endorsed, or tested these modifications."
+  O*NET is a trademark of USDOL/ETA.
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+This project is a Final Year Project at Riphah International University. Any rights the university holds under
+its intellectual-property policy are not affected by this notice.
 
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
+Contact: the copyright holders, through the repository owner.

@@ -33,7 +33,7 @@ A new tool is never "scientifically proven" on day one. What we can say honestly
 | Admission rules (gates) | PEC regulations, PM&DC statements, IBCC; each gate carries `verification` (primary, reported or unverified) and a source in `streams.json` | **Official sources**, checked yearly. Unverified rules are never shown as fact (`tools/check_streams.py` enforces the fields in CI) |
 | Scoring forced choices | Thurstonian IRT (Brown and Maydeu-Olivares, 2011); abilities with Rasch/GRM (Samejima, 1969) | **Established methods**; our item bank must still show fit and reliability (V3, V4) |
 | That the *game* measures interests | Our design | **To be proven**: V1 (simulation feasibility), V2 (agreement with the O*NET Mini Interest Profiler), V3–V4 |
-| The fit weights 0.55 / 0.35 / 0.10 | Our starting values | **To be tested**: compared with counsellor AHP weights and a learned ranker against a blinded panel (V5, ADR-0006) |
+| The fit weights 0.55 / 0.35 / 0.10 and the differentiation minimum 0.15 | Our starting values | **To be tested**: compared with counsellor AHP weights and a learned ranker against a blinded panel (V5, ADR-0006) |
 | Fairness | Our design (gender not an input) | **To be proven**: DIF and outcome checks (V6) |
 
 ## 2. Design method: Evidence-Centred Design
@@ -89,19 +89,21 @@ Play  →  Events (each choice and task step, offline, ≤ 1 KB)  →  Server ch
 
 Each path in `streams.json` has a RIASEC profile and the abilities it needs. **Where the profiles come from:** each path lists the occupations it leads to (`design/game/frameworks/path_occupations.json`, by exact O*NET title, reviewed by the counsellor panel), and its profile is the mean of those occupations' O*NET Occupational Interest scores, rescaled from 1–7 to 0–1 (`tools/onet_profiles.py`, which records the O*NET version and codes in `streams.json`). The profiles in `streams.json` 1.3.0 were derived from O*NET 31.0 on 11 Nov 2026 (codes recorded per path). O*NET 31.0 lists the source of its interest scores as "Machine Learning/Expert". Military occupations have no O*NET interest data, so the armed-forces path uses related uniformed roles (noted in `path_occupations.json`). The **congruence** score (Holland's person–environment fit) is:
 
-> **fit = 0.55 × cosine(student interests, path profile) + 0.35 × ability support + 0.10 × marks support**
+> **fit = 0.55 × interest match + 0.35 × ability support + 0.10 × marks support**, where **interest match = (r + 1) / 2** and r is the Pearson correlation between the student's interest profile and the path profile.
+
+Correlation compares the **shape** of the two profiles (which interests are high and which are low), not their overall level. The first version used cosine similarity; a check on 12 Nov 2026 showed that, because every score is positive, cosine rewarded paths with flat profiles and gave a student with **no** clear interests a confident-looking top 3 (Humanities at 0.93). **Holland's differentiation** (highest minus lowest of the six scores) is now computed for every student: below 0.15 (provisional; calibrated in V1) the interest term is dropped and the app says "no clear interest pattern yet" instead of guessing (FR-51).
 
 The weights are renormalised when marks are missing. The eligibility rules then close any door the student's group or board doesn't allow, and the top 3 open paths are shown.
 
 **Worked example** (computed with the O*NET 31.0-derived profiles in `streams.json` 1.3.0). A class 9 student with interests R .8, I .7, A .3, S .2, E .3, C .4 and strong spatial ability:
 
-| Path | Interest match (cosine) | Ability support | Fit (no marks) |
+| Path | Interest match (correlation → 0–1) | Ability support | Fit (no marks) |
 |---|---|---|---|
-| DAE (technical diploma) | 0.95 | 0.75 | **0.87** |
-| FSc Pre-Engineering | 0.97 | 0.70 | **0.87** |
-| ICS | 0.89 | 0.63 | 0.79 |
-| FSc Pre-Medical | 0.88 | 0.57 | 0.76 |
-| FA Humanities | 0.70 | 0.40 | 0.58 |
+| FSc Pre-Engineering | 0.96 (r = .93) | 0.70 | **0.86** |
+| DAE (technical diploma) | 0.93 (r = .86) | 0.75 | **0.86** |
+| ICS | 0.76 (r = .52) | 0.63 | 0.71 |
+| FSc Pre-Medical | 0.72 (r = .43) | 0.57 | 0.66 |
+| FA Humanities | 0.09 (r = −.82) | 0.40 | 0.21 |
 
 The student sees **DAE, Pre-Engineering and ICS** as their top 3. The reasons are taken from the exact contributions ("you chose building and fixing in 7 of 9 choices; your spatial tasks were strong"). Pre-Engineering and DAE are close, so the app says it is "fairly sure" rather than "sure", and the work values break the tie.
 

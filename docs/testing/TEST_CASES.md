@@ -245,7 +245,13 @@ Feature: Read aloud (FR-96)
 | TC-AGE-03 | Register wins | Form A recorded as 16–17; student claims to be 26 | Parent consent (not self); band 16–17; `age_mismatch` flag with both bands | FR-100 | T-INT | A | 1 |
 | TC-AGE-04 | Form and age must match | Record Form C with 16–17, or Form A with 18–19 | Refused by the database (`consent_slip_kind_band_check`) | FR-100 | T-INT | A | 1 |
 | TC-LIC-01 | No active licence | School without a licence, then an expired one, then an active one | `403 school_access_inactive` twice, then `201` | FR-107 | T-INT | A | 1 |
-| TC-LIC-02 | Seats | Institution licence with 2 seats; 3 joins | 201, 201, then `403` | FR-107 | T-INT | A | 1 |
+| TC-LIC-02 | Seats | Institution licence with 2 seats; 3 joins without claim codes, then 3 with recorded slips | All 3 plain joins succeed (no seat used); slip joins 201, 201, then `403`; 2 consents in total | FR-107 | T-INT | A | 1 |
+| TC-CON-01 | Claim later | Join without a slip (claims to be 26); a Form A recorded as 16–17 comes back; claim it | `200 granted`; band 16–17, verified; `age_mismatch` flag | FR-05a, FR-100 | T-INT | A | 1 |
+| TC-CON-02 | Already consented | A consented student claims a second slip | `200 granted`; the second slip is not used up | FR-05a | T-INT | A | 1 |
+| TC-CON-03 | Bad claims after joining | Unknown, unrecorded and another class's claim codes | The same generic `404` each time | FR-05a, NFR-74 | T-INT | A | 1 |
+| TC-CON-04 | Claim needs a valid token | No token, a garbage token, a deleted student's token | `401` each time | ADR-0011 | T-INT | A | 1 |
+| TC-SCORE-11 | No clear interests | A student with all six interest scores equal | No interest term in any path's fit; the app shows "no clear interest pattern yet" | FR-51 | T-UNIT | A | 1 |
+| TC-SCORE-12 | Shape, not level | Raise every interest score by the same amount | The interest match does not change; an artistic-social profile ranks FA Humanities first, a realistic one ranks technical paths first | FR-44 | T-UNIT | A | 1 |
 | TC-LIC-03 | Store purchase (post-MVP) | Valid, forged and refunded store purchase tokens | Only the valid one creates an `individual` licence; a refund ends it | FR-108 | T-INT | C | post-MVP |
 | TC-EDGE-08 | Over-age learner | Age 22, class 9 | Allowed; older-learner routes shown (private candidate, open schooling, technical); age stored as a band only | FR-100, FR-104 | T-UNIT | A | 1 |
 | TC-EDGE-09 | Unusual combination check | Class 9 with birth year 1999 | Soft question "Is that right?"; both answers work; no error | FR-100 | T-E2E | A | 2 |
