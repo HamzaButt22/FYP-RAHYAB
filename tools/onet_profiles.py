@@ -3,18 +3,18 @@
 Method (docs/project/SCIENTIFIC_BASIS.md §4.3):
 1. Each path lists the occupations it leads to (design/game/frameworks/path_occupations.json), by exact
    O*NET occupation title. The list is reviewed by the counsellor panel (SCIENTIFIC_BASIS V5).
-2. For each occupation, O*NET's Occupational Interest scores (scale "OI", 1-7, from the Interests file) are
-   rescaled to 0-1: (score - 1) / 6.
+2. For each occupation, O*NET's Occupational Interest scores (scale "OI", 1-7, from the Career Interest
+   Types file; O*NET 31.0 lists their source as "Machine Learning/Expert") are rescaled to 0-1: (score - 1) / 6.
 3. The path's profile is the mean of its occupations' rescaled profiles, rounded to 2 decimals.
 4. The result, the O*NET version and the occupation codes are written into streams.json, so every number
    can be traced back to O*NET.
 
-Data: the O*NET Database text files "Interests.txt" and "Occupation Data.txt" (tab-separated), from
-https://www.onetcenter.org/database.html, licensed CC BY 4.0 (attribution: COMPLIANCE.md §2.5). They are
-not committed; put them in a folder and pass it with --onet.
+Data: the O*NET Database CSV files "career_interest_types.csv" and "occupation_data.csv" (O*NET 31.0:
+https://www.onetcenter.org/dl_files/database/db_31_0_csv/), licensed CC BY 4.0 (attribution: COMPLIANCE.md
+§2.5). They are not committed; put them in a folder and pass it with --onet.
 
-    python tools/onet_profiles.py --onet path/to/db_text_folder            # check and show, change nothing
-    python tools/onet_profiles.py --onet path/to/db_text_folder --write    # update streams.json
+    python tools/onet_profiles.py --onet path/to/onet-31.0 --version 31.0            # check and show only
+    python tools/onet_profiles.py --onet path/to/onet-31.0 --version 31.0 --write    # update streams.json
 
 The script stops with a list of problems if any title does not match an O*NET occupation exactly.
 """
@@ -40,16 +40,16 @@ RIASEC = {
 }
 
 
-def read_tsv(path: Path) -> list[dict[str, str]]:
+def read_csv(path: Path) -> list[dict[str, str]]:
     with path.open(encoding="utf-8", newline="") as f:
-        return list(csv.DictReader(f, delimiter="\t"))
+        return list(csv.DictReader(f))
 
 
 def load_onet(folder: Path) -> tuple[dict[str, str], dict[str, dict[str, float]]]:
     """Returns (title -> O*NET-SOC code, code -> {R..C: 0-1})."""
-    titles = {row["Title"]: row["O*NET-SOC Code"] for row in read_tsv(folder / "Occupation Data.txt")}
+    titles = {row["Title"]: row["O*NET-SOC Code"] for row in read_csv(folder / "occupation_data.csv")}
     profiles: dict[str, dict[str, float]] = {}
-    for row in read_tsv(folder / "Interests.txt"):
+    for row in read_csv(folder / "career_interest_types.csv"):
         if row["Scale ID"] == "OI" and row["Element Name"] in RIASEC:
             score = (float(row["Data Value"]) - 1.0) / 6.0
             profiles.setdefault(row["O*NET-SOC Code"], {})[RIASEC[row["Element Name"]]] = score
@@ -79,7 +79,7 @@ def derive(mapping: dict[str, list[str]], titles: dict[str, str], profiles: dict
 
 def main() -> None:
     ap = argparse.ArgumentParser(description=__doc__, formatter_class=argparse.RawDescriptionHelpFormatter)
-    ap.add_argument("--onet", type=Path, required=True, help="folder with Interests.txt and Occupation Data.txt")
+    ap.add_argument("--onet", type=Path, required=True, help="folder with the two O*NET CSV files")
     ap.add_argument("--version", default="", help="O*NET database version, e.g. 30.0 (recorded in streams.json)")
     ap.add_argument("--write", action="store_true", help="update streams.json")
     args = ap.parse_args()

@@ -34,6 +34,8 @@ def main() -> int:
         for name, entry in entries:
             if entry.get("verification") not in LEVELS:
                 problems.append(f"route {item.get('id')} / {name}: verification is missing or invalid")
+            elif entry["verification"] != "unverified" and not (entry.get("source_url") and entry.get("source")):
+                problems.append(f"route {item.get('id')} / {name}: a {entry['verification']} rule needs source and source_url")
 
     for group in streams["by_class"].values():
         for path in group["paths"]:
