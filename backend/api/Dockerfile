@@ -2,7 +2,7 @@
 #   docker build -f backend/api/Dockerfile -t rahyaab-api .
 # Multi-stage, non-root, no build tools in the final image. The same image runs the API, the jobs
 # worker (python -m rahyaab_api.jobs) and migrations (alembic upgrade head).
-FROM python:3.13-slim AS build
+FROM python:3.15-slim AS build
 ENV PIP_NO_CACHE_DIR=1 PYTHONDONTWRITEBYTECODE=1 UV_COMPILE_BYTECODE=0 UV_LINK_MODE=copy
 RUN pip install uv==0.9.*
 WORKDIR /app
@@ -14,7 +14,7 @@ RUN uv sync --frozen --no-dev --no-install-project
 COPY backend/api/ ./
 RUN uv sync --frozen --no-dev
 
-FROM python:3.13-slim
+FROM python:3.15-slim
 ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1 PATH="/app/backend/api/.venv/bin:$PATH"
 RUN useradd --uid 10001 --create-home app \
  && mkdir -p /backups && chown 10001:10001 /backups   # a new named volume copies this owner
