@@ -22,6 +22,20 @@ Instead, we prove four measurable things:
 
 These are the standards used for any psychological or educational assessment (AERA, APA and NCME *Standards for Educational and Psychological Testing*, 2014).
 
+### 1.1 What rests on established science, and what we still have to prove
+
+A new tool is never "scientifically proven" on day one. What we can say honestly is which parts come from established science and data, and which parts are our own design choices that the pilot must test. The app shows results as provisional until V2–V6 are reported.
+
+| Part | Basis | Status |
+|---|---|---|
+| Six interest types (RIASEC) and person–environment fit | Holland (1997); interests predict performance and persistence (Nye et al., 2012) | **Established theory**; used, not re-proven |
+| Interest profiles of occupations | O*NET Occupational Interest data (US Department of Labor, CC BY 4.0) | **Official data.** Each path's profile is the mean profile of the occupations it leads to (§4.3, `tools/onet_profiles.py`). The v1.2 profiles were hand-made estimates and are replaced before the pilot |
+| Admission rules (gates) | PEC regulations, PM&DC statements, IBCC; each gate carries `verification` (primary, reported or unverified) and a source in `streams.json` | **Official sources**, checked yearly. Unverified rules are never shown as fact (`tools/check_streams.py` enforces the fields in CI) |
+| Scoring forced choices | Thurstonian IRT (Brown and Maydeu-Olivares, 2011); abilities with Rasch/GRM (Samejima, 1969) | **Established methods**; our item bank must still show fit and reliability (V3, V4) |
+| That the *game* measures interests | Our design | **To be proven**: V1 (simulation feasibility), V2 (agreement with the O*NET Mini Interest Profiler), V3–V4 |
+| The fit weights 0.55 / 0.35 / 0.10 | Our starting values | **To be tested**: compared with counsellor AHP weights and a learned ranker against a blinded panel (V5, ADR-0006) |
+| Fairness | Our design (gender not an input) | **To be proven**: DIF and outcome checks (V6) |
+
 ## 2. Design method: Evidence-Centred Design
 
 The game was designed with **Evidence-Centred Design (ECD)**, the standard method for game-based assessment (Mislevy, Almond and Lukas, 2003). Every game element exists because it produces evidence about a defined trait.
@@ -73,13 +87,13 @@ Play  →  Events (each choice and task step, offline, ≤ 1 KB)  →  Server ch
 
 ### 4.3 M3: from scores to ranked paths
 
-Each path in `streams.json` has a RIASEC profile and the abilities it needs. The **congruence** score (Holland's person–environment fit) is:
+Each path in `streams.json` has a RIASEC profile and the abilities it needs. **Where the profiles come from:** each path lists the occupations it leads to (`design/game/frameworks/path_occupations.json`, by exact O*NET title, reviewed by the counsellor panel), and its profile is the mean of those occupations' O*NET Occupational Interest scores, rescaled from 1–7 to 0–1 (`tools/onet_profiles.py`, which records the O*NET version and codes in `streams.json`). Until that script is run on the O*NET data files, the profiles are the hand-made v1.2 estimates and results are labelled demo-only. The **congruence** score (Holland's person–environment fit) is:
 
 > **fit = 0.55 × cosine(student interests, path profile) + 0.35 × ability support + 0.10 × marks support**
 
 The weights are renormalised when marks are missing. The eligibility rules then close any door the student's group or board doesn't allow, and the top 3 open paths are shown.
 
-**Worked example** (computed with the real `streams.json` 1.2.0 profiles). A class 9 student with interests R .8, I .7, A .3, S .2, E .3, C .4 and strong spatial ability:
+**Worked example** (an illustration computed with the hand-made `streams.json` 1.2.0 profiles; the numbers will change when the profiles are derived from O*NET). A class 9 student with interests R .8, I .7, A .3, S .2, E .3, C .4 and strong spatial ability:
 
 | Path | Interest match (cosine) | Ability support | Fit (no marks) |
 |---|---|---|---|
@@ -196,6 +210,7 @@ If Rahyaab does not beat the questionnaire baseline, we report that honestly; th
 - Messick, S. (1995). Validity of psychological assessment. *American Psychologist.*
 - Mislevy, R. J., Almond, R. G. and Lukas, J. F. (2003). *A Brief Introduction to Evidence-Centered Design.* ETS.
 - Nunnally, J. C. and Bernstein, I. H. (1994). *Psychometric Theory* (3rd ed.).
+- National Center for O*NET Development. *O*NET Database* (Interests and Occupation Data files). U.S. Department of Labor, Employment and Training Administration. Licensed under CC BY 4.0. https://www.onetcenter.org/database.html
 - Nye, C. D., Su, R., Rounds, J. and Drasgow, F. (2012). Vocational interests and performance. *Perspectives on Psychological Science.*
 - Saaty, T. L. (1980). *The Analytic Hierarchy Process.*
 - Samejima, F. (1969). Estimation of latent ability using a response pattern of graded scores. *Psychometrika Monograph.*

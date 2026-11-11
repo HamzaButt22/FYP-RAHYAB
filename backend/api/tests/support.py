@@ -10,7 +10,6 @@ import base64
 import hashlib
 import os
 import secrets
-import string
 import uuid
 from typing import Any
 
@@ -19,6 +18,7 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from sqlalchemy import Engine, text
 
+from rahyaab_api.codes import new_claim_code, new_class_code
 from rahyaab_api.device_keys import refresh_message
 
 JOIN_URL = "/v1/auth/student/join"
@@ -51,6 +51,7 @@ class World:
         self.admin = admin
         self.school_id = uuid.uuid4()
         self.codes: list[str] = []
+        self.class_ids: list[uuid.UUID] = []
         self.keys: list[str] = []
         self.private_keys: dict[str, ec.EllipticCurvePrivateKey] = {}
         with admin.begin() as conn:
@@ -68,6 +69,14 @@ class World:
                 ),
                 {"s": self.school_id, "e": f"t-{self.school_id}@test.invalid"},
             ).scalar_one()
+            # An active pilot licence, so class codes work (ADR-0015). Tests that need none remove it.
+            conn.execute(
+                text(
+                    "INSERT INTO licence (kind, school_id, ends_at) "
+                    "VALUES ('pilot', :s, now() + interval '30 days')"
+                ),
+                {"s": self.school_id},
+            )
             # Start from zero for the TestClient's IP counters.
             conn.execute(
                 text("DELETE FROM rate_limit WHERE key = ANY(:k)"),
@@ -75,8 +84,7 @@ class World:
             )
 
     def new_code(self) -> str:
-        alphabet = string.ascii_uppercase + string.digits
-        code = "TST-" + "".join(secrets.choice(alphabet) for _ in range(3))
+        code = new_class_code()
         self.codes.append(code)
         return code
 
@@ -92,28 +100,61 @@ class World:
                 ),
                 {"s": self.school_id, "g": grade, "sec": section, "h": sha(code), "exp": expired},
             ).scalar_one()
+        self.class_ids.append(class_id)
         return class_id, code
 
-    def add_slip(self, class_id: uuid.UUID, research: bool = False, expired: bool = False) -> str:
-        claim = "".join(secrets.choice(string.ascii_uppercase + string.digits) for _ in range(8))
-        claim = f"{claim[:4]}-{claim[4:]}"
+    def add_slip(
+        self,
+        class_id: uuid.UUID,
+        research: bool = False,
+        expired: bool = False,
+        kind: str = "parent",
+        band: str | None = None,
+        recorded: bool = True,
+    ) -> str:
+        """A printed consent slip; `recorded` = the signed form is back and the teacher copied the age band
+        from the admission register (`band`, defaulting to 13-15 for Form A and 18-19 for Form C)."""
+        claim = new_claim_code()
+        band = band or ("13-15" if kind == "parent" else "18-19")
         with self.admin.begin() as conn:
             conn.execute(
                 text(
-                    "INSERT INTO consent_slip (class_id, form_serial, claim_code_hash, research_opt_in, "
-                    "notice_version, recorded_by, expires_at) VALUES (:c, :serial, :h, :r, '2026-11', :by, "
+                    "INSERT INTO consent_slip (class_id, kind, form_serial, claim_code_hash, "
+                    "research_opt_in, notice_version, recorded_by, recorded_at, verified_age_band, "
+                    "expires_at) VALUES (:c, :kind, :serial, :h, :r, '2026-11', :by, "
+                    "CASE WHEN :rec THEN now() END, :band, "
                     "now() + CASE WHEN :exp THEN interval '-1 day' ELSE interval '60 days' END)"
                 ),
                 {
                     "c": class_id,
+                    "kind": kind,
                     "serial": secrets.token_hex(4),
                     "h": sha(claim),
                     "r": research,
-                    "by": self.staff_id,
+                    "by": self.staff_id if recorded else None,
+                    "rec": recorded,
+                    "band": band if recorded else None,
                     "exp": expired,
                 },
             )
         return claim
+
+    def set_licence(
+        self, kind: str | None = "pilot", seats: int | None = None, expired: bool = False
+    ) -> None:
+        """Replaces the school's licence; `kind=None` leaves the school without one."""
+        with self.admin.begin() as conn:
+            conn.execute(text("DELETE FROM licence WHERE school_id = :s"), {"s": self.school_id})
+            if kind is not None:
+                conn.execute(
+                    text(
+                        "INSERT INTO licence (kind, school_id, seats, starts_at, ends_at) "
+                        "VALUES (:k, :s, :n, "
+                        "now() - interval '60 days', now() + CASE WHEN :exp THEN interval '-1 day' "
+                        "ELSE interval '30 days' END)"
+                    ),
+                    {"k": kind, "s": self.school_id, "n": seats, "exp": expired},
+                )
 
     def device_key(self) -> str:
         public, private = make_device_key()
@@ -144,7 +185,7 @@ class World:
             return conn.execute(text(sql), params).scalar_one()
 
     def cleanup(self) -> None:
-        keys = [f"join:dev:{sha(k)}" for k in self.keys] + [f"join:codefail:{sha(c)}" for c in self.codes]
+        keys = [f"join:dev:{sha(k)}" for k in self.keys] + [f"join:claimfail:{c}" for c in self.class_ids]
         with self.admin.begin() as conn:
             conn.execute(
                 text(

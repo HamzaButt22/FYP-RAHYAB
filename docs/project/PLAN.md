@@ -98,7 +98,8 @@ The source is `diagrams/gantt.puml` (PlantUML). Bars are linked by dependencies,
 |---|---|---|
 | Scope sign-off | 13 Nov 2026 | Supervisor approves the SRS, MVP and this plan |
 | Ethics application submitted | by 27 Nov 2026 | The complete package, including the Urdu reviews |
-| **FYP-1 demo** | ~15 Jan 2027 (to confirm with the coordinator) | Class 9–10 mode end to end on a budget phone; V1 simulation results; chapters 1–5. **Checkpoint 1** |
+| **FYP-1 demo** | Weeks 17–18 (14–25 Dec 2026; exact day set by the department) | The demo slice (`MVP.md` §3, S4) end to end on a budget phone; V1 simulation results; chapters 1–5 in draft. **Checkpoint 1** |
+| FYP-1 complete | 15 Jan 2027 | The rest of F1 (`MVP.md` §2) and the final FYP-1 chapters |
 | Ethics approval | by 15 Feb 2027 | Approval letter; otherwise the fallback below starts |
 | Feature freeze | 26 Feb 2027 | MVP §2 complete; usability round 1 done. **Checkpoint 2** |
 | Pilot build | 26 Mar 2027 | Pentest done with no open critical or high findings; restore drill passed |

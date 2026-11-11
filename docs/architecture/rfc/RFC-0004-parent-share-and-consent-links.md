@@ -62,10 +62,10 @@ There are still no parent accounts. Each child shares their own link, and each c
 The phone number goes into `guardian_contact`, encrypted and in a separate role. Withdrawing consent works from the same page, through a new link.
 
 **School path (preferred for the pilot):**
-1. The teacher prints numbered consent forms from D-03 (`POST /dash/classes/{id}/consent-slips`). Each form has a serial number and a tear-off slip with a one-time **claim code**.
+1. The teacher prints numbered consent forms from D-03 (`POST /dash/classes/{id}/consent-slips`): Form A for parents of students under 18, Form C for students aged 18 or over. Each form has a serial number and a tear-off slip with a one-time **claim code**. Printing creates the slip, unrecorded.
 2. The parent reads the form (Urdu and English), signs it, ticks the research box or not, and returns the form; the child keeps the slip.
-3. The teacher records each signed form by its serial (`POST /dash/consent-slips/{serial}:record`). The teacher's account and the time go to the audit log; the paper forms stay locked at the school (DPIA §2).
-4. When the student joins, they enter the class code and the claim code. The server creates the `consent` row bound to the new pseudonymous profile (`method=school_form`, with `slip_id` and `recorded_by`).
+3. The teacher records each signed form by its serial (`POST /dash/consent-slips/{serial}:record`) **and enters the student's age band from the admission register** (Form A: 13–15 or 16–17; Form C: 18+; any other combination is refused). The teacher's account and the time go to the audit log; the paper forms stay locked at the school (DPIA §2).
+4. When the student joins, they enter the class code and the claim code. Only a recorded slip can be claimed. The server creates the `consent` row bound to the new pseudonymous profile (`method=school_form`, type `parent` or `self`, with `slip_id` and `recorded_by`) and stores the register's age band, which wins over the student's own answer (`docs/security/AGE_ASSURANCE.md`).
 5. A slip can be claimed once; unclaimed slips expire after 60 days. A spot check by a second staff member (5 forms per class) is recorded in the audit log.
 
 ## Security, privacy and accessibility

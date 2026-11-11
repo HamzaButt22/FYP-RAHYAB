@@ -32,3 +32,7 @@ Each JavaScript app keeps its own pnpm lockfile for now (a root pnpm workspace c
 ## Alternatives considered
 
 - **One repository per component:** rejected, because versioning across repositories slows a small team.
+
+## Amendment (11 Nov 2026)
+
+The repository was set up in PR #4 with **one pnpm project per app** (`frontend/mobile` and `frontend/dashboard`, each with its own lockfile and `pnpm-workspace.yaml` for build settings), not one root workspace. The monorepo decision stands; root-level `pnpm -r` commands do not apply. `python tools/dev.py check` runs every app's checks, as CI does.

@@ -109,6 +109,8 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 | Verify `streams.json` class 9–10 paths and gates with sources | Daniyal | FR-45, NFR-03 |
 | Ethics application submitted | Daniyal | §17 |
 
+**Status on 11 Nov 2026:** done and merged: monorepo and CI; FastAPI skeleton; schema migration; `POST /auth/student/join` (with age assurance and licences); signed token refresh; seed data with a pilot licence, a teacher and consent slips (`database/seed/dev_seed.sql`). Open: the Expo shell and screens S-00 to S-03, secure storage, Ink prologue, `streams.json` board routes (gates are verified, board routes are not), ethics submission.
+
 **Definition of done** (SRS §13.4):
 - code with tests, CI green, one review;
 - works in English and Urdu;
@@ -122,12 +124,12 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 git switch main && git pull
 git switch -c feat/<issue#>-short-name
 # work with your AI assistant (BUILD_GUIDE.md), tests first
-pnpm -r lint && pnpm -r test     # or: uv run ruff check . && uv run pytest
+python tools/dev.py check        # everything CI runs (lint, types, tests, docs and stream checks)
 git add -p && git commit -m "feat(join): field-level errors (#12)"
 git push -u origin HEAD           # open a PR, link the issue, ask a teammate to review
 ```
 
-**Commit style:** Conventional Commits (`feat`, `fix`, `test`, `docs`, `chore`), naming the issue number. Merge with a merge commit.
+**Commit style:** Conventional Commits (`feat`, `fix`, `test`, `docs`, `chore`), naming the issue number. Merge with **Squash and merge** (one commit per PR on `main`); after merging, delete the local branch with `git branch -D` (squash merges are not recognised by `-d`).
 
 ## 6. What to push before development starts
 

@@ -66,6 +66,8 @@
 
 Form no. `[serial]`  Child's class and section: ______  Parent or guardian name: ______________  Relationship: ______  Signature: __________  Date: ______
 
+**For the school only (filled by the teacher from the admission register when recording this form):** child's age band ☐ 13–15 ☐ 16–17. Recorded by: ______ Date: ______. *(A student aged 18 or over uses Form C instead.)*
+
 **Tear-off slip for your child (keep this part):** Form no. `[serial]` · Claim code `[XXXX-XXXX]`. Your child types this code when joining, so the app knows you agreed. It works once.
 
 ### Form A (Urdu draft, needs native review)
@@ -108,9 +110,9 @@ Form no. `[serial]`  Child's class and section: ______  Parent or guardian name:
 
 ---
 
-## Form C. Adult learner consent (18+, in the app)
+## Form C. Adult learner consent (18+, paper, school path)
 
-The same content as Form B, in adult wording:
+The same content as Form B, in adult wording. It is printed with a serial number and a tear-off claim code, like Form A, and signed by the student. **The teacher records it only after checking in the admission register that the student is 18 or over**, and copies the band (18–19, 20–24 or 25+). A student's own statement of age is never enough (`docs/security/AGE_ASSURANCE.md`).
 
 ☐ I am 18 or older and agree to use Rahyaab as described in the privacy policy.
 ☐ (Optional) I agree that my de-identified data may be used for research. This box appears only if the ethics approval covers adults; otherwise adults use the app but are never included in research.

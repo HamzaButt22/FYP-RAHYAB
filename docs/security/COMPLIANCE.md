@@ -81,7 +81,7 @@ Which laws, policies and standards apply to Rahyaab, what each one asks of us, a
 
 | Asset | Licence | Obligation | Status |
 |---|---|---|---|
-| O*NET Web Services and data | O*NET terms; data under CC BY 4.0 | Attribution on career pages; Interest Profiler used unchanged, in English (A-03) | **Verify** the current terms |
+| O*NET Web Services and data | O*NET terms; database under CC BY 4.0 | Attribution on career pages and in the report wherever O*NET-derived path profiles are used (`tools/onet_profiles.py` records the version); Interest Profiler used unchanged, in English (A-03) | **Verify** the current terms |
 | OpenPsychometrics RIASEC dataset (~145k) | Published with the dataset | Used for calibration only; cite it; not redistributed | **Verify** the licence |
 | Bricolage Grotesque, Plus Jakarta Sans, Gulzar, Atkinson Hyperlegible | SIL OFL 1.1 | Keep the licence file with the fonts | Designed |
 | Lucide icons | ISC | Keep the notice | Designed |

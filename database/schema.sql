@@ -1,10 +1,14 @@
--- Rahyaab PostgreSQL 16 schema, version 1.3 (draft, matches docs/architecture/diagrams/erd/*).
+-- Rahyaab PostgreSQL 16 schema, version 1.4 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
 -- v1.1 (2026-11-05): student.age_band and student.situation; self-consent; route and help flags (FR-99..104).
 -- v1.2 (2026-11-05): research_demographics (opt-in, separate role); staff password reset tokens.
 -- v1.3 (2026-11-07, review fixes): consent slips; item keyed by content version; quarantine linked to the
 --   student; trait_estimate versioned; content packs per class mode; shared auth state (OTP, MFA, sessions,
 --   re-link codes, rate limits); integrity checks; model kinds per mode; FK indexes; explicit roles and grants.
--- The real migrations live in services/api/migrations (Alembic). This file is the reviewed design.
+-- v1.4 (2026-11-11, review fixes): age assurance from school records (consent_slip.kind and verified_age_band,
+--   student.age_verified, flag 'age_mismatch'); slips exist before they are recorded; licences (pilot,
+--   institution, individual) gate class-code joins.
+-- The migrations live in backend/api/migrations (Alembic): 0001 applies this file to an empty database and
+-- later revisions bring older databases up to date. This file is always the complete current design.
 -- Conventions: snake_case; UUID keys (UUIDv7 for events); timestamptz in UTC; no personal data
 -- outside guardian_contact, consent_slip (form serial only) and staff_user; every FK has an index.
 
@@ -40,6 +44,8 @@ CREATE TABLE student (
   current_group   text,
   district        text,                               -- optional; library 'near you' only, never scored
   age_band        text NOT NULL CHECK (age_band IN ('13-15', '16-17', '18-19', '20-24', '25+')),  -- never the birth year
+  age_verified    boolean NOT NULL DEFAULT false,     -- true when the band came from the school's admission register
+                                                      -- (via a recorded consent slip), not from the student's own answer
   situation       text CHECK (situation IN ('repeating_class', 'private_candidate', 'returning_learner',
                                             'changed_board', 'o_a_level', 'dae', 'madrassa_or_foreign')),
   marks           jsonb CHECK (marks IS NULL OR (jsonb_typeof(marks) = 'object' AND pg_column_size(marks) <= 512)),
@@ -50,6 +56,26 @@ CREATE TABLE student (
 CREATE INDEX ON student (class_id);
 CREATE INDEX ON student (last_active_at);           -- retention job
 
+-- Licences (ADR-0015). A class code works only while its school holds an active pilot or institution licence;
+-- individual subscriptions (post-MVP) attach to one student. No payment or card data is ever stored here:
+-- institutions pay by invoice, individuals through the app store's billing.
+CREATE TABLE licence (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  kind        text NOT NULL CHECK (kind IN ('pilot', 'institution', 'individual')),
+  school_id   uuid REFERENCES school (id) ON DELETE CASCADE,
+  student_id  uuid REFERENCES student (id) ON DELETE CASCADE,
+  seats       integer CHECK (seats IS NULL OR seats > 0),   -- null = unlimited (pilot)
+  starts_at   timestamptz NOT NULL DEFAULT now(),
+  ends_at     timestamptz NOT NULL,
+  created_at  timestamptz NOT NULL DEFAULT now(),
+  CONSTRAINT licence_period_check CHECK (ends_at > starts_at),
+  CONSTRAINT licence_holder_check CHECK (
+    (kind = 'individual' AND student_id IS NOT NULL AND school_id IS NULL)
+    OR (kind <> 'individual' AND school_id IS NOT NULL AND student_id IS NULL))
+);
+CREATE INDEX ON licence (school_id);
+CREATE INDEX ON licence (student_id);
+
 -- Restricted: only the guardian_rw role may read or write this table.
 CREATE TABLE guardian_contact (
   id                    uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -58,21 +84,32 @@ CREATE TABLE guardian_contact (
   relation              text NOT NULL
 );
 
--- School path (FR-05a): each signed paper form carries a one-time claim code printed on its slip.
--- A teacher records the signed slip; the student enters the claim code when joining, which binds the
--- consent to the new pseudonymous profile. The paper form itself stays with the school.
+-- School path (FR-05a, FR-100): each paper form carries a one-time claim code on its tear-off slip.
+-- A slip row is created when the form is printed (kind: 'parent' = Form A, signed by a parent for a student
+-- under 18; 'self' = Form C, signed by a student aged 18+). When the signed form comes back, the teacher
+-- records it AND copies the student's age band from the school's admission register (verified_age_band).
+-- Only recorded slips can be claimed. The student's own birth-year answer never grants consent by itself.
+-- The paper form stays with the school.
 CREATE TABLE consent_slip (
-  id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
-  class_id        uuid NOT NULL REFERENCES school_class (id) ON DELETE CASCADE,
-  form_serial     text NOT NULL CHECK (length(form_serial) <= 20),   -- printed on the paper form
-  claim_code_hash text NOT NULL UNIQUE,                 -- sha256 of the one-time claim code
-  research_opt_in boolean NOT NULL DEFAULT false,
-  notice_version  text NOT NULL,
-  recorded_by     uuid NOT NULL,                        -- FK added below (staff_user is defined later)
-  recorded_at     timestamptz NOT NULL DEFAULT now(),
-  claimed_at      timestamptz,
-  expires_at      timestamptz NOT NULL,                 -- unclaimed slips expire after 60 days
-  UNIQUE (class_id, form_serial)
+  id                uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  class_id          uuid NOT NULL REFERENCES school_class (id) ON DELETE CASCADE,
+  kind              text NOT NULL DEFAULT 'parent' CHECK (kind IN ('parent', 'self')),
+  form_serial       text NOT NULL CHECK (length(form_serial) <= 20),   -- printed on the paper form
+  claim_code_hash   text NOT NULL UNIQUE,               -- sha256 of the one-time claim code
+  research_opt_in   boolean NOT NULL DEFAULT false,
+  notice_version    text NOT NULL,
+  created_at        timestamptz NOT NULL DEFAULT now(),  -- printed
+  recorded_by       uuid,                               -- FK added below (staff_user is defined later)
+  recorded_at       timestamptz,                        -- null until the signed form is back
+  verified_age_band text CHECK (verified_age_band IN ('13-15', '16-17', '18-19', '20-24', '25+')),
+  claimed_at        timestamptz,
+  expires_at        timestamptz NOT NULL,               -- unclaimed slips expire after 60 days
+  UNIQUE (class_id, form_serial),
+  CONSTRAINT consent_slip_recorded_check CHECK (
+    (recorded_at IS NULL) = (recorded_by IS NULL) AND (recorded_at IS NULL) = (verified_age_band IS NULL)),
+  CONSTRAINT consent_slip_kind_band_check CHECK (
+    verified_age_band IS NULL OR (kind = 'parent') = (verified_age_band IN ('13-15', '16-17'))),
+  CONSTRAINT consent_slip_claim_check CHECK (claimed_at IS NULL OR recorded_at IS NOT NULL)
 );
 CREATE INDEX ON consent_slip (class_id);
 
@@ -380,7 +417,7 @@ CREATE TABLE flag (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   student_id   uuid NOT NULL REFERENCES student (id) ON DELETE CASCADE,
   type         text NOT NULL CHECK (type IN ('not_started', 'stalled', 'mixed_signals', 'low_confidence', 'quality',
-                                         'route_question', 'help_requested')),
+                                         'route_question', 'help_requested', 'age_mismatch')),
   details      jsonb NOT NULL DEFAULT '{}'::jsonb,
   created_at   timestamptz NOT NULL DEFAULT now(),
   resolved_at  timestamptz,
@@ -485,6 +522,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON
   share_link, staff_user, staff_class, note, flag, password_reset, otp_challenge, relink_code,
   staff_session, rate_limit
   TO api_rw;
+GRANT SELECT, INSERT, UPDATE ON licence TO api_rw;      -- licences are never deleted by the API
 GRANT SELECT ON content_pack, item, model_version, stream, eligibility_rule, career, stream_career TO api_rw;
 GRANT SELECT, INSERT ON consent, raw_event, quarantine, trait_estimate, recommendation, audit_log TO api_rw;
 GRANT UPDATE (withdrawn_at) ON consent TO api_rw;     -- withdrawal is the only change to a consent row
@@ -499,6 +537,7 @@ GRANT SELECT, DELETE ON student, raw_event, quarantine, trait_estimate, recommen
   note, flag, consent, consent_slip, otp_challenge, relink_code, staff_session, rate_limit, password_reset TO jobs;
 GRANT INSERT ON trait_estimate, recommendation, audit_log TO jobs;
 GRANT SELECT, INSERT, UPDATE ON career, stream_career, model_version TO jobs;
+GRANT SELECT ON licence TO jobs;
 
 -- research_ro: never reads base tables directly; it gets de-identified views in a separate schema
 -- (created with the research export job) plus the opt-in demographics and panel labels.

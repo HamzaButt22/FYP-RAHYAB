@@ -93,13 +93,14 @@ Feature: Read aloud (FR-96)
 | TC-ONB-01 | Language choice persists | Choose اردو at S-01 → restart app | All screens in Urdu, RTL mirrored | FR-01, NFR-27 | T-E2E | A | 1 |
 | TC-ONB-02 | No identifying fields | Inspect S-03 to S-06 and the join request body | No name, phone, email or photo fields; request matches `JoinRequest` | NFR-44 | T-PRIV | A | 1 |
 | TC-ONB-03 | Invalid class code | Enter `RYB-XXX` | Plain error with a fix; no profile created | FR-03 | T-INT | A | 1 |
-| TC-ONB-04 | Join rate limits | (a) 11 joins in 15 min with the same device public key; (b) 31 failed attempts in an hour on one class code from many devices; (c) 40 devices joining one valid code from one IP | (a) 11th → `429` with `Retry-After`; (b) code paused, generic `404`, teacher notified; (c) all 40 succeed (the per-IP ceiling is 300) | NFR-40, NFR-67 | T-INT | A | 1 |
+| TC-ONB-04 | Join rate limits | (a) 11 joins in 15 min with the same device public key; (b) 30 wrong claim codes in an hour against one class, from many devices; (c) 40 devices joining one valid code from one IP | (a) 11th → `429` with `Retry-After`; (b) claim codes for that class pause for the hour (generic `404`, teacher notified through the audit log) while joins **without** a claim code still work, so one student cannot block a class; (c) all 40 succeed (the per-IP ceiling is 300) | NFR-40, NFR-67 | T-INT | A | 1 |
 | TC-ONB-05 | Age gate | Class 7; a birth month and year giving age 12 years 11 months today; the same input one month later | Neutral stop screen and nothing stored for the first two; the third joins. No fixed year limit in the code | FR-04 | T-UNIT | A | 1 |
 | TC-ONB-06 | Consent gate on upload | Pending consent → `POST /events:batch` | `403 consent_required`; 0 rows stored | NFR-45 | T-INT-01 | A | 1 |
 | TC-ONB-07 | Purge without consent | Pending consent; move the clock forward 15 days | Local events deleted | FR-05 | T-UNIT | A | 1 |
 | TC-ONB-08 | Profiles on a shared phone | Create profiles A and B with PINs; switch | Each profile sees only its own data | FR-07 | T-E2E | A | 1 |
 | TC-ONB-09 | Re-link to a new phone | Teacher issues a re-link code → use it on phone 2 | Profile restored; tokens on phone 1 revoked | FR-12 | T-INT | A | 2 |
-| TC-ONB-10 | Refresh token reuse | Use a refresh token twice | Second use → `401`; the whole token family revoked | ADR-0011 | T-INT | A | 1 |
+| TC-ONB-10 | Refresh token reuse | Use an old refresh token again (a) after its replacement has been used, or (b) more than 2 minutes after it was used | `401`; the whole token family revoked | ADR-0011 | T-INT | A | 1 |
+| TC-ONB-11 | Lost refresh response | Refresh, drop the response, retry at once with the same token and the same device key | `200` with a new pair; the undelivered pair is revoked; the phone carries on (no re-link) | ADR-0011 | T-INT | A | 1 |
 
 ### 2.2 Game loop and tasks
 
@@ -192,7 +193,7 @@ Feature: Read aloud (FR-96)
 | TC-SEC-16 | SSRF and egress | From the jobs container, try to reach a private IP, `169.254.169.254`, a redirecting URL and a non-allowlisted host | All blocked by the egress allowlist and the resolved-IP check; nothing fetched; audit entry | NFR-37 | T-SEC | A | 1 |
 | TC-SEC-17 | Session cookie | Log in to the dashboard on staging; inspect `Set-Cookie`; reuse the cookie after logout and after 31 idle minutes | `__Host-` prefix, `Secure`, `HttpOnly`, `SameSite=Strict`, `Path=/`, no `Domain`; a new session id after MFA; both reuses → 401 | NFR-40, NFR-69 | T-SEC | A | 1 |
 | TC-SEC-18 | Device-bound refresh | Copy a refresh token to a second emulator and refresh with a different key | `401`; the token family is revoked; the first device must re-link | NFR-39 | T-SEC | A | 1 |
-| TC-SEC-19 | Consent claim codes | Claim a slip twice; claim an unrecorded slip; claim after 60 days | Second claim, unrecorded and expired slips → the same generic error; no consent created; audit shows who recorded each slip | FR-05 | T-INT | A | 1 |
+| TC-SEC-19 | Consent claim codes | Claim a slip twice; claim a printed but unrecorded slip; claim after 60 days; claim another class's slip | Second claim, unrecorded and expired slips → the same generic error; no consent created; audit shows who recorded each slip | FR-05 | T-INT | A | 1 |
 | TC-PRIV-01 | Data inventory | mitmproxy trace of a full week on a test phone | Only the documented fields leave the phone, and only to our API | NFR-44, NFR-47 | T-PRIV-01 | M | 1 |
 | TC-PRIV-02 | Export de-identification | Run the research export | No UUIDs that can be linked back, no nicknames, no free text; k-anonymity check ≥ 5 on quasi-identifiers | FR-85 | T-PRIV-02 | A | 1 |
 | TC-PRIV-03 | Retention and deletion | Delete-my-data; run the jobs with the clock moved forward | All of the student's rows gone within 30 days; aggregates kept | NFR-46 | T-PRIV-03 | A | 1 |
@@ -238,7 +239,14 @@ Feature: Read aloud (FR-96)
 | TC-EDGE-04 | Window closed | Class 10 Computer; Pre-Medical fits best | No "switch now" option. Routes: re-take class 9, additional subject (where the board allows), alternatives | FR-99 | T-UNIT | A | 1 |
 | TC-EDGE-05 | Teacher flag | TC-EDGE-02 with teacher visibility consented | A `route_question` flag appears on the roster; no free text | FR-99 | T-INT | A | 2 |
 | TC-EDGE-06 | Under 13 | Birth year making the student 12 | Neutral stop screen; nothing stored, nothing sent | FR-04, FR-100 | T-E2E | A | 1 |
-| TC-EDGE-07 | Adult self-consent | Age 19, class 12 | No parent-consent wait; a consent record with method `self`; family sharing optional | FR-100 | T-INT | A | 1 |
+| TC-EDGE-07 | Adult self-consent | Age 19, class 12, with a Form C slip recorded by the school as 18–19 | No parent-consent wait; a consent record of type `self` (method `school_form`); family sharing optional | FR-100 | T-INT | A | 1 |
+| TC-AGE-01 | Self-declared adult | Class 10 student enters a 2000 birth year, no claim code | Joins with consent `pending`; band stored as provisional (`age_verified = false`); no consent row; nothing uploads | FR-100 | T-INT | A | 1 |
+| TC-AGE-02 | Recorded adult form | Form C recorded with 18–19 from the register | Consent `self`, band 18–19, verified | FR-100 | T-INT | A | 1 |
+| TC-AGE-03 | Register wins | Form A recorded as 16–17; student claims to be 26 | Parent consent (not self); band 16–17; `age_mismatch` flag with both bands | FR-100 | T-INT | A | 1 |
+| TC-AGE-04 | Form and age must match | Record Form C with 16–17, or Form A with 18–19 | Refused by the database (`consent_slip_kind_band_check`) | FR-100 | T-INT | A | 1 |
+| TC-LIC-01 | No active licence | School without a licence, then an expired one, then an active one | `403 school_access_inactive` twice, then `201` | FR-107 | T-INT | A | 1 |
+| TC-LIC-02 | Seats | Institution licence with 2 seats; 3 joins | 201, 201, then `403` | FR-107 | T-INT | A | 1 |
+| TC-LIC-03 | Store purchase (post-MVP) | Valid, forged and refunded store purchase tokens | Only the valid one creates an `individual` licence; a refund ends it | FR-108 | T-INT | C | post-MVP |
 | TC-EDGE-08 | Over-age learner | Age 22, class 9 | Allowed; older-learner routes shown (private candidate, open schooling, technical); age stored as a band only | FR-100, FR-104 | T-UNIT | A | 1 |
 | TC-EDGE-09 | Unusual combination check | Class 9 with birth year 1999 | Soft question "Is that right?"; both answers work; no error | FR-100 | T-E2E | A | 2 |
 | TC-EDGE-10 | Promotion | Class 8 student with a result; class check-in changes to class 9 | Mode becomes `inter`; re-ranked without replaying (estimates < 12 months old); old result kept as history | FR-101 | T-INT | A | 1 |

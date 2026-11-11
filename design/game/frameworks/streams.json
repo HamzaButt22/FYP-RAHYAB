@@ -1,8 +1,8 @@
 {
-  "version": "1.2.0",
-  "updated": "2026-11-05",
+  "version": "1.3.0",
+  "updated": "2026-11-11",
   "framework": "Pakistani education paths with RIASEC profiles, ability support and eligibility gates",
-  "status": "Initial heuristic profiles. Replace with O*NET-derived profiles (occupations each path leads to) and counsellor AHP weights before the pilot. Re-check every gate every year. v1.2.0 adds technical, vocational, health, professional and uniformed-service paths; every new path is marked verify.",
+  "status": "RIASEC profiles are still heuristic: tools/onet_profiles.py replaces them with profiles derived from O*NET occupational interest data (the occupations each path leads to, listed in path_occupations.json) once the O*NET data file is added. Gates carry a verification level and source; see verification_policy.",
   "by_class": {
     "8": {
       "decision": "Matric group",
@@ -660,54 +660,85 @@
   "gates": [
     {
       "id": "biology_for_medicine",
-      "rule": "MBBS/BDS and FSc Pre-Medical need Biology. Without Biology at Matric, the routes are re-taking class 9 in a Biology group or, where the board allows, passing Biology as an additional subject (verify)",
+      "rule": "MBBS/BDS need HSSC Pre-Medical (Biology and Chemistry, with Physics) or an IBCC-equivalent qualification. Without Biology at Matric, the routes are re-taking class 9 in a Biology group or, where the board allows, passing Biology as an additional subject (board routes are listed under routes and are unverified).",
       "applies_to": [
         "pre_medical",
         "medicine"
       ],
-      "source": "PMDC rules via project research (R1 section 1)"
+      "source": "PM&DC statement on the FSc (pre-medical) requirement, The Nation, 24 Oct 2026; regulations: https://pmdc.pk/Documents/law/Admissions%20Regulations-2025.pdf",
+      "verification": "reported",
+      "last_verified": "2026-11-11",
+      "source_url": "https://www.nation.com.pk/24-Oct-2026/pmdc-clarifies-fsc-requirement-mbbs-bds-programs"
     },
     {
       "id": "mbbs_marks",
-      "rule": "MBBS/BDS need 60% in FSc Pre-Medical (or IBCC equivalence) plus MDCAT pass marks",
+      "rule": "MBBS/BDS need at least 60% in HSSC Pre-Medical (or IBCC equivalence) and a pass in the MDCAT. The MDCAT pass mark is set by PM&DC each session and has been relaxed for vacant seats, so the app names PM&DC instead of a number.",
       "applies_to": [
         "medicine"
       ],
-      "source": "PMDC; ilmkidunya PMDC clarification"
+      "source": "PM&DC statement (The Nation, 24 Oct 2026); MDCAT relaxation: https://www.dawn.com/news/1989922",
+      "verification": "reported",
+      "last_verified": "2026-11-11",
+      "source_url": "https://www.nation.com.pk/24-Oct-2026/pmdc-clarifies-fsc-requirement-mbbs-bds-programs"
     },
     {
       "id": "engineering_marks",
-      "rule": "Engineering needs 60% in HSSC",
+      "rule": "A bachelor's in engineering needs HSSC Pre-Engineering (Physics, Chemistry, Mathematics) with at least 60% aggregate, and the institution's entry test.",
       "applies_to": [
         "engineering"
       ],
-      "source": "PEC via project research"
+      "source": "PEC Regulations for Engineering Education in Pakistan (Gazette 20 Nov 1985, amended to 17 Dec 2021, SRO 1606(I)/2021), admission requirements (a)(i) and (b)",
+      "verification": "primary",
+      "last_verified": "2026-11-11",
+      "source_url": "https://www.pec.org.pk/wp-content/uploads/2022/11/REGULATIONS-FOR-ENGG-EDU.pdf"
     },
     {
       "id": "ics_to_engineering",
-      "rule": "ICS students are eligible for all engineering programmes",
+      "rule": "ICS (Physics, Mathematics and Computer Science) is accepted only for computer-related engineering, electronics, telecommunications and avionics engineering, not for every engineering programme.",
       "applies_to": [
         "engineering"
       ],
-      "effect": "opens",
-      "source": "Eduvision PEC news"
+      "effect": "opens_some",
+      "source": "PEC Regulations (amended to 17 Dec 2021), admission requirement (a)(i). Corrects v1.2.0, which said 'all engineering programmes' from a news site",
+      "verification": "primary",
+      "last_verified": "2026-11-11",
+      "source_url": "https://www.pec.org.pk/wp-content/uploads/2022/11/REGULATIONS-FOR-ENGG-EDU.pdf"
     },
     {
       "id": "premed_to_engineering",
-      "rule": "Pre-Medical students can move to engineering with Additional Mathematics",
+      "rule": "Pre-Medical students may be admitted to engineering after an eight-week condensed course in the missing subjects (such as mathematics) and the university's entry test, with at least 60% in HSSC; up to 40% of each programme's seats.",
       "applies_to": [
         "engineering"
       ],
       "effect": "opens_with_condition",
-      "source": "Eduvision PEC news"
+      "source": "PEC Governing Body, 49th meeting (28 Jun 2024), letter to HEC of 11 Jul 2024, as reported by ProPakistani. Corrects v1.2.0 ('with Additional Mathematics')",
+      "verification": "reported",
+      "last_verified": "2026-11-11",
+      "source_url": "https://propakistani.pk/2024/07/15/pre-medical-students-can-now-enroll-in-engineering-degrees/"
     },
     {
       "id": "a_level_equivalence",
-      "rule": "A Level students need IBCC equivalence (≥60% in pre-medical subjects for MBBS)",
+      "rule": "A Level students need IBCC equivalence certificates (O Level and A Level) before applying; medical routes need Biology. The equivalent percentage is computed by IBCC's formula.",
       "applies_to": [
         "medicine"
       ],
-      "source": "RMI admissions"
+      "source": "IBCC formula and thresholds not yet confirmed from ibcc.edu.pk; v1.2.0 cited a college page (RMI)",
+      "verification": "unverified",
+      "last_verified": "2026-11-11",
+      "source_url": null
+    },
+    {
+      "id": "dae_to_engineering",
+      "rule": "A DAE holder with at least 60% may apply for engineering in the same discipline as the diploma, against 2% reserved seats.",
+      "applies_to": [
+        "engineering",
+        "dae"
+      ],
+      "effect": "opens_with_condition",
+      "verification": "primary",
+      "last_verified": "2026-11-11",
+      "source_url": "https://www.pec.org.pk/wp-content/uploads/2022/11/REGULATIONS-FOR-ENGG-EDU.pdf",
+      "source": "PEC Regulations (amended to 17 Dec 2021), admission requirement (c)(i)"
     }
   ],
   "routes": {
@@ -731,7 +762,10 @@
           "extra_years": 0,
           "extra_exams": 0
         },
-        "always_first": true
+        "always_first": true,
+        "verification": "unverified",
+        "last_verified": null,
+        "source_url": null
       },
       {
         "id": "switch_group_window",
@@ -752,28 +786,34 @@
         ],
         "by_board": {
           "FBISE": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "PUNJAB": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "SINDH": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "KPK": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "BALOCHISTAN": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "AJK": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           }
         }
       },
@@ -796,28 +836,34 @@
         ],
         "by_board": {
           "FBISE": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "PUNJAB": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "SINDH": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "KPK": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "BALOCHISTAN": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "AJK": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           }
         }
       },
@@ -840,28 +886,34 @@
         ],
         "by_board": {
           "FBISE": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "PUNJAB": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "SINDH": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "KPK": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "BALOCHISTAN": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           },
           "AJK": {
-            "verified": false,
-            "last_verified": null
+            "verification": "unverified",
+            "last_verified": null,
+            "source_url": null
           }
         }
       },
@@ -881,8 +933,9 @@
           "college",
           "board"
         ],
-        "verified": false,
-        "last_verified": null
+        "last_verified": null,
+        "verification": "unverified",
+        "source_url": null
       },
       {
         "id": "alternative_route",
@@ -902,7 +955,10 @@
           "extra_years": 0,
           "extra_exams": 0
         },
-        "source": "stream doors and plan_b"
+        "source": "stream doors and plan_b",
+        "verification": "unverified",
+        "last_verified": null,
+        "source_url": null
       }
     ]
   },
@@ -990,6 +1046,18 @@
         "label": "I have a madrassa or foreign certificate",
         "note": "IBCC equivalence (verify)"
       }
+    ]
+  },
+  "verification_policy": {
+    "levels": {
+      "primary": "Read in the official document itself (regulation, gazette, board notification).",
+      "reported": "An official decision or statement, reported by a named reputable outlet; the primary document was not retrieved.",
+      "unverified": "No official source yet. The app must not state it as a rule; it shows 'Check this with your school or board' instead."
+    },
+    "rules": [
+      "Every gate and route has verification, last_verified and, unless unverified, source_url.",
+      "Numbers that change every session (MDCAT pass marks, merit cut-offs) are never hard-coded; the app says who sets them.",
+      "Re-check every gate before each school year and before the pilot (tools/check_streams.py fails CI on a missing field)."
     ]
   }
 }

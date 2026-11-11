@@ -1,6 +1,6 @@
 # Rahyaab MVP: both semesters combined
 
-The SRS describes the full product (106 FRs). This document defines the **MVP**: the smallest version that serves real students in a school pilot and proves the research question. That version must be done by the end of FYP-2 (June 2027) by a team of three.
+The SRS describes the full product (108 FRs). This document defines the **MVP**: the smallest version that serves real students in a school pilot and proves the research question. That version must be done by the end of FYP-2 (June 2027) by a team of three.
 
 It is planned as **one product across both semesters**, delivered in two increments:
 - **FYP-1** builds a working core;
@@ -10,8 +10,8 @@ Anything not listed here is **post-MVP**.
 
 | | |
 |---|---|
-| **Team** | Hamza Butt (mobile), Zahid Bashir (backend, scoring, DevOps), Daniyal Sarwar (UX, content, dashboard) |
-| **Capacity (agreed 9 Nov 2026)** | About **20 focused hours per person per week**, about 27 effective working weeks (exam and break weeks counted at half): **≈ 1,620 hours**. The bottom-up estimate is in `PLAN.md` §2 (≈ 1,570 hours after the cut below), so the slack is only about 3%. That is why the cut order in §4 is applied at fixed checkpoints, not when we notice we're late |
+| **Team** | Hamza Butt (mobile, platform and DevOps), Zahid Bashir (backend, scoring, security), Daniyal Sarwar (UX, content, dashboard) (owners as in `PLAN.md` §1) |
+| **Capacity (agreed 9 Nov 2026)** | About **20 focused hours per person per week**, about 27 effective working weeks (exam and break weeks counted at half): **≈ 1,620 hours**. The bottom-up estimate is in `PLAN.md` §2 (≈ 1,580 hours after the cut below), so the slack is only about 3%. That is why the cut order in §4 is applied at fixed checkpoints, not when we notice we're late |
 | **Supersedes** | The R1/R2/R3 split in SRS §4.2 and §13.5 where they differ. The SRS FRs stay; this document decides **when** each one ships |
 | **Needs** | Supervisor sign-off (S0/S1) |
 
@@ -25,7 +25,7 @@ Anything not listed here is **post-MVP**.
 
 ## 2. MVP scope
 
-✅ = in the MVP. **F1** = delivered in FYP-1 (R1 demo, January 2027). **F2** = delivered in FYP-2 (pilot build March 2027, final build June 2027).
+✅ = in the MVP. **F1** = delivered in FYP-1: the **demo slice** is shown at the FYP-1 demo in weeks 17–18 (14–25 Dec 2026, exact day set by the department), and the rest of F1 is finished by the end of S5 (15 Jan 2027). **F2** = delivered in FYP-2 (pilot build March 2027, final build June 2027).
 
 ### 2.1 Student app
 
@@ -36,6 +36,8 @@ Anything not listed here is **post-MVP**.
 | Onboarding, class code, nickname, **guided field help** | FR-02–04, FR-102 | ✅ | F1 | |
 | Age handling (13–17 parent consent; 18+ self-consent; over-age routes) | FR-100 | ✅ | F1 (rules), F2 (routes) | |
 | School-path consent: numbered forms with claim codes, recorded by the teacher (seed script in F1, dashboard screen in F2) | FR-05, FR-06 | ✅ | F1 | The only consent path in the MVP |
+| Institution licences: a class code works only while the school's pilot or paid licence is active, with seats | FR-107 | ✅ | F1 | Pilot schools get free pilot licences (ADR-0015) |
+| Individual subscriptions through app-store billing | FR-108 | ❌ post-MVP | — | Needs the individual sign-up path below |
 | Individual sign-up with parent OTP | FR-03, FR-70 | ❌ **post-MVP** (decided 9 Nov 2026) | — | Saves about 40 hours, the SMS cost, PTA sender-ID registration and the weaker OTP consent. The API design stays in `openapi.yaml` for later. Adults (18+) still join through a school class code |
 | Shared-phone PIN profiles | FR-07 | ✅ | F2 | |
 | Home, the week loop, pause and resume | FR-13–17 | ✅ | F1 | |
@@ -50,7 +52,7 @@ Anything not listed here is **post-MVP**.
 | Value moments | FR-92 | ✅ | F2 | Low effort; reuses scenes |
 | The letter | FR-94 | ✅ | F1 | |
 | Read-aloud (phone voice, English) | FR-96 | ✅ | F1 | |
-| Read-aloud in Urdu, with the recorded audio pack | FR-96, FR-32 | ✅ | F2 | Fixed text (instructions, prologue) as whole clips; the personalised Blueprint and parent report as **assembled clips** (each stream name, fit phrase and sentence template recorded once, about 150 clips). F1 uses the phone voice only for English text; Roman Urdu is never read by an English voice (it mispronounces it), so F1 shows a "listen in Urdu: coming soon" note instead. Recording and review: WBS 6.4 (Daniyal), ~2 days |
+| Read-aloud in Urdu, with the recorded audio pack | FR-96, FR-32 | ✅ | F2 | Fixed text (instructions, prologue) as whole clips; the personalised Blueprint and parent report as **assembled clips** (each stream name, fit phrase and sentence template recorded once, about 150 clips). F1 uses the phone voice only for English text; Roman Urdu is never read by an English voice (it mispronounces it), so F1 shows a "listen in Urdu: coming soon" note instead. Recording and review: WBS 6.5 (Daniyal), ~2 days |
 | Accessibility settings (text size, contrast, easy read, reduce motion) | FR-97 | ✅ | F2 | Text size and reduce motion come free from the OS in F1 |
 | Avatar builder | FR-30 | ✅ (simple) | F2 | Preset parts only |
 | Room objects, reputation, relationship ranks | FR-31 | ❌ post-MVP | — | |
@@ -119,8 +121,8 @@ Also required in the MVP:
 | S1 | 2–13 Nov 2026 | Monorepo, CI, FastAPI skeleton, schema v1, join + consent-slip seed, Expo shell with theme and onboarding (with field help). **Ethics application package** (forms, Urdu reviews, DPIA, protocol) |
 | S2 | 16–27 Nov | Week loop + inkjs; prologue and Week 1; outbox + `/events:batch`; V1 simulation part 1. **Ethics application submitted** when the package is complete |
 | S3 | 30 Nov–11 Dec | Planning task end to end first, then logic and numerical (button modes); congruence scorer + eligibility rules; vertical-slice playtest; **re-estimate the other task families from the planning task's real time** |
-| S4 | 14–25 Dec | Weeks 2–4 (short, F1 script done 18 Dec); the letter; top-3 + "Why this?" for class 9–10; stream library; English read-aloud |
-| S5 | 4–15 Jan 2027 | Hardening on the reference phone; fault, load and monkey tests; report chapters; **FYP-1 demo** (date to confirm with the coordinator) · **Checkpoint 1** |
+| S4 | 14–25 Dec | **FYP-1 demo (weeks 17–18; exact day set by the department) on the demo slice:** join with a class code and consent slip, prologue and Week 1, the planning task, sync, and a class 9–10 top-3 with "Why this?" from verified gates. Then weeks 2–4 (short, F1 script done 18 Dec); the letter · **Checkpoint 1** |
+| S5 | 4–15 Jan 2027 | Rest of F1: logic and numerical tasks, stream library, English read-aloud; hardening on the reference phone; fault, load and monkey tests; report chapters (FYP-1 submission) |
 | Break | 18–29 Jan | Semester exams and break (half capacity): buffer for FYP-1 spill-over, V1 write-up |
 | S6 | 1–12 Feb | Spatial, abstract and verbal tasks; Urdu UI; class 8, 11–12 and O/A-Level modes; technical paths for every class; F2 Ink script (3 scenes a week) |
 | S7 | 15–26 Feb | Group fit check and routes; class check-in; parent page (several children); teacher dashboard with staff login, MFA, reset and the consent-slip screens; PIN profiles; Blueprint; avatar; accessibility settings. **Usability round 1** (22–26 Feb). **Ethics approval needed by 15 Feb** · **Feature freeze 26 Feb** · **Checkpoint 2** |

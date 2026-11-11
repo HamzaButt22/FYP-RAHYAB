@@ -17,7 +17,8 @@ Each file records one decision: the context, what we chose, the consequences and
 | [ADR-0011](ADR-0011-use-pseudonymous-identity-with-class-codes-and-device-bound-tokens.md) | Use pseudonymous identity with class codes and device-bound tokens | Accepted | SRS FR-03–08, NFR-44 |
 | [ADR-0012](ADR-0012-build-the-api-as-a-modular-monolith.md) | Build the API as a modular monolith | Accepted | — |
 | [ADR-0013](ADR-0013-trust-system-cas-only-no-certificate-pinning.md) | Trust system CAs only; no certificate pinning | Accepted | SECURITY §3 |
-| [ADR-0014](ADR-0014-keep-one-monorepo-with-pnpm-workspaces.md) | Keep one monorepo with pnpm workspaces | Accepted | SRS §13.3 |
+| [ADR-0014](ADR-0014-keep-one-monorepo-with-pnpm-workspaces.md) | Keep one monorepo with pnpm workspaces | Accepted (amended 11 Nov 2026: one pnpm project per app) | SRS §13.3 |
+| [ADR-0015](ADR-0015-sell-institutional-licences-and-individual-subscriptions.md) | Sell institutional licences and individual subscriptions | Accepted | SRS FR-107, FR-108 |
 
 ## Template
 

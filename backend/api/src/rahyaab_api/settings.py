@@ -19,10 +19,12 @@ class Settings(BaseSettings):
         default_factory=lambda: ["http://localhost:5173"]
     )
     access_token_minutes: int = Field(default=15, ge=5, le=60)
-    refresh_token_days: int = Field(default=60, ge=1, le=365)
+    # 90 days covers the summer vacation (about June to mid-August), so a student who comes back after
+    # the break is still signed in. Every refresh starts a new 90 days (ADR-0011).
+    refresh_token_days: int = Field(default=90, ge=1, le=365)
+    # A phone that lost a refresh response may retry with the old token for this long (ADR-0011).
+    refresh_reuse_grace_seconds: int = Field(default=120, ge=0, le=900)
     jwt_signing_key: str = ""  # required outside test (at least 32 characters); checked at start-up
-    # Version of the privacy notice an adult (18+) agrees to when self-consenting at join (FR-100).
-    consent_notice_version: str = Field(default="2026-11", max_length=20)
     data_key_wrapper_file: str = "/run/secrets/data_key_wrapper"
 
     @field_validator("cors_allowed_origins", mode="before")

@@ -47,7 +47,7 @@ Every route checks **role + tenant (school) + consent** on every request.
 
 | Route | Limit | Key |
 |---|---|---|
-| `/auth/student/join` | 10 per 15 min per device; 30 failed attempts per hour per class code (then the code pauses); ceiling 300 per 15 min per IP | device key, class code, IP (each counted separately) |
+| `/auth/student/join` | 10 per 15 min per device; 30 wrong claim codes per hour per class (then claim codes pause for that class; joining without one still works); ceiling 300 per 15 min per IP | device key, class, IP (each counted separately) |
 | `/auth/student/relink` | 5 per 15 min per device; 10 failures per hour per IP | device key, IP |
 | `/auth/staff/login`, `/auth/staff/mfa` | 5 per 15 min | account, and IP |
 | `/c/{token}/otp` (send SMS) | 3 per link per day; 3 per phone per day; 20 per IP per hour | link, phone, IP |

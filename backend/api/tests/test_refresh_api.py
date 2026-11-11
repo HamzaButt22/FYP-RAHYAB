@@ -38,14 +38,36 @@ def test_refresh_rotates_the_pair(api: TestClient, world: World) -> None:
     assert refresh(api, new["refresh_token"], key).status_code == 200
 
 
-def test_reusing_a_token_revokes_the_family(api: TestClient, world: World) -> None:  # TC-ONB-10
+def test_a_retry_after_a_lost_response_gets_a_fresh_pair(api: TestClient, world: World) -> None:  # TC-ONB-11
+    pair, key = join(api, world)
+    lost = refresh(api, pair["refresh_token"], key)  # the server answered, but the phone never got it
+    assert lost.status_code == 200
+    retry = refresh(api, pair["refresh_token"], key)  # same phone, same key, seconds later
+    assert retry.status_code == 200
+    assert retry.json()["refresh_token"] not in (lost.json()["refresh_token"], pair["refresh_token"])
+    assert refresh(api, lost.json()["refresh_token"], key).status_code == 401  # the undelivered pair is dead
+    assert refresh(api, retry.json()["refresh_token"], key).status_code == 200  # the phone carries on
+
+
+# TC-ONB-10
+def test_reusing_a_token_after_its_successor_was_used_revokes(api: TestClient, world: World) -> None:
     pair, key = join(api, world)
     first = refresh(api, pair["refresh_token"], key)
-    assert first.status_code == 200
-    again = refresh(api, pair["refresh_token"], key)  # second use of the old token
-    assert again.status_code == 401
-    # The token issued by the first refresh is revoked too, so whoever holds it must re-link.
-    assert refresh(api, first.json()["refresh_token"], key).status_code == 401
+    assert refresh(api, first.json()["refresh_token"], key).status_code == 200  # the successor is in use
+    assert refresh(api, pair["refresh_token"], key).status_code == 401  # so the old token is a replay
+    assert refresh(api, first.json()["refresh_token"], key).status_code == 401  # family revoked
+
+
+def test_reusing_a_token_after_the_grace_period_revokes(api: TestClient, world: World) -> None:  # TC-ONB-10
+    pair, key = join(api, world)
+    first = refresh(api, pair["refresh_token"], key)
+    with world.admin.begin() as conn:
+        conn.execute(
+            text("UPDATE refresh_token SET used_at = now() - interval '10 minutes' WHERE token_hash = :h"),
+            {"h": sha(pair["refresh_token"])},
+        )
+    assert refresh(api, pair["refresh_token"], key).status_code == 401
+    assert refresh(api, first.json()["refresh_token"], key).status_code == 401  # family revoked
 
 
 def test_a_copied_token_signed_by_another_key_is_refused_and_revokes(  # TC-SEC-18
@@ -88,6 +110,11 @@ def test_an_expired_token_is_refused(api: TestClient, world: World) -> None:
 
 
 def test_refresh_reports_current_consent(api: TestClient, world: World) -> None:  # FR-100
-    pair, key = join(api, world, grade=12, birth_year=2007, birth_month=1)  # an adult: self-consent
-    r = refresh(api, pair["refresh_token"], key)
-    assert r.status_code == 200 and r.json()["consent_state"] == "granted"
+    class_id, code = world.add_class(grade=12)
+    claim = world.add_slip(class_id, kind="self")
+    body = world.body(code, grade=12, birth_year=2007, birth_month=1, claim_code=claim)
+    r = api.post(JOIN_URL, json=body)
+    assert r.status_code == 201, r.text
+    key = world.private_keys[body["device"]["public_key"]]
+    again = refresh(api, r.json()["refresh_token"], key)
+    assert again.status_code == 200 and again.json()["consent_state"] == "granted"
