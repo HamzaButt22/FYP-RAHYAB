@@ -96,7 +96,7 @@ jobs:
             docker compose pull && docker compose --profile migrate run --rm migrate && docker compose up -d"
 
       # ---- Kubernetes ----
-      - uses: azure/setup-kubectl@776406bce94f63e41d621b960d78ee25c8b76ede # v4
+      - uses: azure/setup-kubectl@bda439f5f36b99b262ebdcd3613869bddb064c8e # v5.2.0
         if: vars.DEPLOY_TARGET == 'k8s'
       - name: Deploy with kubectl
         if: vars.DEPLOY_TARGET == 'k8s'
