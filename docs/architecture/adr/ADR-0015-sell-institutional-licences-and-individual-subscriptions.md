@@ -23,7 +23,7 @@ The MVP pilot is free and runs only through schools (MVP §2.1). Before any sale
   - `individual`: one student's subscription (post-MVP).
 
   Each licence has `starts_at` and `ends_at`.
-- **A class code works only while its school holds an active pilot or institution licence with a free seat** (FR-107). Otherwise the join answers `403 school_access_inactive` ("Your school's Rahyaab access isn't active right now. Please tell your teacher."). This answer only follows a valid class code, so it reveals nothing to a code guesser.
+- **A class code works only while its school holds an active pilot or institution licence** (FR-107). **A seat is used only when a student's consent is granted** (a recorded slip, claimed at join or later through `POST /consents:claim`). Joining without consent uses no seat, so anyone holding a class code cannot exhaust a school's seats with fake profiles; never-consented profiles are deleted after 30 days. *(Changed on 12 Nov 2026: seats were first counted at join.)* Otherwise the join answers `403 school_access_inactive` ("Your school's Rahyaab access isn't active right now. Please tell your teacher."). This answer only follows a valid class code, so it reveals nothing to a code guesser.
 - **What a lapsed licence does to joined students:** they keep their results, the stream library and their parent link. The yearly re-check uses the licence.
 - **Individual subscriptions (FR-108, post-MVP):**
   - bought through the app store's own billing, by the parent's account for a minor (Google Play requires an adult account holder);
@@ -40,7 +40,7 @@ The MVP pilot is free and runs only through schools (MVP §2.1). Before any sale
   - The pilot uses the same check, with a free licence.
   - The privacy design is unchanged.
 - **Cost:**
-  - Seat counting is per school (students joined through any of its classes). Concurrent joins are serialised on the licence row, so seats are not over-sold.
+  - Seat counting is per school: students with active parent or self consent in any of its classes. Concurrent claims are serialised on the licence row, so seats are not over-sold.
   - Admin screens to issue licences come with FR-80 (scripts in F1, screens in F2).
 - **Open:** prices, refund terms and a written agreement with schools (data-processing terms) need legal review before the first sale.
 

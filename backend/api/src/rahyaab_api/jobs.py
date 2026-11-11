@@ -1,7 +1,9 @@
 """Background jobs worker (`python -m rahyaab_api.jobs`).
 
 Runs as the `jobs` database role (DATABASE_URL), which may only delete and read what retention needs.
-Jobs so far: purge old rate-limit windows (hourly). Still to add: retention and deletion, monthly
+Jobs so far (hourly): purge old rate-limit windows; delete profiles that never received consent within
+UNCONSENTED_DAYS (DATA_GOVERNANCE.md: nothing was ever uploaded for them, and the phone purges its local
+data after 14 days, FR-05). Still to add: retention and deletion, monthly
 partitions (owner role), rescoring, O*NET cache refresh, nightly encrypted backup.
 """
 
@@ -15,6 +17,7 @@ from sqlalchemy import Engine, create_engine, text
 log = logging.getLogger("rahyaab.jobs")
 _running = True
 RATE_LIMIT_KEEP_HOURS = 24  # the longest window is 1 hour; a day of history helps abuse reviews
+UNCONSENTED_DAYS = 30
 
 
 def _stop(*_: object) -> None:
@@ -28,6 +31,23 @@ def purge_rate_limits(engine: Engine, keep_hours: int = RATE_LIMIT_KEEP_HOURS) -
         result = conn.execute(
             text("DELETE FROM rate_limit WHERE window_start < now() - make_interval(hours => :h)"),
             {"h": keep_hours},
+        )
+    return int(result.rowcount or 0)
+
+
+def purge_unconsented_students(engine: Engine, days: int = UNCONSENTED_DAYS) -> int:
+    """Deletes students who never had parent or self consent and joined more than `days` ago."""
+    with engine.begin() as conn:
+        result = conn.execute(
+            text(
+                """
+                DELETE FROM student st
+                WHERE st.created_at < now() - make_interval(days => :d)
+                  AND NOT EXISTS (SELECT 1 FROM consent co
+                                  WHERE co.student_id = st.id AND co.type IN ('parent', 'self'))
+                """
+            ),
+            {"d": days},
         )
     return int(result.rowcount or 0)
 
@@ -46,6 +66,7 @@ def main(interval_s: int = 3600) -> None:
         if engine is not None and time.monotonic() >= next_run:
             try:
                 log.info("rate_limit purge removed %d windows", purge_rate_limits(engine))
+                log.info("removed %d never-consented profiles", purge_unconsented_students(engine))
             except Exception:  # keep the worker alive; the next run retries
                 log.exception("rate_limit purge failed")
             next_run = time.monotonic() + interval_s

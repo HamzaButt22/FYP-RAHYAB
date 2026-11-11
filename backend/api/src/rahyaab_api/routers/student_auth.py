@@ -10,7 +10,8 @@ Join: order of checks, chosen so that failures reveal and store as little as pos
 2. Age: under 13 by the student's own answer -> 422 age_out_of_range, before anything touches the database.
 3. Rate limits per device key (10 / 15 min) and per IP (300 / 15 min) -> 429.
 4. Unknown or expired class codes and bad claim codes get the same generic 404 (NFR-74).
-5. The school must hold an active pilot or institution licence with a free seat -> otherwise 403 (FR-107).
+5. The school must hold an active pilot or institution licence -> otherwise 403 (FR-107). A seat is used
+   only when consent is granted (a claimed slip), so unconsented joins cannot use up a school's seats.
 6. A class with 30 failed claim codes this hour stops accepting claim codes for the rest of the hour;
    joining without a claim code still works (one student cannot block a class).
 7. One transaction creates the student, device, refresh token and consent records.
@@ -212,10 +213,7 @@ def join_with_class_code(
     except _CodeRejected:
         raise _not_accepted() from None
     except _ClaimRejected as rejected:
-        key = f"{CLAIM_FAILURES.name}:{rejected.class_id}"
-        failures, _ = hit(engine, key, CLAIM_FAILURES.window_s)
-        if failures == CLAIM_FAILURES.max_hits:
-            _audit(engine, "claim_codes.paused", f"class:{rejected.class_id}")
+        count_claim_failure(engine, rejected.class_id)
         raise _not_accepted() from None
 
 
@@ -234,34 +232,14 @@ def _create_profile(engine: Engine, settings: Settings, body: JoinRequest, decla
         if school_class is None:
             raise _CodeRejected
 
-        _check_licence(conn, school_class.school_id)
+        # Joining needs an active licence; a seat is used only when consent is granted (a claimed slip).
+        seats = _active_licence_seats(conn, school_class.school_id)
 
-        slip = None
-        if body.claim_code:
-            paused = peek(engine, f"{CLAIM_FAILURES.name}:{school_class.id}", CLAIM_FAILURES.window_s)[0]
-            if paused >= CLAIM_FAILURES.max_hits:
-                raise _not_accepted()  # not counted again; the class can still join without a claim code
-            slip = conn.execute(
-                text(
-                    """
-                    UPDATE consent_slip SET claimed_at = now()
-                    WHERE claim_code_hash = :h AND class_id = :c AND claimed_at IS NULL
-                      AND recorded_at IS NOT NULL AND expires_at > now()
-                    RETURNING id, kind, verified_age_band, recorded_by, notice_version, research_opt_in
-                    """
-                ),
-                {"h": digest(body.claim_code), "c": school_class.id},
-            ).one_or_none()
-            if slip is None:
-                raise _ClaimRejected(school_class.id)
-
-        # The school's record wins over the student's own answer (age assurance).
-        band = slip.verified_age_band if slip is not None else declared_band
         student_id: UUID = conn.execute(
             text(
                 """
                 INSERT INTO student (class_id, nickname, grade, board, age_band, age_verified)
-                VALUES (:class_id, :nickname, :grade, :board, :band, :verified) RETURNING id
+                VALUES (:class_id, :nickname, :grade, :board, :band, false) RETURNING id
                 """
             ),
             {
@@ -269,8 +247,7 @@ def _create_profile(engine: Engine, settings: Settings, body: JoinRequest, decla
                 "nickname": body.nickname,
                 "grade": school_class.grade,  # the class's own grade, not the picker (wrong mode otherwise)
                 "board": school_class.board,
-                "band": band,
-                "verified": slip is not None,
+                "band": declared_band,  # provisional until a recorded slip brings the register's band
             },
         ).scalar_one()
         device_id: UUID = conn.execute(
@@ -291,20 +268,11 @@ def _create_profile(engine: Engine, settings: Settings, body: JoinRequest, decla
         refresh = _store_refresh_token(conn, settings, device_id, family_id=None)
 
         consent_state: ConsentState = "pending"
-        if slip is not None:
-            _record_slip_consent(conn, student_id, slip)
+        if body.claim_code:
+            claim_slip(
+                engine, conn, school_class.id, school_class.school_id, seats, student_id, body.claim_code
+            )
             consent_state = "granted"
-            if band != declared_band:
-                conn.execute(
-                    text(
-                        "INSERT INTO flag (student_id, type, details) "
-                        "VALUES (:s, 'age_mismatch', CAST(:d AS jsonb))"
-                    ),
-                    {
-                        "s": student_id,
-                        "d": json.dumps({"declared_band": declared_band, "verified_band": band}),
-                    },
-                )
 
     return TokenPair(
         access_token=access_token(settings, student_id, device_id),
@@ -315,8 +283,11 @@ def _create_profile(engine: Engine, settings: Settings, body: JoinRequest, decla
     )
 
 
-def _check_licence(conn: Connection, school_id: UUID) -> None:
-    """The school needs an active pilot or institution licence with a free seat (FR-107, ADR-0015)."""
+def _active_licence_seats(conn: Connection, school_id: UUID) -> int | None:
+    """Seats of the school's active pilot or institution licence (None = unlimited); 403 without one (FR-107).
+
+    The licence row is locked, so concurrent consents are counted one at a time: seats are never over-sold.
+    """
     licence = conn.execute(
         text(
             """
@@ -332,16 +303,86 @@ def _check_licence(conn: Connection, school_id: UUID) -> None:
     ).one_or_none()
     if licence is None:
         raise _no_school_access()
-    if licence.seats is not None:
-        used = conn.execute(
+    seats: int | None = licence.seats
+    return seats
+
+
+def _seat_is_free(conn: Connection, school_id: UUID, seats: int | None) -> bool:
+    """A seat is used by a student with active parent or self consent, never by an unconsented join."""
+    if seats is None:
+        return True
+    used = conn.execute(
+        text(
+            """
+            SELECT count(DISTINCT st.id) FROM student st
+            JOIN school_class c ON c.id = st.class_id
+            JOIN consent co ON co.student_id = st.id
+                           AND co.type IN ('parent', 'self') AND co.withdrawn_at IS NULL
+            WHERE c.school_id = :s
+            """
+        ),
+        {"s": school_id},
+    ).scalar_one()
+    return int(used) < seats
+
+
+def claim_slip(
+    engine: Engine,
+    conn: Connection,
+    class_id: UUID,
+    school_id: UUID,
+    seats: int | None,
+    student_id: UUID,
+    claim_code: str,
+) -> None:
+    """Binds a recorded consent slip to a student (at join, or later through /consents:claim).
+
+    Raises _ClaimRejected (counted per class by the caller) or the 403 when no seat is free. The register's
+    age band replaces the student's own answer; a disagreement raises an `age_mismatch` flag.
+    """
+    failures = peek(engine, f"{CLAIM_FAILURES.name}:{class_id}", CLAIM_FAILURES.window_s)[0]
+    if failures >= CLAIM_FAILURES.max_hits:
+        raise _not_accepted()  # paused, not counted again; joining without a claim code still works
+    if not _seat_is_free(conn, school_id, seats):
+        raise _no_school_access()
+    slip = conn.execute(
+        text(
+            """
+            UPDATE consent_slip SET claimed_at = now()
+            WHERE claim_code_hash = :h AND class_id = :c AND claimed_at IS NULL
+              AND recorded_at IS NOT NULL AND expires_at > now()
+            RETURNING id, kind, verified_age_band, recorded_by, notice_version, research_opt_in
+            """
+        ),
+        {"h": digest(claim_code), "c": class_id},
+    ).one_or_none()
+    if slip is None:
+        raise _ClaimRejected(class_id)
+
+    declared_band = conn.execute(
+        text("SELECT age_band FROM student WHERE id = :s"), {"s": student_id}
+    ).scalar_one()
+    conn.execute(
+        text("UPDATE student SET age_band = :b, age_verified = true WHERE id = :s"),
+        {"b": slip.verified_age_band, "s": student_id},
+    )
+    _record_slip_consent(conn, student_id, slip)
+    if declared_band != slip.verified_age_band:
+        conn.execute(
             text(
-                "SELECT count(*) FROM student st JOIN school_class c ON c.id = st.class_id "
-                "WHERE c.school_id = :s"
+                "INSERT INTO flag (student_id, type, details) VALUES (:s, 'age_mismatch', CAST(:d AS jsonb))"
             ),
-            {"s": school_id},
-        ).scalar_one()
-        if used >= licence.seats:
-            raise _no_school_access()
+            {
+                "s": student_id,
+                "d": json.dumps({"declared_band": declared_band, "verified_band": slip.verified_age_band}),
+            },
+        )
+
+
+def count_claim_failure(engine: Engine, class_id: UUID) -> None:
+    failures, _ = hit(engine, f"{CLAIM_FAILURES.name}:{class_id}", CLAIM_FAILURES.window_s)
+    if failures == CLAIM_FAILURES.max_hits:
+        _audit(engine, "claim_codes.paused", f"class:{class_id}")
 
 
 def _record_slip_consent(conn: Connection, student_id: UUID, slip: Row[tuple[object, ...]]) -> None:

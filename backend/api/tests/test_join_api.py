@@ -154,10 +154,24 @@ def test_no_active_licence_means_no_join(api: TestClient, world: World) -> None:
     assert api.post(URL, json=world.body(code)).status_code == 201
 
 
-def test_seats_are_enforced(api: TestClient, world: World) -> None:  # TC-LIC-02
-    _, code = world.add_class()
+def test_seats_are_used_only_by_consent(api: TestClient, world: World) -> None:  # TC-LIC-02
+    class_id, code = world.add_class()
     world.set_licence("institution", seats=2)
-    assert [api.post(URL, json=world.body(code)).status_code for _ in range(3)] == [201, 201, 403]
+    plain = [api.post(URL, json=world.body(code)).status_code for _ in range(3)]
+    assert plain == [201, 201, 201]  # unconsented joins use no seat, so they cannot exhaust the licence
+    claims = [
+        api.post(URL, json=world.body(code, claim_code=world.add_slip(class_id))).status_code
+        for _ in range(3)
+    ]
+    assert claims == [201, 201, 403]  # the third consent finds no free seat
+    assert (
+        world.scalar(
+            "SELECT count(*) FROM consent co JOIN student st ON st.id = co.student_id "
+            "JOIN school_class c ON c.id = st.class_id WHERE c.school_id = :s",
+            s=world.school_id,
+        )
+        == 2
+    )
 
 
 # ---------------------------------------------------------------------------------------- rate limits

@@ -46,3 +46,7 @@ cd infra/docker && cp .env.example .env && docker compose up -d db api
 3. Merge with "Create a merge commit". `main` deploys to staging automatically; a `v*` tag deploys to production after approval (`docs/devops/CI_CD.md`).
 
 Rules that apply to every change are in `docs/project/CONTRIBUTING.md`. Never commit secrets, real student data or `.env` files; the CI secret scan blocks them.
+
+## Licence
+
+Copyright © 2026 Hamza Butt, Zahid Bashir and Daniyal Sarwar. **All rights reserved**; see [`LICENSE`](LICENSE). Third-party components keep their own licences, and O*NET-derived data is used under CC BY 4.0 with attribution.

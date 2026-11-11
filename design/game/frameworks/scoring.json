@@ -20,7 +20,7 @@
   "m3_recommender": {
     "production_default": "congruence",
     "congruence": {
-      "formula": "fit = w_interest * cosine(student_riasec_shifted, path_riasec) + w_ability * ability_support + w_marks * marks_support",
+      "formula": "fit = w_interest * interest_match + w_ability * ability_support + w_marks * marks_support, interest_match = (pearson_r(student_riasec_shifted, path_riasec) + 1) / 2",
       "weights": {
         "interest": 0.55,
         "ability": 0.35,
@@ -29,11 +29,17 @@
       "renormalise_when_marks_missing": true,
       "definitions": {
         "student_riasec_shifted": "theta_plus_k = Phi(theta_k), the standard normal CDF of each interest score, so every value is in (0, 1) and order is kept",
-        "path_riasec": "the path's RIASEC profile in streams.json, values in [0, 1] (to be replaced by O*NET-derived profiles: the mean O*NET interest profile of the occupations the path leads to, rescaled (score - 1) / 6, occupations listed and reviewed by counsellors)",
+        "path_riasec": "the path's RIASEC profile in streams.json, values in [0, 1]: the mean O*NET 31.0 Occupational Interest profile of the occupations the path leads to, rescaled (score - 1) / 6 (tools/onet_profiles.py; occupations in path_occupations.json)",
         "ability_support": "sum over the families listed for the path of alpha_k * Phi(theta_ability_k); alpha_k equal and summing to 1; unmeasured families are dropped and the rest renormalised",
         "marks_support": "mean of the path's relevant subject percentages / 100; absent marks -> term dropped and weights renormalised",
         "range": "every term is in [0, 1], so fit is in [0, 1]",
-        "sensitivity_check": "report how often the top-3 changes if cosine is replaced by Pearson r (profile shape only)"
+        "sensitivity_check": "report how often the top-3 changes if correlation is replaced by cosine",
+        "interest_match": "Pearson correlation of the two profiles mapped to [0, 1]. Correlation compares profile shape (which types are high and low), not level. Changed from cosine on 12 Nov 2026: cosine of all-positive profiles favoured paths with flat profiles and ranked undecided students with false confidence",
+        "differentiation": "Holland's differentiation: highest minus lowest of the six Phi-scaled interest scores. Below min_differentiation the interest term is dropped and the result says 'no clear interest pattern yet' (FR-51)"
+      },
+      "min_differentiation": {
+        "value": 0.15,
+        "status": "provisional; calibrated in the V1 simulation on the reference sample"
       }
     },
     "candidates": [

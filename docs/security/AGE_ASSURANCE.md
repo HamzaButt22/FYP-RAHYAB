@@ -28,7 +28,8 @@ Rahyaab is designed not to collect names, phone numbers, CNIC or B-Form numbers,
 
    The database rejects any other combination (`consent_slip_kind_band_check`). The stored band becomes the register band and `age_verified = true`.
 4. **The student's answer and the register disagree:** the register wins, and an `age_mismatch` flag tells the teacher. The flag holds both bands and nothing more. It is for a conversation, not a penalty.
-5. **Turning 18 later:** the yearly class check-in (FR-101) asks the school to record a Form C. Until then, the parent's consent stays in force.
+5. **Form back after joining:** the student enters the claim code later (`POST /consents:claim`). The same rules apply, and the register's band replaces the provisional one.
+6. **Turning 18 later:** the yearly class check-in (FR-101) asks the school to record a Form C. Until then, the parent's consent stays in force.
 
 ## 4. What each kind of person could try, and what happens
 

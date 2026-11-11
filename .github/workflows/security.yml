@@ -25,6 +25,8 @@ jobs:
 
   codeql:
     name: CodeQL (${{ matrix.language }})
+    # Code scanning on a private repository needs GitHub's paid Code Security add-on; skip instead of failing.
+    if: ${{ !github.event.repository.private }}
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -43,7 +45,8 @@ jobs:
 
   dependency-review:
     name: dependency review
-    if: github.event_name == 'pull_request'
+    # Needs the paid Code Security add-on on a private repository; the dependency audits job still runs.
+    if: ${{ github.event_name == 'pull_request' && !github.event.repository.private }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@fbc6f3992d24b796d5a048ff273f7fcc4a7b6c09 # v5

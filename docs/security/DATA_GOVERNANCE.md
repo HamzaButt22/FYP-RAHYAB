@@ -37,6 +37,7 @@ This document says what data Rahyaab holds, how long we keep it, how it is prote
 | `quarantine` | PostgreSQL | 30 days | Deleted | `retention` job |
 | `trait_estimate`, `recommendation` | PostgreSQL | While the account is active, and 12 months after the last activity | Deleted with the account | `retention` job |
 | `licence` (kind, school or student, seats, dates; **no payment data**) | PostgreSQL | While the school or student account exists | Deleted with the school or student | — (ADR-0015) |
+| A `student` profile that **never received consent** (nothing was ever uploaded for it) | PostgreSQL | 30 days after joining | Hard delete with its device and tokens | `jobs` worker, hourly (`purge_unconsented_students`) |
 | `student` profile (nickname, class, board, group, district, **age band** and whether the school verified it, situation) | PostgreSQL | While active; deleted 12 months after the last activity, or within 30 days of a deletion request | Hard delete, cascading through the student's records | `retention` and `deletion` jobs (NFR-46) |
 | `guardian_contact` | PostgreSQL (encrypted column) | Until consent is withdrawn or the account is deleted | Hard delete | `deletion` job |
 | `research_demographics` (gender, medium; opt-in) | PostgreSQL, `research_ro` role only | Until the study ends, plus 1 year; deleted at once if research consent is withdrawn | Hard delete | `deletion` job |
