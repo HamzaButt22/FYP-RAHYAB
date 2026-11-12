@@ -124,6 +124,15 @@
       }
     },
     {
+      "label": "mobile: build and install Android app",
+      "type": "shell",
+      "command": "pnpm android",
+      "problemMatcher": [],
+      "options": {
+        "cwd": "${workspaceFolder}/frontend/mobile"
+      }
+    },
+    {
       "label": "mobile: start Expo",
       "type": "shell",
       "command": "pnpm start",
