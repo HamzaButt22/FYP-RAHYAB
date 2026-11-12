@@ -138,7 +138,7 @@ _archive/           Old prototypes (Big Five Pygame, BART/Emotify/Hanoi, browser
 ## Ways of working
 
 - **Process:** Scrum with 2-week sprints. One branch per issue (`feat/<#>-name`) and Conventional Commits.
-- **Main branch:** protected; PRs need review by another team member and green CI. Merge with Squash and merge: one commit per PR, credited to its author, while the PR page keeps every commit.
+- **Main branch:** protected; PRs need review by another team member and green CI. Merge with Squash and merge by default (one commit per PR, credited to its author, while the PR page keeps every commit); merge commits and rebase merges are also allowed.
 - **Hygiene:** no secrets, `.env` files, `__pycache__` or real session data in the repo.
 - **Attribution:** commits, documents and code carry no AI-tool attribution.
 
