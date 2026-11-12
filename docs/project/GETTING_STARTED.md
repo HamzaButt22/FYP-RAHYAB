@@ -6,7 +6,7 @@ The first two weeks of development, in order. The scope comes from `MVP.md` (Spr
 
 | # | Task | Who | Done when | Status (13 Nov 2026) |
 |---|---|---|---|---|
-| 1 | Supervisor meeting: approve SRS v1.3, MVP, Template-04 v1.5 and the open questions (GAME_DESIGN §19) | All | Signed change record | Open |
+| 1 | Supervisor meeting: approve SRS v1.5, MVP, Template-04 v1.5 and the open questions (GAME_DESIGN §19) | All | Signed change record | Open |
 | 2 | Submit the ethics application (DPIA, consent forms, protocol) | Daniyal | Submission receipt | Open (deferred) |
 | 3 | Push the pre-development pack and merge the prototype branch (REPOSITORY.md §3, steps 1–4) | Hamza | Both PRs merged; old branches deleted | Done. `zahid/game-levels-research` has no unmerged work and can be deleted |
 | 4 | GitHub settings: branch protection, secret scanning, Dependabot, private repository (REPOSITORY.md §7) | Hamza (owner) | Settings screenshot in the first sprint review | Done, except private: the repository stays public until the team has GitHub Pro (branch protection on private repositories needs it) |

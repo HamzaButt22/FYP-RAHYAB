@@ -16,4 +16,4 @@
 - `docs/security/` (threat model, compliance, data governance);
 - `docs/testing/` (strategy and cases).
 
-The `System Design/` folder at the repository root holds the earlier draw.io drawings for the superseded Big Five design. It is kept unchanged, for history only.
+The `archive/system-design-drawio/` folder (moved from `System Design/` on 9 Nov 2026) holds the earlier draw.io drawings for the superseded Big Five design. It is kept unchanged, for history only.

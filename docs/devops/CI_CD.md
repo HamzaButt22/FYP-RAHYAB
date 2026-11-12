@@ -37,7 +37,7 @@ How Rahyaab's code is checked, built, released and run. The pipeline runs on **G
 
 | Environment | Where | Data | Deployed by | Access |
 |---|---|---|---|---|
-| **Local** | Developer machine: `docker compose up` (API, Postgres, GlitchTip) plus Expo Go or a dev build | Synthetic fixtures only | Developer | Developer |
+| **Local** | Developer machine: `docker compose up` (API, Postgres, GlitchTip) plus the app's development build (`docs/project/NEW_DEVICE_SETUP.md`) | Synthetic fixtures only | Developer | Developer |
 | **Staging** | Small VM or the university server (A-06), same compose file | Synthetic, plus team test accounts | Automatically from `main` | Team; staff MFA |
 | **Production (pilot)** | One VM: 4 vCPU, 8 GB, 80 GB SSD, Ubuntu LTS. Region chosen by measured round-trip time (p95 ≤ 150 ms from Pakistani carriers) | Real, consented student data | A version tag, after manual approval | Two named admins (each with their own key and account); SSH by key only, through a WireGuard VPN on the VM (so dynamic home and mobile IPs are not a problem); break-glass: the hosting provider's web console, used only with a logged reason and a post-incident note |
 
@@ -106,7 +106,8 @@ docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect --source /rep
    - require a PR with 1 approval;
    - require the status checks that exist: start with the `ci.yml` lint, typecheck and test jobs in Sprint 1, and add each new workflow's checks to the ruleset in the sprint that adds the workflow (a ruleset cannot require a check that has never run);
    - block force pushes and deletions;
-   - linear history: **not** required, because the team merges with **"Create a merge commit"** so each member's commits stay attributed (SRS §13.3; CONTRIBUTING.md).
+   - require linear history (the team merges with **"Squash and merge"**: one commit per PR, credited to its author; SRS §13.3, CONTRIBUTING.md).
+   - In **Settings → General → Pull Requests**, allow **squash merging only** (untick merge commits and rebase merging), set the default message to "Pull request title and description", and tick **Automatically delete head branches**.
 2. **Code security:** turn on Dependabot alerts and security updates, Secret scanning with push protection, and CodeQL default setup.
 3. **Environments:** create `staging` and `production`; add the required reviewer to `production`; add the secrets `EXPO_TOKEN`, `DEPLOY_SSH_KEY`, `GHCR_TOKEN` and `PACK_SIGNING_KEY` to the right environment.
 4. **Local mobile builds:** run `npx eas-cli@latest build:configure` once to create `eas.json`.

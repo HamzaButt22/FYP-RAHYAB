@@ -107,27 +107,9 @@ All 35 diagrams are PlantUML (`.puml`) in standard notation, with SVG and PNG ex
 
 `archive/` holds superseded versions: game design v1, the Fern design system, and early app and SRS drafts. They are kept only for history.
 
-The repository-root folder `System Design/` holds the old draw.io diagrams of the Big Five design. They are superseded by `architecture/`.
+The old draw.io diagrams of the Big Five design are in `archive/system-design-drawio/` (moved on 9 Nov 2026). They are superseded by `architecture/`.
 
-## Status (4 Nov 2026)
+## Status
 
-**Done:**
-- research;
-- brand (logo, mascot, palette, tokens, app icons);
-- final game design;
-- framework data;
-- SRS v1.1;
-- the app screens (light, dark, Figma);
-- accessibility, security, store and SEO plans;
-- all pre-development artifacts and the system design;
-- **v1.2 (5 Nov):** edge cases, guided errors, resilience tests, the combined MVP, the AI build guide, 3 new screens, and the `.gitignore` clean-up.
+The current status (what is built and merged, and what is open) is kept in one place: `project/GETTING_STARTED.md` §4, updated each sprint. The history of the documents up to development is in `../project-summary/README.md`.
 
-**Still to do:**
-- untrack 4 old files (`devops/CI_CD.md` §7) and add the CI workflow files (Sprint 1);
-- verify the board rules for routes (switch windows, re-take, additional subject) and the age rules;
-- import the 3 new screens into Figma and refresh 5 FigJam diagrams when the Figma limit resets;
-- confirm the items marked **verify** in `security/COMPLIANCE.md` with the ethics office;
-- draw the scene illustrations and the avatar builder, add high-contrast tokens, and make Urdu (RTL) screens;
-- write the Ink script;
-- build;
-- run the pilot.

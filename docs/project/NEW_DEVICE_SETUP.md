@@ -78,7 +78,7 @@ python tools/dev.py up
 python tools/dev.py seed
 ```
 
-This creates the git-ignored `infra/docker/.env` and local secrets, starts PostgreSQL, the API (http://localhost:8000) and the jobs worker, and loads the synthetic development data. All other commands: `python tools/dev.py` with no argument. Tests:
+This creates the git-ignored `infra/docker/.env` and local secrets, starts PostgreSQL, the API (http://localhost:8000; check it at http://localhost:8000/v1/health) and the jobs worker, and loads the synthetic development data. The first `up` builds the API image, which downloads its Python packages (a few hundred MB). `python tools/dev.py down` stops everything and keeps the data. All other commands: `python tools/dev.py` with no argument. Tests:
 
 ```bash
 python tools/dev.py check

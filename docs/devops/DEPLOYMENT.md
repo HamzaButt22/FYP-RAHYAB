@@ -33,7 +33,7 @@ How Rahyaab runs, from a developer laptop to the pilot server.
 | Data | Synthetic seed only | Synthetic + team test accounts | Real, consented data |
 | Deployed by | `docker compose up` | Automatic on merge to `main` | A version tag + manual approval |
 | URL | `http://localhost:8000` | `https://staging.api.rahyaab.pk` (placeholder) | `https://api.rahyaab.pk` (placeholder) |
-| Mobile build | Expo dev build / Expo Go | EAS `preview` APK (internal testers) | EAS `production` AAB (Play closed track) |
+| Mobile build | Expo development build (`pnpm android`; Expo Go cannot run the app) | EAS `preview` APK (internal testers) | EAS `production` AAB (Play closed track) |
 | Debug tools | On | Off (release-like) | Off; no debug routes (NFR-66) |
 
 ## 3. Local development with Docker
