@@ -22,7 +22,7 @@ The first two weeks of development, in order. The scope comes from `MVP.md` (Spr
 | **Node.js** | 22 LTS (24 also works) + **pnpm** (`npm i -g pnpm`) | Mobile app, dashboard |
 | **Python** | **3.13** through **uv** (`pip install uv`, then `uv python install 3.13`) | API and scoring. Python 3.14 is installed on this PC, but some scientific packages lag behind, so pin 3.13 |
 | **Docker Desktop** | latest (already installed here) | PostgreSQL and the API locally |
-| **Android**: a physical budget phone with USB debugging, **or** Android Studio's emulator (Pixel, API 34, 4 GB RAM profile) | — | Running the app |
+| **Android**: a physical budget phone with USB debugging, **or** Android Studio's emulator (Pixel, API 34, 4 GB RAM profile) | — | Running the app (a development build; on Windows also CMake 3.31.6, see `frontend/mobile/README.md`) |
 | Expo account + `eas-cli` (`npm i -g eas-cli`) | — | Development builds and APKs |
 | **Java 17+ and Graphviz** | — | PlantUML diagram previews in VS Code |
 | R (+ `thurstonianIRT`, `mirt`) | 4.4+ | Zahid only: the M1 and M2 calibration notebooks |
