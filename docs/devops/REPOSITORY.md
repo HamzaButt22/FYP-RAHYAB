@@ -107,7 +107,7 @@ git commit -m "chore: stop tracking ignored files"
 git push -u origin chore/reorganise
 ```
 
-On GitHub: **Pull requests → New → `chore/reorganise` → `main`**. The CI workflow runs on it. Merge with **"Create a merge commit"** (not squash), so everyone's commits stay attributed.
+On GitHub: **Pull requests → New → `chore/reorganise` → `main`**. The CI workflow runs on it. Merge with **"Squash and merge"** (the team's rule since 13 Nov 2026; CONTRIBUTING.md).
 
 **Step 5: delete the old branches** (after the merge):
 
@@ -171,8 +171,9 @@ Keep the repository **private** until this is done and the pilot data rules are 
 
 ## 7. GitHub settings to switch on before development
 
-- **Visibility:** private during development.
-- **Branch protection on `main`:** require a PR with 1 review and the passing `ci` checks; block force pushes and deletions; do not require linear history (CI_CD.md §7).
+- **Visibility:** private during development once the team has GitHub Pro (the Student Developer Pack includes it); branch protection on a private repository needs it. Until then the repository stays public (decided 12 Nov 2026).
+- **Branch protection on `main`:** require a PR with 1 review and the passing `ci` checks; block force pushes and deletions; require linear history (CI_CD.md §7).
+- **Merge button:** allow squash merging only, and delete head branches automatically (CI_CD.md §7).
 - **Code security:** secret scanning with push protection, Dependabot alerts and security updates, CodeQL.
 - **Environments:** create `staging` and `production` (add a required reviewer to `production`). Per environment, set the variables `DEPLOY_TARGET` (`compose` or `k8s`), `DEPLOY_HOST` and `API_URL`, and the secrets `DEPLOY_SSH_KEY` and `DEPLOY_KNOWN_HOSTS` (Compose) or `KUBECONFIG` (Kubernetes). Add `EXPO_TOKEN` as a repository secret for `mobile-build.yml`.
 - **Packages:** after the first `release` run, set the three GHCR images (`rahyaab-api`, `rahyaab-dashboard`, `rahyaab-backup`) to private and give the repository access.

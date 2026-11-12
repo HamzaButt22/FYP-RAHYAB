@@ -6,7 +6,7 @@
 | **Status** | Baseline for implementation (Sprint 1 onward) |
 | **Authors** | Zahid Bashir (backend, data), Hamza Butt (mobile), Daniyal Sarwar (UX, content) |
 | **Supervisor** | Zeeshan Ali |
-| **Inputs** | SRS v1.1 (`docs/project/SRS.md`), GDD v3 (`design/game/GAME_DESIGN.md`), ADRs (`adr/`), RFCs (`rfc/`), API spec (`docs/api/openapi.yaml`) |
+| **Inputs** | SRS (v1.1 when written; current v1.5: `docs/project/SRS.md`), GDD v3 (`design/game/GAME_DESIGN.md`), ADRs (`adr/`), RFCs (`rfc/`), API spec (`docs/api/openapi.yaml`) |
 
 This document shows how Rahyaab is built, in **C4** levels and **UML** views, with data-flow and data-model diagrams.
 

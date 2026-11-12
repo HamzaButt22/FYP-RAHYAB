@@ -1,6 +1,6 @@
-# Rahyaab: project summary (updated 5 Nov 2026)
+# Rahyaab: project summary (updated 13 Nov 2026)
 
-What has been done so far, in detail. Everything listed here is in this repository. Only `design/` and `docs/` were added. The app code, the prototypes and the old `System Design/` folder were not changed. Links below are relative to this folder.
+What has been done so far, in detail. Everything listed here is in this repository. Sections 1–11 cover the documents and designs made before development; section 12 covers development from 9 Nov 2026. The live status is in `docs/project/GETTING_STARTED.md` §4. Links below are relative to this folder.
 
 ## 1. Research (`docs/research/`)
 
@@ -238,24 +238,30 @@ What has been done so far, in detail. Everything listed here is in this reposito
 
 The folder was cleaned and reorganised: `frontend/mobile` (Expo app), `frontend/dashboard` (React + Vite shell), `backend/api` (FastAPI skeleton, tests, migration), `backend/scoring` (congruence ranking, tests), `database/` (schema, role set-up, dev seed), `infra/docker` (Compose, Caddy), `infra/k8s` (Kustomize staging and production), `infra/backup` (encrypted off-site backups), `.github/workflows` (ci, security, release, mobile-build) and Dependabot; old work moved to `prototypes/` and `archive/`. Details and the push commands: `docs/devops/REPOSITORY.md`.
 
+## 12. Development (9–13 Nov 2026)
+
+All merged into `main` through pull requests, with CI green:
+- **Repository and CI/CD (#4, #14):** monorepo, CI (lint, types, tests on a throwaway PostgreSQL, docs audit, token and stream checks), security scans, release images, Dependabot. `main` is protected.
+- **API:** join with a class code, with age assurance and school licences (#15); signed token refresh bound to a device key (#16); claiming a consent slip after joining, with seats counted only for consented students (#28). 79 API tests.
+- **Scoring:** congruence by profile correlation, with Holland's differentiation gate for flat profiles (#28). 10 scoring tests.
+- **Data:** every path's interest profile derived from O*NET 31.0 (#25); `streams.json` entry rules sourced; board routes verified for KPK, partly for others.
+- **Licence:** All rights reserved (#28).
+- **Mobile app:** Android development build and the Windows build fix (#29); the app shell (#30): theme and fonts from the tokens, English and Urdu with right-to-left layout, the language and welcome screens, navigation and four tabs, the language setting, the brand icon and splash.
+- **Guides:** `docs/project/NEW_DEVICE_SETUP.md` (a new computer, step by step, with known errors) (#31).
+
 ## Still to do
 
-- **GitHub settings:** the CI/CD workflows exist; switch on branch protection, environments, variables and secrets on GitHub (`docs/devops/REPOSITORY.md` §7).
-- **Old tracked files:** you staged the untracking of the 4 files; commit it. The participant session file is still in Git history: remove it before the repository goes public (`docs/devops/REPOSITORY.md` §5).
-- **LICENSE:** replace Expo's template licence with the team's own.
-- **Figma:** import `design/figma/import-pending-light.html` and `-dark.html` (31 new screens + 5 updated ones) with the free html.to.design plugin; steps in `design/figma/README.md`. The FigJam board is stale (the diagrams in the repo are current).
-- **Feasibility (FYP-1):** run the V1 simulation and a budget-phone performance spike; both are the guide's FYP-1 feasibility evidence.
+- **Privacy, first:** an old participant session file (from the first prototype) is still in the public Git history. Follow `docs/devops/REPOSITORY.md` §5 to remove it, and decide with the supervisor whether it was real participant data.
+- **Mobile:** the real join screen with the Keystore device key; the other onboarding cards and field help; the encrypted SQLite outbox; the Ink story; the game weeks, tasks and results screens.
+- **Feasibility (FYP-1):** run the V1 simulation and a budget-phone performance spike.
 - **Ethics approval** for the pilot with minors.
-- **Reviews:** a native Urdu review of the consent forms; ethics office review of the DPIA, privacy policy and consent forms.
-- **Board rules:** verify the switch windows, re-take rules, additional-subject exams and age limits for each board.
-- **Confirmations:** check the items marked "verify" in `docs/security/COMPLIANCE.md` with the ethics office: the hosting region, the account-deletion web page, how long to keep consent records, and two licences.
-- **Design work:**
-  - scene illustrations and the avatar builder (placeholders for now);
-  - high-contrast colour tokens;
-  - Urdu right-to-left versions of the screens;
-  - a native-speaker review of the Urdu store text.
+- **Reviews:** a native Urdu review of the app text and the consent forms; ethics office review of the DPIA, privacy policy and consent forms; counsellor review of `path_occupations.json`.
+- **Board rules:** verify the Sindh, Balochistan and AJK routes.
+- **Confirmations:** the items marked "verify" in `docs/security/COMPLIANCE.md`.
+- **Figma:** import the 31 newer screens (`design/figma/README.md`).
+- **Design work:** scene illustrations and the avatar builder; Urdu right-to-left versions of the screen designs.
+- **Team process:** create the GitHub issues and project board; make the repository private once the team has GitHub Pro.
 - **Committee:** rehearse with `docs/project/COMMITTEE_QA.md`.
-- **Building and testing:** write the Ink story, build the app, the backend and the dashboard, and run the pilot.
 
 ## Where to start
 

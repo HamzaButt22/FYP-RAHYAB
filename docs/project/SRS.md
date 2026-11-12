@@ -1651,7 +1651,7 @@ Everyone writes tests for their own code and reviews at least one PR from each t
 ### 13.3 Git workflow and CI
 
 - **Branches:** one per issue, `feat/<issue#>-short-name`, `fix/…`, `docs/…`, `chore/…`. `main` is protected: a PR is required, ≥ 1 approving review from another member, CI green, no force-push.
-- **Merging:** **merge commits** (not squash), so that each member's individual commits remain attributable.
+- **Merging:** **Squash and merge** (changed on 13 Nov 2026 from merge commits): one commit per PR on `main`, credited to the PR's author, with a Conventional Commit title; the PR keeps the individual commits, and `Co-authored-by:` lines credit anyone else who committed.
 - **Conventional Commits:** `feat(planner): randomise option positions (#42)`, `fix(sync): dedupe on event_id`, `test(scoring): TIRT EAP fixtures`.
 - **Identity:** one consistent name/email per member (`.mailmap` for old history).
 - **Hygiene:** no generated files, `__pycache__`, `.env`, real session data or credentials in the repo (fix the existing `.pyc`, `tmp_check.js` and session JSON files) [REV §8]. Secret scanning and Dependabot are on.

@@ -21,7 +21,7 @@ How we will know that Rahyaab works, is safe, and measures what it claims to mea
 ## 2. What we test, and what we don't
 
 **In scope:**
-- all FRs and NFRs in SRS v1.1;
+- all FRs and NFRs in the SRS (v1.5);
 - the content packs;
 - the OpenAPI contract;
 - infrastructure scripts (backup and restore);
@@ -87,7 +87,7 @@ All of these produce a report saved as a CI artifact. A regression of more than 
 | Environment | Use |
 |---|---|
 | Local Docker Compose | Unit, integration and contract tests |
-| GitHub Actions runners | CI (Linux), with an Android emulator job for Maestro (API 34, 4 GB profile) |
+| GitHub Actions runners | CI (Linux), with an Android emulator job for Maestro (API 36, 4 GB profile, matching the local emulator in `docs/project/NEW_DEVICE_SETUP.md`) |
 | Staging VM | E2E against the real API, ZAP, Locust, restore drill |
 | **Device lab** | The RLD: a Tecno or Infinix phone with 4 GB RAM on Android 14–15. Plus a Samsung Galaxy A0x/A1x, a Redmi A-series, one Android 11 phone and one 5.5″ small screen (T-DEV) |
 
