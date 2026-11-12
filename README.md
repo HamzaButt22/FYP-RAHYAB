@@ -25,14 +25,14 @@ Final Year Project, BS Computer Science, Riphah International University (2026â€
 
 ## Quick start
 
-You need Git, Node.js 24 with pnpm, Python 3.13 with [uv](https://docs.astral.sh/uv/), and Docker Desktop. The full guide is `docs/project/GETTING_STARTED.md`.
+You need Git, Node.js 24 with pnpm 12, Python 3.13 with [uv](https://docs.astral.sh/uv/), and Docker Desktop; for the app also Android Studio (SDK and emulator) and JDK 17. **New computer:** `docs/project/NEW_DEVICE_SETUP.md` (every step, debugging, and errors we have already solved). Team workflow: `docs/project/GETTING_STARTED.md`.
 
 ```bash
 cd backend/api && uv sync && uv run pytest
 ```
 
 ```bash
-cd frontend/mobile && pnpm install && pnpm start
+cd frontend/mobile && pnpm install && pnpm android
 ```
 
 ```bash

@@ -1,17 +1,17 @@
 # Getting started: from documents to code
 
-The first two weeks of development, in order. The scope comes from `MVP.md` (Sprint 1–2), the repository steps from `docs/devops/REPOSITORY.md`, and how to use AI assistants from `BUILD_GUIDE.md`.
+The first two weeks of development, in order. The scope comes from `MVP.md` (Sprint 1–2), the repository steps from `docs/devops/REPOSITORY.md`, and how to use AI assistants from `BUILD_GUIDE.md`. **Setting up a new computer** (tools, Android SDK, emulator or phone, debugging, known errors) is in `NEW_DEVICE_SETUP.md`.
 
 ## 1. Before anyone writes code (this week)
 
-| # | Task | Who | Done when |
-|---|---|---|---|
-| 1 | Supervisor meeting: approve SRS v1.3, MVP, Template-04 v1.5 and the open questions (GAME_DESIGN §19) | All | Signed change record |
-| 2 | Submit the ethics application (DPIA, consent forms, protocol) | Daniyal | Submission receipt |
-| 3 | Push the pre-development pack and merge the prototype branch (REPOSITORY.md §3, steps 1–4) | Hamza | Both PRs merged; old branches deleted |
-| 4 | GitHub settings: branch protection, secret scanning, Dependabot, private repository (REPOSITORY.md §7) | Hamza (owner) | Settings screenshot in the first sprint review |
-| 5 | Replace the Expo template `LICENSE` with your own (ask the supervisor which) | Hamza | New `LICENSE` merged |
-| 6 | Create the GitHub Project board, with Sprint 1 issues from §4 | Zahid | Issues assigned |
+| # | Task | Who | Done when | Status (13 Nov 2026) |
+|---|---|---|---|---|
+| 1 | Supervisor meeting: approve SRS v1.3, MVP, Template-04 v1.5 and the open questions (GAME_DESIGN §19) | All | Signed change record | Open |
+| 2 | Submit the ethics application (DPIA, consent forms, protocol) | Daniyal | Submission receipt | Open (deferred) |
+| 3 | Push the pre-development pack and merge the prototype branch (REPOSITORY.md §3, steps 1–4) | Hamza | Both PRs merged; old branches deleted | Done. `zahid/game-levels-research` has no unmerged work and can be deleted |
+| 4 | GitHub settings: branch protection, secret scanning, Dependabot, private repository (REPOSITORY.md §7) | Hamza (owner) | Settings screenshot in the first sprint review | Done, except private: the repository stays public until the team has GitHub Pro (branch protection on private repositories needs it) |
+| 5 | Replace the Expo template `LICENSE` with your own (ask the supervisor which) | Hamza | New `LICENSE` merged | Done: All rights reserved (#28) |
+| 6 | Create the GitHub Project board, with Sprint 1 issues from §4 | Zahid | Issues assigned | Open: no issues on GitHub yet |
 
 ## 2. Install the tools (each developer)
 
@@ -19,11 +19,11 @@ The first two weeks of development, in order. The scope comes from `MVP.md` (Spr
 |---|---|---|
 | **VS Code** | latest | IDE (the recommended extensions are in `.vscode/extensions.json`; VS Code offers to install them) |
 | Git | latest | Version control |
-| **Node.js** | 22 LTS (24 also works) + **pnpm** (`npm i -g pnpm`) | Mobile app, dashboard |
+| **Node.js** | **24** (what CI uses) + **pnpm 12** (`npm i -g pnpm@12`) | Mobile app, dashboard |
 | **Python** | **3.13** through **uv** (`pip install uv`, then `uv python install 3.13`) | API and scoring. Python 3.14 is installed on this PC, but some scientific packages lag behind, so pin 3.13 |
 | **Docker Desktop** | latest (already installed here) | PostgreSQL and the API locally |
-| **Android**: a physical budget phone with USB debugging, **or** Android Studio's emulator (Pixel, API 34, 4 GB RAM profile) | — | Running the app (a development build; on Windows also CMake 3.31.6, see `frontend/mobile/README.md`) |
-| Expo account + `eas-cli` (`npm i -g eas-cli`) | — | Development builds and APKs |
+| **Android**: a physical budget phone with USB debugging, **or** Android Studio's emulator (Android 16 / API 36 platform; any recent x86_64 image) + **JDK 17** | — | Running the app as a development build. Step by step, including the Windows CMake 3.31.6 fix: `NEW_DEVICE_SETUP.md` §3–6 |
+| Expo account + `eas-cli` (`npm i -g eas-cli`) | — | Only for cloud builds and shareable APKs; local builds don't need it |
 | **Java 17+ and Graphviz** | — | PlantUML diagram previews in VS Code |
 | R (+ `thurstonianIRT`, `mirt`) | 4.4+ | Zahid only: the M1 and M2 calibration notebooks |
 
@@ -44,8 +44,10 @@ cd frontend/dashboard && pnpm install && pnpm build
 ```
 
 ```bash
-cd frontend/mobile && pnpm install && pnpm start
+cd frontend/mobile && pnpm install && pnpm android
 ```
+
+(`pnpm android` builds and installs the development build; afterwards `pnpm start` is enough. See `NEW_DEVICE_SETUP.md` §5.)
 
 ```bash
 cd infra/docker && cp .env.example .env && docker compose up -d db api
@@ -77,7 +79,7 @@ This creates the git-ignored `infra/docker/.env` and local secrets, starts Postg
 | `db: start`, `db: migrate`, `db: set role passwords`, `db: seed`, `db: reset (delete local data)` | Database steps on their own |
 | `check: tests` (default test task), `check: lint and types`, `check: everything (like CI)` | The same checks CI runs, before you push |
 | `api: run tests`, `scoring: run tests`, `mobile: typecheck`, `mobile: lint`, `docs: audit`, `openapi: lint`, `k8s: render staging` | Single checks |
-| `dashboard: dev server`, `mobile: start Expo` | Development servers |
+| `dashboard: dev server`, `mobile: start Expo`, `mobile: build and install Android app` | Development servers and the app build |
 
 **Debugging** (Run and Debug, F5):
 
@@ -109,7 +111,15 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 | Verify `streams.json` class 9–10 paths and gates with sources | Daniyal | FR-45, NFR-03 |
 | Ethics application submitted | Daniyal | §17 |
 
-**Status on 11 Nov 2026:** done and merged: monorepo and CI; FastAPI skeleton; schema migration; `POST /auth/student/join` (with age assurance and licences); signed token refresh; seed data with a pilot licence, a teacher and consent slips (`database/seed/dev_seed.sql`). Open: the Expo shell and screens S-00 to S-03, secure storage, Ink prologue, `streams.json` board routes (gates are verified, board routes are not), ethics submission.
+**Status on 13 Nov 2026:** done and merged:
+- monorepo and CI; FastAPI skeleton; schema migration;
+- `POST /auth/student/join` (with age assurance and licences); signed token refresh; `POST /consents:claim` (#28);
+- seed data with a pilot licence, a teacher and consent slips (`database/seed/dev_seed.sql`);
+- scoring: shape-based interest matching with a differentiation gate; O*NET 31.0 path profiles (#25, #28);
+- Android development build and the Windows build fix (#29);
+- **Expo app shell** (#30): theme and fonts from the tokens, English and Urdu with right-to-left layout, S-01 Language, S-02 Welcome (first card), navigation and the four tabs, the language setting on You, the brand icon and splash.
+
+Open: the real S-03 join screen with the Keystore device key; the other two welcome cards; S-03e field help; the encrypted SQLite outbox; the Ink prologue; `streams.json` board routes for Sindh, Balochistan and AJK; the ethics submission; review of `frontend/mobile/src/i18n/locales/ur.json` by a native Urdu editor.
 
 **Definition of done** (SRS §13.4):
 - code with tests, CI green, one review;
@@ -119,6 +129,8 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 - demoed at the sprint review.
 
 ## 5. Daily workflow
+
+In Windows PowerShell 5.1, `&&` and `#` comments don't work: run each line on its own, or use Git Bash.
 
 ```
 git switch main && git pull

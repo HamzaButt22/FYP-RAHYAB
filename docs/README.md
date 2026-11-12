@@ -34,7 +34,8 @@ This folder holds the documents. The code and infrastructure live next to it at 
 | **Infrastructure:** CI/CD pipeline design | `devops/CI_CD.md` |
 | **Infrastructure:** deployment, Docker, staging, Kubernetes | `devops/DEPLOYMENT.md`, `infra/docker/` (repository root) |
 | **Repository:** audit, cleanup, branches, what to push | `devops/REPOSITORY.md` |
-| **Getting started:** tools, monorepo, Sprint 1 issues | `project/GETTING_STARTED.md` |
+| **Getting started:** tools, monorepo, Sprint 1 issues, status | `project/GETTING_STARTED.md` |
+| **New computer:** install, run on an emulator or phone, debug, known errors | `project/NEW_DEVICE_SETUP.md` |
 | **Security:** threat modelling | `security/SECURITY.md` (STRIDE per component) |
 | **Security:** compliance mapping | `security/COMPLIANCE.md` |
 | **Security:** data retention and encryption policies | `security/DATA_GOVERNANCE.md` |
@@ -75,6 +76,7 @@ All 35 diagrams are PlantUML (`.puml`) in standard notation, with SVG and PNG ex
 | How do forms guide users when they make mistakes? | `design/specs/forms-and-errors.md` |
 | How do we build it with AI assistants? | `project/BUILD_GUIDE.md` (including the AI stack: primary coding agent, Gemini Pro, local Qwen3-32B) |
 | How do we start development? | `project/GETTING_STARTED.md` |
+| How do I set up my laptop and run the app? | `project/NEW_DEVICE_SETUP.md` |
 | Which branches and folders do we keep or remove? | `devops/REPOSITORY.md` |
 | How do we prove the results are valid? | `project/SCIENTIFIC_BASIS.md` |
 | Why was each design choice made? | `project/DESIGN_RATIONALE.md` |

@@ -20,6 +20,8 @@ pnpm start
 
 Checks CI runs: `pnpm typecheck` and `pnpm lint`.
 
+**New computer:** follow `docs/project/NEW_DEVICE_SETUP.md` (Android SDK, emulator or phone, debugging, known errors).
+
 **Windows: one-time setup for the Android build.** React Native compiles C++ code, and on Windows its file paths can pass the old 260-character limit.
 1. Long paths must be on (`LongPathsEnabled = 1`; Expo's guide "Windows long paths" shows the command, run as administrator).
 2. Install **CMake 3.31.6** (Android Studio → Settings → Languages & Frameworks → Android SDK → SDK Tools → tick *Show Package Details* → CMake → 3.31.6). It ships Ninja 1.12.1, which handles long paths; the default CMake 3.22.1 does not.
