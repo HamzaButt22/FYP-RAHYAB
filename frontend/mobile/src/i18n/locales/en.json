@@ -1,0 +1,57 @@
+{
+  "common": {
+    "appName": "rahyaab",
+    "appNameUrdu": "راہ یاب",
+    "continue": "Continue",
+    "comingSoon": "Coming soon",
+    "logoLabel": "Rahyaab logo"
+  },
+  "onboarding": {
+    "language": {
+      "title": "Choose your language",
+      "englishName": "English",
+      "englishNote": "Roman Urdu dialogue",
+      "englishLabel": "English, with Roman Urdu dialogue",
+      "urduName": "اردو",
+      "urduNote": "Urdu script",
+      "urduLabel": "Urdu, in Urdu script",
+      "hint": "You can change this anytime in You → Language."
+    },
+    "welcome": {
+      "mascotLabel": "Hudhud the hoopoe, carrying a letter",
+      "title": "A letter from you, five years from now.",
+      "body": "Hudhud carries it. Most of it is smudged. Live your year, a week at a time, and the ink will settle.",
+      "promise": "No right answers. No clock. Nothing is saved until your family says OK.",
+      "start": "Get started"
+    },
+    "join": {
+      "title": "Join your class",
+      "body": "Joining with your class code is the next part we are building.",
+      "devSkip": "Skip to the app (development build only)"
+    }
+  },
+  "tabs": {
+    "home": "Home",
+    "explore": "Explore",
+    "family": "Family",
+    "you": "You"
+  },
+  "home": {
+    "title": "Salaam!",
+    "body": "Your week will appear here."
+  },
+  "explore": {
+    "title": "Explore",
+    "body": "Every stream, explained, will be here."
+  },
+  "family": {
+    "title": "Family",
+    "body": "You will share your Blueprint with your family from here."
+  },
+  "you": {
+    "title": "You",
+    "languageHeading": "Language",
+    "languageNote": "The app restarts to change the language.",
+    "devReset": "Start onboarding again (development build only)"
+  }
+}

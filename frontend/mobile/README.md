@@ -29,6 +29,20 @@ Checks CI runs: `pnpm typecheck` and `pnpm lint`.
 
 **Builds:** `eas.json` has three profiles: `development` (dev client), `preview` (an installable APK for testers and the pilot, pointing at staging) and `production` (Play Store bundle). Run them from GitHub (Actions → mobile-build) or locally with `npx eas-cli build --platform android --profile preview`.
 
-**Design:** colours, type and spacing come from `design/tokens/theme.ts` (copy it to `src/theme/` when the first screen is built); the screen designs are in `design/screens/`.
+**Design:** colours, type and spacing come from `src/theme/tokens.ts`, an exact copy of `design/tokens/theme.ts`. CI (`design/tokens/check_tokens.py`) fails if the two differ, so change the design file first and copy it. The screen designs are in `design/screens/`; brand images in `assets/brand/` are copies from `design/brand/`.
 
-**Privacy in the app config:** Android backups are off, and only INTERNET and VIBRATE permissions are requested; location, contacts, camera and microphone are blocked (SECURITY.md §3).
+**Code layout (`src/`):**
+
+| Folder | What |
+|---|---|
+| `app/` | Screens and navigation (expo-router). `language.tsx` is S-01; `(onboarding)/` holds S-02 and S-03; `(tabs)/` holds Home, Explore, Family and You. Which group is reachable depends on the saved language and onboarding state (`Stack.Protected` in `app/_layout.tsx`) |
+| `components/` | Shared pieces: `AppText` (brand type scale, switches to Gulzar in Urdu), `Button`, `Screen`, `LanguageOption`, `Placeholder` |
+| `i18n/` | All interface text in `locales/en.json` and `locales/ur.json` (keys `domain.screen.element`). No text is written directly in a screen (NFR-27). Choosing Urdu restarts the app in right-to-left layout |
+| `state/` | Saved settings (language, onboarding) in the Keystore-backed secure store |
+| `theme/` | Tokens and `useTheme()` (light, dark, high contrast) |
+
+**Urdu text is a draft.** A native Urdu editor must review `locales/ur.json` before the pilot (SRS §7.4). Use `start`/`end` in styles, never `left`/`right`, so layouts mirror correctly in Urdu.
+
+**Development-only buttons:** "Skip to the app" on the join screen and "Start onboarding again" on You appear only in development builds (`__DEV__`), never in a release build.
+
+**Privacy in the app config:** Android backups are off, and only INTERNET and VIBRATE permissions are requested; location, contacts, camera and microphone are blocked (SECURITY.md §3). The development build adds Expo's developer tools, which may ask for "nearby devices"; that prompt is not part of Rahyaab and can be declined.

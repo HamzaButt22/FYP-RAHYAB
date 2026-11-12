@@ -1,20 +1,13 @@
-import { Stack } from 'expo-router';
-import { StyleSheet, Text, View } from 'react-native';
+// The start address ("/"): sends the student to the right place for where they are.
+// Each group is also locked with Stack.Protected in _layout.tsx, so a deep link cannot skip a step.
 
-export default function HomeScreen() {
-  return (
-    <View style={styles.container}>
-      <Stack.Screen options={{ title: 'Home' }} />
-      <Text>Open up src/app/index.tsx to start working on your app!</Text>
-    </View>
-  );
+import { Redirect } from 'expo-router';
+
+import { useAppState } from '@/state/AppState';
+
+export default function Start() {
+  const { language, onboardingDone } = useAppState();
+  if (!language) return <Redirect href="/language" />;
+  if (!onboardingDone) return <Redirect href="/welcome" />;
+  return <Redirect href="/home" />;
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#fff',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

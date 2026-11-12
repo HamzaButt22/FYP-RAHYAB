@@ -1,4 +1,5 @@
-"""Fail (exit 1) if tokens.css, theme.ts or tokens.dtcg.json drift from tokens.json (the master). Run in CI."""
+"""Fail (exit 1) if tokens.css, theme.ts or tokens.dtcg.json drift from tokens.json (the master), or the app's copy
+of theme.ts (frontend/mobile/src/theme/tokens.ts) differs from theme.ts. Run in CI."""
 import json, pathlib, re, sys
 
 D = pathlib.Path(__file__).parent
