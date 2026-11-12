@@ -31,7 +31,7 @@ Yes. The guide has **one** CCP framework with **nine characteristics**, and asks
 | "Our approach is better." | Baseline + experiment + quantitative comparison | Four baselines (random, rules only, questionnaire only, Rahyaab); NDCG@3, top-3 hit rate and κ against a blinded counsellor panel; a learned model is adopted only if it wins by ≥ .05 | `SCIENTIFIC_BASIS.md` §5.2; ADR-0006 | Design ready; results FYP-2 |
 | "The model is accurate." | Dataset + metrics + validation/test results | 145,828 open RIASEC responses for a **feasibility** simulation (V1, r ≥ .80); accuracy itself comes from the pilot: O*NET Mini Interest Profiler as the criterion (V2, r ≥ .50 with CI rules), reliability ≥ .70 (V4), with 5-fold cross-validated calibration | `SCIENTIFIC_BASIS.md` §5–5.2; `SRS.md` §14.4 | V1 in FYP-1; V2–V6 in FYP-2 |
 | "Our architecture is scalable." | Load/performance evidence | Load, spike (300 joins in 60 s), soak (8 h), break-point and chaos tests; p95 budgets; capacity plan | `TEST_STRATEGY.md` §3.1; `DEPLOYMENT.md`; NFR-75, NFR-76 | Plan ready; results FYP-2 |
-| "We worked as a team." | Git history + task allocation + contribution records | Branch and PR rules; one squashed commit per PR credited to its author (the PR keeps every commit); issue templates; roles | `REPOSITORY.md`; `SRS.md` §13.2–13.3; `.github/` | Set-up ready; history builds from Sprint 1 |
+| "We worked as a team." | Git history + task allocation + contribution records | Branch and PR rules; every PR merge keeps its author's name (squash by default; the PR keeps every commit); issue templates; roles | `REPOSITORY.md`; `SRS.md` §13.2–13.3; `.github/` | Set-up ready; history builds from Sprint 1 |
 | "We used modern tools." | Tool artifacts + demonstrated use | Expo/React Native, FastAPI, PostgreSQL, Docker, GitHub Actions, OpenAPI 3.1, PlantUML, IRT and ranking libraries | `SYSTEM_DESIGN.md`; ADRs; `BUILD_GUIDE.md` | Design ready; use shown in demos |
 | "Our requirements are complete." | SRS + stakeholder evidence | SRS v1.5 (108 FRs, 77 NFRs, MoSCoW, use cases, RTM); student, parent and teacher instruments; personas; edge cases | `SRS.md` §2, §9–11, §16–17; `EDGE_CASES.md` | SRS ready; survey results FYP-1 |
 | "Our software is reliable." | Test cases + results + failure analysis | 126 test cases with acceptance criteria; resilience and chaos suite; failure analysis per incident | `TEST_CASES.md`; `TEST_STRATEGY.md` | Cases ready; results from Sprint 1 on |
@@ -73,7 +73,7 @@ Yes. The guide has **one** CCP framework with **nine characteristics**, and asks
 | LO3 Design and implementation (20) | Architecture, algorithms, database/API, integration, working system | Diagrams, schema, OpenAPI; the built app (FYP-2) |
 | LO4 Theory and trade-offs (20) | Algorithm choice, comparisons, accuracy vs efficiency | ADR-0006 model comparison; V1 choices-vs-accuracy curve; offline vs freshness |
 | LO5 Modern tools (10) | Frameworks, ML libraries, testing and profiling tools | Expo, FastAPI, LightGBM, SHAP, Schemathesis, Locust, Maestro, ZAP, MobSF |
-| LO6 Teamwork and version control (15) | Commits, branches, PRs, issues, sprints, contributions | `REPOSITORY.md`, `.github/` templates, PR history (squash merges) |
+| LO6 Teamwork and version control (15) | Commits, branches, PRs, issues, sprints, contributions | `REPOSITORY.md`, `.github/` templates, PR history |
 | LO7 Communication (10) | Report, documentation, diagrams, demo, viva | This documentation set; demo script |
 
 `SRS.md` §13.6 lists the evidence the team will collect for each LO.

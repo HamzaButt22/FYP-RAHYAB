@@ -43,7 +43,7 @@ cd infra/docker && cp .env.example .env && docker compose up -d db api
 
 1. Pick an issue on the GitHub project board and create a branch (`feat/…`, `fix/…`, `docs/…`).
 2. Open a pull request; the `ci` and `security` workflows must pass and a teammate reviews it.
-3. Merge with **"Squash and merge"** (one commit per pull request, credited to its author). `main` deploys to staging automatically; a `v*` tag deploys to production after approval (`docs/devops/CI_CD.md`).
+3. Merge with **"Squash and merge"** by default (one commit per pull request, credited to its author); "Create a merge commit" and "Rebase and merge" are also allowed. `main` deploys to staging automatically; a `v*` tag deploys to production after approval (`docs/devops/CI_CD.md`).
 
 Rules that apply to every change are in `docs/project/CONTRIBUTING.md`. Never commit secrets, real student data or `.env` files; the CI secret scan blocks them.
 

@@ -141,7 +141,7 @@ git add -p && git commit -m "feat(join): field-level errors (#12)"
 git push -u origin HEAD           # open a PR, link the issue, ask a teammate to review
 ```
 
-**Commit style:** Conventional Commits (`feat`, `fix`, `test`, `docs`, `chore`), naming the issue number. Merge with **Squash and merge** (one commit per PR on `main`); after merging, delete the local branch with `git branch -D` (squash merges are not recognised by `-d`).
+**Commit style:** Conventional Commits (`feat`, `fix`, `test`, `docs`, `chore`), naming the issue number. Merge with **Squash and merge** by default (one commit per PR on `main`; the other merge methods are also allowed); after merging, delete the local branch with `git branch -D` (squash merges are not recognised by `-d`).
 
 ## 6. What to push before development starts
 

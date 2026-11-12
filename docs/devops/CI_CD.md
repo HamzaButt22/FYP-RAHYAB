@@ -106,8 +106,8 @@ docker run --rm -v "$PWD:/repo" zricethezav/gitleaks:latest detect --source /rep
    - require a PR with 1 approval;
    - require the status checks that exist: start with the `ci.yml` lint, typecheck and test jobs in Sprint 1, and add each new workflow's checks to the ruleset in the sprint that adds the workflow (a ruleset cannot require a check that has never run);
    - block force pushes and deletions;
-   - require linear history (the team merges with **"Squash and merge"**: one commit per PR, credited to its author; SRS §13.3, CONTRIBUTING.md).
-   - In **Settings → General → Pull Requests**, allow **squash merging only** (untick merge commits and rebase merging), set the default message to "Pull request title and description", and tick **Automatically delete head branches**.
+   - linear history: **not** required, because merge commits are allowed (squash and merge is the default; SRS §13.3, CONTRIBUTING.md).
+   - In **Settings → General → Pull Requests**, keep all three merge methods allowed, set the squash commit message to "Pull request title and description", and tick **Automatically delete head branches**.
 2. **Code security:** turn on Dependabot alerts and security updates, Secret scanning with push protection, and CodeQL default setup.
 3. **Environments:** create `staging` and `production`; add the required reviewer to `production`; add the secrets `EXPO_TOKEN`, `DEPLOY_SSH_KEY`, `GHCR_TOKEN` and `PACK_SIGNING_KEY` to the right environment.
 4. **Local mobile builds:** run `npx eas-cli@latest build:configure` once to create `eas.json`.
