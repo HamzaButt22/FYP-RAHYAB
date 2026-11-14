@@ -29,7 +29,7 @@ CREATE TABLE school_class (
   school_id        uuid NOT NULL REFERENCES school (id) ON DELETE CASCADE,
   grade            smallint NOT NULL CHECK (grade BETWEEN 8 AND 12),
   section          text NOT NULL CHECK (length(section) <= 8),
-  code_hash        text NOT NULL UNIQUE,              -- sha256 of the class code
+  code_hash        text NOT NULL UNIQUE,              -- HMAC-SHA256 of the class code (key: CODE_PEPPER)
   code_expires_at  timestamptz NOT NULL,
   UNIQUE (school_id, grade, section)
 );
@@ -95,7 +95,7 @@ CREATE TABLE consent_slip (
   class_id          uuid NOT NULL REFERENCES school_class (id) ON DELETE CASCADE,
   kind              text NOT NULL DEFAULT 'parent' CHECK (kind IN ('parent', 'self')),
   form_serial       text NOT NULL CHECK (length(form_serial) <= 20),   -- printed on the paper form
-  claim_code_hash   text NOT NULL UNIQUE,               -- sha256 of the one-time claim code
+  claim_code_hash   text NOT NULL UNIQUE,               -- HMAC-SHA256 of the claim code (CODE_PEPPER)
   research_opt_in   boolean NOT NULL DEFAULT false,
   notice_version    text NOT NULL,
   created_at        timestamptz NOT NULL DEFAULT now(),  -- printed

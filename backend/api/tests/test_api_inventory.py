@@ -27,6 +27,7 @@ def test_every_route_is_in_the_openapi_contract() -> None:
         Settings(
             app_env="production",
             jwt_signing_key="x" * 40,
+            code_pepper="y" * 40,
             database_url="postgresql+psycopg://u:p@h/d",
             cors_allowed_origins=["https://dashboard.example.pk"],
         )

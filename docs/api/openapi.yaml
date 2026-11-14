@@ -62,8 +62,9 @@ paths:
       summary: Join a class with a code and create a pseudonymous profile
       description: |
         Rate limits (NFR-67), counted in PostgreSQL so all workers agree: 10 attempts per 15 minutes per
-        device, 30 wrong claim codes per hour per class (then claim codes pause for that class and the teacher
-        is told; joining without a claim code still works), and a high per-IP ceiling of 300 per 15 minutes,
+        device, 5 wrong claim codes per hour per device (then that device gets `429` with the wait; classmates
+        are never blocked, and 30 wrong claim codes in one class in an hour alert the teacher through the
+        audit log), and a high per-IP ceiling of 300 per 15 minutes,
         because a whole class on school Wi-Fi or a mobile network (CGNAT) shares one IP. A bad format gets
         `422` with a format hint; an unknown or expired class code and every bad claim code get the same
         generic `404` message. A valid code whose school has no active licence gets `403
@@ -307,7 +308,7 @@ paths:
         For a student who joined before the signed form (Form A, or Form C for an adult) was recorded. The same
         rules as a claim at join: only a recorded, unexpired slip of the student's own class; the age band the
         teacher copied from the admission register replaces the student's own answer (`age_mismatch` flag if
-        they differ); claim codes pause per class after 30 failures; the school's licence must be active and a
+        they differ); 5 wrong claim codes per student per hour, then that student waits; the school's licence must be active and a
         seat is used now (seats count only consented students, FR-107). Already consented: `200`, and the slip
         is not used up. Every bad claim code gets the same generic `404`.
       requestBody:
@@ -1456,8 +1457,7 @@ components:
     TooManyRequests:
       description: Rate limited
       headers:
-        Retry-After: { schema: { type: integer } }
-        RateLimit: { schema: { type: string }, description: 'IETF draft RateLimit header, e.g. `limit=5, remaining=0, reset=900`' }
+        Retry-After: { schema: { type: integer }, description: 'Seconds to wait. The limit and the tries left are never sent (forms-and-errors.md §4)' }
       content:
         application/problem+json:
           schema: { $ref: '#/components/schemas/Problem' }

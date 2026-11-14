@@ -18,18 +18,25 @@ from cryptography.hazmat.primitives.asymmetric import ec
 from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
 from sqlalchemy import Engine, text
 
-from rahyaab_api.codes import new_claim_code, new_class_code
+from rahyaab_api.codes import code_hash, new_claim_code, new_class_code
 from rahyaab_api.device_keys import refresh_message
 
 JOIN_URL = "/v1/auth/student/join"
 REFRESH_URL = "/v1/auth/refresh"
 SIGNING_KEY = "test-signing-key-" + "k" * 32
+PEPPER = "test-code-pepper-" + "p" * 32
 API_URL = os.environ.get("TEST_DATABASE_URL", "")
 ADMIN_URL = os.environ.get("TEST_ADMIN_DATABASE_URL", "")
 
 
 def sha(value: str) -> str:
+    """Plain SHA-256, as rate-limit keys use it (ratelimit.digest)."""
     return hashlib.sha256(value.encode()).hexdigest()
+
+
+def stored(code: str) -> str:
+    """The stored form of a class or claim code: the same keyed hash the API uses (codes.py)."""
+    return code_hash(code, PEPPER)
 
 
 def make_device_key() -> tuple[str, ec.EllipticCurvePrivateKey]:
@@ -98,7 +105,7 @@ class World:
                     "VALUES (:s, :g, :sec, :h, now() + CASE WHEN :exp THEN interval '-1 day' "
                     "ELSE interval '30 days' END) RETURNING id"
                 ),
-                {"s": self.school_id, "g": grade, "sec": section, "h": sha(code), "exp": expired},
+                {"s": self.school_id, "g": grade, "sec": section, "h": stored(code), "exp": expired},
             ).scalar_one()
         self.class_ids.append(class_id)
         return class_id, code
@@ -129,7 +136,7 @@ class World:
                     "c": class_id,
                     "kind": kind,
                     "serial": secrets.token_hex(4),
-                    "h": sha(claim),
+                    "h": stored(claim),
                     "r": research,
                     "by": self.staff_id if recorded else None,
                     "rec": recorded,
@@ -185,7 +192,11 @@ class World:
             return conn.execute(text(sql), params).scalar_one()
 
     def cleanup(self) -> None:
-        keys = [f"join:dev:{sha(k)}" for k in self.keys] + [f"join:claimfail:{c}" for c in self.class_ids]
+        keys = (
+            [f"join:dev:{sha(k)}" for k in self.keys]
+            + [f"claim:wrong:{sha(k)}" for k in self.keys]
+            + [f"claim:classwrong:{c}" for c in self.class_ids]
+        )
         with self.admin.begin() as conn:
             conn.execute(
                 text(

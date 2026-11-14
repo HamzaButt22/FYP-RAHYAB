@@ -182,23 +182,37 @@ def test_device_limit_is_10_per_15_minutes(api: TestClient, world: World) -> Non
         assert api.post(URL, json=body).status_code == 201
     r = api.post(URL, json=body)
     assert r.status_code == 429
-    assert int(r.headers["Retry-After"]) > 0
-    assert "remaining=0" in r.headers["RateLimit"]
+    assert int(r.headers["Retry-After"]) > 0  # the wait is shown
+    assert "RateLimit" not in r.headers  # the limit and tries left are not (forms-and-errors.md §4)
 
 
 # TC-ONB-04 (b)
-def test_bad_claim_codes_pause_claims_but_not_the_class(api: TestClient, world: World) -> None:
+def test_wrong_claim_codes_stop_only_that_phone(api: TestClient, world: World) -> None:
     class_id, code = world.add_class()
-    for _ in range(30):
-        assert api.post(URL, json=world.body(code, claim_code="BAD2-2222")).status_code == 404
+    guesser = world.body(code, claim_code="BAD2-2222")  # one phone: one device key
+    for _ in range(5):
+        assert api.post(URL, json=guesser).status_code == 404
     good_claim = world.add_slip(class_id)
-    assert api.post(URL, json=world.body(code, claim_code=good_claim)).status_code == 404  # claims paused
-    assert api.post(URL, json=world.body(code)).status_code == 201  # classmates can still join
-    paused = world.scalar(
-        "SELECT count(*) FROM audit_log WHERE action = 'claim_codes.paused' AND object = :o",
+    r = api.post(URL, json={**guesser, "claim_code": good_claim})
+    assert (
+        r.status_code == 429 and int(r.headers["Retry-After"]) > 0
+    )  # that phone waits, even with a good code
+    assert (
+        api.post(URL, json=world.body(code, claim_code=good_claim)).status_code == 201
+    )  # a classmate is fine
+
+
+def test_many_wrong_claim_codes_in_a_class_alert_but_never_block(api: TestClient, world: World) -> None:
+    class_id, code = world.add_class()
+    for _ in range(30):  # 30 different phones, one wrong slip code each
+        assert api.post(URL, json=world.body(code, claim_code="BAD2-2222")).status_code == 404
+    alerts = world.scalar(
+        "SELECT count(*) FROM audit_log WHERE action = 'claim_codes.many_failures' AND object = :o",
         o=f"class:{class_id}",
     )
-    assert paused == 1
+    assert alerts == 1
+    good_claim = world.add_slip(class_id)
+    assert api.post(URL, json=world.body(code, claim_code=good_claim)).status_code == 201  # still works
 
 
 def test_one_ip_can_join_a_whole_class(api: TestClient, world: World) -> None:  # TC-ONB-04 (c)
