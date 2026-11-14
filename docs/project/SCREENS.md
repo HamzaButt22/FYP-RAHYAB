@@ -121,7 +121,7 @@ After 4 weeks the letter opens as the **Blueprint**, followed by optional **"Try
 |---|---|---|
 | D-01 | Log in | Email + password + one-time code |
 | D-02 | Classes | List of classes, completion %, flags count, invite code per class |
-| D-03 | Class roster | Students (nicknames + roll codes), status per week, top path, confidence, flags ("mixed signals", "not started"); filters |
+| D-03 | Class roster | Students (nicknames + **consent-form numbers** such as A-0007, the "roll code": the teacher matches them with the school's own paper list, so Rahyaab never stores names), status per week, top path, confidence, flags ("mixed signals", "not started"); filters; remove a student from the class |
 | D-04 | Student summary | One page: Blueprint paths, reasons, confidence, doors, notes; print or PDF for a parent meeting |
 | D-05 | Class insights | Distribution of top paths; average interest profile (cells under 5 students hidden) |
 | D-06 | Notes | Short notes per student, visible only to staff of that school |

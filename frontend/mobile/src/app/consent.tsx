@@ -90,6 +90,9 @@ export default function ConsentScreen() {
       case 'school_inactive':
         setNotice(t('onboarding.join.errors.schoolInactive'));
         return;
+      case 'device_blocked':
+        setNotice(t('onboarding.join.errors.deviceBlocked'));
+        return;
       case 'too_many':
         setNotice(t('onboarding.join.errors.tooMany', { minutes: outcome.minutes }));
         return;

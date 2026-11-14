@@ -8,14 +8,17 @@ test_refresh_api.py.
 Join: order of checks, chosen so that failures reveal and store as little as possible:
 1. Request shape (Pydantic, strict, extra fields forbidden) -> 422 with errors[].
 2. Age: under 13 by the student's own answer -> 422 age_out_of_range, before anything touches the database.
-3. Rate limits per device key (10 / 15 min) and per IP (300 / 15 min) -> 429.
+3. Rate limits per device key (10 / 15 min) and per IP (300 / 15 min) -> 429. The first refusal of a
+   device in a window is written to the audit log (join.device_limited), so an admin can block that phone.
+   A phone an admin blocked (blocked_device) gets 403 device_blocked.
 4. Unknown or expired class codes and bad claim codes get the same generic 404 (NFR-74).
 5. The school must hold an active pilot or institution licence -> otherwise 403 (FR-107). A seat is used
    only when consent is granted (a claimed slip), so unconsented joins cannot use up a school's seats.
 6. Wrong claim codes: 5 per phone (device key; the student on /consents:claim) per hour, then that phone
    gets 429 with the wait. Classmates are never blocked; 30 wrong claim codes in one class in an hour
    raise an audit alert for the teacher instead (claim_codes.many_failures).
-7. One transaction creates the student, device, refresh token and consent records.
+7. One transaction creates the student, device, refresh token and consent records. A nickname already used
+   in the class (ignoring case) is refused with the field error `nickname: taken`; the app offers variants.
 
 Age assurance (FR-100, docs/security/AGE_ASSURANCE.md): the student's own birth-year answer only stops
 under-13s and sets a provisional band. Consent is granted only by a recorded paper slip, and the teacher
@@ -40,6 +43,7 @@ from pydantic import BaseModel, ConfigDict, Field, field_validator
 from pydantic_core import PydanticCustomError
 from sqlalchemy import Connection, Engine, text
 from sqlalchemy.engine import Row
+from sqlalchemy.exc import IntegrityError
 
 from rahyaab_api.codes import code_hash
 from rahyaab_api.db import get_engine
@@ -164,6 +168,22 @@ def _no_school_access() -> ProblemError:
     )
 
 
+NICKNAME_KEY = "student_class_nickname_key"  # unique (class, lower(nickname)), schema.sql
+
+
+def device_is_blocked(engine: Engine, key_hash: str) -> bool:
+    with engine.connect() as conn:
+        found = conn.execute(
+            text("SELECT 1 FROM blocked_device WHERE key_hash = :h"), {"h": key_hash}
+        ).first()
+    return found is not None
+
+
+def _device_blocked() -> ProblemError:
+    # Honest to a real student whose phone was blocked by mistake; tells a guesser nothing new.
+    return ProblemError(403, "device_blocked", "This phone can't join Rahyaab. Please talk to your teacher.")
+
+
 def _client_ip(request: Request) -> str:
     return request.client.host if request.client else "unknown"
 
@@ -208,11 +228,27 @@ def join_with_class_code(
     declared_band = age_band(months // 12)
 
     engine = get_engine(request)
-    enforce(engine, DEVICE_LIMIT, body.device.public_key)
+    key_hash = digest(body.device.public_key)
+    hits, retry_after = hit(engine, f"{DEVICE_LIMIT.name}:{key_hash}", DEVICE_LIMIT.window_s)
+    if hits > DEVICE_LIMIT.max_hits:
+        if hits == DEVICE_LIMIT.max_hits + 1:  # once per window: an admin can block this phone from the log
+            _audit(engine, "join.device_limited", f"device:{key_hash}")
+        raise too_many(retry_after)
     enforce(engine, IP_LIMIT, _client_ip(request))
+    if device_is_blocked(engine, key_hash):
+        raise _device_blocked()
 
     try:
         return _create_profile(engine, settings, body, declared_band)
+    except IntegrityError as e:
+        if getattr(getattr(e.orig, "diag", None), "constraint_name", None) == NICKNAME_KEY:
+            raise ProblemError(
+                422,
+                "validation_error",
+                "Some fields need fixing",
+                errors=[field_error("nickname", "taken")],
+            ) from None
+        raise
     except _CodeRejected:
         raise _not_accepted() from None
     except _ClaimRejected as rejected:
@@ -490,6 +526,10 @@ def refresh_tokens(
 
         if row is None or row.revoked_at is not None or not row.live:
             pass  # unknown, revoked or expired: refuse
+        elif conn.execute(
+            text("SELECT 1 FROM blocked_device WHERE key_hash = :h"), {"h": digest(row.public_key)}
+        ).first():
+            _revoke_family(conn, row.family_id)  # an admin blocked this phone (admin.py device-block)
         elif not verify_refresh_signature(row.public_key, body.refresh_token, body.signature):
             _revoke_family(conn, row.family_id)  # a copied token used on another device (TC-SEC-18)
         elif row.used_at is not None and not (row.used_recently and row.newest_used):

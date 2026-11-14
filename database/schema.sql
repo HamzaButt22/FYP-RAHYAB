@@ -1,4 +1,4 @@
--- Rahyaab PostgreSQL 16 schema, version 1.4 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
+-- Rahyaab PostgreSQL 16 schema, version 1.5 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
 -- v1.1 (2026-11-05): student.age_band and student.situation; self-consent; route and help flags (FR-99..104).
 -- v1.2 (2026-11-05): research_demographics (opt-in, separate role); staff password reset tokens.
 -- v1.3 (2026-11-07, review fixes): consent slips; item keyed by content version; quarantine linked to the
@@ -7,6 +7,8 @@
 -- v1.4 (2026-11-11, review fixes): age assurance from school records (consent_slip.kind and verified_age_band,
 --   student.age_verified, flag 'age_mismatch'); slips exist before they are recorded; licences (pilot,
 --   institution, individual) gate class-code joins.
+-- v1.5 (2026-11-14): nicknames unique within a class (case-insensitive), so teachers can tell students
+--   apart; blocked_device for phones an admin has blocked; class and claim codes stored as HMAC.
 -- The migrations live in backend/api/migrations (Alembic): 0001 applies this file to an empty database and
 -- later revisions bring older databases up to date. This file is always the complete current design.
 -- Conventions: snake_case; UUID keys (UUIDv7 for events); timestamptz in UTC; no personal data
@@ -54,6 +56,8 @@ CREATE TABLE student (
   last_active_at  timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX ON student (class_id);
+-- One nickname per class, ignoring case: two "Ali_10"s on one class list would confuse the teacher.
+CREATE UNIQUE INDEX student_class_nickname_key ON student (class_id, lower(nickname)) WHERE class_id IS NOT NULL;
 CREATE INDEX ON student (last_active_at);           -- retention job
 
 -- Licences (ADR-0015). A class code works only while its school holds an active pilot or institution licence;
@@ -140,6 +144,16 @@ CREATE TABLE device (
   created_at   timestamptz NOT NULL DEFAULT now()
 );
 CREATE INDEX ON device (student_id);
+
+-- Phones an admin has blocked (admin.py device-block): they cannot join or refresh again. Only the SHA-256
+-- of the public key is kept, the same digest the rate-limit keys use, so a blocked phone that never
+-- joined (one that hit the join limit) can be blocked from the audit log entry alone.
+CREATE TABLE blocked_device (
+  key_hash    text PRIMARY KEY,
+  reason      text NOT NULL CHECK (length(reason) BETWEEN 1 AND 200),
+  blocked_by  text NOT NULL,                         -- 'admin-cli' now; a staff id from the dashboard later
+  blocked_at  timestamptz NOT NULL DEFAULT now()
+);
 
 CREATE TABLE refresh_token (
   id           uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -523,6 +537,7 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON
   staff_session, rate_limit
   TO api_rw;
 GRANT SELECT, INSERT, UPDATE ON licence TO api_rw;      -- licences are never deleted by the API
+GRANT SELECT ON blocked_device TO api_rw;               -- blocking is an admin action, never the API's
 GRANT SELECT ON content_pack, item, model_version, stream, eligibility_rule, career, stream_career TO api_rw;
 GRANT SELECT, INSERT ON consent, raw_event, quarantine, trait_estimate, recommendation, audit_log TO api_rw;
 GRANT UPDATE (withdrawn_at) ON consent TO api_rw;     -- withdrawal is the only change to a consent row

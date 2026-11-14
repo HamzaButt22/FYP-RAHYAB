@@ -5,12 +5,13 @@ students, and slips follow the register-band rules. Database tests (skipped with
 """
 
 import re
+import secrets
 from datetime import date, timedelta
 
 import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import Engine
-from support import ADMIN_URL, PEPPER, World
+from sqlalchemy import Engine, text
+from support import ADMIN_URL, PEPPER, World, sha, sign_refresh
 
 from rahyaab_api import admin
 
@@ -106,3 +107,102 @@ def test_the_command_refuses_to_run_without_the_pepper(
     assert "CODE_PEPPER" in capsys.readouterr().err
     monkeypatch.setenv("CODE_PEPPER", PEPPER)
     assert admin.main(["classes", "--school", str(world.school_id)]) == 0
+
+
+# ----------------------------------------------------------------------------- students and devices
+REFRESH_URL = "/v1/auth/refresh"
+
+
+def _joined(api: TestClient, world: World, code: str, **overrides: object) -> dict[str, str]:
+    body = world.body(code, **overrides)
+    pair = api.post(URL, json=body).json()
+    pair["public_key"] = body["device"]["public_key"]
+    return pair
+
+
+def test_the_class_list_shows_form_numbers(api: TestClient, world: World) -> None:
+    class_id, code = run(world.admin, admin.add_class, PEPPER, world.school_id, 9, "Y1")
+    world.class_ids.append(class_id)
+    ((serial, claim),) = run(world.admin, admin.print_slips, PEPPER, class_id, 1)
+    run(world.admin, admin.record_slip, class_id, serial, "13-15", world.staff_id)
+    _joined(api, world, code, nickname="Ali_10", claim_code=claim)
+    _joined(api, world, code, nickname="Sitara_14")
+    rows = {r["nickname"]: r for r in run(world.admin, admin.list_students, class_id)}
+    assert rows["Ali_10"]["form"] == "A-0001" and rows["Ali_10"]["consent"] == "granted"
+    assert rows["Sitara_14"]["form"] is None and rows["Sitara_14"]["consent"] == "waiting"
+
+
+def test_removing_a_stranger_deletes_and_signs_out(api: TestClient, world: World) -> None:
+    class_id, code = run(world.admin, admin.add_class, PEPPER, world.school_id, 9, "Y2")
+    world.class_ids.append(class_id)
+    pair = _joined(api, world, code)
+    assert run(world.admin, admin.remove_student, pair["student_id"], "stranger") == "deleted"
+    assert world.scalar("SELECT count(*) FROM student WHERE id = :s", s=pair["student_id"]) == 0
+    with pytest.raises(admin.AdminError):
+        run(world.admin, admin.remove_student, pair["student_id"], "bogus")
+
+
+def test_removing_a_consented_student_keeps_their_results(api: TestClient, world: World) -> None:
+    class_id, code = run(world.admin, admin.add_class, PEPPER, world.school_id, 10, "Y3")
+    world.class_ids.append(class_id)
+    ((serial, claim),) = run(world.admin, admin.print_slips, PEPPER, class_id, 1)
+    run(world.admin, admin.record_slip, class_id, serial, "13-15", world.staff_id)
+    pair = _joined(api, world, code, claim_code=claim)
+    assert run(world.admin, admin.remove_student, pair["student_id"], "left") == "removed"
+    assert world.scalar("SELECT class_id FROM student WHERE id = :s", s=pair["student_id"]) is None
+    live = world.scalar(
+        "SELECT count(*) FROM refresh_token rt JOIN device d ON d.id = rt.device_id "
+        "WHERE d.student_id = :s AND rt.revoked_at IS NULL",
+        s=pair["student_id"],
+    )
+    assert live == 0  # signed out everywhere
+    world.scalar("DELETE FROM student WHERE id = :s RETURNING 1", s=pair["student_id"])  # test cleanup
+
+
+def test_a_blocked_phone_is_signed_out_and_kept_out(api: TestClient, world: World) -> None:
+    class_id, code = run(world.admin, admin.add_class, PEPPER, world.school_id, 11, "Y4")
+    world.class_ids.append(class_id)
+    pair = _joined(api, world, code)
+    device_id = world.scalar("SELECT id FROM device WHERE student_id = :s", s=pair["student_id"])
+    key_hash = run(world.admin, admin.block_device, "tried many codes", device_id=device_id)
+    try:
+        private = world.private_keys[pair["public_key"]]
+        signed = {
+            "refresh_token": pair["refresh_token"],
+            "signature": sign_refresh(private, pair["refresh_token"]),
+        }
+        assert api.post(REFRESH_URL, json=signed).status_code == 401
+        again = world.body(code)
+        again["device"]["public_key"] = pair["public_key"]
+        r = api.post(URL, json=again)
+        assert r.status_code == 403 and r.json()["code"] == "device_blocked"
+        run(world.admin, admin.unblock_device, key_hash)
+        assert api.post(URL, json=again).status_code == 201
+    finally:
+        with world.admin.begin() as conn:
+            conn.execute(text("DELETE FROM blocked_device WHERE key_hash = :h"), {"h": key_hash})
+
+
+def test_limited_phones_can_be_found_and_blocked(api: TestClient, world: World) -> None:
+    _, code = world.add_class()
+    body = world.body(code)
+    for _ in range(11):
+        api.post(URL, json={**body, "nickname": f"Kid_{secrets.token_hex(3)}"})
+    found = {h: blocked for h, _, _, blocked in run(world.admin, admin.limited_devices, 1)}
+    key_hash = sha(body["device"]["public_key"])
+    assert found.get(key_hash) is False
+    run(world.admin, admin.block_device, "join limit", key_hash=key_hash)
+    try:
+        assert {h: b for h, _, _, b in run(world.admin, admin.limited_devices, 1)}[key_hash] is True
+    finally:
+        run(world.admin, admin.unblock_device, key_hash)
+
+
+def test_year_end_stops_every_class_code(api: TestClient, world: World) -> None:
+    codes = []
+    for section in ("Y5", "Y6"):
+        class_id, code = run(world.admin, admin.add_class, PEPPER, world.school_id, 9, section)
+        world.class_ids.append(class_id)
+        codes.append(code)
+    assert run(world.admin, admin.year_end, world.school_id) >= 2
+    assert all(api.post(URL, json=world.body(c)).status_code == 404 for c in codes)

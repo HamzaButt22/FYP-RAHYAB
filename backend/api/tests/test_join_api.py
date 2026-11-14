@@ -5,8 +5,11 @@ Test cases: TC-ONB-02/03/04, TC-VAL-03, TC-SEC-19, TC-EDGE-07, TC-AGE-01..04, TC
 Fixtures `api`, `world` and `admin` are in conftest.py; they skip when no test database is configured.
 """
 
+import secrets
+
 import jwt
 from fastapi.testclient import TestClient
+from sqlalchemy import text
 from support import JOIN_URL as URL
 from support import SIGNING_KEY as KEY
 from support import World, sha
@@ -179,8 +182,8 @@ def test_device_limit_is_10_per_15_minutes(api: TestClient, world: World) -> Non
     _, code = world.add_class()
     body = world.body(code)
     for _ in range(10):
-        assert api.post(URL, json=body).status_code == 201
-    r = api.post(URL, json=body)
+        assert api.post(URL, json={**body, "nickname": f"Kid_{secrets.token_hex(3)}"}).status_code == 201
+    r = api.post(URL, json={**body, "nickname": f"Kid_{secrets.token_hex(3)}"})
     assert r.status_code == 429
     assert int(r.headers["Retry-After"]) > 0  # the wait is shown
     assert "RateLimit" not in r.headers  # the limit and tries left are not (forms-and-errors.md §4)
@@ -219,3 +222,48 @@ def test_one_ip_can_join_a_whole_class(api: TestClient, world: World) -> None:  
     _, code = world.add_class()
     results = [api.post(URL, json=world.body(code)).status_code for _ in range(40)]
     assert results == [201] * 40
+
+
+# ------------------------------------------------------------------------------------ nicknames, blocking
+def test_a_nickname_is_unique_within_a_class_ignoring_case(api: TestClient, world: World) -> None:
+    _, code = world.add_class()
+    _, other = world.add_class()
+    assert api.post(URL, json=world.body(code, nickname="Ali_10")).status_code == 201
+    r = api.post(URL, json=world.body(code, nickname="ali_10"))
+    assert r.status_code == 422
+    assert r.json()["errors"] == [
+        {"field": "nickname", "code": "taken", "message_key": "errors.nickname.taken"}
+    ]
+    assert "ali_10" not in r.text.lower()  # never echoed
+    assert (
+        api.post(URL, json=world.body(other, nickname="Ali_10")).status_code == 201
+    )  # another class is fine
+
+
+def test_a_blocked_phone_cannot_join(api: TestClient, world: World) -> None:
+    _, code = world.add_class()
+    body = world.body(code)
+    with world.admin.begin() as conn:
+        conn.execute(
+            text("INSERT INTO blocked_device (key_hash, reason, blocked_by) VALUES (:h, 'test', 'test')"),
+            {"h": sha(body["device"]["public_key"])},
+        )
+    try:
+        r = api.post(URL, json=body)
+        assert r.status_code == 403 and r.json()["code"] == "device_blocked"
+    finally:
+        world.scalar(
+            "DELETE FROM blocked_device WHERE key_hash = :h RETURNING 1", h=sha(body["device"]["public_key"])
+        )
+
+
+def test_the_join_limit_is_logged_once_per_window(api: TestClient, world: World) -> None:
+    _, code = world.add_class()
+    body = world.body(code)
+    for _ in range(12):
+        api.post(URL, json={**body, "nickname": f"Kid_{secrets.token_hex(3)}"})
+    logged = world.scalar(
+        "SELECT count(*) FROM audit_log WHERE action = 'join.device_limited' AND object = :o",
+        o=f"device:{sha(body['device']['public_key'])}",
+    )
+    assert logged == 1

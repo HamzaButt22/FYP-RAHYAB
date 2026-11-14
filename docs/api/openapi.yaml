@@ -91,12 +91,12 @@ paths:
               schema: { $ref: '#/components/schemas/TokenPair' }
         '400': { $ref: '#/components/responses/BadRequest' }
         '404':
-          description: Unknown or expired class code, or a claim code that is unknown, unrecorded, used, expired, from another class or paused
+          description: Unknown or expired class code, or a claim code that is unknown, unrecorded, used, expired or from another class
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Problem' }
         '403':
-          description: The school has no active licence or no free seat (`school_access_inactive`)
+          description: The school has no active licence or no free seat (`school_access_inactive`), or an admin blocked this phone (`device_blocked`)
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Problem' }
@@ -1483,7 +1483,7 @@ components:
             required: [field, code, message_key]
             properties:
               field: { type: string, examples: [class_code] }
-              code: { type: string, examples: [format, too_short, contains_phone, full_name, not_allowed] }
+              code: { type: string, examples: [format, too_short, contains_phone, full_name, taken, not_allowed] }
               message_key: { type: string, examples: [errors.class_code.format] }
 
     Page:
