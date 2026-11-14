@@ -23,6 +23,7 @@ export type JoinForm = {
 type CommonOutcome =
   | { kind: 'code_not_accepted' } // deliberately vague: unknown, expired or paused (NFR-74)
   | { kind: 'school_inactive' }
+  | { kind: 'device_blocked' } // an admin blocked this phone (admin.py device-block)
   | { kind: 'too_many'; minutes: number }
   | { kind: 'offline' }
   | { kind: 'failed' }; // the server's fault or an app bug: try again later
@@ -43,6 +44,7 @@ function common(result: Exclude<ApiResult<unknown>, { ok: true }>): CommonOutcom
   if (result.kind === 'offline') return { kind: 'offline' };
   if (result.status === 404 && result.code === 'code_not_accepted') return { kind: 'code_not_accepted' };
   if (result.status === 403 && result.code === 'school_access_inactive') return { kind: 'school_inactive' };
+  if (result.status === 403 && result.code === 'device_blocked') return { kind: 'device_blocked' };
   if (result.status === 429) {
     return { kind: 'too_many', minutes: Math.max(1, Math.ceil((result.retryAfterSeconds ?? 60) / 60)) };
   }

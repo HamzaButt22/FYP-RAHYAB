@@ -16,6 +16,18 @@ Commands:
     classes        --school ID                 grade, section and code expiry (codes cannot be shown again)
     slips-print    --class ID --count N [--kind parent|self] [--notice 2026-11]  serials and claim codes
     slip-record    --class ID --serial A-0001 --band 13-15 --by STAFF_ID [--research]
+    students       --class ID                  nickname, consent-form number, consent, joined, last seen
+    student-remove --student ID --reason left|stranger|misuse|other
+                   never consented: the profile is deleted; consented: taken off the class list (their
+                   results stay theirs, FR-10). Either way every sign-in on every phone is revoked.
+    device-block   (--device ID | --key-hash HASH) --reason TEXT   the phone can no longer join or sign in
+    device-unblock --key-hash HASH
+    limited-devices [--hours 24]               phones that hit the join limit (key hashes, for device-block)
+    year-end       --school ID                 every class code of the school stops working (end of year)
+
+How a teacher tells students apart: by the number of their consent form (A-0007), which the class list
+shows next to the nickname. The school keeps the paper list of which student got which form; Rahyaab never
+stores names or roll numbers, so a leaked database cannot name a child.
 
 Environment: DATABASE_URL (a role that may write these tables, for example the migrator) and CODE_PEPPER
 (the API's key for code hashes; it must be the same value the API uses). Every change is audit-logged.
@@ -33,12 +45,14 @@ from uuid import UUID, uuid4
 from sqlalchemy import Connection, create_engine, text
 
 from rahyaab_api.codes import MIN_PEPPER, code_hash, new_claim_code, new_class_code
+from rahyaab_api.ratelimit import digest
 
 ACTOR = "admin-cli"
 DEFAULT_CODE_DAYS = 120  # about one school term; rotate or extend at the start of the next one
 SLIP_DAYS = 60  # unclaimed slips expire after 60 days (schema.sql)
 PARENT_BANDS = ("13-15", "16-17")
 ADULT_BANDS = ("18-19", "20-24", "25+")
+REMOVE_REASONS = ("left", "stranger", "misuse", "other")
 
 
 class AdminError(Exception):
@@ -225,6 +239,154 @@ def record_slip(
     _audit(conn, "slip.record", f"slip:{slip.id}")
 
 
+# ----------------------------------------------------------------------------------------- students
+def list_students(conn: Connection, class_id: UUID) -> list[dict[str, object]]:
+    """The class list: nickname, consent-form number (how the teacher knows who is who), consent state."""
+    _require_class(conn, class_id)
+    rows = conn.execute(
+        text(
+            """
+            SELECT st.id, st.nickname, st.created_at::date AS joined, st.last_active_at::date AS seen,
+                   (SELECT cs.form_serial FROM consent co JOIN consent_slip cs ON cs.id = co.slip_id
+                    WHERE co.student_id = st.id AND co.type IN ('parent', 'self')
+                    ORDER BY co.id LIMIT 1) AS form,
+                   CASE WHEN EXISTS (SELECT 1 FROM consent co WHERE co.student_id = st.id
+                                     AND co.type IN ('parent', 'self') AND co.withdrawn_at IS NULL)
+                        THEN 'granted'
+                        WHEN EXISTS (SELECT 1 FROM consent co WHERE co.student_id = st.id
+                                     AND co.type IN ('parent', 'self')) THEN 'withdrawn'
+                        ELSE 'waiting' END AS consent,
+                   (SELECT count(*) FROM device d WHERE d.student_id = st.id) AS phones
+            FROM student st WHERE st.class_id = :c
+            ORDER BY lower(st.nickname)
+            """
+        ),
+        {"c": class_id},
+    ).all()
+    return [dict(r._mapping) for r in rows]
+
+
+def remove_student(conn: Connection, student_id: UUID, reason: str) -> str:
+    """Takes a student off a class list and signs them out everywhere. Returns 'deleted' or 'removed'.
+
+    A student who never had consent has nothing worth keeping (nothing was uploaded), so the profile is
+    deleted, as the 30-day purge would do anyway. A consented student's results belong to them and their
+    family (FR-10), so the profile is only taken off the class; deleting it is their choice, or the
+    retention job's (FR-84).
+    """
+    if reason not in REMOVE_REASONS:
+        raise AdminError(f"--reason must be one of {', '.join(REMOVE_REASONS)}")
+    row = conn.execute(
+        text(
+            "SELECT st.id, st.class_id, EXISTS (SELECT 1 FROM consent co WHERE co.student_id = st.id "
+            "AND co.type IN ('parent', 'self')) AS consented FROM student st WHERE st.id = :s"
+        ),
+        {"s": student_id},
+    ).one_or_none()
+    if row is None:
+        raise AdminError(f"no student {student_id}")
+    _revoke_student_sign_ins(conn, student_id)
+    if row.consented:
+        conn.execute(text("UPDATE student SET class_id = NULL WHERE id = :s"), {"s": student_id})
+        outcome = "removed"
+    else:
+        conn.execute(text("DELETE FROM student WHERE id = :s"), {"s": student_id})
+        outcome = "deleted"
+    _audit(conn, f"student.{outcome}.{reason}", f"student:{student_id}")
+    return outcome
+
+
+def _revoke_student_sign_ins(conn: Connection, student_id: UUID) -> None:
+    conn.execute(
+        text(
+            "UPDATE refresh_token SET revoked_at = now() WHERE revoked_at IS NULL "
+            "AND device_id IN (SELECT id FROM device WHERE student_id = :s)"
+        ),
+        {"s": student_id},
+    )
+
+
+# ------------------------------------------------------------------------------------------ devices
+def block_device(
+    conn: Connection, reason: str, device_id: UUID | None = None, key_hash: str | None = None
+) -> str:
+    """Blocks a phone by its device row or by the key hash from `limited-devices`. Returns the key hash.
+
+    The phone can no longer join (403 device_blocked) or refresh (its sign-ins are revoked now, and any
+    later refresh is refused). The student's profile is not touched; use student-remove for that.
+    """
+    if not 1 <= len(reason) <= 200:
+        raise AdminError("--reason must be 1 to 200 characters")
+    if device_id is not None:
+        public_key = conn.execute(
+            text("SELECT public_key FROM device WHERE id = :d"), {"d": device_id}
+        ).scalar_one_or_none()
+        if public_key is None:
+            raise AdminError(f"no device {device_id}")
+        key_hash = digest(public_key)
+    if not key_hash or len(key_hash) != 64:
+        raise AdminError("give --device ID or a 64-character --key-hash")
+    conn.execute(
+        text(
+            "INSERT INTO blocked_device (key_hash, reason, blocked_by) VALUES (:h, :r, :by) "
+            "ON CONFLICT (key_hash) DO NOTHING"
+        ),
+        {"h": key_hash, "r": reason, "by": ACTOR},
+    )
+    conn.execute(
+        text(
+            "UPDATE refresh_token SET revoked_at = now() WHERE revoked_at IS NULL AND device_id IN "
+            "(SELECT id FROM device WHERE encode(sha256(convert_to(public_key, 'UTF8')), 'hex') = :h)"
+        ),
+        {"h": key_hash},
+    )
+    _audit(conn, "device.blocked", f"device:{key_hash}")
+    return key_hash
+
+
+def unblock_device(conn: Connection, key_hash: str) -> None:
+    gone = conn.execute(
+        text("DELETE FROM blocked_device WHERE key_hash = :h RETURNING 1"), {"h": key_hash}
+    ).first()
+    if gone is None:
+        raise AdminError("that phone is not blocked")
+    _audit(conn, "device.unblocked", f"device:{key_hash}")
+
+
+def limited_devices(conn: Connection, hours: int = 24) -> list[tuple[str, str, int, bool]]:
+    """Phones that hit the join limit recently: (key hash, last time, windows, already blocked)."""
+    rows = conn.execute(
+        text(
+            """
+            SELECT l.key_hash, l.last, l.windows,
+                   EXISTS (SELECT 1 FROM blocked_device b WHERE b.key_hash = l.key_hash) AS blocked
+            FROM (SELECT substr(object, 8) AS key_hash, max(at) AS last, count(*) AS windows
+                  FROM audit_log
+                  WHERE action = 'join.device_limited' AND at > now() - make_interval(hours => :h)
+                  GROUP BY 1) l
+            ORDER BY l.windows DESC, l.last DESC
+            """
+        ),
+        {"h": hours},
+    ).all()
+    return [(r.key_hash, r.last.isoformat(timespec="minutes"), int(r.windows), r.blocked) for r in rows]
+
+
+# ---------------------------------------------------------------------------------------- year end
+def year_end(conn: Connection, school_id: UUID) -> int:
+    """Every class code of the school stops working. Students keep their profiles; at the yearly class
+    check-in (FR-101) they move to their new class. Returns how many codes were still live."""
+    live = conn.execute(
+        text(
+            "UPDATE school_class SET code_expires_at = now() "
+            "WHERE school_id = :s AND code_expires_at > now() RETURNING id"
+        ),
+        {"s": school_id},
+    ).all()
+    _audit(conn, "school.year_end", f"school:{school_id}:{len(live)}")
+    return len(live)
+
+
 # ---------------------------------------------------------------------------------------------- CLI
 def _parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="python -m rahyaab_api.admin", description=__doc__.split("\n\n")[0])
@@ -262,6 +424,22 @@ def _parser() -> argparse.ArgumentParser:
     s.add_argument("--band", required=True, choices=PARENT_BANDS + ADULT_BANDS)
     s.add_argument("--by", required=True, type=UUID, help="the teacher's staff id")
     s.add_argument("--research", action="store_true", help="the family ticked the research box")
+    s = sub.add_parser("students")
+    s.add_argument("--class", dest="class_id", required=True, type=UUID)
+    s = sub.add_parser("student-remove")
+    s.add_argument("--student", required=True, type=UUID)
+    s.add_argument("--reason", required=True, choices=REMOVE_REASONS)
+    s = sub.add_parser("device-block")
+    target = s.add_mutually_exclusive_group(required=True)
+    target.add_argument("--device", type=UUID, help="a device id (from the database)")
+    target.add_argument("--key-hash", help="a key hash from limited-devices")
+    s.add_argument("--reason", required=True)
+    s = sub.add_parser("device-unblock")
+    s.add_argument("--key-hash", required=True)
+    s = sub.add_parser("limited-devices")
+    s.add_argument("--hours", type=int, default=24)
+    s = sub.add_parser("year-end")
+    s.add_argument("--school", required=True, type=UUID)
     return p
 
 
@@ -314,6 +492,40 @@ def _run(conn: Connection, pepper: str, a: argparse.Namespace) -> None:
     elif a.command == "slip-record":
         record_slip(conn, a.class_id, a.serial, a.band, a.by, a.research)
         print(f"slip {a.serial} recorded with register band {a.band}")
+    elif a.command == "students":
+        rows = list_students(conn, a.class_id)
+        print(
+            f"{'nickname':<22}{'form':<9}{'family OK':<11}{'joined':<12}{'last seen':<12}"
+            f"{'phones':<7}student id"
+        )
+        for r in rows:
+            print(
+                f"{r['nickname']!s:<22}{r['form'] or '-'!s:<9}{r['consent']!s:<11}{r['joined']!s:<12}"
+                f"{r['seen']!s:<12}{r['phones']!s:<7}{r['id']}"
+            )
+        print(f"{len(rows)} students. Match form numbers with the school's own paper list.")
+    elif a.command == "student-remove":
+        outcome = remove_student(conn, a.student, a.reason)
+        print(
+            "Profile deleted (no consent, nothing was ever uploaded). Signed out on every phone."
+            if outcome == "deleted"
+            else "Taken off the class list and signed out on every phone. Their results stay theirs (FR-10)."
+        )
+    elif a.command == "device-block":
+        key_hash = block_device(conn, a.reason, device_id=a.device, key_hash=a.key_hash)
+        print(f"blocked phone {key_hash}: it can no longer join or sign in")
+    elif a.command == "device-unblock":
+        unblock_device(conn, a.key_hash)
+        print("unblocked")
+    elif a.command == "limited-devices":
+        found = limited_devices(conn, a.hours)
+        for key_hash, last, windows, blocked in found:
+            print(f"{key_hash}  last {last}  limited {windows}x{'  (blocked)' if blocked else ''}")
+        print(f"{len(found)} phones hit the join limit in the last {a.hours} hours.")
+    elif a.command == "year-end":
+        print(
+            f"{year_end(conn, a.school)} class codes stopped. Make new ones with class-add or class-rotate."
+        )
 
 
 if __name__ == "__main__":

@@ -77,8 +77,14 @@
         "schoolInactive": "Your school's Rahyaab access isn't active right now. Please tell your teacher.",
         "tooMany": "Too many tries for now. Please try again in {{minutes}} min.",
         "offline": "You're offline. Joining needs the internet once. Everything you typed is kept.",
-        "failed": "Something went wrong on our side. Please try again in a few minutes."
-      }
+        "failed": "Something went wrong on our side. Please try again in a few minutes.",
+        "nicknameTaken": "Someone in your class already uses this nickname. Pick another, like one below.",
+        "deviceBlocked": "This phone can't join Rahyaab. Please talk to your teacher."
+      },
+      "ideas": "Need an idea? Tap one:",
+      "moreIdeas": "Show others",
+      "takenIdeas": "Try one of these instead:",
+      "useIdea": "Use the nickname {{idea}}"
     },
     "ageStop": {
       "title": "Rahyaab is for students aged 13 and over",

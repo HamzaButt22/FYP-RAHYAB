@@ -17,11 +17,13 @@ import { ChoiceRow } from '@/components/ChoiceRow';
 import { Field, type FieldMessage } from '@/components/Field';
 import { Header } from '@/components/Header';
 import { HelpCard } from '@/components/HelpCard';
+import { IdeaChips } from '@/components/IdeaChips';
 import { Notice } from '@/components/Notice';
 import { Screen } from '@/components/Screen';
 import { SelectBox } from '@/components/SelectBox';
 import { TextInputBox, type TextInputHandle } from '@/components/TextInputBox';
 import { joinClass, type JoinField } from '@/join/joinApi';
+import { nicknameIdeas, takenVariants } from '@/join/nicknameIdeas';
 import {
   birthYears,
   classCodeProblem,
@@ -52,6 +54,7 @@ const NICKNAME_MESSAGES = {
   format: 'onboarding.join.errors.nicknameFormat',
   contains_phone: 'onboarding.join.errors.nicknamePhone',
   full_name: 'onboarding.join.errors.nicknameFullName',
+  taken: 'onboarding.join.errors.nicknameTaken',
 } as const;
 const OTHER_MESSAGES = {
   grade: 'onboarding.join.errors.gradeRequired',
@@ -77,6 +80,8 @@ export default function JoinScreen() {
   const [visited, setVisited] = useState({ code: false, nickname: false });
   const [codeFailures, setCodeFailures] = useState(0);
   const [notice, setNotice] = useState<string | null>(null);
+  const [ideas, setIdeas] = useState(() => nicknameIdeas());
+  const [variants, setVariants] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
 
   const codeRef = useRef<TextInputHandle>(null);
@@ -122,6 +127,14 @@ export default function JoinScreen() {
     if (field === 'code' && problem) setCodeFailures((n) => n + 1);
   }
 
+  /** A tapped idea fills the box; it already passes the rules, so the error and the ideas go away. */
+  function pickNickname(idea: string) {
+    setNickname(idea);
+    setVisited((v) => ({ ...v, nickname: true }));
+    setShown((s) => ({ ...s, nickname: null }));
+    setNotice(null);
+  }
+
   function showFirst(next: Shown) {
     setShown(next);
     if (next.code) {
@@ -165,6 +178,9 @@ export default function JoinScreen() {
         router.replace('/age-stop');
         return;
       case 'fields':
+        if (outcome.errors.some((e) => e.field === 'nickname' && e.code === 'taken')) {
+          setVariants(takenVariants(cleanNickname(nickname)));
+        }
         showFirst(fromServer(outcome.errors));
         return;
       case 'code_not_accepted':
@@ -172,6 +188,9 @@ export default function JoinScreen() {
         return;
       case 'school_inactive':
         setNotice(t('onboarding.join.errors.schoolInactive'));
+        return;
+      case 'device_blocked':
+        setNotice(t('onboarding.join.errors.deviceBlocked'));
         return;
       case 'too_many':
         setNotice(t('onboarding.join.errors.tooMany', { minutes: outcome.minutes }));
@@ -262,6 +281,24 @@ export default function JoinScreen() {
           accessibilityHint={t('onboarding.join.nicknameHint')}
         />
       </Field>
+
+      {shown.nickname === 'taken' ? (
+        <IdeaChips
+          title={t('onboarding.join.takenIdeas')}
+          ideas={variants}
+          onPick={pickNickname}
+          pickLabel={(idea) => t('onboarding.join.useIdea', { idea })}
+        />
+      ) : !nickname.trim() || shown.nickname ? (
+        <IdeaChips
+          title={t('onboarding.join.ideas')}
+          ideas={ideas}
+          onPick={pickNickname}
+          pickLabel={(idea) => t('onboarding.join.useIdea', { idea })}
+          moreLabel={t('onboarding.join.moreIdeas')}
+          onMore={() => setIdeas(nicknameIdeas())}
+        />
+      ) : null}
 
       <Field label={t('onboarding.join.gradeLabel')} message={fieldMessage('grade')} groupRole="radiogroup">
         <ChoiceRow
