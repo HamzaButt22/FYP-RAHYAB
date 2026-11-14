@@ -31,7 +31,7 @@ kubectl -n rahyaab-staging create secret generic rahyaab-db --from-literal=usern
 ```
 
 ```bash
-kubectl -n rahyaab-staging create secret generic rahyaab-api --from-literal=database-url='postgresql+psycopg://api_rw:<pw>@postgres:5432/rahyaab' --from-literal=jobs-database-url='postgresql+psycopg://jobs:<pw>@postgres:5432/rahyaab' --from-literal=migrator-database-url='postgresql+psycopg://rahyaab_admin:<pw>@postgres:5432/rahyaab' --from-literal=jwt-signing-key='<48+ random characters>'
+kubectl -n rahyaab-staging create secret generic rahyaab-api --from-literal=database-url='postgresql+psycopg://api_rw:<pw>@postgres:5432/rahyaab' --from-literal=jobs-database-url='postgresql+psycopg://jobs:<pw>@postgres:5432/rahyaab' --from-literal=migrator-database-url='postgresql+psycopg://rahyaab_admin:<pw>@postgres:5432/rahyaab' --from-literal=jwt-signing-key='<48+ random characters>' --from-literal=code-pepper='<48+ random characters, different from the signing key>'
 ```
 
 ```bash

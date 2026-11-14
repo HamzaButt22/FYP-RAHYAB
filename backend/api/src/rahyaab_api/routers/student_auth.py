@@ -12,8 +12,9 @@ Join: order of checks, chosen so that failures reveal and store as little as pos
 4. Unknown or expired class codes and bad claim codes get the same generic 404 (NFR-74).
 5. The school must hold an active pilot or institution licence -> otherwise 403 (FR-107). A seat is used
    only when consent is granted (a claimed slip), so unconsented joins cannot use up a school's seats.
-6. A class with 30 failed claim codes this hour stops accepting claim codes for the rest of the hour;
-   joining without a claim code still works (one student cannot block a class).
+6. Wrong claim codes: 5 per phone (device key; the student on /consents:claim) per hour, then that phone
+   gets 429 with the wait. Classmates are never blocked; 30 wrong claim codes in one class in an hour
+   raise an audit alert for the teacher instead (claim_codes.many_failures).
 7. One transaction creates the student, device, refresh token and consent records.
 
 Age assurance (FR-100, docs/security/AGE_ASSURANCE.md): the student's own birth-year answer only stops
@@ -40,6 +41,7 @@ from pydantic_core import PydanticCustomError
 from sqlalchemy import Connection, Engine, text
 from sqlalchemy.engine import Row
 
+from rahyaab_api.codes import code_hash
 from rahyaab_api.db import get_engine
 from rahyaab_api.device_keys import load_public_key, verify_refresh_signature
 from rahyaab_api.join_rules import (
@@ -51,7 +53,7 @@ from rahyaab_api.join_rules import (
     nickname_problem,
 )
 from rahyaab_api.problems import ProblemError, field_error
-from rahyaab_api.ratelimit import Limit, digest, enforce, hit, peek
+from rahyaab_api.ratelimit import Limit, digest, enforce, hit, peek, too_many
 from rahyaab_api.settings import Settings
 from rahyaab_api.tokens import access_token, new_refresh_token
 
@@ -59,7 +61,8 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 
 DEVICE_LIMIT = Limit("join:dev", 10, 15 * 60)
 IP_LIMIT = Limit("join:ip", 300, 15 * 60)
-CLAIM_FAILURES = Limit("join:claimfail", 30, 60 * 60)  # per class
+CLAIM_WRONG = Limit("claim:wrong", 5, 60 * 60)  # per phone (device key) or student: then that one waits
+CLASS_ALERT = Limit("claim:classwrong", 30, 60 * 60)  # per class: an audit alert, never a block
 REFRESH_IP_LIMIT = Limit("refresh:ip", 300, 60)  # the general ceiling (docs/api/README.md §3)
 
 ConsentState = Literal["pending", "granted", "withdrawn"]
@@ -213,7 +216,7 @@ def join_with_class_code(
     except _CodeRejected:
         raise _not_accepted() from None
     except _ClaimRejected as rejected:
-        count_claim_failure(engine, rejected.class_id)
+        count_claim_failure(engine, rejected.class_id, body.device.public_key)
         raise _not_accepted() from None
 
 
@@ -227,7 +230,7 @@ def _create_profile(engine: Engine, settings: Settings, body: JoinRequest, decla
                 WHERE c.code_hash = :h AND c.code_expires_at > now()
                 """
             ),
-            {"h": digest(body.class_code)},
+            {"h": code_hash(body.class_code, settings.code_pepper)},
         ).one_or_none()
         if school_class is None:
             raise _CodeRejected
@@ -270,7 +273,15 @@ def _create_profile(engine: Engine, settings: Settings, body: JoinRequest, decla
         consent_state: ConsentState = "pending"
         if body.claim_code:
             claim_slip(
-                engine, conn, school_class.id, school_class.school_id, seats, student_id, body.claim_code
+                engine,
+                conn,
+                school_class.id,
+                school_class.school_id,
+                seats,
+                student_id,
+                body.claim_code,
+                pepper=settings.code_pepper,
+                subject=body.device.public_key,
             )
             consent_state = "granted"
 
@@ -334,15 +345,20 @@ def claim_slip(
     seats: int | None,
     student_id: UUID,
     claim_code: str,
+    *,
+    pepper: str,
+    subject: str,
 ) -> None:
     """Binds a recorded consent slip to a student (at join, or later through /consents:claim).
 
-    Raises _ClaimRejected (counted per class by the caller) or the 403 when no seat is free. The register's
-    age band replaces the student's own answer; a disagreement raises an `age_mismatch` flag.
+    `subject` is who is trying: the device key at join, the student on /consents:claim. After 5 wrong
+    claim codes in an hour only that subject waits (429 with the wait time); classmates are not affected.
+    Raises _ClaimRejected (counted by the caller with count_claim_failure) or the 403 when no seat is free.
+    The register's age band replaces the student's own answer; a disagreement raises an `age_mismatch` flag.
     """
-    failures = peek(engine, f"{CLAIM_FAILURES.name}:{class_id}", CLAIM_FAILURES.window_s)[0]
-    if failures >= CLAIM_FAILURES.max_hits:
-        raise _not_accepted()  # paused, not counted again; joining without a claim code still works
+    wrong, retry_after = peek(engine, f"{CLAIM_WRONG.name}:{digest(subject)}", CLAIM_WRONG.window_s)
+    if wrong >= CLAIM_WRONG.max_hits:
+        raise too_many(retry_after)
     if not _seat_is_free(conn, school_id, seats):
         raise _no_school_access()
     slip = conn.execute(
@@ -354,7 +370,7 @@ def claim_slip(
             RETURNING id, kind, verified_age_band, recorded_by, notice_version, research_opt_in
             """
         ),
-        {"h": digest(claim_code), "c": class_id},
+        {"h": code_hash(claim_code, pepper), "c": class_id},
     ).one_or_none()
     if slip is None:
         raise _ClaimRejected(class_id)
@@ -379,10 +395,16 @@ def claim_slip(
         )
 
 
-def count_claim_failure(engine: Engine, class_id: UUID) -> None:
-    failures, _ = hit(engine, f"{CLAIM_FAILURES.name}:{class_id}", CLAIM_FAILURES.window_s)
-    if failures == CLAIM_FAILURES.max_hits:
-        _audit(engine, "claim_codes.paused", f"class:{class_id}")
+def count_claim_failure(engine: Engine, class_id: UUID, subject: str) -> None:
+    """Counts a wrong claim code against the phone or student that tried it, and against the class.
+
+    The class count never blocks anyone: at 30 in an hour it writes one audit alert for the teacher (a
+    pattern worth a look, such as a student trying codes from a classmate's slip).
+    """
+    hit(engine, f"{CLAIM_WRONG.name}:{digest(subject)}", CLAIM_WRONG.window_s)
+    class_wrong, _ = hit(engine, f"{CLASS_ALERT.name}:{class_id}", CLASS_ALERT.window_s)
+    if class_wrong == CLASS_ALERT.max_hits:
+        _audit(engine, "claim_codes.many_failures", f"class:{class_id}")
 
 
 def _record_slip_consent(conn: Connection, student_id: UUID, slip: Row[tuple[object, ...]]) -> None:

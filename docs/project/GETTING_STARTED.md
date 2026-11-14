@@ -119,6 +119,7 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 - Android development build and the Windows build fix (#29);
 - **Expo app shell** (#30): theme and fonts from the tokens, English and Urdu with right-to-left layout, S-01 Language, S-02 Welcome (first card), navigation and the four tabs, the language setting on You, the brand icon and splash.
 - **S-03 Join and S-04 Family OK slip** (14 Nov, branch `feat/join-screen`): field help (S-03e), the under-13 stop, the Keystore device key (our own Kotlin module), signed token refresh, claiming the slip now or later; full names blocked in nicknames on the server too. Tested end to end on the emulator against the local API.
+- **Class-code security** (14 Nov, branch `fix/class-code-security`): the admin command for schools, licences, classes, codes (rotate, expire) and numbered consent slips; codes stored as keyed hashes (`CODE_PEPPER`); wrong slip codes limited per phone instead of pausing the whole class; rate-limit replies no longer reveal the limit.
 
 Open: the other two welcome cards; read-aloud on field messages (FR-96); the soft check for an unusual class and age (EDGE_CASES §4); rude-word nickname check (forms-and-errors §2); Urdu tall letters such as the madda on آ are clipped in one-line Urdu labels on Android; the encrypted SQLite outbox; the Ink prologue; `streams.json` board routes for Sindh, Balochistan and AJK; the ethics submission; review of `frontend/mobile/src/i18n/locales/ur.json` by a native Urdu editor.
 

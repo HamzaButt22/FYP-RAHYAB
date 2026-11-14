@@ -25,6 +25,10 @@ class Settings(BaseSettings):
     # A phone that lost a refresh response may retry with the old token for this long (ADR-0011).
     refresh_reuse_grace_seconds: int = Field(default=120, ge=0, le=900)
     jwt_signing_key: str = ""  # required outside test (at least 32 characters); checked at start-up
+    # Key for the class and claim code hashes (codes.py): HMAC-SHA256, so a leaked database cannot be
+    # reversed by trying every code. Required outside test (at least 32 characters). Changing it makes
+    # every issued code stop working, so rotate it only together with new codes (codes.py).
+    code_pepper: str = ""
     data_key_wrapper_file: str = "/run/secrets/data_key_wrapper"
 
     @field_validator("cors_allowed_origins", mode="before")
@@ -42,6 +46,8 @@ class Settings(BaseSettings):
             # Development signs real tokens too, so it needs a key (tools/dev.py setup creates one).
             if len(self.jwt_signing_key) < 32:
                 raise ValueError("JWT_SIGNING_KEY must be set (at least 32 characters)")
+            if len(self.code_pepper) < 32:
+                raise ValueError("CODE_PEPPER must be set (at least 32 characters)")
         if self.app_env in ("staging", "production"):
             if self.debug:
                 raise ValueError("DEBUG must be false in staging and production")

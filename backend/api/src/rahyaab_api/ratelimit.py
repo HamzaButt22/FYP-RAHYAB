@@ -53,20 +53,18 @@ def peek(engine: Engine, key: str, window_s: int) -> tuple[int, int]:
     return (int(row[0]), max(int(row[1]), 1)) if row else (0, window_s)
 
 
-def too_many(limit: Limit, retry_after: int) -> ProblemError:
-    # The wait time is shown; the number of tries left is not (forms-and-errors.md §4).
+def too_many(retry_after: int) -> ProblemError:
+    # Only the wait time is shown, never the limit or the tries left (forms-and-errors.md §4), so a
+    # guesser cannot tune their pace to stay just under it.
     return ProblemError(
         429,
         "rate_limited",
         "Too many tries. Please wait and try again.",
-        headers={
-            "Retry-After": str(retry_after),
-            "RateLimit": f"limit={limit.max_hits}, remaining=0, reset={retry_after}",
-        },
+        headers={"Retry-After": str(retry_after)},
     )
 
 
 def enforce(engine: Engine, limit: Limit, subject: str) -> None:
     hits, retry_after = hit(engine, f"{limit.name}:{digest(subject)}", limit.window_s)
     if hits > limit.max_hits:
-        raise too_many(limit, retry_after)
+        raise too_many(retry_after)

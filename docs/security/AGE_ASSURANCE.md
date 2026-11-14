@@ -39,7 +39,7 @@ Rahyaab is designed not to collect names, phone numbers, CNIC or B-Form numbers,
 | A 15-year-old | Gets a Form C (adult form) and signs it themself | The teacher must record it with the band from the register (16–17 or lower), and the database refuses an adult form with a minor's band. The teacher records a Form A from the parent instead (TC-AGE-04) |
 | A 12-year-old | Types 13 or older | Passes the app's first check, but the register says 12, so no slip is recorded and nothing uploads. Pilot classes 8–10 are checked by the teacher before the consent drive |
 | A guardian | Signs Form A with a false age for the child | The teacher records the **register's** band, not the form's. If they differ, the register wins and the teacher is flagged |
-| A bad actor outside the school | Joins with a guessed class code | Needs a live class code (about 453 million possible, rate-limited), gets no consent without a claim code recorded by a teacher, and cannot upload. Claim codes pause per class after 30 failures |
+| A bad actor outside the school | Joins with a guessed class code | Needs a live class code (about 453 million possible, rate-limited), gets no consent without a claim code recorded by a teacher, and cannot upload. Wrong claim codes stop that phone after 5 an hour, and 30 in one class alert the teacher |
 | A teacher | Records a false band | Every recording is in the audit log with the teacher's account; a second staff member spot-checks 5 forms per class (RFC-0004). This residual risk is accepted |
 
 ## 5. Remaining risks, stated honestly

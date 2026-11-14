@@ -13,6 +13,7 @@
       ],
       "cwd": "${workspaceFolder}/backend/api",
       "python": "${workspaceFolder}/backend/api/.venv/Scripts/python.exe",
+      "envFile": "${workspaceFolder}/infra/docker/.env",
       "env": {
         "APP_ENV": "development",
         "DEBUG": "true",

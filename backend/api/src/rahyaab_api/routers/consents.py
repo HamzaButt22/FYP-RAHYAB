@@ -2,7 +2,8 @@
 
 A student who joined before their family's signed form came back enters the claim code when it does. The
 same rules as at join apply (student_auth.claim_slip): only a recorded, unexpired slip of the student's own
-class; the register's age band wins; claim codes pause per class after 30 failures; a seat is used now.
+class; the register's age band wins; 5 wrong claim codes per student per hour, then that student waits;
+a seat is used now.
 """
 
 from typing import Annotated, Literal
@@ -19,9 +20,11 @@ from rahyaab_api.routers.student_auth import (
     _ClaimRejected,
     _client_ip,
     _not_accepted,
+    app_settings,
     claim_slip,
     count_claim_failure,
 )
+from rahyaab_api.settings import Settings
 
 router = APIRouter(tags=["consent"])
 
@@ -43,6 +46,7 @@ def claim_consent_slip(
     body: ClaimRequest,
     request: Request,
     student: Annotated[CurrentStudent, Depends(current_student)],
+    settings: Annotated[Settings, Depends(app_settings)],
 ) -> ClaimResult:
     engine = get_engine(request)
     enforce(engine, CLAIM_STUDENT_LIMIT, str(student.student_id))
@@ -67,10 +71,20 @@ def claim_consent_slip(
             return ClaimResult(consent_state="granted")  # already granted; the slip is not used up
         seats = _active_licence_seats(conn, row.school_id)
         try:
-            claim_slip(engine, conn, row.class_id, row.school_id, seats, student.student_id, body.claim_code)
+            claim_slip(
+                engine,
+                conn,
+                row.class_id,
+                row.school_id,
+                seats,
+                student.student_id,
+                body.claim_code,
+                pepper=settings.code_pepper,
+                subject=str(student.student_id),
+            )
         except _ClaimRejected:
             failed_class = row.class_id
         else:
             return ClaimResult(consent_state="granted")
-    count_claim_failure(engine, failed_class)  # outside the rolled-back transaction
+    count_claim_failure(engine, failed_class, str(student.student_id))  # outside the rolled-back transaction
     raise _not_accepted()

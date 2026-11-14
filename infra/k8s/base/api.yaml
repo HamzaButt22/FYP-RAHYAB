@@ -37,6 +37,9 @@ spec:
             - name: JWT_SIGNING_KEY
               valueFrom:
                 secretKeyRef: { name: rahyaab-api, key: jwt-signing-key }
+            - name: CODE_PEPPER
+              valueFrom:
+                secretKeyRef: { name: rahyaab-api, key: code-pepper }
           readinessProbe:
             httpGet: { path: /v1/health, port: http }
             periodSeconds: 10

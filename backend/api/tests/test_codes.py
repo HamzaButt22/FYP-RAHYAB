@@ -1,6 +1,9 @@
 """Class and claim codes: format, alphabet and randomness (FR-80, FR-05a)."""
 
+import hashlib
 import re
+
+import pytest
 
 from rahyaab_api.codes import CHARACTERS, LETTERS, code_hash, new_claim_code, new_class_code
 
@@ -27,6 +30,20 @@ def test_alphabets_and_the_size_of_the_code_space() -> None:
     assert len(CHARACTERS) ** 8 > 10**12
 
 
-def test_codes_are_stored_as_sha256() -> None:
-    dev_seed = "768a808b75c48e3b1ca14b0bcecdd3486e96e33704f07de56789e0c18224d9a5"
-    assert code_hash("RYB-4K2") == dev_seed
+PEPPER = "p" * 32
+
+
+def test_codes_are_stored_as_a_keyed_hash() -> None:
+    # HMAC-SHA256 (RFC 2104): a fixed vector, so the app, the seed (tools/dev.py) and the admin agree.
+    assert code_hash("RYB-4K2", PEPPER) == "10a644047f915f47b9cf42bd982f42bb615488c4ac1101e92843d24f0ca3d78e"
+    # Not the plain SHA-256 that could be reversed from a leaked database by trying every code.
+    assert code_hash("RYB-4K2", PEPPER) != hashlib.sha256(b"RYB-4K2").hexdigest()
+    # Another server key gives another hash, so the database alone is not enough.
+    assert code_hash("RYB-4K2", PEPPER) != code_hash("RYB-4K2", "q" * 32)
+
+
+def test_a_short_or_missing_pepper_is_refused() -> None:
+    with pytest.raises(ValueError):
+        code_hash("RYB-4K2", "")
+    with pytest.raises(ValueError):
+        code_hash("RYB-4K2", "too-short")

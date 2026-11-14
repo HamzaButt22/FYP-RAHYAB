@@ -23,7 +23,7 @@ docker compose -f infra/docker/docker-compose.yml exec -T db psql -U rahyaab_adm
 ```
 
 ```bash
-docker compose -f infra/docker/docker-compose.yml exec -T db psql -U rahyaab_admin -d rahyaab < database/seed/dev_seed.sql
+python tools/dev.py seed   # passes the keyed code hashes (local CODE_PEPPER) to the SQL as psql variables
 ```
 
 **Roles.** The container's admin (`POSTGRES_USER`) runs migrations and owns the objects. The API connects as `api_rw` and the jobs worker as `jobs`, which have only the grants in `schema.sql`.

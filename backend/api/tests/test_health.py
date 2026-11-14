@@ -44,6 +44,13 @@ def test_production_settings_refuse_unsafe_values() -> None:
         Settings(
             app_env="production", jwt_signing_key="x" * 40, cors_allowed_origins=["*"]
         ).validate_for_runtime()
+    with pytest.raises(ValueError, match="CODE_PEPPER"):  # codes would be stored unkeyed
+        Settings(
+            app_env="production",
+            jwt_signing_key="x" * 40,
+            database_url="postgresql+psycopg://u:p@db/x",
+            cors_allowed_origins=["https://dashboard.example.pk"],
+        ).validate_for_runtime()
 
 
 def test_cors_origins_from_environment(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -64,6 +71,7 @@ def test_docs_are_off_outside_development_and_test() -> None:
         Settings(
             app_env="production",
             jwt_signing_key="x" * 40,
+            code_pepper="y" * 40,
             database_url="postgresql+psycopg://u:p@db/x",
             cors_allowed_origins=["https://dashboard.example.pk"],
         )

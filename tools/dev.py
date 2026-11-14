@@ -3,6 +3,7 @@
     python tools/dev.py <command>
 
 Local stack (Docker):  setup, db, migrate, roles, seed, reset, up, down, logs
+Admin (local database): admin <command> ...   e.g. python tools/dev.py admin --help
 Checks:                test, lint, check (everything CI runs that works offline)
 
 VS Code runs these through Terminal -> Run Task (see .vscode/tasks.json).
@@ -11,6 +12,8 @@ VS Code runs these through Terminal -> Run Task (see .vscode/tasks.json).
 from __future__ import annotations
 
 import base64
+import hashlib
+import hmac
 import os
 import secrets
 import shutil
@@ -55,6 +58,17 @@ def setup() -> None:
         lines[lines.index("JWT_SIGNING_KEY=")] = f"JWT_SIGNING_KEY={secrets.token_urlsafe(48)}"
         env.write_text("\n".join(lines) + "\n", encoding="utf-8")
         print("added a random JWT_SIGNING_KEY to infra/docker/.env (local only)")
+    # The key for class and claim code hashes (codes.py). Older .env files have no line for it yet.
+    lines = env.read_text(encoding="utf-8").splitlines()
+    pepper = [i for i, line in enumerate(lines) if line.startswith("CODE_PEPPER=")]
+    if not pepper or lines[pepper[0]] == "CODE_PEPPER=":
+        new = f"CODE_PEPPER={secrets.token_urlsafe(48)}"
+        if pepper:
+            lines[pepper[0]] = new
+        else:
+            lines.append(new)
+        env.write_text("\n".join(lines) + "\n", encoding="utf-8")
+        print("added a random CODE_PEPPER to infra/docker/.env (local only)")
     sec = DOCKER / "secrets"
     sec.mkdir(exist_ok=True)
     key = sec / "data_key_wrapper"
@@ -93,9 +107,31 @@ def roles() -> None:
     print("role passwords set (local development values)")
 
 
+def env_value(name: str) -> str:
+    """A value from the local infra/docker/.env (created by setup)."""
+    for line in (DOCKER / ".env").read_text(encoding="utf-8").splitlines():
+        if line.startswith(f"{name}="):
+            return line.split("=", 1)[1].strip()
+    return ""
+
+
+SEED_CODES = {  # psql variable -> development code (database/seed/dev_seed.sql)
+    "h_class_9a": "RYB-4K2",
+    "h_class_10b": "RYB-7Q9",
+    "h_slip_2222": "DEVA-2222",
+    "h_slip_3333": "DEVA-3333",
+    "h_slip_4444": "DEVS-4444",
+}
+
+
 def seed() -> None:
+    setup()  # makes sure the local CODE_PEPPER exists
+    pepper = env_value("CODE_PEPPER").encode()
     sql = (ROOT / "database" / "seed" / "dev_seed.sql").read_bytes()
-    compose("exec", "-T", "db", "psql", "-q", "-v", "ON_ERROR_STOP=1", "-U", "rahyaab_admin", "-d", "rahyaab", stdin=sql)
+    args = ["exec", "-T", "db", "psql", "-q", "-v", "ON_ERROR_STOP=1", "-U", "rahyaab_admin", "-d", "rahyaab"]
+    for var, code in SEED_CODES.items():  # the same keyed hash as rahyaab_api.codes.code_hash
+        args += ["-v", f"{var}={hmac.new(pepper, code.encode(), hashlib.sha256).hexdigest()}"]
+    compose(*args, stdin=sql)
     print("development seed loaded (class codes RYB-4K2 and RYB-7Q9; claim codes in database/seed/dev_seed.sql)")
 
 
@@ -190,9 +226,25 @@ def check() -> None:
     print("\nall local checks passed")
 
 
+def admin(args: list[str]) -> None:
+    """Schools, licences, classes and codes in the LOCAL database (rahyaab_api/admin.py)."""
+    setup()
+    env = {
+        **os.environ,
+        "DATABASE_URL": f"postgresql+psycopg://rahyaab_admin:{DEV_PW}@127.0.0.1:5432/rahyaab",
+        "CODE_PEPPER": env_value("CODE_PEPPER"),
+    }
+    exe = shutil.which("uv") or "uv"
+    sys.exit(subprocess.run([exe, "run", "python", "-m", "rahyaab_api.admin", *args], cwd=ROOT / "backend" / "api",
+                            env=env).returncode)
+
+
 COMMANDS = {f.__name__: f for f in (setup, db, migrate, roles, seed, reset, up, down, logs, test, lint, check)}
 
 if __name__ == "__main__":
+    if len(sys.argv) >= 2 and sys.argv[1] == "admin":
+        os.environ.setdefault("PYTHONUTF8", "1")
+        admin(sys.argv[2:])
     if len(sys.argv) != 2 or sys.argv[1] not in COMMANDS:
         print(__doc__)
         sys.exit(2)
