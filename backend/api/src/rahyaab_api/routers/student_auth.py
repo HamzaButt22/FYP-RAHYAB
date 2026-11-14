@@ -69,7 +69,7 @@ class DeviceInfo(BaseModel):
     model_config = ConfigDict(extra="forbid", strict=True)
 
     device_tier: Literal["low", "mid", "high"]
-    os_major: int = Field(ge=8, le=30)
+    os_major: int = Field(ge=7, le=30)  # Android 7 = API 24, the app's minSdk (NFR-14)
     app_version: str = Field(min_length=1, max_length=16)
     public_key: str = Field(min_length=16, max_length=200)
     integrity_token: str | None = Field(default=None, max_length=4096)

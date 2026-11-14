@@ -80,6 +80,15 @@ def test_three_bad_fields_give_three_field_errors_without_echo() -> None:  # TC-
         assert typed not in r.text  # never echo input (NFR-74)
 
 
+def test_full_name_is_refused_without_echo() -> None:  # TC-VAL-04
+    r = client().post(URL, json=valid_body(nickname="Ayesha Khan"))
+    assert r.status_code == 422
+    assert {"field": "nickname", "code": "full_name", "message_key": "errors.nickname.full_name"} in r.json()[
+        "errors"
+    ]
+    assert "Ayesha" not in r.text
+
+
 def test_strict_types_do_not_coerce_strings() -> None:
     r = client().post(URL, json=valid_body(grade="9"))
     assert r.status_code == 422
@@ -100,3 +109,16 @@ def test_valid_request_needs_the_database() -> None:
     # Proves the age check passed and nothing was answered from validation alone.
     r = client().post(URL, json=valid_body())
     assert r.status_code == 503
+
+
+def test_android_7_is_the_oldest_accepted_version() -> None:  # NFR-14: minSdk 24 is Android 7
+    device = valid_body()["device"]
+    r = client().post(URL, json=valid_body(device={**device, "os_major": 7}))
+    assert r.status_code == 503  # passed validation; only the missing database stops it
+    r = client().post(URL, json=valid_body(device={**device, "os_major": 6}))
+    assert r.status_code == 422
+    assert {
+        "field": "device.os_major",
+        "code": "out_of_range",
+        "message_key": "errors.device.os_major.out_of_range",
+    } in (r.json()["errors"])

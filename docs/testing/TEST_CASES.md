@@ -266,7 +266,7 @@ Feature: Read aloud (FR-96)
 | TC-VAL-01 | Code auto-format | Type `ryb4k2` | Shows `RYB-4K2`; no error | FR-102 | T-UNIT | A | 1 |
 | TC-VAL-02 | Code format error | Type `RYB-4K` and leave the field | "Codes have 6 letters and numbers, like RYB-4K2." (EN and UR); focus stays; a speaker button reads it | FR-102, NFR-73 | T-E2E | A | 1 |
 | TC-VAL-03 | Code rejected by the server | Use a well-formed but unknown code | Generic "That code didn't work…" with help; the **same** status, message and timing as an expired code (±50 ms) | NFR-74 | T-SEC | A | 1 |
-| TC-VAL-04 | Nickname is a real name | Enter "Ayesha Khan" | Warning suggesting a nickname; can continue | FR-102 | T-UNIT | A | 2 |
+| TC-VAL-04 | Nickname is a real full name | Enter "Ayesha Khan" (and "Ayesha" alone) | "Ayesha Khan" is refused by the app and the server (`full_name`) with the hint "like Ayesha_10"; "Ayesha" alone is accepted | FR-102 | T-UNIT | A | 2 |
 | TC-VAL-05 | Nickname with a phone number or email | "ali03001234567" or "a@b.com" | Blocked with "Please don't add a phone number or email" | FR-102, NFR-44 | T-UNIT | A | 1 |
 | TC-VAL-06 | Bidi and zero-width characters | Nickname containing U+202E or U+200B | Characters stripped; the stored value is clean; the teacher view shows it correctly | NFR-74 | T-SEC | A | 1 |
 | TC-VAL-07 | Server field errors | POST join with 3 bad fields (bypassing the client) | `422` problem+json with `errors[]`: 3 entries `{field, code, message_key}`; no input echoed | FR-102 | T-INT | A | 1 |

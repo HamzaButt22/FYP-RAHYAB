@@ -112,6 +112,22 @@ def up() -> None:
     roles()
     compose("up", "-d", "--build", "api", "jobs")
     print("\nAPI:  http://localhost:8000/v1/health   docs: http://localhost:8000/v1/docs")
+    phone_reaches_api()
+
+
+def phone_reaches_api() -> None:
+    """Lets a connected emulator or USB phone reach the API at its own localhost:8000 (adb reverse).
+
+    Docker publishes the API on 127.0.0.1 only, so the emulator's 10.0.2.2 alias cannot reach it, and the API
+    is never exposed to the local network. Run `up` again after starting the emulator or plugging in a phone.
+    """
+    if not shutil.which("adb"):
+        return
+    devices = subprocess.run(["adb", "devices"], capture_output=True, text=True).stdout.splitlines()[1:]
+    if not any(line.strip().endswith("device") for line in devices):
+        print("No emulator or phone connected: start one, then run `python tools/dev.py up` again for the app.")
+        return
+    run(["adb", "reverse", "tcp:8000", "tcp:8000"], check=False)
 
 
 def down() -> None:
@@ -155,6 +171,7 @@ def lint() -> None:
     _pnpm("mobile", "install", "--frozen-lockfile")
     _pnpm("mobile", "typecheck")
     _pnpm("mobile", "lint")
+    _pnpm("mobile", "test")
 
 
 def check() -> None:
@@ -164,6 +181,7 @@ def check() -> None:
     run([sys.executable, "design/tokens/check_tokens.py"])
     run([sys.executable, "tools/docs_audit.py"])
     run([sys.executable, "tools/check_streams.py"])
+    run([sys.executable, "tools/check_names.py"])
     if shutil.which("kubectl"):
         for overlay in ("staging", "production"):
             print(f"\n$ kubectl kustomize infra/k8s/overlays/{overlay}", flush=True)

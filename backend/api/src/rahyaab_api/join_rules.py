@@ -3,8 +3,12 @@
 No database here, so every rule has fast unit tests (tests/test_join_rules.py).
 """
 
+import json
+import re
 import unicodedata
 from datetime import date, timedelta, timezone
+from functools import cache
+from importlib import resources
 
 # Zero-width and bidi-override characters are removed, not rejected (forms-and-errors.md §4, TC-VAL-06).
 _INVISIBLE = (
@@ -42,7 +46,37 @@ def nickname_problem(nickname: str) -> str | None:
         # Letters, numbers and combining marks (Urdu vowel marks such as zabar and zer are category M).
         if unicodedata.category(ch)[0] not in ("L", "M", "N"):
             return "format"
+    if looks_like_full_name(nickname):
+        return "full_name"
     return None
+
+
+# Arabic letters that look like the Urdu ones (keyboards differ): Arabic yeh, kaf, heh and teh marbuta.
+_URDU_LETTERS = str.maketrans({"ي": "ی", "ى": "ی", "ك": "ک", "ه": "ہ", "ة": "ہ"})
+
+
+def fold_name(word: str) -> str:
+    """Lowercase, without vowel marks or digits, with Arabic letter forms mapped to Urdu ones."""
+    text = unicodedata.normalize("NFD", word.lower())
+    text = "".join(ch for ch in text if unicodedata.category(ch) != "Mn" and not ch.isdecimal())
+    return unicodedata.normalize("NFC", text).translate(_URDU_LETTERS)
+
+
+@cache
+def _common_names() -> frozenset[str]:
+    data = json.loads(resources.files("rahyaab_api").joinpath("data/common_names.json").read_text("utf-8"))
+    return frozenset(fold_name(name) for name in data["first_names"] + data["surnames"])
+
+
+def looks_like_full_name(nickname: str) -> bool:
+    """Two different common names (given or family) in one nickname look like a real full name.
+
+    One name alone is allowed: it cannot identify a student on its own (forms-and-errors.md §2).
+    Words are split at spaces, underscores and digits, so "Ayesha_Khan" and "ali10khan" count too.
+    """
+    names = _common_names()
+    words = {fold_name(w) for w in re.split(r"[\s_\d]+", nickname) if w}
+    return len(words & names) >= 2
 
 
 def age_in_months(birth_year: int, birth_month: int, today: date) -> int:

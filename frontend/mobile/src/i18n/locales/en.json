@@ -4,7 +4,10 @@
     "appNameUrdu": "راہ یاب",
     "continue": "Continue",
     "comingSoon": "Coming soon",
-    "logoLabel": "Rahyaab logo"
+    "logoLabel": "Rahyaab logo",
+    "back": "Back",
+    "help": "What is this screen for?",
+    "close": "Close"
   },
   "onboarding": {
     "language": {
@@ -25,9 +28,62 @@
       "start": "Get started"
     },
     "join": {
-      "title": "Join your class",
-      "body": "Joining with your class code is the next part we are building.",
-      "devSkip": "Skip to the app (development build only)"
+      "header": "Join",
+      "help": "Join your class with the code from your teacher. We never ask for your name, phone number, email or photo.",
+      "title": "Let's set you up",
+      "codeLabel": "Class code from your teacher",
+      "codeHint": "6 letters and numbers, like RYB-4K2",
+      "nicknameLabel": "Nickname",
+      "nicknameHint": "2 to 20 letters or numbers. Not your real name.",
+      "gradeLabel": "Your class",
+      "gradeOption": "Class {{grade}}",
+      "birthLabel": "When you were born",
+      "birthHint": "Only the month and year.",
+      "monthLabel": "Month you were born",
+      "monthPlaceholder": "Month",
+      "yearLabel": "Year you were born",
+      "yearPlaceholder": "Year",
+      "months": [
+        "January",
+        "February",
+        "March",
+        "April",
+        "May",
+        "June",
+        "July",
+        "August",
+        "September",
+        "October",
+        "November",
+        "December"
+      ],
+      "privacy": "We never ask for your name, phone number, email or photo.",
+      "looksRight": "Looks right",
+      "next": "Next",
+      "joining": "Joining…",
+      "fixFields": "Some answers need fixing. The first one is selected.",
+      "codeHelpTitle": "Need help with the code?",
+      "codeHelpBody": "Your teacher writes it on the board or in the class WhatsApp group. Codes never use the letters O and I or the numbers 0 and 1.",
+      "errors": {
+        "codeFormat": "Codes have 6 letters and numbers, like RYB-4K2.",
+        "codeLookalike": "Codes never use O, 0, I or 1. Check that letter with your teacher, like RYB-4K2.",
+        "codeNotAccepted": "That code didn't work. Check each letter with your teacher.",
+        "nicknameRequired": "Choose a nickname, like Ayesha_10.",
+        "nicknameFormat": "Use 2 to 20 letters or numbers, like Ayesha_10.",
+        "nicknamePhone": "Please don't add a phone number or email. Use a nickname instead.",
+        "nicknameFullName": "This looks like a full name. A nickname keeps you private, like Ayesha_10.",
+        "gradeRequired": "Pick your class: 8, 9, 10, 11 or 12.",
+        "birthRequired": "Pick the month and the year you were born.",
+        "schoolInactive": "Your school's Rahyaab access isn't active right now. Please tell your teacher.",
+        "tooMany": "Too many tries for now. Please try again in {{minutes}} min.",
+        "offline": "You're offline. Joining needs the internet once. Everything you typed is kept.",
+        "failed": "Something went wrong on our side. Please try again in a few minutes."
+      }
+    },
+    "ageStop": {
+      "title": "Rahyaab is for students aged 13 and over",
+      "body": "Thank you for wanting to try it. Ask your teacher about other ways to explore careers.",
+      "back": "Back to the start"
     }
   },
   "tabs": {
@@ -38,7 +94,10 @@
   },
   "home": {
     "title": "Salaam!",
-    "body": "Your week will appear here."
+    "body": "Your week will appear here.",
+    "consentPendingTitle": "Waiting for your family's OK",
+    "consentPendingBody": "Until then, nothing you play is saved.",
+    "consentPendingAction": "Enter the slip code"
   },
   "explore": {
     "title": "Explore",
@@ -53,5 +112,25 @@
     "languageHeading": "Language",
     "languageNote": "The app restarts to change the language.",
     "devReset": "Start onboarding again (development build only)"
+  },
+  "consent": {
+    "header": "Family OK",
+    "help": "Your family says OK on a paper form from school. Enter the code from that slip here, now or later.",
+    "title": "Your family's OK slip",
+    "body": "Your teacher gives your family a paper form. When they sign it and your teacher records it, you get a slip with a code.",
+    "codeLabel": "Code on the slip",
+    "codeHint": "8 letters and numbers, like AB23-CD45",
+    "submit": "Use this code",
+    "checking": "Checking…",
+    "later": "I'll do it later",
+    "waiting": "Until your family says OK, you can look around, but nothing you play is saved.",
+    "helpTitle": "Need help with the slip?",
+    "helpBody": "The code is printed on the slip your teacher gives back. Codes never use O, 0, I or 1. If it still doesn't work, ask your teacher.",
+    "errors": {
+      "format": "Slip codes have 8 letters and numbers, like AB23-CD45.",
+      "lookalike": "Slip codes never use O, 0, I or 1. Check that letter on the slip.",
+      "notAccepted": "That code didn't work. Check each letter on the slip, or ask your teacher.",
+      "offline": "You're offline. Please try again when you have internet."
+    }
   }
 }
