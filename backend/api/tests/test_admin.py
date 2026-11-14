@@ -132,31 +132,66 @@ def test_the_class_list_shows_form_numbers(api: TestClient, world: World) -> Non
     assert rows["Sitara_14"]["form"] is None and rows["Sitara_14"]["consent"] == "waiting"
 
 
-def test_removing_a_stranger_deletes_and_signs_out(api: TestClient, world: World) -> None:
+def _refresh(api: TestClient, world: World, pair: dict[str, str]) -> int:
+    private = world.private_keys[pair["public_key"]]
+    body = {"refresh_token": pair["refresh_token"], "signature": sign_refresh(private, pair["refresh_token"])}
+    return api.post(REFRESH_URL, json=body).status_code
+
+
+def test_removing_archives_and_restoring_resumes(api: TestClient, world: World) -> None:
     class_id, code = run(world.admin, admin.add_class, PEPPER, world.school_id, 9, "Y2")
     world.class_ids.append(class_id)
-    pair = _joined(api, world, code)
-    assert run(world.admin, admin.remove_student, pair["student_id"], "stranger") == "deleted"
-    assert world.scalar("SELECT count(*) FROM student WHERE id = :s", s=pair["student_id"]) == 0
-    with pytest.raises(admin.AdminError):
-        run(world.admin, admin.remove_student, pair["student_id"], "bogus")
+    pair = _joined(api, world, code, nickname="Ali_10")
+    run(world.admin, admin.remove_student, pair["student_id"], "stranger")
+    assert run(world.admin, admin.list_students, class_id) == []  # off the class list
+    archived = run(world.admin, admin.list_archived, class_id)
+    assert archived[0]["reason"] == "stranger" and archived[0]["deleted_on"] is not None
+    assert (
+        api.post(
+            CLAIM_URL,
+            json={"claim_code": "AB23-CD45"},
+            headers={"Authorization": f"Bearer {pair['access_token']}"},
+        ).status_code
+        == 401
+    )
+    assert _refresh(api, world, pair) == 401  # the phone stops working ...
+    run(world.admin, admin.restore_student, pair["student_id"])
+    assert _refresh(api, world, pair) == 200  # ... and works again after the restore, without re-joining
+    assert [r["nickname"] for r in run(world.admin, admin.list_students, class_id)] == ["Ali_10"]
+    with pytest.raises(admin.AdminError, match="not archived"):
+        run(world.admin, admin.restore_student, pair["student_id"])
 
 
-def test_removing_a_consented_student_keeps_their_results(api: TestClient, world: World) -> None:
+def test_an_archived_nickname_is_free_but_restore_checks_it(api: TestClient, world: World) -> None:
+    class_id, code = run(world.admin, admin.add_class, PEPPER, world.school_id, 9, "Y7")
+    world.class_ids.append(class_id)
+    first = _joined(api, world, code, nickname="Ali_10")
+    run(world.admin, admin.remove_student, first["student_id"], "left")
+    assert api.post(URL, json=world.body(code, nickname="Ali_10")).status_code == 201  # free again
+    with pytest.raises(admin.AdminError, match="took this nickname"):
+        run(world.admin, admin.restore_student, first["student_id"])
+
+
+def test_an_archived_consented_student_is_kept_and_uses_no_seat(api: TestClient, world: World) -> None:
     class_id, code = run(world.admin, admin.add_class, PEPPER, world.school_id, 10, "Y3")
     world.class_ids.append(class_id)
     ((serial, claim),) = run(world.admin, admin.print_slips, PEPPER, class_id, 1)
     run(world.admin, admin.record_slip, class_id, serial, "13-15", world.staff_id)
     pair = _joined(api, world, code, claim_code=claim)
-    assert run(world.admin, admin.remove_student, pair["student_id"], "left") == "removed"
-    assert world.scalar("SELECT class_id FROM student WHERE id = :s", s=pair["student_id"]) is None
-    live = world.scalar(
-        "SELECT count(*) FROM refresh_token rt JOIN device d ON d.id = rt.device_id "
-        "WHERE d.student_id = :s AND rt.revoked_at IS NULL",
-        s=pair["student_id"],
-    )
-    assert live == 0  # signed out everywhere
-    world.scalar("DELETE FROM student WHERE id = :s RETURNING 1", s=pair["student_id"])  # test cleanup
+    run(world.admin, admin.remove_student, pair["student_id"], "left")
+    assert run(world.admin, admin.list_archived, class_id)[0]["deleted_on"] is None  # consented: kept
+    with world.admin.begin() as conn:  # the school's only seat is now free for someone else
+        conn.execute(text("UPDATE licence SET seats = 1 WHERE school_id = :s"), {"s": world.school_id})
+    ((serial2, claim2),) = run(world.admin, admin.print_slips, PEPPER, class_id, 1)
+    run(world.admin, admin.record_slip, class_id, serial2, "13-15", world.staff_id)
+    assert api.post(URL, json=world.body(code, claim_code=claim2)).status_code == 201
+
+
+def test_removing_twice_or_a_stranger_id_is_refused(world: World) -> None:
+    with pytest.raises(admin.AdminError, match="no student"):
+        run(world.admin, admin.remove_student, world.school_id, "left")
+    with pytest.raises(admin.AdminError):
+        run(world.admin, admin.remove_student, world.school_id, "bogus")
 
 
 def test_a_blocked_phone_is_signed_out_and_kept_out(api: TestClient, world: World) -> None:

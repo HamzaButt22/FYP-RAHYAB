@@ -13,9 +13,13 @@ Work is split so that each person carries about the same load (§2), and every c
 
 | Who | Owns | Backup reviewer for |
 |---|---|---|
-| **ZB** = Zahid Bashir | API (identity, consent, telemetry, results, admin), scoring models M1–M3, security | Platform and CI (HB's) |
-| **HB** = Hamza Butt | Mobile app, tasks, performance, **platform, CI and deployment** | API and scoring code (ZB's) |
-| **DS** = Daniyal Sarwar | UX, Ink content, stream data, **dashboard (UI and API), parent pages**, ethics, pilot, **validation analysis** and AHP | Mobile UI (HB's) |
+| **HB** = Hamza Butt | **The application end to end:** mobile app (shell, onboarding, outbox and sync, results, accessibility), API and admin, teacher dashboard and parent pages, platform, CI and deployment, security; the **ethics application** and the pilot logistics | Zahid's game code before it is merged into the app |
+| **ZB** = Zahid Bashir | **The game:** game research (including the V1 adaptive-pairs simulation and the game-side validation analysis), the Ink story (prologue and weeks), the task modules and their scoring inputs, game testing, and integrating each of these into the app through the interfaces Hamza defines; **board routes** in `streams.json` (verify Sindh, Balochistan and AJK with sources) | Hamza's app screens that show game content |
+| **DS** = Daniyal Sarwar | **Optional, non-blocking:** the M1 (Thurstonian IRT) and M2 (Rasch) calibration notebooks. Nothing in the app depends on them: production scoring uses the congruence recommender. If they are not delivered, or are wrong, they are dropped from FYP-I and done in FYP-II | — |
+
+**Roles changed on 14 Nov 2026** (Hamza's decision, for the team and supervisor to confirm): Daniyal's earlier critical items moved away from him: the ethics application to Hamza, the Ink story and board-route verification to Zahid. **Target:** finish as much as possible in FYP-I, aiming for **70–80% of the whole project** by the FYP-I submission; the F1/F2 labels in `MVP.md` are the latest dates, not limits. The hour estimates in §2 were made for the old split and are re-estimated in the next sprint review.
+
+**Assessment note:** the SRS (§13.2) asks for balanced, per-person Git evidence (LO6). With most work on Hamza and Zahid, Daniyal's individual evidence will be thin; agree with the supervisor how individual contribution is assessed.
 
 The supervisor (Zeeshan Ali) reviews the ethics package and the validation plan. Roles are proposals for the team to confirm in the S1 meeting.
 
@@ -37,7 +41,7 @@ A bottom-up estimate in hours, made on 9 Nov 2026 before any code exists. Coding
 | **Net estimate** | | **≈ 1,580** |
 | **Capacity** | 3 people × 20 h × about 27 effective weeks (exam and break weeks at half) | **≈ 1,620** |
 
-**Load per person (net):** ZB ≈ 525 h, HB ≈ 530 h, DS ≈ 525 h, against about 540 h each.
+**Load per person (net), as estimated on 9 Nov 2026 for the old split:** ZB ≈ 525 h, HB ≈ 530 h, DS ≈ 525 h, against about 540 h each. The split changed on 14 Nov 2026 (§1); to be re-estimated.
 
 **Slack is only about 3%** (the usual target is 15–25%). This is a deliberate choice to keep every class mode in the MVP. It is managed by the **checkpoints** in `MVP.md` §3: at the FYP-1 demo and at the feature freeze, if the team is more than a week behind, the next item in the cut order (`MVP.md` §4, about 160 hours in total) is cut at once.
 

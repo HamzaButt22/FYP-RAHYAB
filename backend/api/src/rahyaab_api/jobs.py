@@ -36,13 +36,18 @@ def purge_rate_limits(engine: Engine, keep_hours: int = RATE_LIMIT_KEEP_HOURS) -
 
 
 def purge_unconsented_students(engine: Engine, days: int = UNCONSENTED_DAYS) -> int:
-    """Deletes students who never had parent or self consent and joined more than `days` ago."""
+    """Deletes students who never had parent or self consent and joined more than `days` ago.
+
+    An archived student (admin.py student-remove) is kept for `days` after archiving, so a removal made by
+    mistake can be undone (student-restore) before anything is deleted.
+    """
     with engine.begin() as conn:
         result = conn.execute(
             text(
                 """
                 DELETE FROM student st
                 WHERE st.created_at < now() - make_interval(days => :d)
+                  AND (st.archived_at IS NULL OR st.archived_at < now() - make_interval(days => :d))
                   AND NOT EXISTS (SELECT 1 FROM consent co
                                   WHERE co.student_id = st.id AND co.type IN ('parent', 'self'))
                 """

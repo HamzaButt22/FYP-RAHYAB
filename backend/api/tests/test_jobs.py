@@ -54,3 +54,29 @@ def test_never_consented_profiles_are_deleted_after_30_days(admin: Engine, world
             .all()
         )
     assert left == ["new_pending", "old_consented"]
+
+
+def test_an_archived_profile_is_kept_30_days_after_archiving(admin: Engine, world: World) -> None:
+    class_id, _ = world.add_class()
+    with admin.begin() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO student (class_id, nickname, grade, age_band, created_at, archived_at, "
+                "archived_reason) VALUES "
+                "(:c, 'recent_archive', 9, '13-15', now() - interval '40 days', "
+                "now() - interval '2 days', 'left'), "
+                "(:c, 'old_archive', 9, '13-15', now() - interval '80 days', "
+                "now() - interval '31 days', 'left')"
+            ),
+            {"c": class_id},
+        )
+    purge_unconsented_students(admin)
+    with admin.connect() as conn:
+        left = (
+            conn.execute(
+                text("SELECT nickname FROM student WHERE class_id = :c ORDER BY nickname"), {"c": class_id}
+            )
+            .scalars()
+            .all()
+        )
+    assert left == ["recent_archive"]

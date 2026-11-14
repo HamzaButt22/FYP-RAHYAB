@@ -45,8 +45,12 @@ def current_student(request: Request, settings: Annotated[Settings, Depends(_set
         raise _unauthorized() from None
     with get_engine(request).connect() as conn:
         exists = conn.execute(
-            text("SELECT 1 FROM device WHERE id = :d AND student_id = :s"), {"d": device_id, "s": student_id}
+            text(
+                "SELECT 1 FROM device d JOIN student st ON st.id = d.student_id "
+                "WHERE d.id = :d AND d.student_id = :s AND st.archived_at IS NULL"
+            ),
+            {"d": device_id, "s": student_id},
         ).first()
-    if exists is None:  # deleted student, or a device that was re-linked away
+    if exists is None:  # deleted or archived student, or a device that was re-linked away
         raise _unauthorized()
     return CurrentStudent(student_id, device_id)

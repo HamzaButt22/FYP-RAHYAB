@@ -1,4 +1,4 @@
--- Rahyaab PostgreSQL 16 schema, version 1.5 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
+-- Rahyaab PostgreSQL 16 schema, version 1.6 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
 -- v1.1 (2026-11-05): student.age_band and student.situation; self-consent; route and help flags (FR-99..104).
 -- v1.2 (2026-11-05): research_demographics (opt-in, separate role); staff password reset tokens.
 -- v1.3 (2026-11-07, review fixes): consent slips; item keyed by content version; quarantine linked to the
@@ -9,6 +9,8 @@
 --   institution, individual) gate class-code joins.
 -- v1.5 (2026-11-14): nicknames unique within a class (case-insensitive), so teachers can tell students
 --   apart; blocked_device for phones an admin has blocked; class and claim codes stored as HMAC.
+-- v1.6 (2026-11-14): removing a student archives them (student.archived_at) so a mistake can be undone;
+--   never-consented archived profiles are deleted 30 days after archiving.
 -- The migrations live in backend/api/migrations (Alembic): 0001 applies this file to an empty database and
 -- later revisions bring older databases up to date. This file is always the complete current design.
 -- Conventions: snake_case; UUID keys (UUIDv7 for events); timestamptz in UTC; no personal data
@@ -53,11 +55,17 @@ CREATE TABLE student (
   marks           jsonb CHECK (marks IS NULL OR (jsonb_typeof(marks) = 'object' AND pg_column_size(marks) <= 512)),
                                                       -- optional, subject -> 0..100 (keys and range checked in the API)
   created_at      timestamptz NOT NULL DEFAULT now(),
-  last_active_at  timestamptz NOT NULL DEFAULT now()
+  last_active_at  timestamptz NOT NULL DEFAULT now(),
+  -- Taken off the class list by an admin or teacher (admin.py student-remove); restorable (student-restore).
+  archived_at     timestamptz,
+  archived_reason text CHECK (archived_reason IN ('left', 'stranger', 'misuse', 'other')),
+  CONSTRAINT student_archived_check CHECK ((archived_at IS NULL) = (archived_reason IS NULL))
 );
 CREATE INDEX ON student (class_id);
 -- One nickname per class, ignoring case: two "Ali_10"s on one class list would confuse the teacher.
-CREATE UNIQUE INDEX student_class_nickname_key ON student (class_id, lower(nickname)) WHERE class_id IS NOT NULL;
+-- Archived students free their nickname; restoring checks it is still free.
+CREATE UNIQUE INDEX student_class_nickname_key ON student (class_id, lower(nickname))
+  WHERE class_id IS NOT NULL AND archived_at IS NULL;
 CREATE INDEX ON student (last_active_at);           -- retention job
 
 -- Licences (ADR-0015). A class code works only while its school holds an active pilot or institution licence;
