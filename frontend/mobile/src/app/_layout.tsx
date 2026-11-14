@@ -1,5 +1,6 @@
 // Root of the app: loads the brand fonts and saved settings behind the splash screen, then sends the
-// student to the right place: language choice (S-01), onboarding (S-02, S-03) or the main tabs.
+// student to the right place: language choice (S-01), onboarding (S-02, S-03), the family slip (S-04) or the
+// main tabs. Each group is locked with Stack.Protected, so a deep link cannot skip joining.
 
 import { BricolageGrotesque_800ExtraBold } from '@expo-google-fonts/bricolage-grotesque';
 import { AtkinsonHyperlegible_400Regular } from '@expo-google-fonts/atkinson-hyperlegible';
@@ -22,7 +23,7 @@ import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 SplashScreen.preventAutoHideAsync();
 
 function Navigation() {
-  const { ready, language, onboardingDone } = useAppState();
+  const { ready, language, session, onboardingDone } = useAppState();
   const { colors, scheme } = useTheme();
 
   useEffect(() => {
@@ -37,10 +38,13 @@ function Navigation() {
         <Stack.Protected guard={!language}>
           <Stack.Screen name="language" />
         </Stack.Protected>
-        <Stack.Protected guard={!!language && !onboardingDone}>
+        <Stack.Protected guard={!!language && !session}>
           <Stack.Screen name="(onboarding)" />
         </Stack.Protected>
-        <Stack.Protected guard={!!language && onboardingDone}>
+        <Stack.Protected guard={!!language && !!session}>
+          <Stack.Screen name="consent" />
+        </Stack.Protected>
+        <Stack.Protected guard={!!language && !!session && onboardingDone}>
           <Stack.Screen name="(tabs)" />
         </Stack.Protected>
       </Stack>

@@ -1483,7 +1483,7 @@ components:
             required: [field, code, message_key]
             properties:
               field: { type: string, examples: [class_code] }
-              code: { type: string, examples: [format, too_short, contains_phone, not_allowed] }
+              code: { type: string, examples: [format, too_short, contains_phone, full_name, not_allowed] }
               message_key: { type: string, examples: [errors.class_code.format] }
 
     Page:
@@ -1504,7 +1504,7 @@ components:
       required: [device_tier, os_major, app_version, public_key]
       properties:
         device_tier: { type: string, enum: [low, mid, high], description: 'From RAM class on the phone (<=3 GB low, 4-6 GB mid, >=8 GB high)' }
-        os_major: { type: integer, minimum: 8, maximum: 30 }
+        os_major: { type: integer, minimum: 7, maximum: 30, description: 'Android major version (7 = API 24, the Expo SDK 58 floor; NFR-14)' }
         app_version: { type: string, maxLength: 16 }
         public_key: { type: string, maxLength: 200, description: 'Keystore-held EC P-256 key, base64 of the DER SubjectPublicKeyInfo (Java PublicKey.getEncoded()); refresh requests are signed with it (ADR-0011). Any other key is refused with 422.' }
         integrity_token: { type: string, description: 'Play Integrity token when available (NFR-68 policy in SECURITY.md §3)' }

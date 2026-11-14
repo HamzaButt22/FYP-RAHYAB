@@ -17,7 +17,7 @@ from rahyaab_api.settings import Settings, get_settings
 log = logging.getLogger("rahyaab.api")
 
 # Our own field-error codes (raised by validators); everything else is mapped through FIELD_CODES.
-CUSTOM_FIELD_CODES = {"contains_phone", "too_short", "too_long", "format"}
+CUSTOM_FIELD_CODES = {"contains_phone", "full_name", "too_short", "too_long", "format"}
 
 
 def create_app(settings: Settings | None = None) -> FastAPI:

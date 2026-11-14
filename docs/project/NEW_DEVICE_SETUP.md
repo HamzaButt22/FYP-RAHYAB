@@ -110,12 +110,14 @@ pnpm start
 
 Edits to `src/` appear on the phone at once (Fast Refresh).
 
+**Joining a class** needs the backend from step 4, and the emulator or phone must be connected when you run `python tools/dev.py up`: it forwards the device's port 8000 to the API (`adb reverse tcp:8000 tcp:8000`; run that by hand after restarting the emulator). Use the seed class code `RYB-4K2`; the consent-slip codes are listed at the top of `database/seed/dev_seed.sql`.
+
 **A real phone instead of the emulator:** Settings → About phone → tap "Build number" 7 times; then Developer options → **USB debugging** on. Connect the cable, accept the prompt on the phone, and check that `adb devices` lists it. Then run `pnpm android` as above.
 
 **What you will see in a development build (normal, not part of Rahyaab):**
 - a floating gear button (Expo's developer menu);
 - a one-time "Allow Rahyaab to find nearby devices?" prompt from Expo's tools: choose **Don't allow**;
-- "Skip to the app" on the join screen and "Start onboarding again" on You. Release builds have none of these.
+- "Start onboarding again" on You (it also deletes the sign-in and the device key). Release builds have none of these.
 
 ## 6. Windows only: the C++ build fix (once per PC)
 
@@ -151,6 +153,7 @@ This file is not in the repository, so cloud (EAS) and Linux builds keep their d
 | `Port 8081 is unavailable` | An old Metro server is still running | Close the other terminal, or end the `node` process using port 8081 |
 | `The token '&&' is not a valid statement separator` | Windows PowerShell 5.1 | Run the commands one at a time (step 1) |
 | App shows "Unmatched Route" | A route was added without a matching file | Check `src/app/` against the links; `pnpm typecheck` catches most of these |
+| The join screen says "You're offline" | The backend is not running, or the device has no `adb reverse` (it is lost when the emulator restarts) | `python tools/dev.py up`, or `adb reverse tcp:8000 tcp:8000` |
 | Urdu letters such as گ lose their top stroke | Android clips Nastaliq above the first line | Always use `AppText` for text; it adds the headroom (`frontend/mobile/README.md`) |
 
 ## 9. What is not in the repository, on purpose

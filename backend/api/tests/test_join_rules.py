@@ -8,7 +8,15 @@ from datetime import date
 
 import pytest
 
-from rahyaab_api.join_rules import MIN_AGE, age_band, age_in_months, clean_nickname, nickname_problem
+from rahyaab_api.join_rules import (
+    MIN_AGE,
+    age_band,
+    age_in_months,
+    clean_nickname,
+    fold_name,
+    looks_like_full_name,
+    nickname_problem,
+)
 
 
 @pytest.mark.parametrize(
@@ -41,6 +49,8 @@ def test_clean_nickname(raw: str, cleaned: str) -> None:
         ("a123456", None),  # 6 digits is not yet a phone number
         ("a1234567", "contains_phone"),  # 7 digits is
         ("۰۳۰۰۱۲۳۴۵۶۷", "contains_phone"),  # Urdu (Extended Arabic-Indic) digits count too
+        ("Ayesha Khan", "full_name"),  # TC-VAL-04: a given name and a family name
+        ("Ayesha", None),  # one name alone is allowed
     ],
 )
 def test_nickname_problem(nickname: str, problem: str | None) -> None:
@@ -72,3 +82,29 @@ def test_age_boundary_is_13_years_to_the_month() -> None:  # TC-ONB-05
 )
 def test_age_band(years: int, band: str) -> None:
     assert age_band(years) == band
+
+
+@pytest.mark.parametrize(
+    ("nickname", "full"),
+    [
+        ("Ayesha Khan", True),
+        ("ayesha_khan", True),  # underscores separate words too
+        ("Ali10Butt", True),  # so do digits
+        ("Muhammad Ali", True),  # two given names are a full name in Pakistan
+        ("عائشہ خان", True),  # Urdu script
+        ("عائشه خان", True),  # Arabic heh typed for the Urdu one
+        ("فاطِمہ ملک", True),  # vowel marks are ignored
+        ("Ali Ali", False),  # the same name twice is still one name
+        ("Ayesha_10", False),
+        ("Khan", False),
+        ("Cool Ali", False),
+        ("Star Gazer", False),
+    ],
+)
+def test_looks_like_full_name(nickname: str, full: bool) -> None:
+    assert looks_like_full_name(nickname) is full
+
+
+def test_fold_name() -> None:
+    assert fold_name("ALI7") == "ali"
+    assert fold_name("عائشه") == fold_name("عائشہ")

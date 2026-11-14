@@ -92,6 +92,7 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm typecheck
       - run: pnpm lint
+      - run: pnpm test
 
   dashboard:
     name: frontend/dashboard (types, tests, build)
@@ -135,6 +136,8 @@ jobs:
         run: python tools/docs_audit.py
       - name: Design tokens are in sync
         run: python design/tokens/check_tokens.py
+      - name: The app's common-names copy matches the API's
+        run: python tools/check_names.py
       - name: Stream rules have sources and verification levels
         run: python tools/check_streams.py
       - name: Kubernetes overlays render and match the API schemas

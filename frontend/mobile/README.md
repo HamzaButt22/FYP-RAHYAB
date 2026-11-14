@@ -18,7 +18,9 @@ After that, start the JavaScript server and open the installed **Rahyaab** app:
 pnpm start
 ```
 
-Checks CI runs: `pnpm typecheck` and `pnpm lint`.
+Checks CI runs: `pnpm typecheck`, `pnpm lint` and `pnpm test` (unit tests of plain TypeScript rules with Node's own test runner, no extra packages).
+
+**The app talks to the local API** at `http://localhost:8000/v1` in development builds, through `adb reverse tcp:8000 tcp:8000` (the same on the emulator and a USB phone). `python tools/dev.py up` runs it when a device is connected; start the emulator first, or run `up` again. Docker publishes the API on 127.0.0.1 only, so the emulator's usual `10.0.2.2` address cannot reach it. Release builds must set `EXPO_PUBLIC_API_URL`.
 
 **New computer:** follow `docs/project/NEW_DEVICE_SETUP.md` (Android SDK, emulator or phone, debugging, known errors).
 
@@ -37,14 +39,18 @@ Checks CI runs: `pnpm typecheck` and `pnpm lint`.
 
 | Folder | What |
 |---|---|
-| `app/` | Screens and navigation (expo-router). `language.tsx` is S-01; `(onboarding)/` holds S-02 and S-03; `(tabs)/` holds Home, Explore, Family and You. Which group is reachable depends on the saved language and onboarding state (`Stack.Protected` in `app/_layout.tsx`) |
-| `components/` | Shared pieces: `AppText` (brand type scale, switches to Gulzar in Urdu), `Button`, `Screen`, `LanguageOption`, `Placeholder` |
+| `app/` | Screens and navigation (expo-router). `language.tsx` is S-01; `(onboarding)/` holds S-02 Welcome, S-03 Join and the under-13 stop screen; `consent.tsx` is S-04 (the family's consent slip); `(tabs)/` holds Home, Explore, Family and You. Which group is reachable depends on the saved language, the sign-in and the onboarding state (`Stack.Protected` in `app/_layout.tsx`) |
+| `components/` | Shared pieces: `AppText` (brand type scale, switches to Gulzar in Urdu), `Button`, `Screen`, `Header` (back and "?"), `Field` with `TextInputBox`, `ChoiceRow` and `SelectBox` (forms with field help), `HelpCard`, `Notice`, `LanguageOption`, `Placeholder` |
+| `api/` | `client.ts`: JSON requests to the API; problem+json errors come back as codes, never as server text |
+| `join/` | S-03 and S-04 logic: `rules.ts` (code formatting, nickname and age checks that match the server's; tested in `rules.test.ts`), `joinApi.ts` (join and claim, with every server answer mapped), `commonNames.ts` (generated: `python tools/check_names.py --write`) |
 | `i18n/` | All interface text in `locales/en.json` and `locales/ur.json` (keys `domain.screen.element`). No text is written directly in a screen (NFR-27). Choosing Urdu restarts the app in right-to-left layout |
-| `state/` | Saved settings (language, onboarding) in the Keystore-backed secure store |
+| `state/` | Saved settings (language, onboarding) in the Keystore-backed secure store; `session.ts`: the refresh token in the secure store, the access token in memory only, and refresh signed with the device key |
 | `theme/` | Tokens and `useTheme()` (light, dark, high contrast) |
 
 **Urdu text is a draft.** A native Urdu editor must review `locales/ur.json` before the pilot (SRS §7.4). Use `start`/`end` in styles, never `left`/`right`, so layouts mirror correctly in Urdu.
 
-**Development-only buttons:** "Skip to the app" on the join screen and "Start onboarding again" on You appear only in development builds (`__DEV__`), never in a release build.
+**Native code (`modules/device-key/`):** our own Kotlin module for the device key (ADR-0011). It creates an EC P-256 key in the Android Keystore (StrongBox when the phone has it), returns the public key, and signs only refresh requests: it adds the `rahyaab-refresh-v1:` prefix itself, so nothing else in the app can use the key. Expo links it automatically; after changing it, run `pnpm android` again.
+
+**Development-only button:** "Start onboarding again" on You (also deletes the sign-in and the device key) appears only in development builds (`__DEV__`), never in a release build. Joining needs the local backend and a seed class code (`RYB-4K2`; `python tools/dev.py seed`).
 
 **Privacy in the app config:** Android backups are off, and only INTERNET and VIBRATE permissions are requested; location, contacts, camera and microphone are blocked (SECURITY.md §3). The development build adds Expo's developer tools, which may ask for "nearby devices"; that prompt is not part of Rahyaab and can be declined.

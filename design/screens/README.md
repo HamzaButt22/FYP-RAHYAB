@@ -24,7 +24,7 @@
 | Flow | Screens |
 |---|---|
 | 0 System | **S-00 Splash** · **S-00b Loading (building the Blueprint)** · **S-28 Offline** · **S-19 Profiles and PIN** · **S-29 Re-link on a new phone** |
-| 1 Onboarding | S-01 Language · S-02 Welcome · S-03 Join · **S-03e Join with field help** · **S-03i Join without a code (parent OTP)** · S-04 Family consent · S-05 Profile · S-06 Avatar |
+| 1 Onboarding | S-01 Language · S-02 Welcome · S-03 Join · **S-03e Join with field help** · **S-03i Join without a code (parent OTP; post-MVP)** · S-04 Family OK slip · S-05 Profile · S-06 Avatar |
 | 2 Play a week | S-07 Home · S-08a Plan your week · S-08b Scene with Dil/Duniya · S-08c Task (pack the boot, with button controls) · S-08d Value moment · S-09 Sunday diary · S-21 The letter |
 | 3 Results | S-10 Blueprint slide · S-10b Your paths · **S-10c Is your group right for you?** · S-11 Why this? · S-14 Share with family |
 | 4 Explore, family, you | S-12 Explore · S-13 Stream detail · **S-15 Saved** · **S-16 Career detail** · **S-17 History** · S-23 Try a day · S-25 Family · S-18 You, with the Accessibility settings · **S-20 Help** · **S-26 School** · **S-27 Reminders** · **S-31 Class check-in** |
