@@ -7,7 +7,7 @@ The first two weeks of development, in order. The scope comes from `MVP.md` (Spr
 | # | Task | Who | Done when | Status (13 Nov 2026) |
 |---|---|---|---|---|
 | 1 | Supervisor meeting: approve SRS v1.5, MVP, Template-04 v1.5 and the open questions (GAME_DESIGN §19) | All | Signed change record | Open |
-| 2 | Submit the ethics application (DPIA, consent forms, protocol) | Daniyal | Submission receipt | Open (deferred) |
+| 2 | Submit the ethics application (DPIA, consent forms, protocol) | Hamza (from Daniyal, 14 Nov) | Submission receipt | Open |
 | 3 | Push the pre-development pack and merge the prototype branch (REPOSITORY.md §3, steps 1–4) | Hamza | Both PRs merged; old branches deleted | Done. `zahid/game-levels-research` has no unmerged work and can be deleted |
 | 4 | GitHub settings: branch protection, secret scanning, Dependabot, private repository (REPOSITORY.md §7) | Hamza (owner) | Settings screenshot in the first sprint review | Done, except private: the repository stays public until the team has GitHub Pro (branch protection on private repositories needs it) |
 | 5 | Replace the Expo template `LICENSE` with your own (ask the supervisor which) | Hamza | New `LICENSE` merged | Done: All rights reserved (#28) |
@@ -25,7 +25,7 @@ The first two weeks of development, in order. The scope comes from `MVP.md` (Spr
 | **Android**: a physical budget phone with USB debugging, **or** Android Studio's emulator (Android 16 / API 36 platform; any recent x86_64 image) + **JDK 17** | — | Running the app as a development build. Step by step, including the Windows CMake 3.31.6 fix: `NEW_DEVICE_SETUP.md` §3–6 |
 | Expo account + `eas-cli` (`npm i -g eas-cli`) | — | Only for cloud builds and shareable APKs; local builds don't need it |
 | **Java 17+ and Graphviz** | — | PlantUML diagram previews in VS Code |
-| R (+ `thurstonianIRT`, `mirt`) | 4.4+ | Zahid only: the M1 and M2 calibration notebooks |
+| R (+ `thurstonianIRT`, `mirt`) | 4.4+ | Daniyal only (optional): the M1 and M2 calibration notebooks |
 
 ## 3. The monorepo (done on 9 Nov 2026)
 
@@ -107,9 +107,9 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 | Expo app: theme from `theme.ts`, fonts, i18n (en/ur), navigation shell | Hamza | NFR-27 |
 | Screens S-00, S-01, S-02, S-03 / S-03e with field help and pickers | Hamza | FR-01–04, FR-102; TC-VAL-01–02 |
 | Secure store, tokens, encrypted SQLite set-up | Hamza | NFR-39 |
-| Ink: prologue draft, and Week 1 scene 1 with tags | Daniyal | FR-20, FR-95 |
-| Verify `streams.json` class 9–10 paths and gates with sources | Daniyal | FR-45, NFR-03 |
-| Ethics application submitted | Daniyal | §17 |
+| Ink: prologue draft, and Week 1 scene 1 with tags | Zahid (from Daniyal, 14 Nov) | FR-20, FR-95 |
+| Verify `streams.json` class 9–10 paths and gates with sources | Zahid (from Daniyal, 14 Nov) | FR-45, NFR-03 |
+| Ethics application submitted | Hamza (from Daniyal, 14 Nov) | §17 |
 
 **Status on 13 Nov 2026:** done and merged:
 - monorepo and CI; FastAPI skeleton; schema migration;
@@ -120,6 +120,7 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 - **Expo app shell** (#30): theme and fonts from the tokens, English and Urdu with right-to-left layout, S-01 Language, S-02 Welcome (first card), navigation and the four tabs, the language setting on You, the brand icon and splash.
 - **S-03 Join and S-04 Family OK slip** (14 Nov, branch `feat/join-screen`): field help (S-03e), the under-13 stop, the Keystore device key (our own Kotlin module), signed token refresh, claiming the slip now or later; full names blocked in nicknames on the server too. Tested end to end on the emulator against the local API.
 - **Class-code security** (14 Nov, branch `fix/class-code-security`): the admin command for schools, licences, classes, codes (rotate, expire) and numbered consent slips; codes stored as keyed hashes (`CODE_PEPPER`); wrong slip codes limited per phone instead of pausing the whole class; rate-limit replies no longer reveal the limit. Then: class lists with consent-form numbers, removing students, blocking and unblocking phones, end of year (admin command); nickname ideas on S-03 and nicknames unique within a class (schema v1.5, migration 0003).
+- **School files and archive** (14 Nov, branch `feat/register-and-archive`): encrypted Excel slips and class register (generated password); removing a student archives them and `student-restore` undoes it (schema v1.6, migration 0004).
 
 Open: the other two welcome cards; read-aloud on field messages (FR-96); the soft check for an unusual class and age (EDGE_CASES §4); rude-word nickname check (forms-and-errors §2); Urdu tall letters such as the madda on آ are clipped in one-line Urdu labels on Android; the encrypted SQLite outbox; the Ink prologue; `streams.json` board routes for Sindh, Balochistan and AJK; the ethics submission; review of `frontend/mobile/src/i18n/locales/ur.json` by a native Urdu editor.
 

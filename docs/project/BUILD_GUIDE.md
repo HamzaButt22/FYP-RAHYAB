@@ -60,7 +60,7 @@ Pick issue (MVP sprint)  →  "Plan this, citing FR/TC IDs and files"  →  corr
 **Scoring:**
 > In `backend/scoring`, implement the congruence recommender from SRS §12.6 M3(b) and the eligibility gates and `routes` from design/game/frameworks/streams.json (FR-44, FR-45, FR-99 with the anti-push rule in EDGE_CASES §3.3). Pure functions only. Tests first: TC-SCORE-01, TC-SCORE-04, TC-EDGE-01 to TC-EDGE-04 and 20 golden profiles.
 
-**Content (Daniyal):**
+**Content (Zahid, the game):**
 > Draft Week 1 scene 1 in Ink, following GAME_DESIGN.md §6–9 and pairs.json week 1, with tags `#pair`, `#left` and `#voice`. Roman Urdu dialogue, at most 2 lines per message, Grade 6 level. Mark every line for Urdu-editor review.
 
 Treat AI-drafted dialogue and Urdu as a **first draft**. A native editor and a "cringe check" with real teens are still required (T-CONT).
@@ -72,9 +72,9 @@ Treat AI-drafted dialogue and Urdu as a **first draft**. A native editor and a "
 
 | Member | Main assistant use | Always does by hand |
 |---|---|---|
-| Hamza (mobile) | Screens from the HTML designs, task modules, outbox and sync, Maestro flows | Device testing on the reference phone, performance profiling, final UX feel |
-| Zahid (backend) | Endpoints from OpenAPI, migrations from `schema.sql`, scoring functions, CI workflows, Locust and chaos scripts | Security review, data-model decisions, deployments, secrets |
-| Daniyal (UX and content) | Ink drafts, string tables, dashboard screens, FAQ and help copy | Story voice, Urdu review, usability sessions, ethics forms |
+| Hamza (the application) | Screens from the HTML designs, endpoints from OpenAPI, migrations, outbox and sync, dashboard, CI workflows, ethics drafts | Device testing on the reference phone, security review, data-model decisions, deployments and secrets, ethics forms |
+| Zahid (the game) | Ink drafts, task modules, V1 simulation, game tests, board-route research notes | Story voice, game feel with real teens, checking board rules against official sources |
+| Daniyal (optional) | M1/M2 calibration notebooks | Checking the notebooks' results against the simulation |
 
 ## 6. Don't delegate
 

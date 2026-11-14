@@ -10,7 +10,8 @@ Anything not listed here is **post-MVP**.
 
 | | |
 |---|---|
-| **Team** | Hamza Butt (mobile, platform and DevOps), Zahid Bashir (backend, scoring, security), Daniyal Sarwar (UX, content, dashboard) (owners as in `PLAN.md` §1) |
+| **Team** | Hamza Butt (the application end to end, ethics), Zahid Bashir (the game: research, story, tasks, testing, integration; board routes), Daniyal Sarwar (optional: M1/M2 calibration notebooks) (owners as in `PLAN.md` §1, changed 14 Nov 2026) |
+| **Target (14 Nov 2026)** | Do as much as possible in FYP-I, aiming for 70–80% of the whole project by the FYP-I submission. **F1** and **F2** below are the latest dates, not limits: anything ready earlier ships earlier |
 | **Capacity (agreed 9 Nov 2026)** | About **20 focused hours per person per week**, about 27 effective working weeks (exam and break weeks counted at half): **≈ 1,620 hours**. The bottom-up estimate is in `PLAN.md` §2 (≈ 1,580 hours after the cut below), so the slack is only about 3%. That is why the cut order in §4 is applied at fixed checkpoints, not when we notice we're late |
 | **Supersedes** | The R1/R2/R3 split in SRS §4.2 and §13.5 where they differ. The SRS FRs stay; this document decides **when** each one ships |
 | **Needs** | Supervisor sign-off (S0/S1) |

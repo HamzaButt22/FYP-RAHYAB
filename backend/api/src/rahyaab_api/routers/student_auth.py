@@ -365,7 +365,7 @@ def _seat_is_free(conn: Connection, school_id: UUID, seats: int | None) -> bool:
             JOIN school_class c ON c.id = st.class_id
             JOIN consent co ON co.student_id = st.id
                            AND co.type IN ('parent', 'self') AND co.withdrawn_at IS NULL
-            WHERE c.school_id = :s
+            WHERE c.school_id = :s AND st.archived_at IS NULL
             """
         ),
         {"s": school_id},
@@ -515,8 +515,9 @@ def refresh_tokens(
                        NOT EXISTS (SELECT 1 FROM refresh_token o
                                    WHERE o.family_id = rt.family_id AND o.used_at > rt.used_at)
                          AS newest_used,
-                       d.public_key, d.student_id
+                       d.public_key, d.student_id, st.archived_at IS NOT NULL AS archived
                 FROM refresh_token rt JOIN device d ON d.id = rt.device_id
+                JOIN student st ON st.id = d.student_id
                 WHERE rt.token_hash = :h
                 FOR UPDATE OF rt
                 """
@@ -526,6 +527,8 @@ def refresh_tokens(
 
         if row is None or row.revoked_at is not None or not row.live:
             pass  # unknown, revoked or expired: refuse
+        elif row.archived:
+            pass  # taken off the class (admin.py student-remove); nothing revoked, so a restore resumes it
         elif conn.execute(
             text("SELECT 1 FROM blocked_device WHERE key_hash = :h"), {"h": digest(row.public_key)}
         ).first():

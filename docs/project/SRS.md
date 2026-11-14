@@ -1037,7 +1037,7 @@ Columns: **P** = MoSCoW priority; **Rel** = first release; **AC** = acceptance c
 
 | ID | Requirement | P | Rel | Acceptance criteria | Src |
 |---|---|---|---|---|---|
-| FR-80 | Manage schools, classes, teachers and class codes (create, rotate, expire); list a class with each student's consent-form number; remove a student from a class (a never-consented profile is deleted, a consented one leaves the class and keeps its results; every sign-in is revoked); block and unblock a phone; end the school year (all class codes expire). Admin command in F1 (`rahyaab_api/admin.py`), dashboard in F2 | M | R1 | Rotating a code does not affect already-joined students | — |
+| FR-80 | Manage schools, classes, teachers and class codes (create, rotate, expire); list a class with each student's consent-form number; remove a student from a class by **archiving** them (off the list, phone stops working, nothing deleted; restorable; a never-consented profile is deleted 30 days after archiving, a consented one is kept, FR-10); print numbered slips as two **encrypted Excel files** (slip codes, and the teacher's class register with checked columns; generated password shown once); block and unblock a phone; end the school year (all class codes expire). Admin command in F1 (`rahyaab_api/admin.py`), dashboard in F2 | M | R1 | Rotating a code does not affect already-joined students | — |
 | FR-81 | Upload, validate, diff and activate **content packs** (compiled Ink story, task banks, frameworks, streams/rules) with a review status | S | R2 | The validator checks schemas, pair coverage, missing translations and rule sources; R1 manages packs via Git + CI | [N6 §4] |
 | FR-82 | Keep a **model registry**: register, activate or roll back scoring/recommender versions, linked to an evaluation report | S | R2 | Rollback takes ≤ 1 minute; old results keep their version | [N6 §4] |
 | FR-83 | Write an **audit log** of staff and admin data access and configuration changes | M | R2 | Append-only; retained 12 months | ASVS L2 |
@@ -1642,9 +1642,9 @@ Errors use RFC 9457 problem+json. All list endpoints are paginated.
 
 | Member | Primary ownership | Secondary | Report chapters (lead) |
 |---|---|---|---|
-| **Hamza Butt** | Mobile app: week loop, inkjs integration, task modules (port the planning model from his `career-game-prototype`; abstract, spatial, numerical, logic, verbal), Rive animation, telemetry outbox, performance on low-end devices | Parity tests TS↔Python | Implementation (mobile) |
-| **Zahid Bashir** | Backend: FastAPI, PostgreSQL, auth/consent, events API, scoring service (`rahyaab_scoring`), M1/M3 notebooks, CI/CD, deployment | Security (ASVS/MASVS checklists) | Design (architecture, data), Algorithms/experiments |
-| **Daniyal Sarwar** | UX/UI design system, content (Ink story, task banks, frameworks and streams, Urdu with editor), Blueprint and parent view, counsellor dashboard (React + Vite), usability studies and research instruments | Accessibility testing, documentation | Introduction, literature/market survey, SRS |
+| **Hamza Butt** | The application end to end: mobile app, API and admin, dashboard and parent pages, platform, CI/CD, security; ethics application and pilot logistics (changed 14 Nov 2026, `PLAN.md` §1) | Review of game code before merge | Implementation, Design (architecture, data) |
+| **Zahid Bashir** | The game: game research (V1 simulation, game-side validation), Ink story, task modules (port the planning model from the `career-game-prototype`; abstract, spatial, numerical, logic, verbal), game testing and integration into the app; board routes in `streams.json` | Game content checks | Algorithms/experiments |
+| **Daniyal Sarwar** | Optional, non-blocking: M1 (Thurstonian IRT) and M2 (Rasch) calibration notebooks; dropped to FYP-II if not delivered | — | Introduction, literature/market survey |
 
 Everyone writes tests for their own code and reviews at least one PR from each teammate per sprint. This produces balanced, per-person Git evidence for LO6 [REV §8].
 
@@ -1822,24 +1822,24 @@ Likelihood (L) and impact (I) are rated 1–5. Score = L × I.
 
 | ID | Risk | L | I | Score | Mitigation | Owner |
 |---|---|---|---|---|---|---|
-| RK-01 | Ethics approval is delayed and the pilot slips past April | 3 | 5 | 15 | Submit in S1 (Nov); use templates from §17; build all experiments to run on public data and simulation first (M1, M3 vignettes) so LO4 evidence exists without the pilot | Daniyal |
+| RK-01 | Ethics approval is delayed and the pilot slips past April | 3 | 5 | 15 | Submit in S1 (Nov); use templates from §17; build all experiments to run on public data and simulation first (M1, M3 vignettes) so LO4 evidence exists without the pilot | Hamza |
 | RK-02 | Breach or misuse of minors' data | 2 | 5 | 10 | Minimisation (NFR-44); pseudonymous IDs; encryption; RBAC; audit log; no third-party SDKs; incident runbook (NFR-49) | Zahid |
 | RK-03 | Low validity (game θ vs O*NET r < .30) | 3 | 4 | 12 | Recalibrate items on the pilot; report honestly as a finding (publishable either way); keep recommendations "starting points"; confidence labels | Zahid |
 | RK-04 | RIASEC structure does not hold in Pakistani teens (hexagon misfit [R2]) | 3 | 3 | 9 | Score the six scales independently; no hexagon-based consistency index | Zahid |
 | RK-05 | Scope creep (simulations, dashboard, LLM, extra weeks or tasks) | 4 | 4 | 16 | MoSCoW is enforced; Could items only after Must items are Done; supervisor approves scope changes; WBS milestones | Team |
 | RK-06 | Games perform poorly on low-end phones (jank, size) | 3 | 4 | 12 | Skia + worklets; procedural items; size budget in CI; profile on the RLD from S2 | Hamza |
 | RK-07 | Team capacity drops during finals / an uneven Git history | 4 | 3 | 12 | Light sprint S4; documentation during finals; issue-based task split; per-member PR targets | Team |
-| RK-08 | School access is refused or limited | 3 | 4 | 12 | Approach 6 schools for 3–4; offer free use and a teacher report; use the supervisor's and university's networks | Daniyal |
-| RK-09 | Parental-consent friction lowers participation | 4 | 3 | 12 | School-mediated paper consent in Urdu; short notice; teacher explains; expect 40–60% return and over-recruit | Daniyal |
-| RK-10 | Licence issues (O*NET IP modification, dataset item licence, OpenMoji share-alike, DiceBear styles) | 3 | 3 | 9 | Use the IP unchanged in English; verify dataset and asset licences in S1; keep a licence register | Daniyal |
-| RK-11 | Eligibility rules change (e.g., IBCC 2025 open entry) or are wrong per board | 4 | 4 | 16 | Data-driven rules with effective dates and sources; "check with your board" notice; teacher review of streams.json each term | Daniyal |
+| RK-08 | School access is refused or limited | 3 | 4 | 12 | Approach 6 schools for 3–4; offer free use and a teacher report; use the supervisor's and university's networks | Hamza |
+| RK-09 | Parental-consent friction lowers participation | 4 | 3 | 12 | School-mediated paper consent in Urdu; short notice; teacher explains; expect 40–60% return and over-recruit | Hamza |
+| RK-10 | Licence issues (O*NET IP modification, dataset item licence, OpenMoji share-alike, DiceBear styles) | 3 | 3 | 9 | Use the IP unchanged in English; verify dataset and asset licences in S1; keep a licence register | Hamza |
+| RK-11 | Eligibility rules change (e.g., IBCC 2025 open entry) or are wrong per board | 4 | 4 | 16 | Data-driven rules with effective dates and sources; "check with your board" notice; teacher review of streams.json each term | Zahid |
 | RK-12 | Mode effect: story choices do not behave like the Likert ratings used to simulate them | 4 | 3 | 12 | Treat 145k-based parameters as priors only; recalibrate on the pilot; compare fixed vs adaptive | Zahid |
 | RK-13 | Recommender or teachers reinforce gender stereotypes | 3 | 5 | 15 | Gender excluded from features; fairness audit; counter-stereotypical role models; teacher guide warning about bias [R2, Carlana] | Team |
 | RK-14 | Hosting cost or free-tier limits (EAS, VM) | 2 | 2 | 4 | Local EAS builds; a single VM; university server fallback (A-06) | Zahid |
 | RK-15 | Expo SDK 58 / RN 0.88 breaking changes or immature libraries | 3 | 3 | 9 | Pin versions; upgrade only between releases; avoid unmaintained libraries | Hamza |
-| RK-16 | Urdu quality or RTL bugs damage trust | 3 | 3 | 9 | Native editor review; RTL screenshot tests; early usability round with Urdu-medium students | Daniyal |
+| RK-16 | Urdu quality or RTL bugs damage trust | 3 | 3 | 9 | Native editor review; RTL screenshot tests; early usability round with Urdu-medium students | Hamza |
 | RK-17 | Students misread results as a verdict and families over-rely on them | 3 | 4 | 12 | Top-3 + Plan B + disclaimers + confidence; parent checklist; comprehension check in usability tests | Team |
-| RK-18 | Writing volume (≈1,200–1,500 dialogue lines) slips, or the tone feels cringe to teens | 4 | 3 | 12 | Vertical slice first; reuse scene templates; teen cringe check per scene; cut to 3 weeks if needed and report the effect on certainty | Daniyal |
+| RK-18 | Writing volume (≈1,200–1,500 dialogue lines) slips, or the tone feels cringe to teens | 4 | 3 | 12 | Vertical slice first; reuse scene templates; teen cringe check per scene; cut to 3 weeks if needed and report the effect on certainty | Zahid |
 | RK-19 | Thurstonian IRT is poorly identified with few forced choices | 3 | 3 | 9 | GRM taps and planner choices anchor the scale; identification checks in simulation; fall back to GRM + planner scoring if needed | Zahid |
 
 ---

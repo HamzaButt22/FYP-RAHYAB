@@ -14,12 +14,17 @@ Commands:
     class-rotate   --class ID [--days 120]     a new code; the old one stops at once; joined students stay
     class-expire   --class ID                  the code stops working now (end of term, or a leaked code)
     classes        --school ID                 grade, section and code expiry (codes cannot be shown again)
-    slips-print    --class ID --count N [--kind parent|self] [--notice 2026-11]  serials and claim codes
+    slips-print    --class ID --count N --out FOLDER [--kind parent|self] [--notice 2026-11]
+                   writes two encrypted Excel files: the slip codes to print, and the class register
+                   (form numbers filled in, checked columns for name, dates, band, research box)
     slip-record    --class ID --serial A-0001 --band 13-15 --by STAFF_ID [--research]
-    students       --class ID                  nickname, consent-form number, consent, joined, last seen
+    students       --class ID [--out FOLDER]   nickname, consent-form number, consent, joined, last seen
+                   (--out also writes it as an encrypted Excel file, to match with the register)
     student-remove --student ID --reason left|stranger|misuse|other
-                   never consented: the profile is deleted; consented: taken off the class list (their
-                   results stay theirs, FR-10). Either way every sign-in on every phone is revoked.
+                   archives the student: off the class list, their phone stops working, nothing deleted
+    student-restore --student ID               undoes student-remove (a never-consented profile can be
+                   restored for 30 days; after that the purge deletes it)
+    archived       --class ID                  archived students, the reason, and the deletion date
     device-block   (--device ID | --key-hash HASH) --reason TEXT   the phone can no longer join or sign in
     device-unblock --key-hash HASH
     limited-devices [--hours 24]               phones that hit the join limit (key hashes, for device-block)
@@ -37,13 +42,16 @@ from __future__ import annotations
 
 import argparse
 import os
+import re
 import sys
 from collections.abc import Callable
 from datetime import date
+from pathlib import Path
 from uuid import UUID, uuid4
 
 from sqlalchemy import Connection, create_engine, text
 
+from rahyaab_api import register
 from rahyaab_api.codes import MIN_PEPPER, code_hash, new_claim_code, new_class_code
 from rahyaab_api.ratelimit import digest
 
@@ -163,6 +171,31 @@ def list_classes(conn: Connection, school_id: UUID) -> list[tuple[str, str, str,
     return [(str(r.id), f"{r.grade}-{r.section}", r.code_expires_at.date().isoformat(), r.live) for r in rows]
 
 
+def class_label(conn: Connection, class_id: UUID) -> tuple[str, str]:
+    """(school name, "9-A") for file names and headings."""
+    row = conn.execute(
+        text(
+            "SELECT s.name, c.grade, c.section FROM school_class c JOIN school s ON s.id = c.school_id "
+            "WHERE c.id = :c"
+        ),
+        {"c": class_id},
+    ).one_or_none()
+    if row is None:
+        raise AdminError(f"no class {class_id}")
+    return row.name, f"{row.grade}-{row.section}"
+
+
+def _file_name(*parts: str) -> str:
+    return "-".join(re.sub(r"[^A-Za-z0-9]+", "_", p).strip("_") for p in parts)
+
+
+def _out_folder(value: str) -> Path:
+    folder = Path(value)
+    if not folder.is_dir():
+        raise AdminError(f"the folder {folder} does not exist")
+    return folder
+
+
 def _require_class(conn: Connection, class_id: UUID) -> None:
     if conn.execute(text("SELECT 1 FROM school_class WHERE id = :id"), {"id": class_id}).first() is None:
         raise AdminError(f"no class {class_id}")
@@ -257,7 +290,7 @@ def list_students(conn: Connection, class_id: UUID) -> list[dict[str, object]]:
                                      AND co.type IN ('parent', 'self')) THEN 'withdrawn'
                         ELSE 'waiting' END AS consent,
                    (SELECT count(*) FROM device d WHERE d.student_id = st.id) AS phones
-            FROM student st WHERE st.class_id = :c
+            FROM student st WHERE st.class_id = :c AND st.archived_at IS NULL
             ORDER BY lower(st.nickname)
             """
         ),
@@ -266,44 +299,75 @@ def list_students(conn: Connection, class_id: UUID) -> list[dict[str, object]]:
     return [dict(r._mapping) for r in rows]
 
 
-def remove_student(conn: Connection, student_id: UUID, reason: str) -> str:
-    """Takes a student off a class list and signs them out everywhere. Returns 'deleted' or 'removed'.
+def remove_student(conn: Connection, student_id: UUID, reason: str) -> None:
+    """Takes a student off the class list by archiving them; nothing is deleted, so a mistake can be undone.
 
-    A student who never had consent has nothing worth keeping (nothing was uploaded), so the profile is
-    deleted, as the 30-day purge would do anyway. A consented student's results belong to them and their
-    family (FR-10), so the profile is only taken off the class; deleting it is their choice, or the
-    retention job's (FR-84).
+    While archived, the student's phone cannot sign in or upload (auth.py, the refresh route) and they use no
+    seat. Their sign-ins are not cancelled, so student-restore brings them back exactly as they were. A
+    never-consented archived profile is deleted 30 days after archiving (jobs.py); a consented one stays
+    archived until the student or family asks for deletion (FR-10) or the retention job removes it (FR-84).
+    To keep a misbehaving phone out for good, block it as well (device-block).
     """
     if reason not in REMOVE_REASONS:
         raise AdminError(f"--reason must be one of {', '.join(REMOVE_REASONS)}")
-    row = conn.execute(
+    done = conn.execute(
         text(
-            "SELECT st.id, st.class_id, EXISTS (SELECT 1 FROM consent co WHERE co.student_id = st.id "
-            "AND co.type IN ('parent', 'self')) AS consented FROM student st WHERE st.id = :s"
+            "UPDATE student SET archived_at = now(), archived_reason = :r "
+            "WHERE id = :s AND archived_at IS NULL RETURNING id"
         ),
-        {"s": student_id},
+        {"s": student_id, "r": reason},
+    ).first()
+    if done is None:
+        exists = conn.execute(text("SELECT 1 FROM student WHERE id = :s"), {"s": student_id}).first()
+        raise AdminError("that student is already archived" if exists else f"no student {student_id}")
+    _audit(conn, f"student.archived.{reason}", f"student:{student_id}")
+
+
+def restore_student(conn: Connection, student_id: UUID) -> None:
+    """Undoes student-remove: back on the class list, and their phone works again without re-joining."""
+    row = conn.execute(
+        text("SELECT class_id, nickname, archived_at FROM student WHERE id = :s"), {"s": student_id}
     ).one_or_none()
     if row is None:
-        raise AdminError(f"no student {student_id}")
-    _revoke_student_sign_ins(conn, student_id)
-    if row.consented:
-        conn.execute(text("UPDATE student SET class_id = NULL WHERE id = :s"), {"s": student_id})
-        outcome = "removed"
-    else:
-        conn.execute(text("DELETE FROM student WHERE id = :s"), {"s": student_id})
-        outcome = "deleted"
-    _audit(conn, f"student.{outcome}.{reason}", f"student:{student_id}")
-    return outcome
-
-
-def _revoke_student_sign_ins(conn: Connection, student_id: UUID) -> None:
-    conn.execute(
+        raise AdminError(
+            f"no student {student_id} (a never-consented profile is deleted 30 days after removal)"
+        )
+    if row.archived_at is None:
+        raise AdminError("that student is not archived")
+    clash = conn.execute(
         text(
-            "UPDATE refresh_token SET revoked_at = now() WHERE revoked_at IS NULL "
-            "AND device_id IN (SELECT id FROM device WHERE student_id = :s)"
+            "SELECT 1 FROM student WHERE class_id = :c AND lower(nickname) = lower(:n) "
+            "AND archived_at IS NULL AND id <> :s"
         ),
-        {"s": student_id},
+        {"c": row.class_id, "n": row.nickname, "s": student_id},
+    ).first()
+    if clash is not None:
+        raise AdminError(
+            "someone in the class took this nickname meanwhile; ask one of them to change it, then restore"
+        )
+    conn.execute(
+        text("UPDATE student SET archived_at = NULL, archived_reason = NULL WHERE id = :s"), {"s": student_id}
     )
+    _audit(conn, "student.restored", f"student:{student_id}")
+
+
+def list_archived(conn: Connection, class_id: UUID) -> list[dict[str, object]]:
+    """Archived students of a class, with the reason and when a never-consented one will be deleted."""
+    _require_class(conn, class_id)
+    rows = conn.execute(
+        text(
+            """
+            SELECT st.id, st.nickname, st.archived_reason AS reason, st.archived_at::date AS archived,
+                   CASE WHEN EXISTS (SELECT 1 FROM consent co WHERE co.student_id = st.id
+                                     AND co.type IN ('parent', 'self'))
+                        THEN NULL ELSE (st.archived_at + interval '30 days')::date END AS deleted_on
+            FROM student st WHERE st.class_id = :c AND st.archived_at IS NOT NULL
+            ORDER BY st.archived_at DESC
+            """
+        ),
+        {"c": class_id},
+    ).all()
+    return [dict(r._mapping) for r in rows]
 
 
 # ------------------------------------------------------------------------------------------ devices
@@ -418,6 +482,7 @@ def _parser() -> argparse.ArgumentParser:
     s.add_argument("--count", required=True, type=int)
     s.add_argument("--kind", default="parent", choices=["parent", "self"])
     s.add_argument("--notice", default="2026-11", help="version of the privacy notice printed on the form")
+    s.add_argument("--out", required=True, help="an existing folder on this computer for the two files")
     s = sub.add_parser("slip-record")
     s.add_argument("--class", dest="class_id", required=True, type=UUID)
     s.add_argument("--serial", required=True)
@@ -426,9 +491,14 @@ def _parser() -> argparse.ArgumentParser:
     s.add_argument("--research", action="store_true", help="the family ticked the research box")
     s = sub.add_parser("students")
     s.add_argument("--class", dest="class_id", required=True, type=UUID)
+    s.add_argument("--out", help="also write an encrypted Excel file into this existing folder")
     s = sub.add_parser("student-remove")
     s.add_argument("--student", required=True, type=UUID)
     s.add_argument("--reason", required=True, choices=REMOVE_REASONS)
+    s = sub.add_parser("student-restore")
+    s.add_argument("--student", required=True, type=UUID)
+    s = sub.add_parser("archived")
+    s.add_argument("--class", dest="class_id", required=True, type=UUID)
     s = sub.add_parser("device-block")
     target = s.add_mutually_exclusive_group(required=True)
     target.add_argument("--device", type=UUID, help="a device id (from the database)")
@@ -485,10 +555,30 @@ def _run(conn: Connection, pepper: str, a: argparse.Namespace) -> None:
         for listed_id, name, expires, live in list_classes(conn, a.school):
             print(f"{listed_id}  class {name:<6} code {'live until' if live else 'expired'} {expires}")
     elif a.command == "slips-print":
-        print("serial,claim_code")
-        for serial, code in print_slips(conn, pepper, a.class_id, a.count, a.kind, a.notice):
-            print(f"{serial},{code}")
-        print(f"# Print each claim code on its numbered form. {once}", file=sys.stderr)
+        folder = _out_folder(a.out)
+        school, class_name = class_label(conn, a.class_id)
+        slips = print_slips(conn, pepper, a.class_id, a.count, a.kind, a.notice)
+        # Written before the transaction commits: if a file can't be written, no slips are created.
+        password = register.new_password()
+        stamp = date.today().isoformat()
+        first, final = slips[0][0], slips[-1][0]
+        slip_file = register.save_encrypted(
+            register.slips_workbook(school, class_name, slips),
+            folder,
+            _file_name(school, class_name, "slips", first, final, stamp),
+            password,
+        )
+        register_file = register.save_encrypted(
+            register.register_workbook(school, class_name, [s for s, _ in slips], a.kind),
+            folder,
+            _file_name(school, class_name, "register", first, final, stamp),
+            password,
+        )
+        print(f"{len(slips)} slips, {first} to {final}. Two encrypted files:")
+        print(f"  {slip_file}   print the slips from it, then delete it")
+        print(f"  {register_file}   the class register; keep it at school")
+        print(f"Password for both: {password}")
+        print("Write the password in the school's staff record book now: it is shown only once.")
     elif a.command == "slip-record":
         record_slip(conn, a.class_id, a.serial, a.band, a.by, a.research)
         print(f"slip {a.serial} recorded with register band {a.band}")
@@ -503,14 +593,33 @@ def _run(conn: Connection, pepper: str, a: argparse.Namespace) -> None:
                 f"{r['nickname']!s:<22}{r['form'] or '-'!s:<9}{r['consent']!s:<11}{r['joined']!s:<12}"
                 f"{r['seen']!s:<12}{r['phones']!s:<7}{r['id']}"
             )
-        print(f"{len(rows)} students. Match form numbers with the school's own paper list.")
+        print(f"{len(rows)} students. Match form numbers with the school's own register.")
+        if a.out:
+            _, class_name = class_label(conn, a.class_id)
+            password = register.new_password()
+            path = register.save_encrypted(
+                register.class_list_workbook(class_name, rows),
+                _out_folder(a.out),
+                _file_name(class_name, "class_list", date.today().isoformat()),
+                password,
+            )
+            print(f"Encrypted file: {path}")
+            print(f"Password: {password}   (shown only once)")
     elif a.command == "student-remove":
-        outcome = remove_student(conn, a.student, a.reason)
+        remove_student(conn, a.student, a.reason)
         print(
-            "Profile deleted (no consent, nothing was ever uploaded). Signed out on every phone."
-            if outcome == "deleted"
-            else "Taken off the class list and signed out on every phone. Their results stay theirs (FR-10)."
+            "Archived: off the class list, and their phone stops working. Nothing is deleted; undo with "
+            "student-restore. To keep a phone out for good, also use device-block."
         )
+    elif a.command == "student-restore":
+        restore_student(conn, a.student)
+        print("Restored: back on the class list, and their phone works again.")
+    elif a.command == "archived":
+        rows = list_archived(conn, a.class_id)
+        for r in rows:
+            gone = f"deleted on {r['deleted_on']}" if r["deleted_on"] else "kept (consented)"
+            print(f"{r['nickname']!s:<22}{r['reason']!s:<10}archived {r['archived']}  {gone}  {r['id']}")
+        print(f"{len(rows)} archived.")
     elif a.command == "device-block":
         key_hash = block_device(conn, a.reason, device_id=a.device, key_hash=a.key_hash)
         print(f"blocked phone {key_hash}: it can no longer join or sign in")
