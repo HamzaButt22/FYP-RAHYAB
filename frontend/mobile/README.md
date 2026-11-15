@@ -47,6 +47,8 @@ Checks CI runs: `pnpm typecheck`, `pnpm lint` and `pnpm test` (unit tests of pla
 | `state/` | Saved settings (language, onboarding) in the Keystore-backed secure store; `session.ts`: the refresh token in the secure store, the access token in memory only, and refresh signed with the device key |
 | `theme/` | Tokens and `useTheme()` (light, dark, high contrast) |
 
+**Urdu text is never cut off (fixed 15 Nov 2026):** Android 15+ wraps text by the ink of the letters, React Native measures by their widths, and Nastaliq ink overhangs; `plugins/withAdvanceWidthText.js` makes Android wrap like React Native, and `AppText` adds room above the first line and a narrow no-break space at each end of an Urdu string. Use `AppText` for all visible text. **After pulling this change, run `pnpm android` once** (the plugin changes the native theme).
+
 **Urdu text is a draft.** A native Urdu editor must review `locales/ur.json` before the pilot (SRS §7.4). Use `start`/`end` in styles, never `left`/`right`, so layouts mirror correctly in Urdu.
 
 **Native code (`modules/device-key/`):** our own Kotlin module for the device key (ADR-0011). It creates an EC P-256 key in the Android Keystore (StrongBox when the phone has it), returns the public key, and signs only refresh requests: it adds the `rahyaab-refresh-v1:` prefix itself, so nothing else in the app can use the key. It also returns secure random bytes (`randomHex`) for the outbox database key. Expo links it automatically; after changing it, run `pnpm android` again.
