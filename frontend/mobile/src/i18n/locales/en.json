@@ -103,7 +103,8 @@
     "body": "Your week will appear here.",
     "consentPendingTitle": "Waiting for your family's OK",
     "consentPendingBody": "Until then, nothing you play is saved.",
-    "consentPendingAction": "Enter the slip code"
+    "consentPendingAction": "Enter the slip code",
+    "gameLab": "Game lab (development build only)"
   },
   "explore": {
     "title": "Explore",

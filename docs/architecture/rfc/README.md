@@ -22,6 +22,7 @@ Small decisions go straight to an [ADR](../adr/README.md).
 | [RFC-0002](RFC-0002-telemetry-sync-protocol.md) | Telemetry sync protocol (envelope v3) | Accepted | ADR-0010; `POST /v1/events:batch` |
 | [RFC-0003](RFC-0003-scoring-service-and-model-registry.md) | Scoring service and model registry | Accepted | ADR-0004, ADR-0005, ADR-0006 |
 | [RFC-0004](RFC-0004-parent-share-and-consent-links.md) | Parent share and consent links | Accepted | ADR-0008; FR-66–68 |
+| [RFC-0005](RFC-0005-game-app-contract.md) | Game–app contract (version 1) | Draft | NFR-52; `frontend/mobile/src/game/` |
 
 ## Template
 
