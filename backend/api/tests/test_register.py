@@ -2,11 +2,13 @@
 
 import io
 import re
+import uuid
 from pathlib import Path
 
 import msoffcrypto  # type: ignore[import-untyped]
 import openpyxl  # type: ignore[import-untyped]
 import pytest
+from cryptography.exceptions import InvalidTag
 from msoffcrypto.exceptions import InvalidKeyError  # type: ignore[import-untyped]
 from sqlalchemy import text
 from support import ADMIN_URL, PEPPER, World
@@ -79,36 +81,161 @@ def test_files_never_overwrite_and_need_an_existing_folder(tmp_path: Path) -> No
         register.save_encrypted(wb, tmp_path / "missing", "x", register.new_password())
 
 
-def test_printing_slips_writes_both_files_and_shows_no_codes(
-    world: World, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
-) -> None:
-    with world.admin.begin() as conn:
-        class_id, _ = admin.add_class(conn, PEPPER, world.school_id, 9, "R1")
-    world.class_ids.append(class_id)
+class Operator:
+    """Whoever runs the admin command: at a terminal, and types back `answers` when asked to confirm."""
+
+    def __init__(
+        self, monkeypatch: pytest.MonkeyPatch, password: str, answers: list[str] | None = None
+    ) -> None:
+        self.password = password
+        self.answers = list(answers) if answers is not None else [password.rsplit("-", 1)[-1]]
+        self.asked = 0
+        monkeypatch.setattr(admin, "on_terminal", lambda: True)
+        monkeypatch.setattr(register, "new_password", lambda: password)
+        monkeypatch.setattr("builtins.input", self._input)
+
+    def _input(self, _prompt: str = "") -> str:
+        self.asked += 1
+        return self.answers.pop(0) if self.answers else ""
+
+
+@pytest.fixture
+def env(monkeypatch: pytest.MonkeyPatch) -> pytest.MonkeyPatch:
     monkeypatch.setenv("DATABASE_URL", ADMIN_URL)
     monkeypatch.setenv("CODE_PEPPER", PEPPER)
+    return monkeypatch
+
+
+def _class(world: World, section: str) -> uuid.UUID:
+    with world.admin.begin() as conn:
+        class_id, _ = admin.add_class(conn, PEPPER, world.school_id, 9, section)
+    world.class_ids.append(class_id)
+    return class_id
+
+
+COUNTS = {
+    "consent_slip": "SELECT count(*) FROM consent_slip WHERE class_id = :c",
+    "school_file": "SELECT count(*) FROM school_file WHERE class_id = :c",
+}
+
+
+def _count(world: World, table: str, class_id: uuid.UUID) -> int:
+    return int(world.scalar(COUNTS[table], c=class_id))
+
+
+def test_a_sealed_password_opens_only_with_the_same_pepper_and_file() -> None:
+    password, file_id = register.new_password(), uuid.uuid4()
+    sealed = register.seal_password(password, PEPPER, file_id)
+    assert password.encode() not in sealed
+    assert register.seal_password(password, PEPPER, file_id) != sealed  # a fresh nonce every time
+    assert register.open_password(sealed, PEPPER, file_id) == password
+    with pytest.raises(InvalidTag):
+        register.open_password(sealed, "another-pepper-of-at-least-32-characters", file_id)
+    with pytest.raises(InvalidTag):  # a sealed copy moved to another file's row does not open
+        register.open_password(sealed, PEPPER, uuid.uuid4())
+    with pytest.raises(ValueError):
+        register.seal_password(password, "short", file_id)
+
+
+def test_printing_slips_writes_both_files_and_shows_no_codes(
+    world: World, tmp_path: Path, env: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    class_id = _class(world, "R1")
+    operator = Operator(env, register.new_password())
     assert admin.main(["slips-print", "--class", str(class_id), "--count", "3", "--out", str(tmp_path)]) == 0
     out = capsys.readouterr().out
-    password = re.search(r"Password for both: (\S+)", out).group(1)  # type: ignore[union-attr]
+    assert operator.asked == 1 and f"Password: {operator.password}" in out
     files = sorted(tmp_path.iterdir())
     assert len(files) == 2
-    slips = open_encrypted(next(f for f in files if "slips" in f.name), password)["Slips"]
+    slips = open_encrypted(next(f for f in files if "slips" in f.name), operator.password)["Slips"]
     codes = [row[1].value for row in slips.iter_rows(min_row=2)]
     assert len(codes) == 3 and not any(code in out for code in codes)  # codes only inside the file
-    reg = open_encrypted(next(f for f in files if "register" in f.name), password)["Register"]
+    reg = open_encrypted(next(f for f in files if "register" in f.name), operator.password)["Register"]
     assert [row[0].value for row in reg.iter_rows(min_row=2)] == ["A-0001", "A-0002", "A-0003"]
 
 
-def test_a_failed_file_write_creates_no_slips(
-    world: World, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
-) -> None:
-    with world.admin.begin() as conn:
-        class_id, _ = admin.add_class(conn, PEPPER, world.school_id, 9, "R2")
-    world.class_ids.append(class_id)
-    monkeypatch.setenv("DATABASE_URL", ADMIN_URL)
-    monkeypatch.setenv("CODE_PEPPER", PEPPER)
+def test_a_failed_file_write_creates_no_slips(world: World, tmp_path: Path, env: pytest.MonkeyPatch) -> None:
+    class_id = _class(world, "R2")
+    Operator(env, register.new_password())
     missing = tmp_path / "not-there"
     assert admin.main(["slips-print", "--class", str(class_id), "--count", "2", "--out", str(missing)]) == 1
+    assert _count(world, "consent_slip", class_id) == 0
+
+
+def test_without_a_terminal_nothing_is_made(
+    world: World, tmp_path: Path, env: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    class_id = _class(world, "R3")  # pytest's captured output is not a terminal, like a pipe or a CI log
+    assert admin.main(["slips-print", "--class", str(class_id), "--count", "2", "--out", str(tmp_path)]) == 1
+    assert "run this in a terminal" in capsys.readouterr().err
+    assert list(tmp_path.iterdir()) == [] and _count(world, "consent_slip", class_id) == 0
+
+
+def test_an_unconfirmed_password_removes_the_files_and_creates_nothing(
+    world: World, tmp_path: Path, env: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    class_id = _class(world, "R4")
+    operator = Operator(env, register.new_password(), answers=["ABCD", "", "XXXX"])
+    assert admin.main(["slips-print", "--class", str(class_id), "--count", "2", "--out", str(tmp_path)]) == 1
+    assert operator.asked == admin.CONFIRM_TRIES
+    assert "password not confirmed" in capsys.readouterr().err
+    assert list(tmp_path.iterdir()) == []
+    assert _count(world, "consent_slip", class_id) == 0 and _count(world, "school_file", class_id) == 0
+
+
+def test_a_lost_password_can_be_shown_again_and_each_time_is_logged(
+    world: World, tmp_path: Path, env: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    class_id = _class(world, "R5")
+    operator = Operator(env, register.new_password())
+    assert admin.main(["slips-print", "--class", str(class_id), "--count", "1", "--out", str(tmp_path)]) == 0
     with world.admin.connect() as conn:
-        count = conn.execute(text("SELECT count(*) FROM consent_slip WHERE class_id = :c"), {"c": class_id})
-        assert count.scalar_one() == 0
+        (listed,) = admin.list_files(conn, class_id)
+        sealed = conn.execute(
+            text("SELECT sealed_password FROM school_file WHERE id = :f"), {"f": listed["id"]}
+        ).scalar_one()
+    assert listed["kind"] == "slips_and_register" and "register" in str(listed["file_names"])
+    assert operator.password.encode() not in bytes(sealed)  # the database holds only the sealed copy
+    capsys.readouterr()
+    operator.answers = [operator.password.rsplit("-", 1)[-1].lower()]  # lower case is accepted
+    args = ["file-password", "--file", str(listed["id"]), "--reason", "lost"]
+    assert admin.main(args) == 0
+    assert f"Password: {operator.password}" in capsys.readouterr().out
+    operator.answers = []  # not confirmed this time: still shown, still logged
+    assert admin.main([*args[:-1], "new-teacher"]) == 0
+    logged = world.scalar(
+        "SELECT count(*) FROM audit_log WHERE object = :o AND action LIKE 'file.password_revealed.%'",
+        o=f"school_file:{listed['id']}",
+    )
+    assert logged == 2
+    with world.admin.connect() as conn:
+        assert admin.list_files(conn, class_id)[0]["reveals"] == 2
+
+
+def test_a_backup_needs_the_same_pepper_and_a_known_file(world: World) -> None:
+    class_id = _class(world, "R6")
+    with world.admin.begin() as conn:
+        file_id = admin.save_file_password(
+            conn, PEPPER, class_id, "class_list", [Path("x.xlsx")], "K7QP-M2XD"
+        )
+    with world.admin.begin() as conn, pytest.raises(admin.AdminError, match="CODE_PEPPER"):
+        admin.reveal_file_password(conn, "another-pepper-of-at-least-32-characters", file_id, "lost")
+    with world.admin.begin() as conn, pytest.raises(admin.AdminError, match="no file"):
+        admin.reveal_file_password(conn, PEPPER, uuid.uuid4(), "lost")
+    with world.admin.begin() as conn, pytest.raises(admin.AdminError, match="--reason"):
+        admin.reveal_file_password(conn, PEPPER, file_id, "curious")
+
+
+def test_the_class_list_file_is_backed_up_too(
+    world: World, tmp_path: Path, env: pytest.MonkeyPatch, capsys: pytest.CaptureFixture[str]
+) -> None:
+    class_id = _class(world, "R7")
+    operator = Operator(env, register.new_password())
+    assert admin.main(["students", "--class", str(class_id), "--out", str(tmp_path)]) == 0
+    (path,) = tmp_path.iterdir()
+    assert open_encrypted(path, operator.password)["Class list"]["A1"].value == "Nickname"
+    with world.admin.connect() as conn:
+        (listed,) = admin.list_files(conn, class_id)
+        assert listed["kind"] == "class_list" and listed["file_names"] == path.name
+        file_id = uuid.UUID(str(listed["id"]))
+        assert admin.reveal_file_password(conn, PEPPER, file_id, "other") == operator.password

@@ -3,8 +3,8 @@
 Runs as the `jobs` database role (DATABASE_URL), which may only delete and read what retention needs.
 Jobs so far (hourly): purge old rate-limit windows; delete profiles that never received consent within
 UNCONSENTED_DAYS (DATA_GOVERNANCE.md: nothing was ever uploaded for them, and the phone purges its local
-data after 14 days, FR-05). Still to add: retention and deletion, monthly
-partitions (owner role), rescoring, O*NET cache refresh, nightly encrypted backup.
+data after 14 days, FR-05); delete school-file password backups after SCHOOL_FILE_DAYS. Still to add:
+retention and deletion, monthly partitions (owner role), rescoring, O*NET cache refresh, nightly backup.
 """
 
 import logging
@@ -18,6 +18,7 @@ log = logging.getLogger("rahyaab.jobs")
 _running = True
 RATE_LIMIT_KEEP_HOURS = 24  # the longest window is 1 hour; a day of history helps abuse reviews
 UNCONSENTED_DAYS = 30
+SCHOOL_FILE_DAYS = 400  # a school year and a margin; the register is needed all year (register.py)
 
 
 def _stop(*_: object) -> None:
@@ -57,6 +58,15 @@ def purge_unconsented_students(engine: Engine, days: int = UNCONSENTED_DAYS) -> 
     return int(result.rowcount or 0)
 
 
+def purge_school_files(engine: Engine, days: int = SCHOOL_FILE_DAYS) -> int:
+    """Deletes sealed school-file password backups made more than `days` ago. Returns the number removed."""
+    with engine.begin() as conn:
+        result = conn.execute(
+            text("DELETE FROM school_file WHERE created_at < now() - make_interval(days => :d)"), {"d": days}
+        )
+    return int(result.rowcount or 0)
+
+
 def main(interval_s: int = 3600) -> None:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(name)s %(message)s")
     signal.signal(signal.SIGTERM, _stop)
@@ -72,8 +82,9 @@ def main(interval_s: int = 3600) -> None:
             try:
                 log.info("rate_limit purge removed %d windows", purge_rate_limits(engine))
                 log.info("removed %d never-consented profiles", purge_unconsented_students(engine))
+                log.info("removed %d old school-file password backups", purge_school_files(engine))
             except Exception:  # keep the worker alive; the next run retries
-                log.exception("rate_limit purge failed")
+                log.exception("a purge failed")
             next_run = time.monotonic() + interval_s
         time.sleep(1)
     log.info("jobs worker stopped")
