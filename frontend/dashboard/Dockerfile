@@ -4,6 +4,8 @@ FROM node:24-alpine AS build
 RUN corepack enable
 WORKDIR /repo
 COPY design/tokens/tokens.css design/tokens/tokens.css
+# Files the dashboard imports from design/ (src/main.tsx, src/Roster.tsx); keep in step with Dockerfile.dockerignore.
+COPY design/brand/logo/svg/branch-light.svg design/brand/logo/svg/branch-light.svg
 COPY frontend/dashboard/package.json frontend/dashboard/pnpm-lock.yaml frontend/dashboard/pnpm-workspace.yaml frontend/dashboard/
 WORKDIR /repo/frontend/dashboard
 RUN pnpm install --frozen-lockfile
