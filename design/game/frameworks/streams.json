@@ -1,6 +1,6 @@
 {
-  "version": "1.3.1",
-  "updated": "2026-11-11",
+  "version": "1.4.0",
+  "updated": "2026-11-15",
   "framework": "Pakistani education paths with RIASEC profiles, ability support and eligibility gates",
   "status": "RIASEC profiles derived from O*NET 31.0 occupational interest data on 2026-11-11 (tools/onet_profiles.py; occupations per path in path_occupations.json, to be reviewed by the counsellor panel). Gates carry a verification level and source; see verification_policy. Board-specific routes are being verified.",
   "by_class": {
@@ -1448,5 +1448,119 @@
       "Re-check every gate before each school year and before the pilot (tools/check_streams.py fails CI on a missing field).",
       "Board rules are per board and per session: each entry names the boards it covers (applies_to_boards) and, when dated, the session. A province with several boards is not verified by one board's rule."
     ]
+  },
+  "doors": {
+    "description": "Which further doors each class 9-10 path keeps open, as used by the rules engine (backend/scoring rules.py, FR-45). Every door names the gates it rests on; it adds no rule of its own. 'open' means the path meets the gate's subject requirement (the destination's own conditions, such as marks and entry tests, still apply and are shown); 'extra_step' means possible with an extra step; 'closed' means not from this path without a route. A door resting only on unverified gates is shown as 'check with your school or board', never as a rule. Paths without gates have no doors here yet.",
+    "destinations": {
+      "medicine": {
+        "label_key": "door.medicine"
+      },
+      "engineering": {
+        "label_key": "door.engineering"
+      }
+    },
+    "by_path": {
+      "pre_medical": [
+        {
+          "to": "medicine",
+          "state": "open",
+          "gates": [
+            "biology_for_medicine",
+            "mbbs_marks"
+          ],
+          "needs_biology": true
+        },
+        {
+          "to": "engineering",
+          "state": "extra_step",
+          "gates": [
+            "premed_to_engineering"
+          ]
+        }
+      ],
+      "pre_engineering": [
+        {
+          "to": "engineering",
+          "state": "open",
+          "gates": [
+            "engineering_marks"
+          ]
+        },
+        {
+          "to": "medicine",
+          "state": "closed",
+          "gates": [
+            "biology_for_medicine"
+          ],
+          "route": "additional_subject"
+        }
+      ],
+      "ics": [
+        {
+          "to": "engineering",
+          "state": "extra_step",
+          "gates": [
+            "ics_to_engineering"
+          ]
+        },
+        {
+          "to": "medicine",
+          "state": "closed",
+          "gates": [
+            "biology_for_medicine"
+          ]
+        }
+      ],
+      "icom": [
+        {
+          "to": "engineering",
+          "state": "closed",
+          "gates": [
+            "engineering_marks"
+          ]
+        },
+        {
+          "to": "medicine",
+          "state": "closed",
+          "gates": [
+            "biology_for_medicine"
+          ]
+        }
+      ],
+      "fa_humanities": [
+        {
+          "to": "engineering",
+          "state": "closed",
+          "gates": [
+            "engineering_marks"
+          ]
+        },
+        {
+          "to": "medicine",
+          "state": "closed",
+          "gates": [
+            "biology_for_medicine"
+          ]
+        }
+      ],
+      "dae": [
+        {
+          "to": "engineering",
+          "state": "extra_step",
+          "gates": [
+            "dae_to_engineering"
+          ]
+        }
+      ],
+      "a_level": [
+        {
+          "to": "medicine",
+          "state": "extra_step",
+          "gates": [
+            "a_level_equivalence"
+          ]
+        }
+      ]
+    }
   }
 }

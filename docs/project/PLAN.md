@@ -82,7 +82,7 @@ A bottom-up estimate in hours, made on 9 Nov 2026 before any code exists. Coding
 | 6.2 | Stream data | `streams.json` verification for every board and path, O*NET profiles, routes | ZB (board routes), HB (O*NET profiles) | S3–S7 |
 | 6.3 | Dashboard UI | D-01–D-11, including the consent-slip screens (D-03 roster started 15 Nov 2026) | HB | S7 |
 | 6.4 | Usability | Round 1 (22–26 Feb), round 2 (12–16 Apr) | HB | S7, S10 |
-| 6.5 | Urdu audio | Record and review the clip set (fixed text + assembled Blueprint clips) | HB (needs a native speaker) | S6–S7 |
+| 6.5 | Urdu audio | **Only if needed** (decided 15 Nov 2026): first check whether the phones speak Urdu: the reference phone in S5 (with English read-aloud), student phones in usability round 1 (22–26 Feb). If many lack an Urdu voice, record the instructions and prologue first, the assembled Blueprint clips last; if most have one, cut it (MVP §4, item 3) | HB (a native speaker records, with written permission to use the voice) | S5, S7 |
 | **7** | **Pilot and release** | | | |
 | 7.1 | Freeze and pentest | Feature freeze 26 Feb; pentest on the frozen build (S8); fix sprint (S9); restore drill | HB | S8–S9 |
 | 7.2 | Pilot build | Pilot APK, 26 Mar | HB | S9 |

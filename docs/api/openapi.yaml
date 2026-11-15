@@ -601,16 +601,27 @@ paths:
                 mode: { $ref: '#/components/schemas/ClassMode' }
       responses:
         '200':
-          description: Recommendation
+          description: Recommendation (the stored one when the inputs are unchanged)
           content:
             application/json:
               schema: { $ref: '#/components/schemas/Recommendation' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-        '409':
-          description: '`insufficient_evidence`: more play is needed (FR-51)'
+        '403':
+          description: '`consent_required`: results open once the family says OK'
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Problem' }
+        '409':
+          description: '`insufficient_evidence`: more play is needed (FR-51). `errors[0].code` says why: `low_coverage`, `uncertain_interests` or `no_clear_pattern`'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422':
+          description: '`mode_not_supported`: no recommender for this class yet (class 9-10 only in FYP-1)'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
 
   /results:
     get:
@@ -656,10 +667,10 @@ paths:
         - { $ref: '#/components/parameters/ResultId' }
       responses:
         '200':
-          description: Contributions, rules applied and confidence inputs
+          description: Contributions, rules applied and confidence inputs, for each of the three paths
           content:
             application/json:
-              schema: { $ref: '#/components/schemas/Evidence' }
+              schema: { $ref: '#/components/schemas/EvidenceSet' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '404': { $ref: '#/components/responses/NotFound' }
 
@@ -1659,20 +1670,37 @@ components:
 
     PathCard:
       type: object
+      description: One of the top 3 (FR-46, FR-53). No numeric fit is sent (FR-54); reasons are codes the app words in English or Urdu.
       required: [stream_id, fit_band, reasons, doors, plan_b]
       properties:
         stream_id: { type: string }
         fit_band: { type: string, enum: [strong, good, worth_a_look] }
-        reasons: { type: array, minItems: 2, maxItems: 3, items: { type: string } }
-        doors:
-          type: array
-          items:
-            type: object
-            properties:
-              label: { type: string }
-              state: { type: string, enum: [open, extra_step, closed] }
-              source_url: { type: string, format: uri }
-        plan_b: { type: array, minItems: 1, items: { type: string } }
+        reasons: { type: array, minItems: 2, maxItems: 3, items: { $ref: '#/components/schemas/Reason' } }
+        doors: { type: array, items: { $ref: '#/components/schemas/Door' } }
+        plan_b: { type: array, minItems: 1, items: { type: string, description: stream id } }
+
+    Reason:
+      type: object
+      required: [code]
+      properties:
+        code: { type: string, enum: [interest_match, ability_support, keeps_doors_open, path_strength] }
+        types: { type: array, items: { type: string, enum: [R, I, A, S, E, C] } }
+        doors: { type: array, items: { type: string } }
+
+    Door:
+      type: object
+      description: What a path keeps open, from the gates in streams.json (FR-45). A door resting only on unverified gates is never a rule (check_with_board).
+      required: [to, label_key, state, gates, verification, sources, check_with_board]
+      properties:
+        to: { type: string, examples: [medicine, engineering] }
+        label_key: { type: string }
+        state: { type: string, enum: [open, extra_step, closed] }
+        gates: { type: array, items: { type: string } }
+        verification: { type: string, enum: [primary, reported, unverified] }
+        sources: { type: array, items: { type: string, format: uri } }
+        check_with_board: { type: boolean }
+        route: { type: string, examples: [additional_subject, switch_group_window] }
+        note: { type: string, examples: [needs_biology_at_matric] }
 
     Recommendation:
       type: object
@@ -1691,6 +1719,38 @@ components:
         content_version: { type: string }
         input_hash: { type: string }
         created_at: { type: string, format: date-time }
+
+    EvidenceSet:
+      type: object
+      required: [result_id, confidence, evidence, paths, rules_applied]
+      properties:
+        result_id: { type: string, format: uuid }
+        confidence: { type: string, enum: [high, medium, low] }
+        evidence:
+          type: object
+          properties:
+            choices: { type: integer }
+            coverage: { type: number, minimum: 0, maximum: 1 }
+            weeks_played: { type: integer }
+            top_interest_types: { type: array, items: { type: string, enum: [R, I, A, S, E, C] } }
+            differentiation: { type: number }
+        paths:
+          type: array
+          items:
+            type: object
+            properties:
+              stream_id: { type: string }
+              contributions:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    feature: { type: string, enum: [interest, ability, marks] }
+                    weight: { type: number }
+                    contribution: { type: number }
+              reasons: { type: array, items: { $ref: '#/components/schemas/Reason' } }
+              rules_applied: { type: array, items: { type: string } }
+        rules_applied: { type: array, items: { type: string } }
 
     Evidence:
       type: object

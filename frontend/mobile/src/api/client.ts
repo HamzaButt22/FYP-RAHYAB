@@ -31,20 +31,33 @@ export type ApiResult<T> =
 
 type Options = { accessToken?: string; headers?: Record<string, string> };
 
-export async function postJson<T>(path: string, body: unknown, options: Options = {}): Promise<ApiResult<T>> {
+export function postJson<T>(path: string, body: unknown, options: Options = {}): Promise<ApiResult<T>> {
+  return request<T>('POST', path, body, options);
+}
+
+export function getJson<T>(path: string, options: Options = {}): Promise<ApiResult<T>> {
+  return request<T>('GET', path, undefined, options);
+}
+
+async function request<T>(
+  method: 'GET' | 'POST',
+  path: string,
+  body: unknown,
+  options: Options
+): Promise<ApiResult<T>> {
   const controller = new AbortController();
   const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
   let response: Response;
   try {
     response = await fetch(`${apiBaseUrl()}${path}`, {
-      method: 'POST',
+      method,
       headers: {
-        'Content-Type': 'application/json',
+        ...(body === undefined ? {} : { 'Content-Type': 'application/json' }),
         Accept: 'application/json, application/problem+json',
         ...(options.accessToken ? { Authorization: `Bearer ${options.accessToken}` } : {}),
         ...options.headers,
       },
-      body: JSON.stringify(body),
+      body: body === undefined ? undefined : JSON.stringify(body),
       signal: controller.signal,
     });
   } catch {

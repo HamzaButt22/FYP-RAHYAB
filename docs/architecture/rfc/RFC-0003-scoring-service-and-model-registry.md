@@ -55,6 +55,15 @@ load runs + events  →  validity checks  →  M1 interests (TIRT + GRM, EAP)
 - On demand: `POST /v1/results/compute`, at the end of week 4 or when the student opens the letter.
 - In batch: the `rescore` job, after a model activation or a content fix. It is idempotent by `input_hash`.
 
+### As built in FYP-I (15 Nov 2026)
+
+- **Endpoints:** `POST /v1/results/compute`, `GET /v1/results/latest` and `GET /v1/results/{id}/why` (`backend/api/src/rahyaab_api/routers/results.py`), scoring in `backend/scoring` (`interests.py`, `rules.py`, `recommend.py`). Class 9-10 only; other classes answer `422 mode_not_supported`.
+- **Interest scores:** an interim scorer (`m1-counts-2026.11.0`) counts forced-choice wins until the Thurstonian IRT scorer exists; every result made with it is marked `provisional` and its confidence is at most "medium" (in practice "low", because the delta-method SE of a count is large at the extremes). Practice runs and accessible-mode runs are never scored (FR-98).
+- **Rules:** the `doors` section of `streams.json` (1.4.0) links each class 9-10 path to the existing gates; a door resting only on unverified gates is shown as "check with your school or board".
+- **Evidence (FR-51):** coverage below 80% or SE > 0.6 on 3+ types, or a flat profile, gives `409 insufficient_evidence`. Weeks played = the number of `week_complete` events: the envelope and `game_run` allow weeks 0-4 only, so the "extra week 5" of FR-51 is a fifth completed week.
+- **Registry:** migration 0006 registers `m1-counts-2026.11.0` and `m3-congruence-2026.11.0`; both are code in the repository, pinned through each result's `input_hash`.
+- **Reproducible (V7):** the same choices, context and versions always give the same `input_hash`, and the stored result is returned instead of a new one.
+
 ## Security, privacy and accessibility
 
 - Excluded features: gender, district, school type and device. They are kept only in the audit dataset.
