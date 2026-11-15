@@ -1,10 +1,13 @@
-// Placeholder shell. The dashboard screens (D-01 to D-11, A-01 to A-05) are built in FYP-2;
-// their designs are in design/screens/ and the API contract is docs/api/openapi.yaml.
+// The teacher and admin dashboard. First screen: D-03 class roster, in English and Urdu, with sample data
+// until staff sign-in and the dashboard API exist (designs in design/screens/, API in docs/api/openapi.yaml).
+import './app.css';
+import { I18nProvider } from './i18n';
+import { Roster } from './Roster';
+
 export function App() {
   return (
-    <main style={{ fontFamily: 'var(--font-sans)', padding: 'var(--space-6)', color: 'var(--text)' }}>
-      <h1 style={{ fontFamily: 'var(--font-display)' }}>Rahyaab dashboard</h1>
-      <p>Teacher and admin dashboard. Screens arrive in FYP-2.</p>
-    </main>
+    <I18nProvider>
+      <Roster />
+    </I18nProvider>
   );
 }

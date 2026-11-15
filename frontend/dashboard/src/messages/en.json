@@ -1,0 +1,39 @@
+{
+  "nav": {
+    "label": "Dashboard",
+    "classes": "Classes",
+    "students": "Students",
+    "reports": "Reports",
+    "school": "School",
+    "settings": "Settings"
+  },
+  "language": {
+    "switchTo": "اردو",
+    "switchLabel": "Show the dashboard in Urdu"
+  },
+  "demo": "Sample data. The real class list appears here once staff sign-in is built.",
+  "roster": {
+    "title": "Class {{name}}",
+    "export": "Download the list",
+    "invite": "Add students",
+    "started": "Started the game",
+    "ready": "Blueprint ready",
+    "chat": "Worth a chat",
+    "colStudent": "Student",
+    "colProgress": "Progress",
+    "colPath": "Best-fit path",
+    "colConfidence": "How sure",
+    "colNote": "Note",
+    "week": "Week {{n}} of {{total}}",
+    "none": "Not yet",
+    "sure": "Fairly sure",
+    "unsure": "Not sure yet",
+    "mixed": "Mixed answers: have a chat",
+    "tableCaption": "Students in this class, with their progress and best-fit path"
+  },
+  "paths": {
+    "preEngineering": "Pre-Engineering",
+    "ics": "ICS (Computer Science)",
+    "preMedical": "Pre-Medical"
+  }
+}
