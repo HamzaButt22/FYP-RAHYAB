@@ -1642,9 +1642,9 @@ Errors use RFC 9457 problem+json. All list endpoints are paginated.
 
 | Member | Primary ownership | Secondary | Report chapters (lead) |
 |---|---|---|---|
-| **Hamza Butt** | The application end to end: mobile app, API and admin, dashboard and parent pages, platform, CI/CD, security; ethics application and pilot logistics (changed 14 Nov 2026, `PLAN.md` §1) | Review of game code before merge | Implementation, Design (architecture, data) |
-| **Zahid Bashir** | The game: game research (V1 simulation, game-side validation), Ink story, task modules (port the planning model from the `career-game-prototype`; abstract, spatial, numerical, logic, verbal), game testing and integration into the app; board routes in `streams.json` | Game content checks | Algorithms/experiments |
-| **Daniyal Sarwar** | Optional, non-blocking: M1 (Thurstonian IRT) and M2 (Rasch) calibration notebooks; dropped to FYP-II if not delivered | — | Introduction, literature/market survey |
+| **Hamza Butt** | The application end to end: mobile app, API and admin, dashboard and parent pages, platform, CI/CD, security; production M1 scorer; validation V5 and V6 (and V7, V8); M3 learned ranker as a stretch goal; ethics application and pilot logistics (changed 14–15 Nov 2026, `PLAN.md` §1) | Review of game code before merge | Implementation, Design (architecture, data) |
+| **Zahid Bashir** | The game: game research (V1 simulation; validation V2–V4), Ink story, task modules (port the planning model from the `career-game-prototype`; abstract, spatial, numerical, logic, verbal), game testing and integration into the app; board routes in `streams.json` | Game content checks | Algorithms/experiments |
+| **Daniyal Sarwar** | FYP-I report chapters 1–2 (draft by 15 Dec 2026; Hamza is backup). Optional, non-blocking: M1 (Thurstonian IRT) and M2 (Rasch) calibration notebooks; dropped if not delivered | — | Introduction, literature/market survey |
 
 Everyone writes tests for their own code and reviews at least one PR from each teammate per sprint. This produces balanced, per-person Git evidence for LO6 [REV §8].
 
