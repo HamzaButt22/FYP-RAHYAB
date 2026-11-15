@@ -12,17 +12,30 @@ import { postJson } from '../api/client';
 import type { EventSink } from '../game/run';
 import { getAccessToken, type ConsentState } from '../state/session';
 import { KEEP_UNCONSENTED_MS, type OutboxStore } from './outbox';
-import { openOutbox } from './sqliteOutbox';
+import { uuidv7 } from '../game/run';
+import { openLocal, type SqliteKv } from './sqliteOutbox';
 import { Syncer, type BatchResult, type SendResult, type SyncOutcome } from './sync';
 
 const EVERY_MS = 15 * 60_000;
 
-let outbox: Promise<OutboxStore> | null = null;
+let local: ReturnType<typeof openLocal> | null = null;
 let syncer: Promise<Syncer> | null = null;
 
-export function getOutbox(): Promise<OutboxStore> {
-  outbox ??= openOutbox();
-  return outbox;
+/** One sitting per app launch: every run started while the app is open shares it (envelope session_id). */
+export const SESSION_ID = uuidv7(Date.now());
+
+function getLocal(): ReturnType<typeof openLocal> {
+  local ??= openLocal();
+  return local;
+}
+
+export async function getOutbox(): Promise<OutboxStore> {
+  return (await getLocal()).outbox;
+}
+
+/** Week progress and modules' saved state (src/game/progress.ts). */
+export async function getKv(): Promise<SqliteKv> {
+  return (await getLocal()).kv;
 }
 
 /** Writes each event to the encrypted outbox before the game moves on (FR-35). */

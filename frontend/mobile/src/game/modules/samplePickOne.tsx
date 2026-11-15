@@ -1,9 +1,13 @@
 // A sample module that shows every part of the contract in one small screen. It is NOT game content:
 // the real modules (the week loop, the story, the task families) are Zahid's to design.
 //
-// It shows how a module: reads the context (language, right-to-left), uses its saved
+// It shows how a module: reads the context (language, right-to-left, the step's params), uses its saved
 // progress, sends agreed events (scene_start, choice_made), tries an idea with host.experiment(), and
 // finishes. Copy it as a starting point; nothing here limits what a real module looks like.
+//
+// Params (contract 1.1.0): { left, right, item } = the two interest types to offer, in screen order, and the
+// item id. The sample week plan (samplePlan.ts) sets them from the pairs.json schedule. Without params (the
+// game lab) it offers R and S in a random order.
 
 import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
@@ -21,7 +25,11 @@ const TEXT = {
     again: 'You have played this sample before.',
     prompt: 'Which would you rather do this Saturday?',
     R: 'Fix the radio at home',
+    I: 'Find out why the sky is blue',
+    A: 'Design a poster for school',
     S: 'Help a friend study',
+    E: 'Run the class food stall',
+    C: 'Keep the class accounts in order',
     done: 'Done',
   },
   ur: {
@@ -29,18 +37,32 @@ const TEXT = {
     again: 'آپ یہ نمونہ پہلے کھیل چکے ہیں۔',
     prompt: 'اس ہفتے کو آپ کیا کرنا پسند کریں گے؟',
     R: 'گھر کا ریڈیو ٹھیک کرنا',
+    I: 'معلوم کرنا کہ آسمان نیلا کیوں ہے',
+    A: 'اسکول کے لیے پوسٹر بنانا',
     S: 'دوست کو پڑھائی میں مدد دینا',
+    E: 'کلاس کا کھانے کا اسٹال چلانا',
+    C: 'کلاس کا حساب کتاب ترتیب سے رکھنا',
     done: 'ہو گیا',
   },
 } as const;
 
-type Option = 'R' | 'S';
+type Option = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
+const TYPES: readonly string[] = ['R', 'I', 'A', 'S', 'E', 'C'];
 
 function SamplePickOne({ context, host, saved }: GameModuleProps) {
   const { colors } = useTheme();
   const text = TEXT[context.locale];
-  // Shown in a random order, so the side a student taps can't decide the answer for them.
-  const [order] = useState<Option[]>(() => (Math.random() < 0.5 ? ['R', 'S'] : ['S', 'R']));
+  const { left, right, item: itemParam } = context.params ?? {};
+  const item = typeof itemParam === 'string' ? itemParam : 'sample_pick_one';
+  // From the week plan (its schedule already swaps sides between rounds), or, without params, a random
+  // order, so the side a student taps can't decide the answer for them.
+  const [order] = useState<Option[]>(() =>
+    typeof left === 'string' && typeof right === 'string' && TYPES.includes(left) && TYPES.includes(right)
+      ? [left as Option, right as Option]
+      : Math.random() < 0.5
+        ? ['R', 'S']
+        : ['S', 'R']
+  );
   const [picked, setPicked] = useState<Option | null>(null);
   const changes = useRef(0);
   const shownAt = useRef(0);
@@ -48,9 +70,9 @@ function SamplePickOne({ context, host, saved }: GameModuleProps) {
 
   useEffect(() => {
     shownAt.current = Date.now();
-    host.emit({ type: 'scene_start', itemId: 'sample_pick_one', data: { scene_id: 'sample_pick_one' } });
+    host.emit({ type: 'scene_start', itemId: item, data: { scene_id: item } });
     host.save({ seen: true });
-  }, [host]);
+  }, [host, item]);
 
   const choose = (option: Option) => {
     if (picked !== null && picked !== option) changes.current += 1;
@@ -64,8 +86,8 @@ function SamplePickOne({ context, host, saved }: GameModuleProps) {
     const side = (index === 0) !== context.rtl ? 'left' : 'right';
     host.emit({
       type: 'choice_made',
-      itemId: 'sample_pick_one',
-      data: { pair: 'R-S', picked, side, dwell_ms: Date.now() - shownAt.current },
+      itemId: item,
+      data: { pair: `${order[0]}-${order[1]}`, picked, side, dwell_ms: Date.now() - shownAt.current },
     });
     // An idea that is not an agreed measurement yet: kept on the phone, never uploaded.
     host.experiment({ name: 'changed_mind', data: { count: changes.current } });
@@ -110,7 +132,7 @@ function SamplePickOne({ context, host, saved }: GameModuleProps) {
 
 export const samplePickOne: GameModule = {
   id: 'sample-pick-one',
-  version: '1.0.0',
+  version: '1.1.0',
   kind: 'scene',
   measures: ['interests'],
   title: { en: 'Sample: pick one', ur: 'نمونہ: ایک چنیں' },

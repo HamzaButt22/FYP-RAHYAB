@@ -14,7 +14,7 @@
 
 import type { ComponentType } from 'react';
 
-export const CONTRACT_VERSION = '1.0.0';
+export const CONTRACT_VERSION = '1.1.0'; // 1.1.0: step params in the context; week_complete is the host's
 
 /** Event types the server accepts (envelope v3.0.0, docs/api/openapi.yaml `Event`). */
 export const EVENT_TYPES = [
@@ -42,8 +42,9 @@ export const EVENT_TYPES = [
 ] as const;
 export type EventType = (typeof EVENT_TYPES)[number];
 
-/** Sent by the host itself, never by a module: they mark the run and keep the order trustworthy. */
-export const HOST_ONLY_EVENTS: readonly EventType[] = ['session_start', 'session_end', 'run_start', 'quit'];
+/** Sent by the host itself, never by a module: they mark the run and keep the order trustworthy.
+ * week_complete is the week loop's (the server counts weeks from it, so a module must not send it twice). */
+export const HOST_ONLY_EVENTS: readonly EventType[] = ['session_start', 'session_end', 'run_start', 'quit', 'week_complete'];
 
 /** The six task families (Recommendation.tasks_measured in the OpenAPI file). */
 export const TASK_FAMILIES = ['SPA', 'ABS', 'NUM', 'LOG', 'PLN', 'VRB'] as const;
@@ -78,6 +79,9 @@ export interface GameContext {
   a11yMode: boolean;
   /** The phone asks for less motion: skip or shorten animations. */
   reducedMotion: boolean;
+  /** What the week plan asks this step to show (a scene id, a pair, a task level). Module-defined; may be
+   * empty. Added in contract 1.1.0. */
+  params?: JsonObject;
 }
 
 /** One thing that happened in the module. The host turns it into an envelope v3 event. */
