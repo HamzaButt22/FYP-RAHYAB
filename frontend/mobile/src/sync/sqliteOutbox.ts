@@ -17,7 +17,7 @@ import {
 
 const FILE = 'outbox.db';
 const KEY_NAME = 'outbox.key';
-const SCHEMA_VERSION = 1;
+const SCHEMA_VERSION = 2; // 2: the kv table (week progress and modules' saved state, FR-15)
 
 type Row = { payload: string };
 
@@ -114,6 +114,32 @@ export class SqliteOutbox implements OutboxStore {
   }
 }
 
+/** Small values kept with the outbox, encrypted the same way: week progress and modules' saved state. */
+export class SqliteKv {
+  private readonly db: SQLiteDatabase;
+
+  constructor(db: SQLiteDatabase) {
+    this.db = db;
+  }
+
+  get<T>(key: string): T | null {
+    const row = this.db.getFirstSync<{ value: string }>('SELECT value FROM kv WHERE key = ?', key);
+    return row ? (JSON.parse(row.value) as T) : null;
+  }
+
+  set(key: string, value: unknown): void {
+    this.db.runSync(
+      'INSERT INTO kv (key, value) VALUES (?, ?) ON CONFLICT (key) DO UPDATE SET value = excluded.value',
+      key,
+      JSON.stringify(value)
+    );
+  }
+
+  deletePrefix(prefix: string): void {
+    this.db.runSync("DELETE FROM kv WHERE substr(key, 1, length(?)) = ?", prefix, prefix);
+  }
+}
+
 async function databaseKey(): Promise<string> {
   const saved = await SecureStore.getItemAsync(KEY_NAME);
   if (saved && /^[0-9a-f]{64}$/.test(saved)) return saved;
@@ -130,8 +156,8 @@ function open(key: string): SQLiteDatabase {
   return db;
 }
 
-/** Opens (or creates) the encrypted outbox. Call once at start-up. */
-export async function openOutbox(): Promise<SqliteOutbox> {
+/** Opens (or creates) the encrypted local database: the outbox and the kv table. Call once at start-up. */
+export async function openLocal(): Promise<{ outbox: SqliteOutbox; kv: SqliteKv }> {
   const key = await databaseKey();
   let db: SQLiteDatabase;
   try {
@@ -160,8 +186,11 @@ export async function openOutbox(): Promise<SqliteOutbox> {
         settled_at      INTEGER
       );
       CREATE INDEX IF NOT EXISTS outbox_queue ON outbox (state, queued_at, seq);
-      PRAGMA user_version = ${SCHEMA_VERSION};
     `);
   }
-  return new SqliteOutbox(db);
+  if (version < 2) {
+    db.execSync('CREATE TABLE IF NOT EXISTS kv (key TEXT PRIMARY KEY, value TEXT NOT NULL);');
+  }
+  db.execSync(`PRAGMA user_version = ${SCHEMA_VERSION};`);
+  return { outbox: new SqliteOutbox(db), kv: new SqliteKv(db) };
 }

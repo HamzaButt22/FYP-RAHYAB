@@ -6,7 +6,8 @@
 | **Author(s)** | Hamza Butt (app) |
 | **Reviewers** | Zahid Bashir (game) |
 | **Created / decided** | 2026-11-15 / — |
-| **Requirements** | NFR-52, FR-35, FR-98; ADR-0002, RFC-0002 |
+| **Requirements** | NFR-52, FR-13–17, FR-35, FR-52, FR-98; ADR-0002, RFC-0002 |
+| **Contract version** | 1.1.0 (15 Nov 2026: `params` in the context, `week_complete` sent by the host, the week loop). 1.0.0 modules still work. |
 
 ## Summary
 
@@ -31,7 +32,7 @@ The app and the game meet in three small places, and nowhere else: what the app 
 
 ### 1. `GameContext`: what the app tells a module
 
-`locale` (`en` or `ur`), `rtl`, `week` (0 for the prologue), `practice` (never scored), `a11yMode` (accessible task mode, FR-98: played but stored as not measured) and `reducedMotion`.
+`locale` (`en` or `ur`), `rtl`, `week` (0 for the prologue), `practice` (never scored), `a11yMode` (accessible task mode, FR-98: played but stored as not measured), `reducedMotion`, and `params` (1.1.0, optional): what this step of the week plan asks the module to show, such as which pair of options. It is plain JSON from the plan; a module that needs none ignores it.
 
 It never includes the student's name, nickname or id. A module doesn't need them, so it can't leak them.
 
@@ -44,7 +45,7 @@ It never includes the student's name, nickname or id. A module doesn't need them
 | `save(state)` | Saves the module's own progress (≤ 16 KB of JSON). It is given back as `saved` on the next run. |
 | `finish({ completed })` | Ends the run. Leaving early sends `quit`. |
 
-The host sends `run_start`, `quit`, `session_start` and `session_end` itself; a module can't.
+The host sends `run_start`, `quit`, `session_start`, `session_end` and `week_complete` itself; a module can't.
 
 **Who owns a run:** whoever starts it (the week loop, or the game lab) creates it with `createRun()` and hears through `onFinish` when the run ends. That happens when the module finishes, the student leaves (`run.abandon()`), or the module crashes. `GameScreen` shows the module for that run.
 
@@ -97,6 +98,18 @@ How a module measures it is entirely the game's choice. Changing *what* is measu
 
 The proposal says what changes, why, and what it does to measurement. It is reviewed for measurement and child safety only, not for taste. Compatible additions raise the minor contract version (1.1.0). A breaking change raises the major version, and old modules are then refused by `moduleProblems()` until they are updated.
 
+### The week loop (1.1.0)
+
+The week loop (`src/game/weekLoop.ts`, FR-13–17) plays modules in the order the game's content sets. A **week plan** is data: weeks 0–4 in order (week 0 is the practice prologue, never scored), each a list of **steps**, and each step names a module from the registry plus the `params` it should get. The app only walks the plan; the game decides what is in it.
+
+- **Home** shows this week, the step and the time left, and one button that starts or continues it.
+- **The player** (`src/app/play.tsx`) runs each step as its own run. After a step finishes, the place is saved and the next step starts. After a week's last step the host sends `week_complete` (data `{week}`) once, uploads, and the student goes back home. "Take a break" leaves at any time (`quit`) and keeps the place; "?" explains the screen. There is no timer.
+- **Saved progress** (FR-15): the place in the plan and each step's own saved state are kept per student in the encrypted local database (`src/game/progress.ts`), so a shared phone keeps students apart and closing the app resumes the same step.
+- **Results** open after 4 scored weeks (FR-52); Home says why they are locked until then. The server counts `week_complete` events from non-practice runs (RFC-0003).
+- `planProblems()` names plan mistakes: unknown modules, repeated step ids, weeks outside 0–4 or out of order, empty weeks.
+
+Until the game's content exists, the active plan is `src/game/samplePlan.ts`: the sample module over the 30 pairs of `design/game/frameworks/pairs.json`, in its target schedule (a test checks they match).
+
 ### The game lab
 
 The game lab is a developer-only screen (`src/app/game-lab.tsx`, locked with `Stack.Protected guard={__DEV__}`, opened from Home). It:
@@ -108,6 +121,7 @@ The game lab is a developer-only screen (`src/app/game-lab.tsx`, locked with `St
 
 `modules/samplePickOne.tsx` is a two-option choice that uses every part of the contract:
 - context and right-to-left (the recorded `side` is mirrored in Urdu);
+- `params` from the week plan (`left`, `right`, `item`), or a random order when played alone;
 - saved progress ("played before");
 - `scene_start` and `choice_made`, with the options in random order;
 - an experiment (`changed_mind`);
@@ -133,10 +147,9 @@ It is not game content. Copy it as a starting point.
 ## Rollout and testing
 
 - `src/game/contract.test.ts` (`pnpm test`) covers the module, event and data checks, the envelope fields and limits, the never-decreasing time, `quit` on leaving, development versus release behaviour, experiments and saved progress, and UUIDv7.
-- **Built now:** an in-memory sink and store.
-- **Next:**
-  - the encrypted SQLite outbox (ADR-0010) and `POST /v1/events:batch` replace the in-memory sink, with no change to modules;
-  - saved progress moves to the same database.
+- `src/game/weekLoop.test.ts` covers the week loop: every step in order, each week finished once, results opening only after four scored weeks, resuming and fitting saved progress to a changed plan, plan mistakes, the sample plan matching `pairs.json`, `week_complete` sent once and only by the host, and per-step saved state.
+- **Built:** events go to the encrypted SQLite outbox (ADR-0010) and `POST /v1/events:batch`; saved progress and the week's place are in the same database. Modules did not change.
+- **Tested on the emulator (15 Nov 2026, Urdu and English):** the prologue and the first steps of week 1 played through Home and the player; the server received the planned pairs, the practice flag on week 0 and one `week_complete`; a break and a full app restart resumed at the same step.
 
 ## Open questions
 

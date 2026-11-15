@@ -100,12 +100,31 @@
   },
   "home": {
     "title": "Salaam!",
-    "body": "Your week will appear here.",
     "consentPendingTitle": "Waiting for your family's OK",
     "consentPendingBody": "Until then, nothing you play is saved.",
     "consentPendingAction": "Enter the slip code",
     "gameLab": "Game lab (development build only)",
-    "seePaths": "See my paths"
+    "seePaths": "See my paths",
+    "prologue": "Practice week",
+    "weekTitle": "Week {{n}}",
+    "practiceNote": "Just practice: nothing here counts towards your paths.",
+    "stepOf": "Step {{n}} of {{total}}",
+    "minutesLeft": "Time left this week: about {{n}} min",
+    "start": "Start",
+    "continue": "Continue",
+    "allDone": "You have played every week. Well done!",
+    "pathsLocked": "Your paths open after {{weeks}} weeks of play, so they rest on enough of your choices.",
+    "weeksDone": "{{n}} of {{total}} weeks done"
+  },
+  "play": {
+    "title": "Play",
+    "help": "Pick what you like: no answer is right or wrong, and there is no timer. Take a break any time; you will carry on from here.",
+    "loading": "Getting your next step ready…",
+    "problem": "This part did not open. Go back home and try again.",
+    "backHome": "Back to home",
+    "prologueDone": "Practice done! Your first real week is ready.",
+    "weekDone": "Week {{n}} done. Well done!",
+    "takeBreak": "Take a break"
   },
   "explore": {
     "title": "Explore",

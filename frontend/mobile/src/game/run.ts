@@ -68,6 +68,9 @@ export interface RunOptions {
   contentVersion: string;
   sink: EventSink;
   store: SaveStore;
+  /** Where the module's saved progress is kept; the week loop uses the step id, so the same module can fill
+   * several steps. Defaults to the module id. */
+  saveKey?: string;
   strict: boolean;
   /** Milliseconds that never go back (performance.now()). */
   monotonic: () => number;
@@ -118,6 +121,9 @@ export interface Run {
   start(): void;
   /** The student left before the module finished (back button, a crash): sends quit, calls onFinish. */
   abandon(): void;
+  /** The week loop's last step finished: sends week_complete once, after the module completed. The server
+   * counts weeks played from these events (FR-51, FR-52). */
+  recordWeekComplete(): void;
   readonly finished: boolean;
 }
 
@@ -130,6 +136,9 @@ export function createRun(o: RunOptions): Run {
   let lastMs = 0;
   let started = false;
   let finished = false;
+  let completed = false;
+  let weekRecorded = false;
+  const saveKey = o.saveKey ?? o.module.id;
 
   const elapsed = () => {
     lastMs = Math.max(lastMs, Math.round((o.monotonic() - startedAt) * 10) / 10);
@@ -192,12 +201,13 @@ export function createRun(o: RunOptions): Run {
     save(state: JsonValue) {
       if (!live('save')) return;
       if (refuse(savedProblems(state))) return;
-      o.store.save(o.module.id, state);
+      o.store.save(saveKey, state);
     },
     finish(result: GameResult) {
       if (!live('finish')) return;
       if (!result.completed) send('quit');
       finished = true;
+      completed = result.completed;
       o.onFinish?.(result, run);
     },
   };
@@ -205,7 +215,7 @@ export function createRun(o: RunOptions): Run {
   const run: Run = {
     runId,
     host,
-    saved: o.store.load(o.module.id),
+    saved: o.store.load(saveKey),
     log,
     start: begin,
     abandon() {
@@ -213,6 +223,11 @@ export function createRun(o: RunOptions): Run {
       send('quit');
       finished = true;
       o.onFinish?.({ completed: false }, run);
+    },
+    recordWeekComplete() {
+      if (!completed || weekRecorded) return;
+      weekRecorded = true;
+      send('week_complete', undefined, { week: o.context.week });
     },
     get finished() {
       return finished;

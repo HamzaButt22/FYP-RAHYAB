@@ -3,7 +3,7 @@
 
 import { Tabs } from 'expo-router';
 import { Compass, House, User, Users, type LucideIcon } from 'lucide-react-native';
-import type { ColorValue } from 'react-native';
+import { useWindowDimensions, type ColorValue } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/AppText';
@@ -20,11 +20,20 @@ function icon(Icon: LucideIcon) {
   return TabIcon;
 }
 
-// Labels use AppText so Urdu gets Gulzar with enough headroom (the bar of گ is otherwise cut off).
+// Labels use AppText so Urdu gets Gulzar with enough headroom (the bar of گ is otherwise cut off). Like
+// display text they stop growing at 1.3x the phone's font scale, and the bar grows with them (at 200%
+// they overflowed the bar and were cut off at the bottom).
+const LABEL_MAX_SCALE = 1.3;
+
 function label(text: string) {
   function TabLabel({ color }: { color: ColorValue }) {
     return (
-      <AppText variant="caption" style={{ color: colorOf(color) }} numberOfLines={1}>
+      <AppText
+        variant="caption"
+        style={{ color: colorOf(color) }}
+        numberOfLines={1}
+        maxFontSizeMultiplier={LABEL_MAX_SCALE}
+      >
         {text}
       </AppText>
     );
@@ -36,6 +45,8 @@ export default function TabsLayout() {
   const { t, i18n } = useTranslation();
   const { colors } = useTheme();
   const urdu = i18n.language === 'ur';
+  const { fontScale } = useWindowDimensions();
+  const barHeight = Math.round((urdu ? 88 : 64) * Math.min(Math.max(fontScale, 1), LABEL_MAX_SCALE));
   const tab = (key: 'home' | 'explore' | 'family' | 'you', Icon: LucideIcon) => ({
     title: t(`tabs.${key}`),
     tabBarLabel: label(t(`tabs.${key}`)),
@@ -48,7 +59,7 @@ export default function TabsLayout() {
         headerShown: false,
         tabBarActiveTintColor: colors.primaryText,
         tabBarInactiveTintColor: colors.muted,
-        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border, minHeight: urdu ? 88 : 64 },
+        tabBarStyle: { backgroundColor: colors.surface, borderTopColor: colors.border, minHeight: barHeight },
         sceneStyle: { backgroundColor: colors.bg },
       }}
     >
