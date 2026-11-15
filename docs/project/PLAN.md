@@ -13,9 +13,11 @@ Work is split so that each person carries about the same load (§2), and every c
 
 | Who | Owns | Backup reviewer for |
 |---|---|---|
-| **HB** = Hamza Butt | **The application end to end:** mobile app (shell, onboarding, outbox and sync, results, accessibility), API and admin, teacher dashboard and parent pages, platform, CI and deployment, security; the **ethics application** and the pilot logistics | Zahid's game code before it is merged into the app |
-| **ZB** = Zahid Bashir | **The game:** game research (including the V1 adaptive-pairs simulation and the game-side validation analysis), the Ink story (prologue and weeks), the task modules and their scoring inputs, game testing, and integrating each of these into the app through the interfaces Hamza defines; **board routes** in `streams.json` (verify Sindh, Balochistan and AJK with sources) | Hamza's app screens that show game content |
-| **DS** = Daniyal Sarwar | **Optional, non-blocking:** the M1 (Thurstonian IRT) and M2 (Rasch) calibration notebooks. Nothing in the app depends on them: production scoring uses the congruence recommender. If they are not delivered, or are wrong, they are dropped from FYP-I and done in FYP-II | — |
+| **HB** = Hamza Butt | **The application end to end:** mobile app (shell, onboarding, outbox and sync, results, accessibility), API and admin, teacher dashboard and parent pages, platform, CI and deployment, security; the **production M1 scorer**; validation studies **V5** (expert agreement) and **V6** (fairness), plus V7 and V8; the **M3 learned ranker as a stretch goal** (only if time allows after the pilot); the **ethics application** and the pilot logistics | Zahid's game code before it is merged into the app |
+| **ZB** = Zahid Bashir | **The game:** game research (including the V1 adaptive-pairs simulation and the game-side validation studies **V2** convergent validity, **V3** discriminant validity, **V4** reliability), the Ink story (prologue and weeks), the task modules and their scoring inputs, game testing, and integrating each of these into the app through the interfaces Hamza defines; **board routes** in `streams.json` (verify Sindh, Balochistan and AJK with sources) | Hamza's app screens that show game content |
+| **DS** = Daniyal Sarwar | **FYP-I report chapters 1 (introduction) and 2 (literature and market survey)**: first draft by **15 Dec 2026**; if it is not in by then, Hamza writes them. **Optional, non-blocking:** the M1 (Thurstonian IRT) and M2 (Rasch) calibration notebooks; nothing in the app depends on them, and if they are not delivered they are dropped | — |
+
+**Owners added on 15 Nov 2026** (Hamza's decision) for the work that had none after the role change: production M1 scorer, V5, V6 and the M3 stretch goal to Hamza; V2–V4 to Zahid; report chapters 1–2 to Daniyal with Hamza as backup. The WBS owners below follow the same split.
 
 **Roles changed on 14 Nov 2026** (Hamza's decision, for the team and supervisor to confirm): Daniyal's earlier critical items moved away from him: the ethics application to Hamza, the Ink story and board-route verification to Zahid. **Target:** finish as much as possible in FYP-I, aiming for **70–80% of the whole project** by the FYP-I submission; the F1/F2 labels in `MVP.md` are the latest dates, not limits. The hour estimates in §2 were made for the old split and are re-estimated in the next sprint review.
 
@@ -50,41 +52,41 @@ A bottom-up estimate in hours, made on 9 Nov 2026 before any code exists. Coding
 | WBS | Work package | Deliverables | Owner | Sprints |
 |---|---|---|---|---|
 | **1** | **Project management** | | | |
-| 1.1 | Scope sign-off | SRS v1.4, MVP, this plan, supervisor approval | DS | S1 |
-| 1.2 | Ethics | Application package: consent forms (all Urdu versions reviewed by a native speaker), DPIA reviewed by the ethics office, protocol, school permission letters; submission when complete (S2); **approval needed by 15 Feb 2027** | DS | S1–S2 → approval |
-| 1.3 | Reporting | FYP-1 chapters 1–5; final report; slides | All | S4–S5, S14–Final |
-| 1.4 | Tracking | Issue estimates, burn-down per sprint, checkpoint reviews | ZB | Every sprint |
+| 1.1 | Scope sign-off | SRS v1.4, MVP, this plan, supervisor approval | HB | S1 |
+| 1.2 | Ethics | Application package: consent forms (all Urdu versions reviewed by a native speaker), DPIA reviewed by the ethics office, protocol, school permission letters; submission when complete (S2); **approval needed by 15 Feb 2027** | HB | S1–S2 → approval |
+| 1.3 | Reporting | FYP-1 chapters 1–5 (chapters 1–2: DS, draft by 15 Dec 2026, HB as backup); final report; slides | All | S4–S5, S14–Final |
+| 1.4 | Tracking | Issue estimates, burn-down per sprint, checkpoint reviews | HB | Every sprint |
 | **2** | **Platform and DevOps** | | | |
 | 2.1 | Monorepo and CI | Workflows, branch protection, secret scanning | HB | S1 |
 | 2.2 | Environments | Docker Compose; staging; production VM; off-site backups; restore test | HB | S1, S8 |
-| 2.3 | Resilience tests | Load, spike, soak, chaos and monkey suites | HB, ZB | S5, S8, S13 |
+| 2.3 | Resilience tests | Load, spike, soak, chaos and monkey suites | HB | S5, S8, S13 |
 | **3** | **Backend** | | | |
-| 3.1 | Identity and consent | Join, consent slips and claim codes, re-link, consent gate, staff login, MFA, reset | ZB | S1–S2, S7 |
-| 3.2 | Telemetry | `/events:batch`, validation, quarantine, deferred events | ZB | S2 |
-| 3.3 | Library and sharing | Streams, share links, parent page (several children) | ZB (library), DS (parent page) | S4, S7 |
-| 3.4 | Dashboard API | Roster, flags, notes, summary, CSV, consent slips, re-link codes, audit | DS | S7 |
+| 3.1 | Identity and consent | Join, consent slips and claim codes, re-link, consent gate, staff login, MFA, reset | HB | S1–S2, S7 |
+| 3.2 | Telemetry | `/events:batch`, validation, quarantine, deferred events (built 15 Nov 2026) | HB | S2 |
+| 3.3 | Library and sharing | Streams, share links, parent page (several children) | HB | S4, S7 |
+| 3.4 | Dashboard API | Roster, flags, notes, summary, CSV, consent slips, re-link codes, audit | HB | S7 |
 | **4** | **Scoring and research** | | | |
-| 4.1 | M1 interests | V1 simulation (feasibility), option map, production scorer, pilot recalibration | ZB | S2–S5, S6, S13 |
-| 4.2 | M2 abilities | Staircase, then Rasch on the pilot | ZB | S3, S13 |
-| 4.3 | M3 recommender | Congruence + gates + routes; AHP weights; rules vs congruence comparison; learned-ranker experiment; fairness | ZB (models), DS (AHP) | S3–S4, S14 |
-| 4.4 | Validation study | Mini-IP sessions, reliability, panel labels, V2–V8 analysis | DS (analysis), ZB (scoring) | S10–S14 |
+| 4.1 | M1 interests | V1 simulation (feasibility), option map, production scorer, pilot recalibration | ZB (V1, option map), HB (production scorer, recalibration), DS (optional notebook) | S2–S5, S6, S13 |
+| 4.2 | M2 abilities | Staircase, then Rasch on the pilot | ZB (staircase in the tasks), DS (optional Rasch notebook) | S3, S13 |
+| 4.3 | M3 recommender | Congruence + gates + routes; AHP weights; rules vs congruence comparison; learned-ranker experiment (stretch goal, only if time allows); fairness | HB | S3–S4, S14 |
+| 4.4 | Validation study | Mini-IP sessions, reliability, panel labels, V2–V8 analysis | ZB (V2–V4), HB (V5–V8, panel labels) | S10–S14 |
 | **5** | **Mobile app** | | | |
 | 5.1 | Shell and onboarding | Theme, i18n, S-01–S-06, field help, age rules, claim code | HB | S1 |
-| 5.2 | Week loop and story | inkjs bridge, planner, scenes, diary, letter | HB | S2–S4 |
-| 5.3 | Tasks | Planning first, then logic and numerical (FYP-1); spatial, abstract, verbal (FYP-2) | HB | S3, S6 |
+| 5.2 | Week loop and story | inkjs bridge, planner, scenes, diary, letter | ZB (game modules), HB (week loop host, RFC-0005) | S2–S4 |
+| 5.3 | Tasks | Planning first, then logic and numerical (FYP-1); spatial, abstract, verbal (FYP-2) | ZB | S3, S6 |
 | 5.4 | Results | Blueprint, Why this?, group fit check, check-in, share | HB | S4, S6–S7 |
 | 5.5 | Offline and sync | Outbox, sync worker, fault tests | HB | S2, S5 |
-| 5.6 | Accessibility | Read-aloud, settings, accessible modes, high-contrast theme | HB, DS | S4, S7 |
+| 5.6 | Accessibility | Read-aloud, settings, accessible modes, high-contrast theme | HB | S4, S7 |
 | **6** | **Content and UX** | | | |
-| 6.1 | Ink script | F1: prologue + 4 short weeks (S2–S4, done 18 Dec); F2: 3 scenes a week, value moments (S6–S7) | DS | S2–S4, S6–S7 |
-| 6.2 | Stream data | `streams.json` verification for every board and path, O*NET profiles, routes | DS | S3–S7 |
-| 6.3 | Dashboard UI | D-01–D-11, including the consent-slip screens | DS | S7 |
-| 6.4 | Usability | Round 1 (22–26 Feb), round 2 (12–16 Apr) | DS | S7, S10 |
-| 6.5 | Urdu audio | Record and review the clip set (fixed text + assembled Blueprint clips) | DS | S6–S7 |
+| 6.1 | Ink script | F1: prologue + 4 short weeks (S2–S4, done 18 Dec); F2: 3 scenes a week, value moments (S6–S7) | ZB | S2–S4, S6–S7 |
+| 6.2 | Stream data | `streams.json` verification for every board and path, O*NET profiles, routes | ZB (board routes), HB (O*NET profiles) | S3–S7 |
+| 6.3 | Dashboard UI | D-01–D-11, including the consent-slip screens (D-03 roster started 15 Nov 2026) | HB | S7 |
+| 6.4 | Usability | Round 1 (22–26 Feb), round 2 (12–16 Apr) | HB | S7, S10 |
+| 6.5 | Urdu audio | Record and review the clip set (fixed text + assembled Blueprint clips) | HB (needs a native speaker) | S6–S7 |
 | **7** | **Pilot and release** | | | |
-| 7.1 | Freeze and pentest | Feature freeze 26 Feb; pentest on the frozen build (S8); fix sprint (S9); restore drill | ZB, HB | S8–S9 |
+| 7.1 | Freeze and pentest | Feature freeze 26 Feb; pentest on the frozen build (S8); fix sprint (S9); restore drill | HB | S8–S9 |
 | 7.2 | Pilot build | Pilot APK, 26 Mar | HB | S9 |
-| 7.3 | School recruitment | Approach 4–5 schools, permission letters (Form D), consent-slip drives, teacher training, recruitment funnel | DS | S5–S9 |
+| 7.3 | School recruitment | Approach 4–5 schools, permission letters (Form D), consent-slip drives, teacher training, recruitment funnel | HB | S5–S9 |
 | 7.4 | Pilot | 3–4 schools, classes 8–10, 5 Apr – 14 May | All | S10–S12 |
 | 7.5 | Final demo | Committee demo script (`SCIENTIFIC_BASIS.md` §6) | All | Final |
 
