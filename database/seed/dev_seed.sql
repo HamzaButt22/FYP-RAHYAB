@@ -41,3 +41,14 @@ INSERT INTO consent_slip (id, class_id, kind, form_serial, claim_code_hash, rese
    :'h_slip_4444', false, '2026-11', '00000000-0000-4000-8000-000000000301', now(), '18-19',
    now() + interval '60 days')
 ON CONFLICT (id) DO UPDATE SET claim_code_hash = EXCLUDED.claim_code_hash;
+
+-- A development content pack, until real packs exist (RFC-0001). Events name it as their content_version
+-- (frontend/mobile/src/game/content.ts), and every item_id a module sends must be listed here, or the API
+-- rejects the event as unknown_item. Never activated outside a developer's machine.
+INSERT INTO content_pack (id, class_mode, min_app, sha256, signature, manifest, size_bytes, storage_uri, active)
+VALUES ('dev-2026.11.0', 'matric', '0.1.0', 'dev', 'dev', '{"note": "development only"}', 1, 'dev://none', false)
+ON CONFLICT (id) DO NOTHING;
+
+INSERT INTO item (id, kind, construct, pair, content_version) VALUES
+  ('sample_pick_one', 'choice', 'interests', 'R-S', 'dev-2026.11.0')
+ON CONFLICT (id, content_version) DO NOTHING;

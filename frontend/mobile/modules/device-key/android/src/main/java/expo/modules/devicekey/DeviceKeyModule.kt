@@ -16,6 +16,7 @@ import java.security.KeyFactory
 import java.security.KeyPairGenerator
 import java.security.KeyStore
 import java.security.PrivateKey
+import java.security.SecureRandom
 import java.security.Signature
 import java.security.spec.ECGenParameterSpec
 
@@ -62,6 +63,15 @@ class DeviceKeyModule : Module() {
         val store = keyStore()
         if (store.containsAlias(ALIAS)) store.deleteEntry(ALIAS)
       }
+    }
+
+    // Random bytes from the platform's SecureRandom, as hex: the key of the encrypted outbox database
+    // (ADR-0010). Generated once and kept in expo-secure-store, which the Android Keystore protects.
+    Function("randomHex") { byteCount: Int ->
+      if (byteCount !in 16..64) throw DeviceKeyException("16 to 64 bytes")
+      val bytes = ByteArray(byteCount)
+      SecureRandom().nextBytes(bytes)
+      bytes.joinToString("") { "%02x".format(it) }
     }
 
     // Coarse facts the join request needs (openapi.yaml DeviceInfo); no model name or identifier.

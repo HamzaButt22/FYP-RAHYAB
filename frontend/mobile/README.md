@@ -49,7 +49,11 @@ Checks CI runs: `pnpm typecheck`, `pnpm lint` and `pnpm test` (unit tests of pla
 
 **Urdu text is a draft.** A native Urdu editor must review `locales/ur.json` before the pilot (SRS §7.4). Use `start`/`end` in styles, never `left`/`right`, so layouts mirror correctly in Urdu.
 
-**Native code (`modules/device-key/`):** our own Kotlin module for the device key (ADR-0011). It creates an EC P-256 key in the Android Keystore (StrongBox when the phone has it), returns the public key, and signs only refresh requests: it adds the `rahyaab-refresh-v1:` prefix itself, so nothing else in the app can use the key. Expo links it automatically; after changing it, run `pnpm android` again.
+**Native code (`modules/device-key/`):** our own Kotlin module for the device key (ADR-0011). It creates an EC P-256 key in the Android Keystore (StrongBox when the phone has it), returns the public key, and signs only refresh requests: it adds the `rahyaab-refresh-v1:` prefix itself, so nothing else in the app can use the key. It also returns secure random bytes (`randomHex`) for the outbox database key. Expo links it automatically; after changing it, run `pnpm android` again.
+
+**The outbox (`src/sync/`, ADR-0010, RFC-0002):** every game event is written to an encrypted SQLite database (`expo-sqlite` with SQLCipher, turned on in `app.json`) before the game moves on, then uploaded to `POST /v1/events:batch` when the app opens, every 15 minutes, and after a run, but only once the family has said OK. Before that, events stay on the phone and are deleted after 14 days. The database key is 32 random bytes from Android's SecureRandom (`randomHex` in the device-key module), kept in the Keystore-protected secure store. **After pulling this change (15 Nov 2026), run `pnpm android` once:** SQLCipher is native code. The Game lab has a "Send to the local API" switch to try a run end to end.
+
+**Game modules (`src/game/`, RFC-0005):** the contract between the game and the app, the module registry and a sample module. Home → "Game lab" (development builds only) plays any module and shows exactly what it sends.
 
 **Development-only button:** "Start onboarding again" on You (also deletes the sign-in and the device key) appears only in development builds (`__DEV__`), never in a release build. Joining needs the local backend and a seed class code (`RYB-4K2`; `python tools/dev.py seed`).
 

@@ -29,6 +29,9 @@ export interface Envelope {
   run_id: string;
   seq: number;
   week: number;
+  /** The game module and its version (module@1.0.0): what produced the run. */
+  story_version: string;
+  /** The content pack the run's items belong to (RFC-0001; content.ts until packs exist). */
   content_version: string;
   event_type: EventType;
   monotonic_ms: number;
@@ -61,6 +64,8 @@ export interface RunOptions {
   module: GameModule;
   context: GameContext;
   sessionId: string;
+  /** The content pack in use (content.ts). The server knows its items; unknown ones are rejected. */
+  contentVersion: string;
   sink: EventSink;
   store: SaveStore;
   strict: boolean;
@@ -146,7 +151,8 @@ export function createRun(o: RunOptions): Run {
       run_id: runId,
       seq: seq++,
       week: o.context.week,
-      content_version: `${o.module.id}@${o.module.version}`,
+      story_version: `${o.module.id}@${o.module.version}`,
+      content_version: o.contentVersion,
       event_type: type,
       monotonic_ms: elapsed(),
       wall_clock_utc_min: utcMinute(o.wallClock()),

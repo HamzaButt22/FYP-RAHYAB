@@ -39,7 +39,7 @@ It never includes the student's name, nickname or id. A module doesn't need them
 
 | Call | What it does |
 |---|---|
-| `emit({ type, itemId?, data? })` | Sends one of the 21 agreed event types (SRS §12.5). The host adds the envelope: UUIDv7 id, run id, `seq` +1, `monotonic_ms` that never goes back, wall clock to the minute, week, practice, accessibility flag, and `content_version` = `module@version`. |
+| `emit({ type, itemId?, data? })` | Sends one of the 21 agreed event types (SRS §12.5). The host adds the envelope: UUIDv7 id, run id, `seq` +1, `monotonic_ms` that never goes back, wall clock to the minute, week, practice, accessibility flag, `story_version` = `module@version`, and `content_version` = the content pack in use (`content.ts`). Every `itemId` must be listed in that pack on the server, or the event is rejected as `unknown_item`; until real packs exist, add your item ids to the development pack in `database/seed/dev_seed.sql`. |
 | `experiment({ name, data? })` | Records a measurement nobody has agreed on yet. It is kept on the phone and **never uploaded or scored**. This is the room for new ideas: try it first, then propose it. |
 | `save(state)` | Saves the module's own progress (≤ 16 KB of JSON). It is given back as `saved` on the next run. |
 | `finish({ completed })` | Ends the run. Leaving early sends `quit`. |

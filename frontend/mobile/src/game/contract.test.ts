@@ -28,6 +28,7 @@ function setup(overrides: Partial<RunOptions> = {}) {
     module: good,
     context: { locale: 'en', rtl: false, week: 2, practice: false, a11yMode: false, reducedMotion: false },
     sessionId: '0192f3c8-7a1e-7c3d-9b2a-5f1e2d3c4b5a',
+    contentVersion: 'dev-2026.11.0',
     sink,
     store,
     strict: true,
@@ -88,7 +89,8 @@ test('the host builds envelope v3 events: ids, order and time are its job', () =
     assert.equal(e.schema_version, '3.0.0');
     assert.equal(e.run_id, run.runId);
     assert.equal(e.week, 2);
-    assert.equal(e.content_version, 'sample-pick-one@1.0.0');
+    assert.equal(e.story_version, 'sample-pick-one@1.0.0');
+    assert.equal(e.content_version, 'dev-2026.11.0');
     assert.match(e.event_id, /^[0-9a-f]{8}-[0-9a-f]{4}-7[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
     assert.match(e.wall_clock_utc_min, /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}Z$/);
     assert.ok(new TextEncoder().encode(JSON.stringify(e)).length <= 1024);
@@ -153,6 +155,7 @@ test('experiments stay on the phone and saved progress comes back next run', () 
     module: good,
     context: { locale: 'ur', rtl: true, week: 0, practice: true, a11yMode: true, reducedMotion: true },
     sessionId: 's',
+    contentVersion: 'dev-2026.11.0',
     sink,
     store,
     strict: true,

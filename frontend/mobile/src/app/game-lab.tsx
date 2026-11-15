@@ -1,7 +1,8 @@
 // Game lab: developer builds only (the route is locked with Stack.Protected guard={__DEV__}). Lists every
 // module in the registry with any contract problems, plays one as a practice run, and then shows exactly
 // what it sent: the envelope events that would go to the outbox, the experiments that stay on the phone,
-// and anything dropped. English only (in the Latin font, also in Urdu mode), like other developer tools;
+// and anything dropped. With "Send to the local API" on, the run also goes through the real encrypted
+// outbox and is uploaded at once (needs a joined student whose family said OK). English only (in the Latin font, also in Urdu mode), like other developer tools;
 // students never see it.
 
 import { router } from 'expo-router';
@@ -13,22 +14,43 @@ import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
 import { Screen } from '@/components/Screen';
 import type { GameContext, GameModule, GameResult } from '@/game/contract';
+import { CONTENT_VERSION } from '@/game/content';
 import { GameScreen } from '@/game/GameScreen';
 import { GAME_MODULES } from '@/game/registry';
 import { moduleProblems, registryProblems } from '@/game/rules';
-import { MemorySink, MemoryStore, createRun, uuidv7, type Run } from '@/game/run';
+import { MemorySink, MemoryStore, createRun, uuidv7, type EventSink, type Run } from '@/game/run';
+import { getOutbox, outboxSink, syncNow } from '@/sync/runtime';
+import type { SyncOutcome } from '@/sync/sync';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, space } from '@/theme/tokens';
 
 const store = new MemoryStore(); // saved progress lasts while the app is open, so "played before" can be tried
 const sessionId = uuidv7(Date.now());
 
-type Played = { module: GameModule; sink: MemorySink; run: Run; result: GameResult };
+type Played = { module: GameModule; sink: MemorySink; run: Run; result: GameResult; upload: string | null };
+
+function describe(outcome: SyncOutcome): string {
+  switch (outcome.kind) {
+    case 'done':
+      return `sent ${outcome.sent}: ${outcome.acked} stored, ${outcome.deferred} waiting, ${outcome.rejected} rejected`;
+    case 'failed':
+      return `not sent (${outcome.reason}); retried later`;
+    case 'waiting':
+      return 'waiting after an earlier failure; retried later';
+    case 'consent_required':
+      return 'kept on the phone: no family consent yet';
+    case 'signed_out':
+      return 'kept on the phone: nobody is signed in';
+    case 'busy':
+      return 'a sync was already running';
+  }
+}
 
 export default function GameLab() {
   const { i18n } = useTranslation();
   const { colors } = useTheme();
   const [a11yMode, setA11yMode] = useState(false);
+  const [upload, setUpload] = useState(false);
   const [playing, setPlaying] = useState<{ module: GameModule; run: Run } | null>(null);
   const [played, setPlayed] = useState<Played | null>(null);
   const problems = useMemo(() => registryProblems(GAME_MODULES), []);
@@ -42,20 +64,33 @@ export default function GameLab() {
     reducedMotion: false,
   };
 
-  const play = (module: GameModule) => {
-    const sink = new MemorySink();
+  const play = async (module: GameModule) => {
+    const shown = new MemorySink();
+    const outbox = upload ? outboxSink(await getOutbox()) : null;
+    const sink: EventSink = {
+      add: (event) => {
+        outbox?.add(event); // first into the encrypted outbox, as in the app
+        shown.add(event);
+      },
+    };
     const run = createRun({
       module,
       context,
       sessionId,
+      contentVersion: CONTENT_VERSION,
       sink,
       store,
       strict: true, // the lab exists only in development builds
       monotonic: () => performance.now(),
       wallClock: () => Date.now(),
       onFinish: (result, ended) => {
-        setPlayed({ module, sink, run: ended, result });
+        setPlayed({ module, sink: shown, run: ended, result, upload: upload ? 'sending…' : null });
         setPlaying(null);
+        if (upload) {
+          void syncNow()
+            .then(describe, (e: unknown) => `failed: ${String(e)}`)
+            .then((text) => setPlayed((p) => (p ? { ...p, upload: text } : p)));
+        }
       },
     });
     setPlayed(null);
@@ -97,6 +132,12 @@ export default function GameLab() {
         <AppText script="latin" style={styles.grow}>Accessible task mode (stored as not measured)</AppText>
         <Switch value={a11yMode} onValueChange={setA11yMode} />
       </View>
+      <View style={styles.toggle}>
+        <AppText script="latin" style={styles.grow}>
+          Send to the local API through the encrypted outbox (needs a joined student with family OK)
+        </AppText>
+        <Switch value={upload} onValueChange={setUpload} />
+      </View>
       {GAME_MODULES.map((m) => (
         <View key={m.id} style={[styles.box, { borderColor: colors.border, backgroundColor: colors.surface }]}>
           <AppText variant="title">{m.title[locale]}</AppText>
@@ -106,7 +147,7 @@ export default function GameLab() {
           <Button
             label="Play"
             disabled={moduleProblems(m).length > 0}
-            onPress={() => play(m)}
+            onPress={() => void play(m)}
           />
         </View>
       ))}
@@ -118,7 +159,7 @@ export default function GameLab() {
 
 function Results({ played }: { played: Played }) {
   const { colors } = useTheme();
-  const { sink, run, result, module } = played;
+  const { sink, run, result, module, upload } = played;
   return (
     <View style={[styles.box, { borderColor: colors.border }]}>
       <AppText script="latin" variant="title">
@@ -127,6 +168,9 @@ function Results({ played }: { played: Played }) {
       <AppText script="latin" variant="caption" color="secondaryText">
         {`practice: ${sink.events[0]?.practice ? 'yes' : 'no'} · accessible mode: ${sink.events[0]?.a11y_mode ? 'yes (not measured)' : 'no'} · week ${sink.events[0]?.week ?? '-'}`}
       </AppText>
+      {upload ? (
+        <AppText script="latin" variant="label" color="primaryText">{`Upload: ${upload}`}</AppText>
+      ) : null}
       <AppText script="latin" variant="label">Events for the outbox (envelope v3.0.0)</AppText>
       {sink.events.map((e) => (
         <AppText script="latin" key={e.event_id} variant="caption" selectable>

@@ -51,7 +51,7 @@ An event is committed **before** the story advances (FR-35). On a crash or kill,
 - `deferred` (order-dependent: `unknown_run`, `sequence_gap`) → back to `queued` and resent after the earlier events of that run are acked; given up only after 7 days;
 - `rejected` (final: the event itself is invalid) → `rejected`, kept locally for 7 days for debugging, and never retried.
 
-**How runs and sittings are created.** The first event of every sitting is `session_start` and the first event of every run is `run_start`. The server creates the `sitting` and `game_run` rows from them. The app always sends events in `seq` order and never sends an event before its run's `run_start` is acked or in the same batch. An event whose run is not known yet is `deferred`, never lost.
+**How runs and sittings are created.** The first event of every run is `run_start` at `seq` 0. The server creates the `game_run` row from it, and the `sitting` row (its `session_id`, one per app session) the first time a run of that session starts; `session_start` and `session_end` are ordinary events inside a run (built 15 Nov 2026, `routers/events.py`). `story_version` names the game module that produced the run (`module@1.0.0`, RFC-0005) and `content_version` the content pack whose items it uses. The app always sends events in `seq` order and never sends an event before its run's `run_start` is acked or in the same batch. An event whose run is not known yet is `deferred`, never lost.
 
 ### Server checks, in order
 
@@ -68,6 +68,12 @@ An event is committed **before** the story advances (FR-35). On a crash or kill,
 
    A final failure goes to `quarantine` with its reason, the student id and the run id (`INSERT … ON CONFLICT (event_id) DO NOTHING`, so a replayed bad batch is harmless). Quarantine rows are deleted after 30 days, and at once when the student is erased or withdraws consent.
 5. Insert with `ON CONFLICT (event_id) DO NOTHING`. Conflicts are reported as `duplicates`.
+
+**As built (15 Nov 2026):**
+- A rejected event still uses up its `seq` (the server counts quarantined numbers of the run), so later events of the run are never stuck behind a bad one.
+- An entry without a readable `event_id` can't be acknowledged or quarantined; it is only counted in `unreadable`.
+- A run id that belongs to another student is rejected as `sequence`.
+- The phone sends batches uncompressed for now (500 events of ≤ 1 KB fit the 1 MB limit); the server accepts gzip whenever the app adds it.
 
 ## Security, privacy and accessibility
 
