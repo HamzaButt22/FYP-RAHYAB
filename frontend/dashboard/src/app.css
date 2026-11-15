@@ -1,0 +1,289 @@
+/* Dashboard styles. Colours, radii and spacing come from design/tokens/tokens.css.
+   Rules for Urdu (the user skills urdu-language-support and urdu-anti-clipping-design):
+   - logical properties only (inline-start/end, block-start/end), so the page mirrors with <html dir>;
+   - Gulzar for Urdu, larger than the Latin sizes, with line-height 2.4 for body text and at least 2.0
+     for headings, buttons, labels and navigation;
+   - no fixed heights and no overflow clipping on anything that holds text: min-height + padding instead. */
+
+@font-face {
+  font-family: Gulzar;
+  src: url('/fonts/Gulzar-Regular.ttf') format('truetype');
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/PlusJakartaSans-Medium.ttf') format('truetype');
+  font-weight: 500;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Plus Jakarta Sans';
+  src: url('/fonts/PlusJakartaSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/BricolageGrotesque-ExtraBold.ttf') format('truetype');
+  font-weight: 800;
+  font-display: swap;
+}
+
+* {
+  box-sizing: border-box;
+}
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 500 15px/22px var(--font-sans);
+}
+
+/* ------------------------------------------------------------------ layout */
+.layout {
+  display: flex;
+  min-block-size: 100vh;
+}
+.side {
+  inline-size: 240px;
+  flex-shrink: 0;
+  background: var(--surface);
+  border-inline-end: 1px solid var(--border);
+  padding: 22px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 8px 18px;
+}
+.brand-word {
+  font: 800 20px/1.2 var(--font-display);
+  letter-spacing: -0.8px;
+}
+.nav {
+  min-block-size: 44px;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  font: 700 14px/20px var(--font-sans);
+  color: var(--muted);
+}
+.nav.on {
+  background: var(--sunken);
+  color: var(--text);
+}
+.nav:focus-visible,
+.btn:focus-visible {
+  outline: 3px solid var(--focus);
+  outline-offset: 2px;
+}
+.main {
+  flex: 1;
+  min-inline-size: 0;
+  padding: 28px 32px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+/* ------------------------------------------------------------------ parts */
+.demo {
+  margin: 0;
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--sunken);
+  border-inline-start: 4px solid var(--accent);
+}
+.head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+}
+.head p {
+  margin: 0;
+}
+.h1 {
+  margin: 0;
+  font: 800 32px/36px var(--font-display);
+  letter-spacing: -0.6px;
+}
+.muted {
+  color: var(--muted);
+}
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.btn {
+  min-block-size: var(--touch-min);
+  padding: 10px 18px;
+  border-radius: var(--radius-md);
+  border: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font: 700 15px/22px var(--font-sans);
+  cursor: pointer;
+}
+.btn.primary {
+  background: var(--primary);
+  color: var(--on-primary);
+}
+.btn.secondary,
+.btn.lang {
+  background: transparent;
+  color: var(--secondary-text);
+  border: 1.5px solid var(--secondary);
+}
+.stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(200px, 100%), 1fr)); /* never wider than the screen */
+  gap: 14px;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.stat {
+  font: 800 34px/1.2 var(--font-display);
+}
+.table-card {
+  padding: 4px 0;
+}
+.table-scroll {
+  overflow-x: auto; /* wide tables scroll sideways on narrow screens; rows still grow in height */
+}
+.tbl {
+  inline-size: 100%;
+  border-collapse: collapse;
+  font: 500 14px/20px var(--font-sans);
+}
+.tbl th {
+  text-align: start;
+  color: var(--muted);
+  font-weight: 600;
+  padding: 12px 18px;
+}
+.tbl th,
+.tbl td {
+  white-space: nowrap; /* short phrases stay whole; the table scrolls sideways instead (.table-scroll) */
+}
+.tbl td {
+  padding: 12px 18px;
+  border-block-start: 1px solid var(--border);
+  vertical-align: middle;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  border-radius: var(--radius-pill);
+  padding: 6px 12px;
+  font: 700 12px/16px var(--font-sans);
+}
+.chip.warn {
+  background: var(--accent);
+  color: var(--on-accent);
+}
+.nickname {
+  font-family: var(--font-sans);
+  unicode-bidi: isolate;
+}
+.sr-only {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden; /* screen-reader-only text: never shown, so it cannot be visibly clipped */
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Narrow screens: the menu becomes a row across the top, so the table keeps the width. */
+@media (max-width: 960px) {
+  .layout {
+    flex-direction: column;
+  }
+  .side {
+    inline-size: auto;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-items: center;
+    border-inline-end: 0;
+    border-block-end: 1px solid var(--border);
+    padding: 10px 14px;
+  }
+  .brand {
+    margin: 0 8px;
+  }
+  .main {
+    padding: 20px 16px;
+  }
+}
+
+/* ------------------------------------------------------------------ Urdu */
+/* Gulzar reserves about 1.5 em above and 1.2 em below the baseline, so Urdu gets bigger sizes and line
+   heights of 2.0 (single-line labels) to 2.4 (running text), plus vertical padding on every box. */
+html:lang(ur) body {
+  font: 400 17px/2.4 var(--font-urdu);
+}
+html:lang(ur) .demo {
+  padding-block: 12px;
+}
+html:lang(ur) .nav {
+  font: 400 18px/2 var(--font-urdu);
+  padding-block: 8px;
+}
+html:lang(ur) .h1 {
+  font: 400 32px/2 var(--font-urdu);
+  letter-spacing: 0;
+}
+html:lang(ur) .btn {
+  font: 400 17px/2 var(--font-urdu);
+  padding-block: 8px;
+}
+html:lang(ur) .tbl {
+  font: 400 17px/2.4 var(--font-urdu);
+}
+html:lang(ur) .tbl th {
+  font-weight: 400;
+  line-height: 2;
+  padding-block: 14px;
+}
+html:lang(ur) .tbl td {
+  padding-block: 14px;
+}
+html:lang(ur) .chip {
+  font: 400 15px/2 var(--font-urdu);
+  padding: 6px 14px;
+}
+/* Latin inside Urdu pages keeps a Latin font (the brand word, the language button, nicknames). */
+html:lang(ur) [lang='en'],
+html:lang(ur) .nickname {
+  font-family: var(--font-sans);
+  line-height: 22px;
+}
+html:lang(ur) .btn[lang='en'] {
+  font: 700 15px/22px var(--font-sans);
+}
+/* The Urdu language button on the English page */
+.btn[lang='ur'] {
+  font: 400 17px/2 var(--font-urdu);
+  padding-block: 8px;
+}
