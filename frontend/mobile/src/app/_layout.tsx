@@ -47,6 +47,9 @@ function Navigation() {
         <Stack.Protected guard={!!language && !!session && onboardingDone}>
           <Stack.Screen name="(tabs)" />
         </Stack.Protected>
+        <Stack.Protected guard={__DEV__}>
+          <Stack.Screen name="game-lab" />
+        </Stack.Protected>
       </Stack>
       <StatusBar style={scheme === 'dark' ? 'light' : 'dark'} />
     </>

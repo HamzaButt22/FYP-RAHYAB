@@ -103,7 +103,8 @@
     "body": "آپ کا ہفتہ یہاں نظر آئے گا۔",
     "consentPendingTitle": "گھر والوں کی اجازت کا انتظار ہے",
     "consentPendingBody": "تب تک آپ کا کھیلا ہوا کچھ بھی محفوظ نہیں ہوگا۔",
-    "consentPendingAction": "پرچی کا کوڈ لکھیں"
+    "consentPendingAction": "پرچی کا کوڈ لکھیں",
+    "gameLab": "گیم لیب (صرف ڈویلپمنٹ بلڈ)"
   },
   "explore": {
     "title": "دریافت",
