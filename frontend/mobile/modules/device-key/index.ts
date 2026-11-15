@@ -12,6 +12,7 @@ type NativeDeviceKey = {
   signRefresh(refreshToken: string): Promise<string>;
   deleteKey(): Promise<void>;
   deviceInfo(): { ramClass: RamClass; osMajor: number };
+  randomHex(byteCount: number): string;
 };
 
 const native = requireOptionalNativeModule<NativeDeviceKey>('RahyaabDeviceKey');
@@ -33,3 +34,6 @@ export const signRefresh = (refreshToken: string) => module().signRefresh(refres
 export const deleteKey = () => module().deleteKey();
 
 export const deviceInfo = () => module().deviceInfo();
+
+/** Random bytes from Android's SecureRandom, as hex (16 to 64 bytes): the outbox database key. */
+export const randomHex = (byteCount: number) => module().randomHex(byteCount);

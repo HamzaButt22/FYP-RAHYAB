@@ -18,6 +18,7 @@ import { useEffect } from 'react';
 
 import '@/i18n';
 import { AppStateProvider, useAppState } from '@/state/AppState';
+import { useBackgroundSync } from '@/sync/runtime';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 
 SplashScreen.preventAutoHideAsync();
@@ -25,6 +26,7 @@ SplashScreen.preventAutoHideAsync();
 function Navigation() {
   const { ready, language, session, onboardingDone } = useAppState();
   const { colors, scheme } = useTheme();
+  useBackgroundSync(session?.consentState ?? null);
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();

@@ -29,7 +29,7 @@ export type ApiResult<T> =
       retryAfterSeconds: number | null;
     };
 
-type Options = { accessToken?: string };
+type Options = { accessToken?: string; headers?: Record<string, string> };
 
 export async function postJson<T>(path: string, body: unknown, options: Options = {}): Promise<ApiResult<T>> {
   const controller = new AbortController();
@@ -42,6 +42,7 @@ export async function postJson<T>(path: string, body: unknown, options: Options 
         'Content-Type': 'application/json',
         Accept: 'application/json, application/problem+json',
         ...(options.accessToken ? { Authorization: `Bearer ${options.accessToken}` } : {}),
+        ...options.headers,
       },
       body: JSON.stringify(body),
       signal: controller.signal,

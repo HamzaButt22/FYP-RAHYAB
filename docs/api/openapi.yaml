@@ -1652,6 +1652,10 @@ components:
             properties:
               id: { type: string, format: uuid }
               reason: { type: string, enum: [schema, sequence, monotonic, size, unknown_version, unknown_item, clock] }
+        unreadable:
+          type: integer
+          minimum: 0
+          description: Entries without a readable event_id (not even a UUID); nothing is stored or acknowledged for them
 
     PathCard:
       type: object
