@@ -54,7 +54,8 @@
             "backgroundColor": "#121B1B"
           }
         }
-      ]
+      ],
+      "./plugins/withAdvanceWidthText"
     ],
     "experiments": {
       "typedRoutes": true
