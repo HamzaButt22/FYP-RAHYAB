@@ -1,6 +1,6 @@
 {
   "version": "1.1.0",
-  "updated": "2026-11-07",
+  "updated": "2026-11-15",
   "framework": "Scoring settings for models M1-M3 (GDD section 12)",
   "m1_interests": {
     "model": "One joint model: Thurstonian IRT for forced choices and the planner ranking block + graded response model for reaction taps (3 categories), all loading on the same six traits",
@@ -9,7 +9,13 @@
     "estimator": "MAP with an N(0, Sigma) prior; SE = posterior SD from the Laplace approximation. No full quadrature grid (41^6 points would be infeasible); quasi-Monte-Carlo EAP with 2,000 Sobol points is used only as a check in the simulation study",
     "adaptive": "next scenes maximise expected information for the type with the largest SE, within pairs.json coverage and exposure caps",
     "pre_calibration": "Open-Source Psychometrics RIASEC dataset via simulated game choices (feasibility only; parameters marked provisional)",
-    "recalibration": "pilot, with k-fold cross-validation so the same students are not used to fit and to evaluate"
+    "recalibration": "pilot, with k-fold cross-validation so the same students are not used to fit and to evaluate",
+    "provisional_scorer": {
+      "id": "m1-counts-2026.11.0",
+      "status": "interim, until the Thurstonian IRT scorer is built (production M1 scorer, Hamza); results made with it are marked provisional",
+      "method": "For each forced choice (pair X-Y, picked X) the picked type wins one comparison. theta_k = probit((wins_k + 0.5) / (comparisons_k + 1)); se_k = sqrt(p_k * (1 - p_k) / (comparisons_k + 1)) / pdf(theta_k), the delta-method standard error on the probit scale (larger with fewer choices and at the extremes). Practice runs and accessible-mode runs are never scored.",
+      "coverage": "mean over the 15 pairs of min(times seen, each_pair_min) / each_pair_min (pairs.json coverage_targets), so 100% means every pair seen at least twice"
+    }
   },
   "m2_abilities": {
     "model": "Rasch (1PL) per family; 2PL only if n >= 300 for the family and item fit favours it",
@@ -54,7 +60,16 @@
       "school_type",
       "device"
     ],
-    "tie_break": "Work values are not part of the fit score. If two paths' fit differs by less than 0.02, they are ordered by value match (share of the path's top O*NET work values that are among the student's top 2); otherwise by interest fit. A tie-break never moves a path by more than one place."
+    "tie_break": "Work values are not part of the fit score. If two paths' fit differs by less than 0.02, they are ordered by value match (share of the path's top O*NET work values that are among the student's top 2); otherwise by interest fit. A tie-break never moves a path by more than one place.",
+    "fit_bands": {
+      "strong": 0.7,
+      "good": 0.55,
+      "worth_a_look": 0.0,
+      "status": "provisional cut points on the fit scale (0-1), set on the pilot together with confidence.delta; a band describes fit, never a probability",
+      "rule": "fit >= strong -> 'strong'; fit >= good -> 'good'; otherwise 'worth_a_look'"
+    },
+    "plan_b": "For each of the top 3, the path outside the top 3 whose RIASEC profile correlates most with it (a related option); if every other path is in the top 3, the next-ranked path. Always at least one.",
+    "reasons": "2-3 reason codes per card, from the stored contributions only: the student's top interest types that the path's profile shares, ability support when measured, and the doors the rules engine set. Codes, never text: the app words them in English or Urdu."
   },
   "confidence": {
     "high": "all interest SE <= .35 and coverage 100% and top-1 vs top-4 margin >= delta",

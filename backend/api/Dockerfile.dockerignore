@@ -1,4 +1,5 @@
-# Build context is the repository root for the API image (it needs backend/ and database/).
+# Build context is the repository root for the API image (it needs backend/, database/ and the two
+# framework files the results use).
 # Everything is excluded except what the image needs.
 *
 !backend/api/pyproject.toml
@@ -9,4 +10,6 @@
 !backend/scoring/pyproject.toml
 !backend/scoring/src/
 !database/schema.sql
+!design/game/frameworks/streams.json
+!design/game/frameworks/scoring.json
 **/__pycache__

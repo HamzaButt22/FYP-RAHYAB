@@ -27,7 +27,9 @@ export default function HomeScreen() {
           <AppText color="muted">{t('home.consentPendingBody')}</AppText>
           <Button kind="text" label={t('home.consentPendingAction')} onPress={() => router.push('/consent')} />
         </View>
-      ) : null}
+      ) : (
+        <Button label={t('home.seePaths')} onPress={() => router.push('/results')} />
+      )}
       {__DEV__ ? (
         <Button kind="text" label={t('home.gameLab')} onPress={() => router.push('/game-lab')} />
       ) : null}

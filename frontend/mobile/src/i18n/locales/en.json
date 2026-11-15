@@ -104,7 +104,8 @@
     "consentPendingTitle": "Waiting for your family's OK",
     "consentPendingBody": "Until then, nothing you play is saved.",
     "consentPendingAction": "Enter the slip code",
-    "gameLab": "Game lab (development build only)"
+    "gameLab": "Game lab (development build only)",
+    "seePaths": "See my paths"
   },
   "explore": {
     "title": "Explore",
@@ -139,5 +140,81 @@
       "notAccepted": "That code didn't work. Check each letter on the slip, or ask your teacher.",
       "offline": "You're offline. Please try again when you have internet."
     }
+  },
+  "results": {
+    "title": "Your paths",
+    "provisional": "A first look: the game is not finished yet, so these paths are a starting point, not an answer.",
+    "loading": "Working out your paths…",
+    "confidenceLabel": "How sure we are: {{level}}",
+    "confidence": {
+      "high": "sure",
+      "medium": "fairly sure",
+      "low": "not sure yet"
+    },
+    "band": {
+      "strong": "Strong fit",
+      "good": "Good fit",
+      "worth_a_look": "Worth a look"
+    },
+    "reason": {
+      "interest_match": "Your choices lean towards {{types}}, and so does this path.",
+      "ability_support": "Your task results support it.",
+      "keeps_doors_open": "It keeps {{doors}} open.",
+      "path_strength": "It suits people who enjoy {{types}}."
+    },
+    "type": {
+      "R": "hands-on work",
+      "I": "science",
+      "A": "creative work",
+      "S": "helping people",
+      "E": "leading others",
+      "C": "organising"
+    },
+    "and": " and ",
+    "doorsTitle": "Where it can lead",
+    "doorState": {
+      "open": "open",
+      "extra_step": "possible with an extra step",
+      "closed": "closed from this path"
+    },
+    "checkWithBoard": "Check this with your school or board.",
+    "doorNote": {
+      "needs_biology_at_matric": "Needs Biology at Matric."
+    },
+    "route": {
+      "additional_subject": "Way round: pass the missing subject separately.",
+      "switch_group_window": "Way round: switch to a Biology group early in class 9."
+    },
+    "planB": "Plan B: {{name}}",
+    "why": "Why this?",
+    "hideWhy": "Hide",
+    "basedOn": "Based on {{choices}} choices over {{weeks}} weeks.",
+    "sources": "Rules come from official sources, checked on the dates in our records.",
+    "retry": "Try again",
+    "state": {
+      "more_play": "Not sure about you yet. One more week?",
+      "more_play_body": "Play a little more, and your paths will show here.",
+      "consent": "Your paths open once your family says OK.",
+      "not_supported": "Paths for your class come later.",
+      "offline": "No internet. Your paths need a connection.",
+      "signed_out": "Please join your class again.",
+      "error": "Something went wrong. Try again."
+    }
+  },
+  "door": {
+    "medicine": "Medicine (MBBS, BDS)",
+    "engineering": "Engineering"
+  },
+  "stream": {
+    "pre_medical": "FSc Pre-Medical",
+    "pre_engineering": "FSc Pre-Engineering",
+    "ics": "ICS (Computer Science)",
+    "icom": "I.Com (Commerce)",
+    "fa_humanities": "FA / Humanities",
+    "general_science": "General Science",
+    "dae": "DAE (Associate Engineering diploma)",
+    "tech_vocational": "Technical and vocational certificate",
+    "a_level": "A Level subjects (after O Level)",
+    "nursing_diploma_early": "Nursing and allied health after Matric"
   }
 }

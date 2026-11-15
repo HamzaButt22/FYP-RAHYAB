@@ -48,6 +48,7 @@ function Navigation() {
         </Stack.Protected>
         <Stack.Protected guard={!!language && !!session && onboardingDone}>
           <Stack.Screen name="(tabs)" />
+          <Stack.Screen name="results" />
         </Stack.Protected>
         <Stack.Protected guard={__DEV__}>
           <Stack.Screen name="game-lab" />
