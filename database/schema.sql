@@ -1,4 +1,4 @@
--- Rahyaab PostgreSQL 16 schema, version 1.6 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
+-- Rahyaab PostgreSQL 16 schema, version 1.7 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
 -- v1.1 (2026-11-05): student.age_band and student.situation; self-consent; route and help flags (FR-99..104).
 -- v1.2 (2026-11-05): research_demographics (opt-in, separate role); staff password reset tokens.
 -- v1.3 (2026-11-07, review fixes): consent slips; item keyed by content version; quarantine linked to the
@@ -11,6 +11,8 @@
 --   apart; blocked_device for phones an admin has blocked; class and claim codes stored as HMAC.
 -- v1.6 (2026-11-14): removing a student archives them (student.archived_at) so a mistake can be undone;
 --   never-consented archived profiles are deleted 30 days after archiving.
+-- v1.7 (2026-11-15): school_file keeps a sealed copy of each school-file password (AES-256-GCM, key derived
+--   from CODE_PEPPER outside the database), so a lost password can be given again; deleted after 400 days.
 -- The migrations live in backend/api/migrations (Alembic): 0001 applies this file to an empty database and
 -- later revisions bring older databases up to date. This file is always the complete current design.
 -- Conventions: snake_case; UUID keys (UUIDv7 for events); timestamptz in UTC; no personal data
@@ -124,6 +126,19 @@ CREATE TABLE consent_slip (
   CONSTRAINT consent_slip_claim_check CHECK (claimed_at IS NULL OR recorded_at IS NOT NULL)
 );
 CREATE INDEX ON consent_slip (class_id);
+
+-- The encrypted Excel files the admin command writes for a class (register.py). Only the password is kept,
+-- sealed (AES-256-GCM, key derived from CODE_PEPPER, bound to the row id); the files stay at the school.
+-- Read only by the admin command (owner role); every reveal is audit-logged. Deleted after 400 days (jobs).
+CREATE TABLE school_file (
+  id               uuid PRIMARY KEY,                   -- made by the admin command; part of the seal
+  class_id         uuid NOT NULL REFERENCES school_class (id) ON DELETE CASCADE,
+  kind             text NOT NULL CHECK (kind IN ('slips_and_register', 'class_list')),
+  file_names       text NOT NULL CHECK (length(file_names) BETWEEN 1 AND 600),  -- school, class, forms, date
+  sealed_password  bytea NOT NULL,
+  created_at       timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX ON school_file (class_id);
 
 CREATE TABLE consent (
   id              uuid PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -561,6 +576,7 @@ GRANT SELECT, DELETE ON student, raw_event, quarantine, trait_estimate, recommen
 GRANT INSERT ON trait_estimate, recommendation, audit_log TO jobs;
 GRANT SELECT, INSERT, UPDATE ON career, stream_career, model_version TO jobs;
 GRANT SELECT ON licence TO jobs;
+GRANT SELECT, DELETE ON school_file TO jobs;           -- the API never reads school_file
 
 -- research_ro: never reads base tables directly; it gets de-identified views in a separate schema
 -- (created with the research export job) plus the opt-in demographics and panel labels.

@@ -20,6 +20,9 @@ Commands:
     slip-record    --class ID --serial A-0001 --band 13-15 --by STAFF_ID [--research]
     students       --class ID [--out FOLDER]   nickname, consent-form number, consent, joined, last seen
                    (--out also writes it as an encrypted Excel file, to match with the register)
+    files          --class ID                  the encrypted files made for a class (file ids, dates)
+    file-password  --file ID --reason lost|new-teacher|other
+                   shows a file's password again (a sealed copy is kept); every request is audit-logged
     student-remove --student ID --reason left|stranger|misuse|other
                    archives the student: off the class list, their phone stops working, nothing deleted
     student-restore --student ID               undoes student-remove (a never-consented profile can be
@@ -29,6 +32,12 @@ Commands:
     device-unblock --key-hash HASH
     limited-devices [--hours 24]               phones that hit the join limit (key hashes, for device-block)
     year-end       --school ID                 every class code of the school stops working (end of year)
+
+File passwords: slips-print and students --out make one random password per run. It is shown on this
+screen only, never written to a file or log, so these commands refuse to run unless both input and output
+are a terminal. To finish, whoever runs it must type back the last group of the password: proof that it was
+written down. If they can't, nothing is created and the files are removed. A sealed copy of the password is
+kept on the server (register.py), so a lost one can be given again with file-password.
 
 How a teacher tells students apart: by the number of their consent form (A-0007), which the class list
 shows next to the nickname. The school keeps the paper list of which student got which form; Rahyaab never
@@ -49,6 +58,7 @@ from datetime import date
 from pathlib import Path
 from uuid import UUID, uuid4
 
+from cryptography.exceptions import InvalidTag
 from sqlalchemy import Connection, create_engine, text
 
 from rahyaab_api import register
@@ -61,6 +71,8 @@ SLIP_DAYS = 60  # unclaimed slips expire after 60 days (schema.sql)
 PARENT_BANDS = ("13-15", "16-17")
 ADULT_BANDS = ("18-19", "20-24", "25+")
 REMOVE_REASONS = ("left", "stranger", "misuse", "other")
+REVEAL_REASONS = ("lost", "new-teacher", "other")
+CONFIRM_TRIES = 3
 
 
 class AdminError(Exception):
@@ -270,6 +282,99 @@ def record_slip(
         {"by": staff_id, "b": band, "r": research, "id": slip.id},
     )
     _audit(conn, "slip.record", f"slip:{slip.id}")
+
+
+# ------------------------------------------------------------------------------------ file passwords
+def save_file_password(
+    conn: Connection, pepper: str, class_id: UUID, kind: str, files: list[Path], password: str
+) -> UUID:
+    """Keeps a sealed copy of a school-file password (register.seal_password). Returns the file id."""
+    file_id = uuid4()
+    conn.execute(
+        text(
+            "INSERT INTO school_file (id, class_id, kind, file_names, sealed_password) "
+            "VALUES (:id, :c, :k, :n, :p)"
+        ),
+        {
+            "id": file_id,
+            "c": class_id,
+            "k": kind,
+            "n": ", ".join(f.name for f in files),
+            "p": register.seal_password(password, pepper, file_id),
+        },
+    )
+    _audit(conn, "file.password_saved", f"school_file:{file_id}")
+    return file_id
+
+
+def list_files(conn: Connection, class_id: UUID) -> list[dict[str, object]]:
+    """The encrypted files made for a class, newest first, with how often their password was shown again."""
+    _require_class(conn, class_id)
+    rows = conn.execute(
+        text(
+            """
+            SELECT f.id, f.kind, f.file_names, f.created_at::date AS made,
+                   (SELECT count(*) FROM audit_log a WHERE a.object = 'school_file:' || f.id::text
+                      AND a.action LIKE 'file.password_revealed.%') AS reveals
+            FROM school_file f WHERE f.class_id = :c ORDER BY f.created_at DESC
+            """
+        ),
+        {"c": class_id},
+    ).all()
+    return [dict(r._mapping) for r in rows]
+
+
+def reveal_file_password(conn: Connection, pepper: str, file_id: UUID, reason: str) -> str:
+    """Opens the sealed copy of a file's password. The request is audit-logged with its reason."""
+    if reason not in REVEAL_REASONS:
+        raise AdminError(f"--reason must be one of {', '.join(REVEAL_REASONS)}")
+    sealed = conn.execute(
+        text("SELECT sealed_password FROM school_file WHERE id = :f"), {"f": file_id}
+    ).scalar_one_or_none()
+    if sealed is None:
+        raise AdminError(f"no file {file_id} (backups are deleted 400 days after the file was made)")
+    try:
+        password = register.open_password(bytes(sealed), pepper, file_id)
+    except InvalidTag:
+        raise AdminError(
+            "the backup can't be opened: CODE_PEPPER is not the value used when it was made"
+        ) from None
+    _audit(conn, f"file.password_revealed.{reason}", f"school_file:{file_id}")
+    return password
+
+
+def on_terminal() -> bool:
+    """True when a person is at the keyboard and the screen (not a pipe, a file or a CI log)."""
+    return sys.stdin.isatty() and sys.stdout.isatty()
+
+
+def _require_terminal() -> None:
+    if not on_terminal():
+        raise AdminError(
+            "run this in a terminal: the password is shown on screen only, never into a file, pipe or log"
+        )
+
+
+def show_password(password: str, tries: int = CONFIRM_TRIES) -> bool:
+    """Shows a file password once and asks for its last group back. True once it is typed correctly.
+
+    The one place a password is put on screen, and only after on_terminal() was checked.
+    """
+    last = password.rsplit("-", 1)[-1]
+    print(f"\nPassword: {password}")  # on purpose: a person must read it; never a file or log (see above)
+    print("Write it in the school's staff record book now.")
+    for _ in range(tries):
+        typed = input("To confirm you wrote it down, type its last group (4 characters): ")
+        if typed.strip().upper() == last:
+            print("Confirmed.")
+            return True
+        print("That is not the last group.")
+    return False
+
+
+def _remove(files: list[Path]) -> None:
+    for f in files:
+        f.unlink(missing_ok=True)
 
 
 # ----------------------------------------------------------------------------------------- students
@@ -492,6 +597,11 @@ def _parser() -> argparse.ArgumentParser:
     s = sub.add_parser("students")
     s.add_argument("--class", dest="class_id", required=True, type=UUID)
     s.add_argument("--out", help="also write an encrypted Excel file into this existing folder")
+    s = sub.add_parser("files")
+    s.add_argument("--class", dest="class_id", required=True, type=UUID)
+    s = sub.add_parser("file-password")
+    s.add_argument("--file", required=True, type=UUID, help="a file id from the files command")
+    s.add_argument("--reason", required=True, choices=REVEAL_REASONS)
     s = sub.add_parser("student-remove")
     s.add_argument("--student", required=True, type=UUID)
     s.add_argument("--reason", required=True, choices=REMOVE_REASONS)
@@ -555,30 +665,43 @@ def _run(conn: Connection, pepper: str, a: argparse.Namespace) -> None:
         for listed_id, name, expires, live in list_classes(conn, a.school):
             print(f"{listed_id}  class {name:<6} code {'live until' if live else 'expired'} {expires}")
     elif a.command == "slips-print":
+        _require_terminal()
         folder = _out_folder(a.out)
         school, class_name = class_label(conn, a.class_id)
         slips = print_slips(conn, pepper, a.class_id, a.count, a.kind, a.notice)
-        # Written before the transaction commits: if a file can't be written, no slips are created.
+        # Written before the transaction commits: if a file can't be written or the password isn't
+        # confirmed, the files are removed and no slips are created.
         password = register.new_password()
         stamp = date.today().isoformat()
         first, final = slips[0][0], slips[-1][0]
-        slip_file = register.save_encrypted(
-            register.slips_workbook(school, class_name, slips),
-            folder,
-            _file_name(school, class_name, "slips", first, final, stamp),
-            password,
-        )
-        register_file = register.save_encrypted(
-            register.register_workbook(school, class_name, [s for s, _ in slips], a.kind),
-            folder,
-            _file_name(school, class_name, "register", first, final, stamp),
-            password,
-        )
-        print(f"{len(slips)} slips, {first} to {final}. Two encrypted files:")
-        print(f"  {slip_file}   print the slips from it, then delete it")
-        print(f"  {register_file}   the class register; keep it at school")
-        print(f"Password for both: {password}")
-        print("Write the password in the school's staff record book now: it is shown only once.")
+        written: list[Path] = []
+        try:
+            written.append(
+                register.save_encrypted(
+                    register.slips_workbook(school, class_name, slips),
+                    folder,
+                    _file_name(school, class_name, "slips", first, final, stamp),
+                    password,
+                )
+            )
+            written.append(
+                register.save_encrypted(
+                    register.register_workbook(school, class_name, [s for s, _ in slips], a.kind),
+                    folder,
+                    _file_name(school, class_name, "register", first, final, stamp),
+                    password,
+                )
+            )
+            file_id = save_file_password(conn, pepper, a.class_id, "slips_and_register", written, password)
+            print(f"{len(slips)} slips, {first} to {final}. Two encrypted files, one password:")
+            print(f"  {written[0]}   print the slips from it, then delete it")
+            print(f"  {written[1]}   the class register; keep it at school")
+            if not show_password(password):
+                raise AdminError("password not confirmed: nothing was created and the files were removed")
+        except BaseException:
+            _remove(written)
+            raise
+        print(f"File id {file_id}: if the password is lost, file-password --file {file_id} shows it again.")
     elif a.command == "slip-record":
         record_slip(conn, a.class_id, a.serial, a.band, a.by, a.research)
         print(f"slip {a.serial} recorded with register band {a.band}")
@@ -595,6 +718,7 @@ def _run(conn: Connection, pepper: str, a: argparse.Namespace) -> None:
             )
         print(f"{len(rows)} students. Match form numbers with the school's own register.")
         if a.out:
+            _require_terminal()
             _, class_name = class_label(conn, a.class_id)
             password = register.new_password()
             path = register.save_encrypted(
@@ -603,8 +727,28 @@ def _run(conn: Connection, pepper: str, a: argparse.Namespace) -> None:
                 _file_name(class_name, "class_list", date.today().isoformat()),
                 password,
             )
-            print(f"Encrypted file: {path}")
-            print(f"Password: {password}   (shown only once)")
+            try:
+                file_id = save_file_password(conn, pepper, a.class_id, "class_list", [path], password)
+                print(f"Encrypted file: {path}")
+                if not show_password(password):
+                    raise AdminError("password not confirmed: the file was removed")
+            except BaseException:
+                _remove([path])
+                raise
+            print(
+                f"File id {file_id}: if the password is lost, file-password --file {file_id} shows it again."
+            )
+    elif a.command == "files":
+        made = list_files(conn, a.class_id)
+        for r in made:
+            again = f"  password shown again {r['reveals']}x" if r["reveals"] else ""
+            print(f"{r['id']}  {r['made']}  {r['kind']!s:<19}{r['file_names']}{again}")
+        print(f"{len(made)} files. Password backups are deleted 400 days after a file was made.")
+    elif a.command == "file-password":
+        _require_terminal()
+        password = reveal_file_password(conn, pepper, a.file, a.reason)
+        if not show_password(password):
+            print("Not confirmed. The request is logged; run file-password again when you can write it down.")
     elif a.command == "student-remove":
         remove_student(conn, a.student, a.reason)
         print(

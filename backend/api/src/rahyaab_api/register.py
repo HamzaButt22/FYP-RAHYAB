@@ -13,22 +13,34 @@ Designed for minimum trust in whoever handles the files (SECURITY.md "Codes hand
 
 The register holds children's names, so it never comes back to Rahyaab: the school keeps it. Rahyaab only
 knows form numbers, which is how a teacher tells students apart on the class list.
+
+A forgotten password must not lock the school out of its own register, so a **sealed copy of the password**
+is kept on the server (`seal_password`, the `school_file` table): AES-256-GCM under a key derived from
+CODE_PEPPER, which never enters the database, and bound to the file's id. An admin can open it again with
+`admin.py file-password`, and every opening is audit-logged. Rahyaab holds the password, never the file.
 """
 
 from __future__ import annotations
 
 import io
+import os
 import secrets
 from datetime import date
 from pathlib import Path
+from uuid import UUID
 
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.ciphers.aead import AESGCM
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
 from msoffcrypto.format.ooxml import OOXMLFile  # type: ignore[import-untyped]
 from openpyxl import Workbook  # type: ignore[import-untyped]
 from openpyxl.styles import Alignment, Font, PatternFill, Protection  # type: ignore[import-untyped]
 from openpyxl.worksheet.datavalidation import DataValidation  # type: ignore[import-untyped]
 
-from rahyaab_api.codes import CHARACTERS
+from rahyaab_api.codes import CHARACTERS, MIN_PEPPER
 
+SEAL_INFO = b"rahyaab-file-password-v1"  # separates this key from the code-hash use of the same pepper
+NONCE_BYTES = 12
 PARENT_BANDS = ("13-15", "16-17")
 ADULT_BANDS = ("18-19", "20-24", "25+")
 HEADER_FILL = PatternFill("solid", fgColor="EDE3D3")
@@ -39,6 +51,26 @@ def new_password() -> str:
     """20 random characters in five groups, like K7QP-M2XD-9RTV-H4NB-W8CA (about 100 bits)."""
     groups = ["".join(secrets.choice(CHARACTERS) for _ in range(4)) for _ in range(5)]
     return "-".join(groups)
+
+
+def _seal_key(pepper: str) -> bytes:
+    if len(pepper) < MIN_PEPPER:
+        raise ValueError("CODE_PEPPER must be set (at least 32 characters)")
+    return HKDF(algorithm=hashes.SHA256(), length=32, salt=None, info=SEAL_INFO).derive(
+        pepper.encode("utf-8")
+    )
+
+
+def seal_password(password: str, pepper: str, file_id: UUID) -> bytes:
+    """The password encrypted for the server's backup: nonce + AES-256-GCM ciphertext, bound to `file_id`."""
+    nonce = os.urandom(NONCE_BYTES)
+    return nonce + AESGCM(_seal_key(pepper)).encrypt(nonce, password.encode("ascii"), file_id.bytes)
+
+
+def open_password(sealed: bytes, pepper: str, file_id: UUID) -> str:
+    """Reverses seal_password. Raises InvalidTag for another pepper, another file id or a changed row."""
+    nonce, body = sealed[:NONCE_BYTES], sealed[NONCE_BYTES:]
+    return AESGCM(_seal_key(pepper)).decrypt(nonce, body, file_id.bytes).decode("ascii")
 
 
 def safe(value: object) -> object:
@@ -183,6 +215,7 @@ def register_workbook(school: str, class_name: str, serials: list[str], kind: st
             "   whether the research box is ticked. Then record the slip in Rahyaab with the same band.",
             "3. To find who a nickname is, look up its form number (shown on the class list) in this sheet.",
             "4. Keep this file only on the school's computer. Its password is in the staff record book.",
+            "   If the password is lost, the Rahyaab admin can give it again (every request is logged).",
         ],
     )
     return wb

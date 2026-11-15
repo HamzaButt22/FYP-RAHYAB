@@ -3,7 +3,7 @@
 from sqlalchemy import Engine, text
 from support import World
 
-from rahyaab_api.jobs import purge_rate_limits, purge_unconsented_students
+from rahyaab_api.jobs import purge_rate_limits, purge_school_files, purge_unconsented_students
 
 
 def test_old_rate_limit_windows_are_purged(admin: Engine) -> None:
@@ -80,3 +80,25 @@ def test_an_archived_profile_is_kept_30_days_after_archiving(admin: Engine, worl
             .all()
         )
     assert left == ["recent_archive"]
+
+
+def test_school_file_password_backups_are_deleted_after_400_days(admin: Engine, world: World) -> None:
+    class_id, _ = world.add_class()
+    with admin.begin() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO school_file (id, class_id, kind, file_names, sealed_password, created_at) "
+                "VALUES "
+                "(gen_random_uuid(), :c, 'class_list', 'old.xlsx', '\\x00', now() - interval '401 days'), "
+                "(gen_random_uuid(), :c, 'class_list', 'new.xlsx', '\\x00', now() - interval '399 days')"
+            ),
+            {"c": class_id},
+        )
+    purge_school_files(admin)
+    with admin.connect() as conn:
+        left = (
+            conn.execute(text("SELECT file_names FROM school_file WHERE class_id = :c"), {"c": class_id})
+            .scalars()
+            .all()
+        )
+    assert left == ["new.xlsx"]
