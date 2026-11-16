@@ -1,5 +1,0 @@
-services:
-  dashboard:
-    build: .
-    ports: ["5000:5000"]
-    volumes: ["./data:/app/data"]     # shares the SQLite file with the game running on the host
