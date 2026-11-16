@@ -62,6 +62,16 @@ def test_biology_requirement_uses_the_current_group() -> None:
     assert medicine(None).state == "open" and medicine(None).note == "needs_biology_at_matric"
 
 
+def test_the_profile_group_ids_count_for_biology() -> None:
+    # The profile stores a class 9-10 student's Matric group as the class-8 path id (streams.json).
+    matric_ids = {p["id"] for p in STREAMS["by_class"]["8"]["paths"]}
+    assert {"matric_science_bio", "matric_science_cs", "matric_humanities", "matric_technical"} <= matric_ids
+    assert rules.has_biology("matric_science_bio") is True
+    assert rules.has_biology("matric_science_cs") is False
+    assert rules.has_biology("matric_humanities") is False
+    assert rules.has_biology("matric_technical") is None  # varies by board: nothing is assumed
+
+
 def test_paths_without_gates_have_no_doors_and_are_never_removed() -> None:
     assert rules.doors_for("tech_vocational", STREAMS).doors == ()
 

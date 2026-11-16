@@ -16,13 +16,13 @@
 | 8 | Teacher interview consent (Form F) | `CONSENT_FORMS.md` | Draft, only if interviews are kept (open item 6) |
 | 9 | Usability session consent and assent (Form G) | `CONSENT_FORMS.md` | Draft |
 | 10 | Withdrawal form | `CONSENT_FORMS.md` | Draft |
-| 11 | Data Protection Impact Assessment | `../security/DPIA.md` | v1.0; owners need updating (open item 10) |
+| 11 | Data Protection Impact Assessment | `../security/DPIA.md` | v1.1, 16 Nov 2026: owners updated, R11 and R12 added; supervisor review pending |
 | 12 | Data management and retention | `../security/DATA_GOVERNANCE.md` | Done |
 | 13 | How age is checked without IDs | `../security/AGE_ASSURANCE.md` | Done |
 | 14 | Privacy notice | `../legal/PRIVACY_POLICY.md` | Draft; contact addresses missing |
 | 15 | Instruments: Mini-IP (licensed, attach the licence terms), confidence and English-reading items, SUS | SRS §17.1; `PROTOCOL.md` §7 | Mini-IP version to confirm (open item 4) |
-| 16 | Think-aloud and interview prompts for usability rounds | — | **To write** |
-| 17 | Teacher guide (consent recording, what the dashboard shows, "never decide from the app alone", safeguarding route) | — | **To write** |
+| 16 | Think-aloud and interview prompts for usability rounds | `USABILITY_PROMPTS.md` | Drafted v0.1; supervisor review pending; SUS wording and word list to settle |
+| 17 | Teacher guide (consent recording, what the dashboard shows, "never decide from the app alone", safeguarding route) | `TEACHER_GUIDE.md` | Drafted v0.1; supervisor review pending; contacts to fill; dashboard steps to check once it is built |
 | 18 | Screenshots of the app's consent screens (S-04) and the parent page (P-02) | `design/screens/png/` | Available |
 
 The application should be **short and readable**: the protocol, the forms and the instruments are what the committee reads; the DPIA, data governance and age assurance documents are attached as evidence.
@@ -40,8 +40,8 @@ The application should be **short and readable**: the protocol, the forms and th
 | 7 | **Form G's parent part in Urdu?** ADR-0016 keeps Urdu for Forms A and B only. Parents of usability-session students should probably get the same choice; if so, write it and add it to the native review | Team decision | 20 Nov |
 | 8 | Adults (18+): ask the committee to allow them in research, or exclude them (the default) | Team decision; the protocol asks the committee (§13) | — |
 | 9 | Fill in contacts (team, supervisor, committee), the hosting region (DPIA action 1) and the incentive decision (none, or a certificate for every student) | Hamza | 24 Nov |
-| 10 | Update the DPIA's owners and actions to the 14 Nov roles (it still names Zahid as owner and Daniyal for the ethics actions), and add the new risks: reading difficulty (ADR-0016) and the conflict of interest (`PROTOCOL.md` §12) | Hamza | 21 Nov |
-| 11 | Write items 16 and 17 above (think-aloud prompts; teacher guide) | Daniyal (usability), Hamza (teacher guide) | 24 Nov |
+| 10 | **Done in draft (16 Nov):** the DPIA (v1.1) now names Hamza as owner and for the ethics actions, and adds R11 (reading difficulty, ADR-0016) and R12 (conflict of interest, `PROTOCOL.md` §12). **Remains:** supervisor review; fill the hosting region (action 1) | Hamza; supervisor | 21 Nov |
+| 11 | **Drafted (16 Nov):** `USABILITY_PROMPTS.md` and `TEACHER_GUIDE.md` (items 16 and 17), both by Hamza (V8 and the ethics application are his since 14–15 Nov). **Remains:** supervisor review; fill contacts; check the teacher guide against the dashboard once it is built; agree the SUS word list and whether the Form G parent part needs Urdu (item 7) | Hamza; supervisor | 24 Nov |
 | 12 | Breach notices to parents are English only since ADR-0016 (NFR-49). Decide whether a short Urdu notice is kept, like the consent forms | Team decision | 20 Nov |
 
 ## Timeline to submission
