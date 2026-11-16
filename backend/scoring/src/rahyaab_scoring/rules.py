@@ -19,8 +19,20 @@ from typing import Any, Literal
 DoorState = Literal["open", "extra_step", "closed"]
 
 # Matric groups that include Biology. Unknown or missing group: Biology is not assumed either way.
-BIOLOGY_GROUPS = frozenset({"science_biology", "biology", "pre_medical", "science"})
-NO_BIOLOGY_GROUPS = frozenset({"science_computer", "computer", "arts", "humanities", "general"})
+# The matric_* ids are the class-8 paths in streams.json, which the profile stores as a class 9-10
+# student's current group (PATCH /me/profile); Matric Technical varies by board, so it stays unknown.
+BIOLOGY_GROUPS = frozenset({"matric_science_bio", "science_biology", "biology", "pre_medical", "science"})
+NO_BIOLOGY_GROUPS = frozenset(
+    {
+        "matric_science_cs",
+        "matric_humanities",
+        "science_computer",
+        "computer",
+        "arts",
+        "humanities",
+        "general",
+    }
+)
 
 
 @dataclass(frozen=True)

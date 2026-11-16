@@ -460,7 +460,13 @@ paths:
     patch:
       tags: [profile]
       operationId: updateProfile
-      summary: Update nickname, board, group, district or marks
+      summary: Update the board, current group or situation
+      description: |
+        JSON merge patch; `null` clears a field. **Built so far (1.4.0-draft):** `board`, `current_group` and
+        `situation`. Nickname, grade (class check-in), district and marks are listed in `ProfileUpdate` for
+        later and are refused (422) until they are built. `current_group` must be one of the profile's
+        `groups` for the student's class (class 8: none yet; 9-10: a Matric group; 11-12: an Intermediate
+        stream, from `streams.json`), otherwise 422 with `errors[].code = not_for_your_class`.
       requestBody:
         required: true
         content:
@@ -1572,6 +1578,10 @@ components:
         class_id: { type: [string, 'null'], format: uuid }
         age_band: { type: string, enum: ['13-15', '16-17', '18-19', '20-24', '25+'] }
         situation: { $ref: '#/components/schemas/Situation' }
+        groups:
+          type: array
+          items: { type: string }
+          description: The current-group ids this student's class can choose from (empty for class 8)
 
     ProfileUpdate:
       type: object

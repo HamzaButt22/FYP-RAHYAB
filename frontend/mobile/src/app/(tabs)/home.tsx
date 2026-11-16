@@ -11,6 +11,8 @@ import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
 import { Screen } from '@/components/Screen';
 import { ACTIVE_PLAN, loadProgress } from '@/game/progress';
+import { needsGroup, type Profile } from '@/profile/profile';
+import { cachedProfile, loadProfile } from '@/profile/profileApi';
 import {
   WEEKS_FOR_RESULTS,
   currentStep,
@@ -31,12 +33,19 @@ export default function HomeScreen() {
   const waiting = session?.consentState !== 'granted';
   const studentId = session?.studentId ?? '';
   const [progress, setProgress] = useState<Progress | null>(null);
+  const [profile, setProfile] = useState<Profile | null>(null);
 
   useFocusEffect(
     useCallback(() => {
       let live = true;
       void getKv()
-        .then((kv) => live && setProgress(loadProgress(kv, studentId)))
+        .then(async (kv) => {
+          if (!live) return;
+          setProgress(loadProgress(kv, studentId));
+          setProfile(cachedProfile(kv, studentId)); // offline: the last profile the server sent
+          const r = await loadProfile(kv, studentId); // online: refresh it (best effort)
+          if (live && r.kind === 'ready') setProfile(r.profile);
+        })
         .catch(() => undefined);
       return () => {
         live = false;
@@ -60,6 +69,16 @@ export default function HomeScreen() {
           </AppText>
           <AppText color="muted">{t('home.consentPendingBody')}</AppText>
           <Button kind="text" label={t('home.consentPendingAction')} onPress={() => router.push('/consent')} />
+        </View>
+      ) : null}
+
+      {needsGroup(profile) ? (
+        <View style={[styles.box, card]}>
+          <AppText variant="title" accessibilityRole="header">
+            {t('profile.promptTitle')}
+          </AppText>
+          <AppText color="muted">{t('profile.promptBody')}</AppText>
+          <Button kind="text" label={t('profile.promptAction')} onPress={() => router.push('/profile')} />
         </View>
       ) : null}
 

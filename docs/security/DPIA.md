@@ -1,11 +1,13 @@
 # Data Protection Impact Assessment (DPIA)
 
+**Change note, v1.1, 16 Nov 2026:** owners and actions updated to the roles of 14–15 Nov 2026 (Hamza Butt owns data protection for this application and the ethics application). Native Urdu review now covers Forms A and B only (ADR-0016). Two risks added: R11 (reading difficulty, English-only app) and R12 (conflict of interest). Nothing else changed.
+
 | | |
 |---|---|
 | **System** | Rahyaab: a game-based stream guidance app (mobile app, API, parent web page, teacher dashboard) |
 | **Controller** | **Pilot (proposed, to confirm with the ethics office):** Riphah International University is the controller for the research and the app, acting through the supervisor; the FYP team operates it. Each partner school is controller for its own paper consent forms and class rosters. Who handles what: access, deletion and complaints from families → the team (with the school's help on the school path); security incidents → the team, notifying the university and the schools; disputes about consent → the school and the supervisor together |
-| **Version / date** | 1.0, 5 Nov 2026 |
-| **Owner / reviewers** | Zahid Bashir (owner); Daniyal Sarwar; supervisor Zeeshan Ali; the university ethics committee |
+| **Version / date** | 1.1, 16 Nov 2026 (v1.0: 5 Nov 2026) |
+| **Owner / reviewers** | Hamza Butt (owner); Zahid Bashir (game); supervisor Zeeshan Ali; the university ethics committee |
 | **Why a DPIA** | The system processes data about **children (13–17)** and **profiles** their interests and abilities to make recommendations. Under the ICO Children's Code, GDPR Art. 35 practice and the principles of Pakistan's draft PDP Bill, this needs a documented risk assessment |
 | **Review** | Before the pilot; then whenever a new data field, SDK, purpose or host is added |
 
@@ -54,7 +56,7 @@ Likelihood (L) and severity (S) are rated 1–3. A residual risk is **accepted**
 | # | Risk to people | L | S | Controls | Residual |
 |---|---|---|---|---|---|
 | R1 | A breach exposes children's profiles | 2 | 3 | Pseudonymous IDs; encryption on the device, in transit and at rest; RBAC + tenant scope; MFA; audit log; pentest before the pilot; incident plan with 72-hour notice | Low–medium (accepted) |
-| R2 | A recommendation steers a child wrongly or reinforces stereotypes (monitoring: the V6 fairness audit runs on every pilot cohort and every model release; a matched gap > .10 or flagged DIF pauses that model version until the supervisor reviews it; owner: Zahid Bashir) | 2 | 3 | Top 3 + Plan B + confidence; gender never an input; fairness audit; counsellor panel; family conversation; anti-push rule for routes | Medium (accepted, with monitoring) |
+| R2 | A recommendation steers a child wrongly or reinforces stereotypes (monitoring: the V6 fairness audit runs on every pilot cohort and every model release; a matched gap > .10 or flagged DIF pauses that model version until the supervisor reviews it; owner: Hamza Butt, who owns V6) | 2 | 3 | Top 3 + Plan B + confidence; gender never an input; fairness audit; counsellor panel; family conversation; anti-push rule for routes | Medium (accepted, with monitoring) |
 | R3 | Siblings or others see a child's data on a shared phone | 2 | 2 | PIN profiles; `FLAG_SECURE`; wipe on sign-out; a parent's "save to this phone" is off by default, with a warning | Low |
 | R4 | Teachers see data they shouldn't, or misuse it | 2 | 2 | Own classes and consented students only; small groups hidden; reads audited; staff guidance not to decide from the app alone | Low |
 | R5 | Uploads before consent | 1 | 3 | Server consent gate; local purge after 14 days | Low |
@@ -63,6 +65,8 @@ Likelihood (L) and severity (S) are rated 1–3. A residual risk is **accepted**
 | R8 | Data leaves Pakistan, or a vendor processes it | 2 | 2 | Self-hosted; no SDKs; a region decision recorded; can move to a local host | Low–medium (**verify** the production region) |
 | R9 | Profiling causes anxiety | 2 | 2 | No timers, scores or "wrong"; break nudges; confidence in plain words | Low |
 | R10 | Adults (18+) or over-age learners are mixed into minors' research | 1 | 2 | Age bands; adults excluded from research unless approved | Low |
+| R11 | Students from Urdu-medium schools find the English-only app hard to read, so they get a worse experience or less accurate results (ADR-0016) | 2 | 2 | Copy at about a Grade 6 reading level; English read-aloud on every screen; icons and pictures beside text; short sentences; teachers can explain the app in class; school medium and a short English-reading item recorded so results are reported by medium (`PROTOCOL.md` §8); usability rounds include Urdu-medium school students; stated as a limitation in the report | Medium (accepted, with monitoring and reporting by medium) |
+| R12 | Conflict of interest: the team intends to offer the app to schools after the FYP (ADR-0015), which could bias how the study is run or reported (`PROTOCOL.md` §12) | 2 | 2 | Targets pre-registered and results reported whether met or not; supervisor reviews the analysis; no school pays for the pilot; pilot data is never sold or shared with any company; the possible later sale is disclosed in Form A | Low–medium (accepted) |
 
 ## 5. Consultation
 
@@ -77,16 +81,16 @@ Likelihood (L) and severity (S) are rated 1–3. A residual risk is **accepted**
 
 | Role | Name | Decision | Date |
 |---|---|---|---|
-| Data protection owner (team) | Zahid Bashir | | |
+| Data protection owner (team) | Hamza Butt | | |
 | Supervisor | Zeeshan Ali | | |
 | Ethics committee | | | |
 
 **The DPIA counts as approved for the pilot** when all three rows are signed and actions 1–6 below are done.
 
 **Actions before the pilot** (owner, target date):
-1. Record the production hosting region (Zahid Bashir, end of S6).
-2. Finish the pentest and fix every critical and high finding (Zahid Bashir, S8).
-3. Get ethics approval for the consent forms and the consent methods, including the OTP path (Daniyal Sarwar, application in S1; approval needed by mid-February 2027).
+1. Record the production hosting region (Hamza Butt, end of S6).
+2. Finish the pentest and fix every critical and high finding (Hamza Butt, S8).
+3. Get ethics approval for the consent forms and the consent methods, including the OTP path (Hamza Butt, application due 27 Nov 2026; approval needed by mid-February 2027).
 4. Publish the privacy policy with working contact addresses (Hamza Butt, before the pilot build).
-5. Native Urdu review of every form (Daniyal Sarwar, before the ethics application).
+5. Native Urdu review of Forms A and B (the only forms with Urdu, ADR-0016) (Hamza Butt arranges it, with the supervisor; before the ethics application).
 6. Agree the controller roles in writing with the university and each school (supervisor, before the pilot).

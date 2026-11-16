@@ -39,8 +39,16 @@ export function getJson<T>(path: string, options: Options = {}): Promise<ApiResu
   return request<T>('GET', path, undefined, options);
 }
 
+/** A JSON merge patch (RFC 7396): only the fields sent change, and `null` clears a field. */
+export function patchJson<T>(path: string, body: unknown, options: Options = {}): Promise<ApiResult<T>> {
+  return request<T>('PATCH', path, body, {
+    ...options,
+    headers: { 'Content-Type': 'application/merge-patch+json', ...options.headers },
+  });
+}
+
 async function request<T>(
-  method: 'GET' | 'POST',
+  method: 'GET' | 'POST' | 'PATCH',
   path: string,
   body: unknown,
   options: Options
