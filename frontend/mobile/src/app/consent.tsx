@@ -17,6 +17,7 @@ import { Field, type FieldMessage } from '@/components/Field';
 import { Header } from '@/components/Header';
 import { HelpCard } from '@/components/HelpCard';
 import { Notice } from '@/components/Notice';
+import { ReadableText } from '@/components/ReadableText';
 import { Screen } from '@/components/Screen';
 import { TextInputBox, type TextInputHandle } from '@/components/TextInputBox';
 import { claimSlip } from '@/join/joinApi';
@@ -126,7 +127,9 @@ export default function ConsentScreen() {
       </AppText>
       <View style={[styles.how, { backgroundColor: colors.sunken }]}>
         <FileSignature color={colors.secondaryText} size={28} accessibilityElementsHidden importantForAccessibility="no" />
-        <AppText style={styles.howText}>{t('consent.body')}</AppText>
+        <View style={styles.howText}>
+          <ReadableText id="consent" text={t('consent.body')} />
+        </View>
       </View>
 
       <Field label={t('consent.codeLabel')} hint={t('consent.codeHint')} message={message}>

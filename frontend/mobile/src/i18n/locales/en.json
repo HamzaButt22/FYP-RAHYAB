@@ -280,5 +280,11 @@
     "tech_vocational": "Technical and vocational certificate",
     "a_level": "A Level subjects (after O Level)",
     "nursing_diploma_early": "Nursing and allied health after Matric"
+  },
+  "listen": {
+    "start": "Read aloud",
+    "stop": "Stop reading",
+    "noVoice": "To hear this, add an English voice: phone Settings → Text-to-speech → Google Text-to-speech → Install voice data.",
+    "noAudio": "This line has no audio yet."
   }
 }

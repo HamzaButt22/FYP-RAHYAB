@@ -7,6 +7,7 @@ import { Lock } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/AppText';
+import { ReadableText } from '@/components/ReadableText';
 import { Button } from '@/components/Button';
 import { Screen } from '@/components/Screen';
 import { useTheme } from '@/theme/ThemeProvider';
@@ -32,9 +33,7 @@ export default function WelcomeScreen() {
       <AppText variant="displayL" accessibilityRole="header">
         {t('onboarding.welcome.title')}
       </AppText>
-      <AppText variant="bodyL" color="muted">
-        {t('onboarding.welcome.body')}
-      </AppText>
+      <ReadableText id="welcome" variant="bodyL" color="muted" text={t('onboarding.welcome.body')} />
       <View style={[styles.promise, { backgroundColor: colors.sunken }]}>
         <Lock color={colors.text} size={24} strokeWidth={2} accessibilityElementsHidden importantForAccessibility="no" />
         <AppText style={styles.promiseText}>{t('onboarding.welcome.promise')}</AppText>

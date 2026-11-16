@@ -13,6 +13,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 
 import { AppText } from '@/components/AppText';
+import { ListenButton } from '@/components/ListenButton';
 import { Button } from '@/components/Button';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, space, touchMin } from '@/theme/tokens';
@@ -85,9 +86,13 @@ function SamplePickOne({ context, host, saved }: GameModuleProps) {
         {text.note}
       </AppText>
       {playedBefore ? <AppText color="muted">{text.again}</AppText> : null}
-      <AppText variant="heading" accessibilityRole="header">
-        {text.prompt}
-      </AppText>
+      <View style={styles.promptRow}>
+        <AppText variant="heading" accessibilityRole="header" style={styles.grow}>
+          {text.prompt}
+        </AppText>
+        {/* Read aloud (FR-96): the question, then both choices. */}
+        <ListenButton id={`choice:${item}`} text={`${text.prompt} ${text[order[0]]}. Or: ${text[order[1]]}.`} />
+      </View>
       <View style={styles.row}>
         {order.map((option) => {
           const on = picked === option;
@@ -126,6 +131,8 @@ export const samplePickOne: GameModule = {
 };
 
 const styles = StyleSheet.create({
+  promptRow: { flexDirection: 'row', alignItems: 'flex-start', gap: space[3] },
+  grow: { flex: 1 },
   column: { gap: space[4] },
   row: { flexDirection: 'row', gap: space[3] },
   card: {

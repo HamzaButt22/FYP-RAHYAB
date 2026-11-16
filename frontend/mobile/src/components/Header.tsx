@@ -9,6 +9,7 @@ import { useTranslation } from 'react-i18next';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, space, touchMin } from '@/theme/tokens';
 import { AppText } from './AppText';
+import { ReadableText } from './ReadableText';
 
 interface Props {
   title: string;
@@ -51,7 +52,7 @@ export function Header({ title, onBack, help }: Props) {
       </View>
       {help && showHelp ? (
         <View accessibilityLiveRegion="polite" style={[styles.help, { backgroundColor: colors.sunken }]}>
-          <AppText>{help}</AppText>
+          <ReadableText id={`help:${title}`} text={help} />
         </View>
       ) : null}
     </View>

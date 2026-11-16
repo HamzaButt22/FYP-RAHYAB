@@ -17,6 +17,7 @@ import { useEffect } from 'react';
 
 import '@/i18n';
 import { AppStateProvider, useAppState } from '@/state/AppState';
+import { useStopReadingInBackground } from '@/speech/reader';
 import { useBackgroundSync } from '@/sync/runtime';
 import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 
@@ -26,6 +27,7 @@ function Navigation() {
   const { ready, session, onboardingDone } = useAppState();
   const { colors, scheme } = useTheme();
   useBackgroundSync(session?.consentState ?? null);
+  useStopReadingInBackground();
 
   useEffect(() => {
     if (ready) SplashScreen.hideAsync();
