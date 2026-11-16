@@ -1,9 +1,0 @@
-[run]
-source = engine
-omit =
-    # pygame window code: exercised by hand and by the skipped smoke tests, not by CI
-    engine/*_app.py
-    engine/session_report.py
-
-[report]
-show_missing = true
