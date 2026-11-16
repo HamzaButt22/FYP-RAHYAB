@@ -1,8 +1,8 @@
 # Consent, assent and permission forms (pilot)
 
-**Draft v0.1, 5 Nov 2026.** For the Riphah ethics application. These expand the outline in SRS §17.4.
+**Draft v0.2, 16 Nov 2026** (v0.1: 5 Nov). For the Riphah ethics application; the study they serve is described in `PROTOCOL.md`. These expand the outline in SRS §17.4.
 
-- **Urdu (paper forms):** Forms A and B have Urdu first drafts below for the paper forms parents sign, which a **native editor must check** before use. Forms C, D, E and the withdrawal form are **English only for now**; their Urdu versions must be written and reviewed before the ethics application (tracked in `project-summary/README.md`, "Still to do").
+- **Urdu (paper forms):** Forms A and B have Urdu first drafts below for the paper forms parents sign, which a **native editor must check** before use. Forms C to G and the withdrawal form are **English only** (ADR-0016). Whether Form G's parent part also needs Urdu is an open item (`README.md`).
 - **Reading level:** keep the English and Urdu versions at Grade 6 or lower.
 - **Paper and screen:** forms are printed for the school path. The English text appears on screen (S-04, P-02) with a Listen button. The Urdu versions of Forms A and B are for the paper forms only.
 
@@ -40,7 +40,7 @@
 - Your child's class teacher or counsellor, who sees: progress, top paths, and simple flags such as "hasn't started yet" or "asked for help". Teachers may write short private notes for follow-up; notes and flags are deleted at the end of the school year.
 - The research team, without names.
 
-**No ads and no selling.** No other company receives your child's game data. (Only on the individual path, without a school, an SMS company delivers a one-time code to a parent's phone.)
+**No ads and no selling.** No other company receives your child's game data. De-identified pilot data also helps us tune how the game scores answers. After this project, the team may offer Rahyaab to schools; your child's data will never be sold or given to anyone for that. (Only on the individual path, without a school, an SMS company delivers a one-time code to a parent's phone.)
 
 **Risks and benefits.** The main risk is that a suggestion might worry your child or the family. Every result shows a Plan B and says it is "a starting point", and teachers are told not to decide from the app alone. Possible benefits: your child learns about paths and careers, and your family has a clear report to discuss.
 
@@ -71,6 +71,8 @@ Form no. `[serial]`  Child's class and section: ______  Parent or guardian name:
 **Tear-off slip for your child (keep this part):** Form no. `[serial]` · Claim code `[XXXX-XXXX]`. Your child types this code when joining, so the app knows you agreed. It works once.
 
 ### Form A (Urdu draft, needs native review)
+
+> **For the reviewer:** this draft is shorter than the English form and differs from it in places. It says "the phone model" (فون کا ماڈل), but the English form says the phone's model name is **not** collected (only a low/mid/high memory tier and the Android version). It also leaves out the 2-week replay, the survey's length, the 90-day backup deletion and the research-export exception. Bring it in line with the English text before submission.
 
 **عنوان:** راہ یاب — ایک گیم جو طلبہ کو سوچنے میں مدد دیتی ہے کہ کون سا تعلیمی راستہ ان کے لیے موزوں ہے۔
 
@@ -127,7 +129,8 @@ The school agrees to:
 - let class 8–12 students take part with parental consent;
 - distribute and collect Form A;
 - provide a supervised room for the optional 15-minute survey;
-- nominate a coordinating teacher.
+- nominate a coordinating teacher;
+- name a designated safeguarding contact, to whom the team passes any concern a student raises (`PROTOCOL.md` §9).
 
 The team agrees to:
 - follow the approved protocol `[Ethics ref no.]`;
@@ -135,6 +138,8 @@ The team agrees to:
 - keep data encrypted and delete it on request;
 - give the school a class-level summary (groups of fewer than 5 students hidden) and a teacher guide;
 - not use the school's name in publications without permission.
+
+Coordinating teacher: __________ Safeguarding contact: __________
 
 Principal: __________ Signature and stamp: ______ Date: ______
 
@@ -147,6 +152,28 @@ You will rank the top 3 paths for 120–200 written student profiles. **None of 
 ☐ I agree to take part.  Name: ______ Signature: ______ Date: ______
 
 ---
+
+## Form F. Teacher or counsellor interview consent (only if interviews are kept, `README.md` open item 6)
+
+We would like to interview you for 30–40 minutes about how students at your school choose their study group, and what would make a class dashboard useful (SRS §17.3). We take written notes; we do not record audio unless you tick the box below. Your name and your school's name will not appear in any report. You can skip any question and stop at any time.
+
+☐ I agree to take part in the interview.  ☐ (Optional) I agree that the interview may be audio-recorded; the recording is deleted once the notes are checked.
+
+Name: ______ School: ______ Signature: ______ Date: ______
+
+---
+
+## Form G. Usability session: parent information and consent, and student assent
+
+**For parents.** Your child's school has chosen a few students to help us test whether Rahyaab is easy to use. In one session at school (about 30 minutes), your child plays the game and says out loud what they think, while two members of our team and a teacher watch and take written notes. We do not record audio, video or the screen, and we do not write down your child's name. The session is optional and separate from Form A. Your child can stop at any time.
+
+☐ I agree that my child may take part in one usability session at school.
+
+Parent or guardian name: ______ Relationship: ______ Signature or thumbprint: ______ Date: ______
+
+**For the student (read aloud at the start of the session).** We are testing the app, not you. If something is confusing, that is the app's fault, and it helps us to know. Say what you are thinking as you play. You can stop at any time and it is fine to say no.
+
+☐ I want to take part.
 
 ## Withdrawal form (any party)
 

@@ -18,7 +18,7 @@ This folder holds the documents. The code and infrastructure live next to it at 
 | `university/` | Riphah FYP templates 01, 02, 04 filled in (the `.docx` files stay local; see the README) |
 | `security/` | Threat model, compliance mapping, data retention and encryption policy, DPIA |
 | `legal/` | Privacy policy and terms of use (drafts for review) |
-| `ethics/` | Consent, assent and permission forms (English; Forms A and B also keep their Urdu versions for parents, ADR-0016) |
+| `ethics/` | The ethics application package: index and open items (`README.md`), research protocol, consent, assent and permission forms (English; Forms A and B also keep their Urdu versions for parents, ADR-0016) |
 | `testing/` | Test strategy and plan; test cases and acceptance criteria |
 | `research/` | Research reports and notes |
 | `archive/` | Superseded versions, kept for history |
@@ -43,7 +43,7 @@ This folder holds the documents. The code and infrastructure live next to it at 
 | **Security:** data retention and encryption policies | `security/DATA_GOVERNANCE.md` |
 | **Security:** Data Protection Impact Assessment | `security/DPIA.md` |
 | **Security:** age assurance (the committee's "how do you know the age is right?") | `security/AGE_ASSURANCE.md` |
-| **Legal and ethics:** privacy policy, terms, consent forms | `legal/`, `ethics/CONSENT_FORMS.md` |
+| **Legal and ethics:** privacy policy, terms, ethics package (protocol and forms) | `legal/`, `ethics/` |
 | **Testing:** test strategy and plan | `testing/TEST_STRATEGY.md` (includes load, stress, spike, soak, break-point, monkey and chaos tests) |
 | **Testing:** test cases and acceptance criteria | `testing/TEST_CASES.md` (Gherkin + 131 cases + authorisation matrix) |
 | **Evidence for the committee:** how the app measures and is validated | `project/SCIENTIFIC_BASIS.md` |
