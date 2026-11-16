@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
+import { ListenButton } from '@/components/ListenButton';
 import { Screen } from '@/components/Screen';
 import {
   bandDots,
@@ -95,6 +96,14 @@ function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId
   const { colors } = useTheme();
   const [why, setWhy] = useState<Evidence | null | 'open'>(null);
   const dots = bandDots(card.fit_band);
+  // Read aloud (FR-96): the path, its fit, the reasons and the doors, as sentences.
+  const spoken = [
+    `${rank}. ${tx(`stream.${card.stream_id}`, { defaultValue: card.stream_id })}.`,
+    `${t(`results.band.${card.fit_band}`)}.`,
+    ...card.reasons.map((r) => reasonPhrase(r)).flatMap((p) => (p ? [`${say(p)}.`] : [])),
+    ...card.doors.map((d) => `${tx(d.label_key, { defaultValue: d.to })}: ${say(doorPhrases(d)[0])}.`),
+    ...card.plan_b.map((id) => `${t('results.planB', { name: tx(`stream.${id}`, { defaultValue: id }) })}.`),
+  ].join(' ');
 
   const toggleWhy = () => {
     if (why) {
@@ -110,9 +119,12 @@ function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId
       style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
       accessibilityLabel={`${rank}. ${tx(`stream.${card.stream_id}`)}, ${t(`results.band.${card.fit_band}`)}`}
     >
-      <AppText variant="heading" accessibilityRole="header">
-        {tx(`stream.${card.stream_id}`, { defaultValue: card.stream_id })}
-      </AppText>
+      <View style={styles.titleRow}>
+        <AppText variant="heading" accessibilityRole="header" style={styles.grow}>
+          {tx(`stream.${card.stream_id}`, { defaultValue: card.stream_id })}
+        </AppText>
+        <ListenButton id={`card:${card.stream_id}`} text={spoken} />
+      </View>
       <View style={styles.band} accessibilityElementsHidden importantForAccessibility="no-hide-descendants">
         {[1, 2, 3].map((n) => (
           <View
@@ -179,6 +191,8 @@ function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId
 
 const styles = StyleSheet.create({
   column: { gap: space[2] },
+  titleRow: { flexDirection: 'row', alignItems: 'flex-start', gap: space[3] },
+  grow: { flex: 1 },
   card: { borderWidth: 1, borderRadius: radius.lg, padding: space[4], gap: space[2] },
   band: { flexDirection: 'row', alignItems: 'center', gap: space[1] },
   dot: { width: 12, height: 12, borderRadius: 6, borderWidth: 1.5 },
