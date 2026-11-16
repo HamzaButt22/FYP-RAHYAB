@@ -30,8 +30,8 @@ Parents never install anything and never create an account. The student creates 
 ### Report page (P-01)
 
 - **Rendering:** the page is built from the **stored** recommendation, never recomputed. That keeps the parent's view consistent with what the student saw.
-- **Language:** Urdu first, with an English toggle. A "Listen" button uses the Web Speech API, with recorded audio as a fallback.
-- **Size:** ≤ 150 KB on the first load. System fonts plus a subset of Gulzar.
+- **Language:** English only (ADR-0016). A "Listen" button uses the Web Speech API, with recorded audio as a fallback.
+- **Size:** ≤ 150 KB on the first load. System fonts only.
 - **Security headers:**
   - `noindex`;
   - `Referrer-Policy: no-referrer`;
@@ -51,7 +51,7 @@ There are still no parent accounts. Each child shares their own link, and each c
 ### Consent page (P-02, individual path)
 
 1. The parent opens the consent link.
-2. They read the notice in Urdu or English (with "Listen").
+2. They read the notice in English (with "Listen").
 3. They enter their phone number, choose their relation (mother, father, guardian) and tick "I am this student's parent or legal guardian" (`POST /c/{token}/otp`).
 4. They receive a 6-digit code by SMS: valid for 10 minutes, single use, at most 5 tries. At most 3 codes per link per day, 3 per phone number per day and 20 per IP per hour, which stops SMS-pumping abuse. SMS goes through a PTA-registered aggregator (COMPLIANCE.md).
 5. They confirm or refuse (`POST /c/{token}/otp/verify`).
@@ -63,7 +63,7 @@ The phone number goes into `guardian_contact`, encrypted and in a separate role.
 
 **School path (preferred for the pilot):**
 1. The teacher prints numbered consent forms from D-03 (`POST /dash/classes/{id}/consent-slips`): Form A for parents of students under 18, Form C for students aged 18 or over. Each form has a serial number and a tear-off slip with a one-time **claim code**. Printing creates the slip, unrecorded.
-2. The parent reads the form (Urdu and English), signs it, ticks the research box or not, and returns the form; the child keeps the slip.
+2. The parent reads the form (Forms A and B keep their Urdu versions, ADR-0016), signs it, ticks the research box or not, and returns the form; the child keeps the slip.
 3. The teacher records each signed form by its serial (`POST /dash/consent-slips/{serial}:record`) **and enters the student's age band from the admission register** (Form A: 13–15 or 16–17; Form C: 18+; any other combination is refused). The teacher's account and the time go to the audit log; the paper forms stay locked at the school (DPIA §2).
 4. When the student joins, they enter the class code and the claim code (or, if the form comes back later, the claim code alone on the consent screen: `POST /consents:claim`). Only a recorded slip can be claimed. The server creates the `consent` row bound to the new pseudonymous profile (`method=school_form`, type `parent` or `self`, with `slip_id` and `recorded_by`) and stores the register's age band, which wins over the student's own answer (`docs/security/AGE_ASSURANCE.md`).
 5. A slip can be claimed once; unclaimed slips expire after 60 days. A spot check by a second staff member (5 forms per class) is recorded in the audit log.

@@ -2,6 +2,8 @@
 
 What has been done so far, in detail. Everything listed here is in this repository. Sections 1–11 cover the documents and designs made before development; section 12 covers development from 9 Nov 2026. The live status is in `docs/project/GETTING_STARTED.md` §4. Links below are relative to this folder.
 
+16 Nov 2026: the interface is now English only (ADR-0016); entries below are kept as written.
+
 ## 1. Research (`docs/research/`)
 
 - **3 full reports:**
@@ -43,7 +45,7 @@ What has been done so far, in detail. Everything listed here is in this reposito
   | Accent | #F2B33D | #F2B33D |
 
   The full set also covers surfaces, text, success, danger and focus colours.
-- **Fonts:** Bricolage Grotesque for headings, Plus Jakarta Sans for the interface, Gulzar for Urdu.
+- **Fonts:** Bricolage Grotesque for headings, Plus Jakarta Sans for the interface.
 - **Icons:** Lucide.
 - **Screen sizes:** compact, phone, tablet and desktop breakpoints.
 - **The same tokens in four formats:**
@@ -126,12 +128,12 @@ What has been done so far, in detail. Everything listed here is in this reposito
   - the parent web report;
   - the teacher dashboard.
 - **Formats:** editable HTML files, PNG images, and the same screens in Figma.
-- **8 Play Store screenshots** with English and Urdu captions.
+- **8 Play Store screenshots** with English captions.
 
 ## 7. Accessibility, security and store
 
 - **Accessibility** (`design/specs/accessibility.md`):
-  - read-aloud, including Urdu, with recorded audio when the phone has no Urdu voice;
+  - read-aloud in English;
   - text size up to 200%;
   - high contrast;
   - easy read;
@@ -145,7 +147,7 @@ What has been done so far, in detail. Everything listed here is in this reposito
   - the server decides results;
   - collect as little data as possible.
 - **Store and search** (`docs/project/STORE_AND_SEARCH.md`):
-  - the Play listing in English and Urdu, within Play's limits;
+  - the Play listing in English, within Play's limits;
   - search terms;
   - the Data safety answers;
   - a website SEO plan;
@@ -199,7 +201,7 @@ What has been done so far, in detail. Everything listed here is in this reposito
   - class check-in for promotion or repeating (FR-101, screen S-31);
   - O/A-Level, DAE, private, returning and madrassa learners (FR-104).
 - **Guided errors:**
-  - every field says what is wrong, how to fix it, and gives an example, in EN and UR, with read-aloud;
+  - every field says what is wrong, how to fix it, and gives an example, in English, with read-aloud;
   - secrets and existence checks stay generic, so attackers learn nothing (FR-102, NFR-73, NFR-74);
   - see `design/specs/forms-and-errors.md` and screen S-03e.
 - **Resilience tests:** load, stress, spike, soak, break-point, volume, monkey, client endurance, server and client chaos, fuzzing and mutation testing (NFR-75, NFR-76), plus a weekly `resilience.yml` workflow.
@@ -255,11 +257,11 @@ All merged into `main` through pull requests, with CI green:
 - **Mobile:** the real join screen with the Keystore device key; the other onboarding cards and field help; the encrypted SQLite outbox; the Ink story; the game weeks, tasks and results screens.
 - **Feasibility (FYP-1):** run the V1 simulation and a budget-phone performance spike.
 - **Ethics approval** for the pilot with minors.
-- **Reviews:** a native Urdu review of the app text and the consent forms; ethics office review of the DPIA, privacy policy and consent forms; counsellor review of `path_occupations.json`.
+- **Reviews:** a native Urdu review of the paper consent forms (Forms A and B); ethics office review of the DPIA, privacy policy and consent forms; counsellor review of `path_occupations.json`.
 - **Board rules:** verify the Sindh, Balochistan and AJK routes.
 - **Confirmations:** the items marked "verify" in `docs/security/COMPLIANCE.md`.
 - **Figma:** import the 31 newer screens (`design/figma/README.md`).
-- **Design work:** scene illustrations and the avatar builder; Urdu right-to-left versions of the screen designs.
+- **Design work:** scene illustrations and the avatar builder.
 - **Team process:** create the GitHub issues and project board; make the repository private once the team has GitHub Pro.
 - **Committee:** rehearse with `docs/project/COMMITTEE_QA.md`.
 

@@ -25,7 +25,7 @@ def valid_body(**overrides: Any) -> dict[str, Any]:
         "birth_year": 2011,
         "birth_month": 5,
         "nickname": "Ayesha_10",
-        "lang": "ur",
+        "lang": "en",
         "device": {
             "device_tier": "low",
             "os_major": 13,
@@ -122,3 +122,9 @@ def test_android_7_is_the_oldest_accepted_version() -> None:  # NFR-14: minSdk 2
         "code": "out_of_range",
         "message_key": "errors.device.os_major.out_of_range",
     } in (r.json()["errors"])
+
+
+def test_only_english_is_accepted() -> None:  # ADR-0016: the interface is English only
+    r = client().post(URL, json=valid_body(lang="ur"))
+    assert r.status_code == 422
+    assert r.json()["errors"][0]["field"] == "lang"

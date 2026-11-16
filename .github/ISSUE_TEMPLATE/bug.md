@@ -13,6 +13,6 @@ labels: bug
 
 **Actual**
 
-**Device / build / language:** e.g. Tecno Spark 20, Android 14, build 0.3.1, Urdu
+**Device / build:** e.g. Tecno Spark 20, Android 14, build 0.3.1
 
 > Never paste real student data, tokens or logs that contain personal data.

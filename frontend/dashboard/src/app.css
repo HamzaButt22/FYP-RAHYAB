@@ -1,16 +1,6 @@
 /* Dashboard styles. Colours, radii and spacing come from design/tokens/tokens.css.
-   Rules for Urdu (the user skills urdu-language-support and urdu-anti-clipping-design):
-   - logical properties only (inline-start/end, block-start/end), so the page mirrors with <html dir>;
-   - Gulzar for Urdu, larger than the Latin sizes, with line-height 2.4 for body text and at least 2.0
-     for headings, buttons, labels and navigation;
-   - no fixed heights and no overflow clipping on anything that holds text: min-height + padding instead. */
+   No fixed heights and no overflow clipping on anything that holds text: min-height + padding instead. */
 
-@font-face {
-  font-family: Gulzar;
-  src: url('/fonts/Gulzar-Regular.ttf') format('truetype');
-  font-weight: 400;
-  font-display: swap;
-}
 @font-face {
   font-family: 'Plus Jakarta Sans';
   src: url('/fonts/PlusJakartaSans-Medium.ttf') format('truetype');
@@ -139,8 +129,7 @@ body {
   background: var(--primary);
   color: var(--on-primary);
 }
-.btn.secondary,
-.btn.lang {
+.btn.secondary {
   background: transparent;
   color: var(--secondary-text);
   border: 1.5px solid var(--secondary);
@@ -237,53 +226,3 @@ body {
   }
 }
 
-/* ------------------------------------------------------------------ Urdu */
-/* Gulzar reserves about 1.5 em above and 1.2 em below the baseline, so Urdu gets bigger sizes and line
-   heights of 2.0 (single-line labels) to 2.4 (running text), plus vertical padding on every box. */
-html:lang(ur) body {
-  font: 400 17px/2.4 var(--font-urdu);
-}
-html:lang(ur) .demo {
-  padding-block: 12px;
-}
-html:lang(ur) .nav {
-  font: 400 18px/2 var(--font-urdu);
-  padding-block: 8px;
-}
-html:lang(ur) .h1 {
-  font: 400 32px/2 var(--font-urdu);
-  letter-spacing: 0;
-}
-html:lang(ur) .btn {
-  font: 400 17px/2 var(--font-urdu);
-  padding-block: 8px;
-}
-html:lang(ur) .tbl {
-  font: 400 17px/2.4 var(--font-urdu);
-}
-html:lang(ur) .tbl th {
-  font-weight: 400;
-  line-height: 2;
-  padding-block: 14px;
-}
-html:lang(ur) .tbl td {
-  padding-block: 14px;
-}
-html:lang(ur) .chip {
-  font: 400 15px/2 var(--font-urdu);
-  padding: 6px 14px;
-}
-/* Latin inside Urdu pages keeps a Latin font (the brand word, the language button, nicknames). */
-html:lang(ur) [lang='en'],
-html:lang(ur) .nickname {
-  font-family: var(--font-sans);
-  line-height: 22px;
-}
-html:lang(ur) .btn[lang='en'] {
-  font: 700 15px/22px var(--font-sans);
-}
-/* The Urdu language button on the English page */
-.btn[lang='ur'] {
-  font: 400 17px/2 var(--font-urdu);
-  padding-block: 8px;
-}

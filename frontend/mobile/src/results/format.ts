@@ -1,6 +1,6 @@
 // The top-3 result as the API sends it (docs/api/openapi.yaml Recommendation, PathCard, Door, Reason),
 // and how each part is worded. The server sends codes, never text: this file turns them into translation
-// keys with parameters, so English and Urdu stay in the locale files. Pure functions, tested with `pnpm test`.
+// keys with parameters, so all wording stays in en.json. Pure functions, tested with `pnpm test`.
 
 export type InterestType = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
 export type Band = 'strong' | 'good' | 'worth_a_look';

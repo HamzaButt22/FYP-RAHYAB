@@ -30,22 +30,20 @@ Every option is off by default except where Android already has a matching setti
 ## 2. Read aloud (FR-96)
 
 - **App engine:** the phone's own text-to-speech through `expo-speech`. Nothing is sent to a server, and no third party hears the student.
-- **Languages:**
-  - English text uses an English voice.
-  - In Urdu mode the app reads the Urdu-script version of each line with an Urdu voice (`ur-PK`), when the phone has one.
-  - Roman Urdu is never read by an Urdu voice, because it would sound wrong. Every dialogue line is therefore written in **Urdu script as well**.
-- **Checking the voice:** at first use, `Speech.getAvailableVoicesAsync()` checks for an Urdu voice.
-  - If none is installed, the app shows a one-time hint: "Install the Urdu voice in Google Text-to-Speech, or use the recorded voice."
-  - It then falls back to the **recorded audio pack** (FR-32): whole clips for fixed text (instructions, prologue), and **assembled clips** for personalised text (the letter, the Blueprint and the parent report are built from recorded stream names, fit phrases and sentence templates). If neither covers a line, the screen says plainly "This line has no audio yet" instead of staying silent. The parent page uses the same clips when the browser has no Urdu voice.
+- **Language:** English only (ADR-0016). Every line is read with an English voice.
+- **Checking the voice:** at first use, `Speech.getAvailableVoicesAsync()` checks for an English voice.
+  - If none is installed, the app shows a one-time hint: "Install an English voice in Google Text-to-Speech."
+  - If the phone still has no voice for a line, the screen says plainly "This line has no audio yet" instead of staying silent.
+  - The recorded Urdu audio pack (FR-32, WBS 6.5) is removed with the Urdu audio (ADR-0016).
 - **While reading:**
   - the sentence being read is highlighted;
   - tapping again stops it;
   - reading pauses when the app goes to the background.
-- **Parent page (P-01):** a "Listen" button using the browser's Web Speech API, with the same Urdu fallback. Many parents read Urdu slowly or not at all.
+- **Parent page (P-01):** a "Listen" button using the browser's Web Speech API, in English. Parents who read only Urdu may not follow the page; the paper consent form (Forms A and B) keeps its Urdu version (ADR-0016).
 
 ## 3. Screen readers (TalkBack and VoiceOver)
 
-- Every control has an `accessibilityLabel` in the current language, a role (button, header, adjustable, link) and a state (selected, disabled).
+- Every control has an `accessibilityLabel` in English, a role (button, header, adjustable, link) and a state (selected, disabled).
 - Story text sits in a live region so new lines are announced. Focus moves to the first new line, then to the choices.
 - Dil and Duniya cards are announced with their voice and text: "Dil says: Let me open it up. Button, 1 of 2."
 - Focus order follows reading order. Nothing traps focus. Every screen has a heading.
@@ -73,7 +71,7 @@ Every task family has an **accessible mode** with buttons instead of drag, and a
 ## 5. Low vision and colour
 
 - Text contrast is 4.5:1 or better everywhere, and 7:1 in high contrast. Every token pair is listed in `design/tokens` and SRS §8.2.
-- Layouts work at 200% text with no clipped text. Nastaliq never sits in a fixed-height box.
+- Layouts work at 200% text with no clipped text.
 - Meaning never depends on colour alone:
   - Dil and Duniya carry their names, not just colour;
   - bands use dots and words;
@@ -116,7 +114,7 @@ Every task family has an **accessible mode** with buttons instead of drag, and a
 
 - Semantic HTML: landmarks, headings, real buttons, labelled form fields, visible focus.
 - 200% zoom and 320 px width work without horizontal scrolling.
-- Parent page: "Listen" button (Web Speech API), Urdu-first, no app or login.
+- Parent page: "Listen" button (Web Speech API), plain English, no app or login.
 - Dashboard: keyboard-only use, data tables with proper headers, CSV export as an alternative to charts.
 
 ## 10. Testing
@@ -124,11 +122,11 @@ Every task family has an **accessible mode** with buttons instead of drag, and a
 | Check | When |
 |---|---|
 | Android Accessibility Scanner on every screen; axe-core on web pages | Every release |
-| TalkBack walkthrough of onboarding, one full week, the Blueprint and sharing, in English and Urdu | Every release |
+| TalkBack walkthrough of onboarding, one full week, the Blueprint and sharing | Every release |
 | Switch Access and keyboard walkthrough | Every release |
 | 200% font, high contrast, reduced motion, greyscale and CVD-simulated screenshots | Every release |
 | Usability round including at least 2 students with a disability (with consent), for example a low-vision student and a student with dyslexia | Usability rounds 1 and 2 |
-| Urdu TTS on 3 budget phones; fallback audio path when no Urdu voice exists | Before the pilot |
+| English TTS on 3 budget phones, including one with no English voice installed (the "no audio yet" message) | Before the pilot |
 
 ### WCAG 2.2 checklist: the criteria new in 2.2
 

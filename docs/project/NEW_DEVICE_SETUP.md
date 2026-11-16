@@ -154,7 +154,6 @@ This file is not in the repository, so cloud (EAS) and Linux builds keep their d
 | `The token '&&' is not a valid statement separator` | Windows PowerShell 5.1 | Run the commands one at a time (step 1) |
 | App shows "Unmatched Route" | A route was added without a matching file | Check `src/app/` against the links; `pnpm typecheck` catches most of these |
 | The join screen says "You're offline" | The backend is not running, or the device has no `adb reverse` (it is lost when the emulator restarts) | `python tools/dev.py up`, or `adb reverse tcp:8000 tcp:8000` |
-| Urdu letters such as گ lose their top stroke | Android clips Nastaliq above the first line | Always use `AppText` for text; it adds the headroom (`frontend/mobile/README.md`) |
 
 ## 9. What is not in the repository, on purpose
 

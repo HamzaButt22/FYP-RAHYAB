@@ -1,4 +1,4 @@
-// The teacher and admin dashboard. First screen: D-03 class roster, in English and Urdu, with sample data
+// The teacher and admin dashboard. First screen: D-03 class roster, with sample data
 // until staff sign-in and the dashboard API exist (designs in design/screens/, API in docs/api/openapi.yaml).
 import './app.css';
 import { I18nProvider } from './i18n';

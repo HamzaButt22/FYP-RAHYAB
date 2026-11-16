@@ -2,6 +2,8 @@
 
 Start here. Current design files live in `design/`. This folder holds the project documents, the pre-development engineering documents, and the research behind them.
 
+The app's interface is English only since 16 Nov 2026 (ADR-0016).
+
 ## Folders
 
 This folder holds the documents. The code and infrastructure live next to it at the repository root (see the root `README.md`): `frontend/` (mobile app, dashboard), `backend/` (API, scoring), `database/` (schema), `infra/` (Docker, Kubernetes, backups) and `.github/` (CI/CD).
@@ -16,7 +18,7 @@ This folder holds the documents. The code and infrastructure live next to it at 
 | `university/` | Riphah FYP templates 01, 02, 04 filled in (the `.docx` files stay local; see the README) |
 | `security/` | Threat model, compliance mapping, data retention and encryption policy, DPIA |
 | `legal/` | Privacy policy and terms of use (drafts for review) |
-| `ethics/` | Consent, assent and permission forms (English, with Urdu drafts) |
+| `ethics/` | Consent, assent and permission forms (English; Forms A and B also keep their Urdu versions for parents, ADR-0016) |
 | `testing/` | Test strategy and plan; test cases and acceptance criteria |
 | `research/` | Research reports and notes |
 | `archive/` | Superseded versions, kept for history |
@@ -29,7 +31,7 @@ This folder holds the documents. The code and infrastructure live next to it at 
 | **Planning:** WBS and Gantt chart | `project/PLAN.md` |
 | **Scope:** MVP for both semesters | `project/MVP.md` |
 | **Scope:** exceptions and edge cases | `project/EDGE_CASES.md` |
-| **Technical alignment:** RFCs and ADRs | `architecture/rfc/` (4), `architecture/adr/` (14) |
+| **Technical alignment:** RFCs and ADRs | `architecture/rfc/` (4), `architecture/adr/` (16) |
 | **Technical alignment:** API specification | `api/openapi.yaml` (validated), `api/README.md`, `api/api-reference.html` |
 | **Infrastructure:** CI/CD pipeline design | `devops/CI_CD.md` |
 | **Infrastructure:** deployment, Docker, staging, Kubernetes | `devops/DEPLOYMENT.md`, `infra/docker/` (repository root) |

@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block title %}Dashboard - RahYaab{% endblock %}
+{% block content %}
+<h1>Dashboard</h1>
+<p class="sub">Live overview of everything stored in the telemetry database.</p>
+<div class="row" style="margin-bottom:14px"><label><input type="checkbox" id="incdemo" checked> include scripted demo bots</label></div>
+
+<div class="grid g4" id="kpis"></div>
+
+<div class="grid g2" style="margin-top:16px">
+  <div class="card"><h2>Average OCEAN profile</h2><div id="avg"></div><p class="small muted" id="avgnote"></p></div>
+  <div class="card"><h2>Score distributions</h2><div class="grid" id="dists" style="grid-template-columns:repeat(auto-fit,minmax(150px,1fr))"></div></div>
+</div>
+
+<div class="card" style="margin-top:16px"><h2>Players</h2><div id="players"></div></div>
+<div class="card" style="margin-top:16px"><h2>Recent sessions</h2><div id="sessions"></div></div>
+<div class="card" style="margin-top:16px"><h2>All telemetry events by type</h2><div id="events"></div></div>
+{% endblock %}
+{% block scripts %}
+<script>
+const E = RY.esc;
+async function load() {
+  const demo = document.getElementById('incdemo').checked ? 1 : 0;
+  const [ov, players, sessions, tel] = await Promise.all([
+    RY.get('/api/overview?include_demo=' + demo), RY.get('/api/players'), RY.get('/api/sessions?limit=40'),
+    RY.get('/api/telemetry/overview?include_demo=' + demo)]);
+  const k = (v, l) => `<div class="card kpi"><div class="v">${v}</div><div class="l">${l}</div></div>`;
+  document.getElementById('kpis').innerHTML =
+    k(ov.players, 'Players') + k(ov.sessions, 'Sessions') + k(ov.completed_assessments, 'Completed assessments') +
+    k(RY.fmtDur(ov.avg_session_duration_ms), 'Average session duration') + k(ov.total_events.toLocaleString(), 'Telemetry events stored');
+  if (ov.average_scores) { RY.traitBars(document.getElementById('avg'), ov.average_scores);
+    document.getElementById('avgnote').textContent = 'Mean of ' + ov.completed_assessments + ' completed assessments.'; }
+  else document.getElementById('avg').innerHTML = '<div class="empty">No completed assessments yet. Play the game or run <code>python -m tools.generate_demo_data</code>.</div>';
+  document.getElementById('dists').innerHTML = RY.TRAITS.map(t => `<div><div class="small muted">${RY.TRAIT_NAME[t]}</div><div id="d-${t}"></div></div>`).join('');
+  RY.TRAITS.forEach(t => RY.histogram(document.getElementById('d-' + t), tel.score_distribution[t] || [], RY.TRAIT_COLOR[t]));
+  const shown = players.filter(p => demo || !p.is_demo);
+  document.getElementById('players').innerHTML = shown.length ? `<table><tr><th>ID</th><th>Name</th><th>Created</th><th>Sessions</th><th>Completed</th><th></th></tr>${shown.map(p =>
+    `<tr><td>${p.player_id}</td><td>${E(p.name)} ${p.is_demo ? '<span class="pill demo">demo bot</span>' : ''}</td><td>${E(p.created_at)}</td><td>${p.n_sessions}</td><td>${p.n_completed || 0}</td><td><a href="/players/${p.player_id}">Details &rarr;</a></td></tr>`).join('')}</table>` : '<div class="empty">No players yet.</div>';
+  const ss = sessions.filter(s => demo || !s.is_demo);
+  document.getElementById('sessions').innerHTML = ss.length ? `<table><tr><th>Session</th><th>Player</th><th>Started</th><th>Duration</th><th>Status</th><th>Events</th><th></th></tr>${ss.map(s =>
+    `<tr><td class="mono">${E(s.session_id)}</td><td>${E(s.player_name)}</td><td>${E(s.started_at)}</td><td>${RY.fmtDur(s.duration_ms)}</td><td><span class="pill ${s.status}">${s.status}</span></td><td>${s.n_events}</td><td><a href="/players/${s.player_id}?session=${encodeURIComponent(s.session_id)}">Open</a> &middot; <a href="/sessions/${encodeURIComponent(s.session_id)}/events">Raw events</a></td></tr>`).join('')}</table>` : '<div class="empty">No sessions yet.</div>';
+  RY.hbars(document.getElementById('events'), Object.entries(tel.event_counts).map(([l, v]) => ({label: l, value: v})), {left: 190, width: 900});
+}
+document.getElementById('incdemo').addEventListener('change', load);
+load().catch(e => document.getElementById('kpis').innerHTML = '<div class="card">Failed to load: ' + E(e.message) + '</div>');
+</script>
+{% endblock %}

@@ -9,7 +9,7 @@
 
 ## Context
 
-The game must run smoothly on 4 GB Android phones (Tecno, Infinix, Redmi A-series) with a download of 35 MB or less (NFR-11), offline, in Urdu and English. The story, the six task families and the results all live in one app.
+The game must run smoothly on 4 GB Android phones (Tecno, Infinix, Redmi A-series) with a download of 35 MB or less (NFR-11), offline, in English. The story, the six task families and the results all live in one app. Since 16 Nov 2026 the interface is English only (ADR-0016).
 
 ## Decision
 

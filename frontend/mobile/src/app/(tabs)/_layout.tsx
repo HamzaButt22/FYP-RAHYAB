@@ -1,5 +1,4 @@
 // Main tabs from S-07: Home, Explore, Family, You. Icons are Lucide, outline, 2 px stroke, 24 px.
-// The tab order mirrors automatically in Urdu (right to left).
 
 import { Tabs } from 'expo-router';
 import { Compass, House, User, Users, type LucideIcon } from 'lucide-react-native';
@@ -20,9 +19,8 @@ function icon(Icon: LucideIcon) {
   return TabIcon;
 }
 
-// Labels use AppText so Urdu gets Gulzar with enough headroom (the bar of گ is otherwise cut off). Like
-// display text they stop growing at 1.3x the phone's font scale, and the bar grows with them (at 200%
-// they overflowed the bar and were cut off at the bottom).
+// Labels use AppText (the brand type scale). They stop growing at 1.3x the phone's font scale, like
+// display text, and the bar grows with them, so large text settings never push them out of the bar.
 const LABEL_MAX_SCALE = 1.3;
 
 function label(text: string) {
@@ -42,11 +40,10 @@ function label(text: string) {
 }
 
 export default function TabsLayout() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { colors } = useTheme();
-  const urdu = i18n.language === 'ur';
   const { fontScale } = useWindowDimensions();
-  const barHeight = Math.round((urdu ? 88 : 64) * Math.min(Math.max(fontScale, 1), LABEL_MAX_SCALE));
+  const barHeight = Math.round(64 * Math.min(Math.max(fontScale, 1), LABEL_MAX_SCALE));
   const tab = (key: 'home' | 'explore' | 'family' | 'you', Icon: LucideIcon) => ({
     title: t(`tabs.${key}`),
     tabBarLabel: label(t(`tabs.${key}`)),

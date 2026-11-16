@@ -1,0 +1,7 @@
+target-version = "py313"
+line-length = 120
+
+[lint]
+# Start with errors that are always bugs (syntax errors, undefined names, unused imports).
+# Widen this list sprint by sprint, e.g. add "B" (bugbear) and "I" (import order) in Sprint 2.
+select = ["E9", "F"]

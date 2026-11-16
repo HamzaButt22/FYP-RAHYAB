@@ -231,7 +231,7 @@ A release is blocked by any critical or high finding without a fix or a document
    - disable the affected route or feature flag;
    - rotate secrets.
 3. **Assess:** what data, whose, and how many records.
-4. **Notify:** schools and parents within 72 hours, in Urdu and English, with what happened and what to do.
+4. **Notify:** schools and parents within 72 hours, in plain English, with what happened and what to do.
 5. **Fix and learn:** a patch, a test that would have caught it, and a short post-incident note.
 
 ## 8. Responsible disclosure

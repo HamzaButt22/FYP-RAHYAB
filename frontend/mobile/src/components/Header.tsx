@@ -1,9 +1,9 @@
 // Screen header from the S-03 designs: a round back button, the screen name, and "?" (FR-103: every
-// screen says what it is for in two lines). The back arrow points the other way in Urdu.
+// screen says what it is for in two lines). The back arrow points left.
 
 import { useState } from 'react';
-import { I18nManager, Pressable, StyleSheet, View } from 'react-native';
-import { ChevronLeft, ChevronRight, CircleHelp } from 'lucide-react-native';
+import { Pressable, StyleSheet, View } from 'react-native';
+import { ChevronLeft, CircleHelp } from 'lucide-react-native';
 import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '@/theme/ThemeProvider';
@@ -21,7 +21,6 @@ export function Header({ title, onBack, help }: Props) {
   const { colors } = useTheme();
   const { t } = useTranslation();
   const [showHelp, setShowHelp] = useState(false);
-  const Back = I18nManager.isRTL ? ChevronRight : ChevronLeft;
   return (
     <View style={styles.wrap}>
       <View style={styles.row}>
@@ -32,7 +31,7 @@ export function Header({ title, onBack, help }: Props) {
             onPress={onBack}
             style={[styles.round, { backgroundColor: colors.sunken }]}
           >
-            <Back color={colors.text} size={26} accessibilityElementsHidden importantForAccessibility="no" />
+            <ChevronLeft color={colors.text} size={26} accessibilityElementsHidden importantForAccessibility="no" />
           </Pressable>
         ) : null}
         <AppText variant="title" style={styles.title}>

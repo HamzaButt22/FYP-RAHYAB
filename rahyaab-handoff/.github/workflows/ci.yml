@@ -1,0 +1,105 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  changes:
+    name: Detect changed areas
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    outputs:
+      mobile: ${{ steps.filter.outputs.mobile }}
+      engine: ${{ steps.filter.outputs.engine }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dorny/paths-filter@v3
+        id: filter
+        with:
+          filters: |
+            mobile:
+              - 'src/**'
+              - 'assets/**'
+              - 'app.json'
+              - 'package.json'
+              - 'pnpm-lock.yaml'
+              - 'pnpm-workspace.yaml'
+              - 'tsconfig.json'
+              - 'eslint.config.js'
+              - '.github/workflows/ci.yml'
+            engine:
+              - 'career-game-prototype/**'
+              - '.github/workflows/ci.yml'
+
+  mobile:
+    name: Mobile app (lint, typecheck, test)
+    needs: changes
+    if: needs.changes.outputs.mobile == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 10
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+      - name: Lint
+        run: pnpm lint
+      - name: Typecheck
+        run: pnpm exec tsc --noEmit
+      - name: Unit tests
+        run: pnpm run --if-present test --ci
+      - name: Expo dependency check
+        # Non-blocking until the app has settled dependencies; make it blocking in Sprint 2.
+        continue-on-error: true
+        run: pnpm dlx expo-doctor@latest
+
+  engine:
+    name: Scoring engine (lint, tests, coverage) - Python ${{ matrix.python }}
+    needs: changes
+    if: needs.changes.outputs.engine == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ['3.13', '3.14']
+    defaults:
+      run:
+        working-directory: career-game-prototype
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: career-game-prototype/requirements-dev.txt
+      - name: Install tools
+        run: python -m pip install -r requirements-dev.txt
+      - name: Lint
+        run: python -m ruff check engine tests
+      - name: Tests with coverage gate
+        # pygame is not installed here, so the window smoke tests skip; the pure logic is what is gated.
+        run: python -m pytest -q --cov=engine --cov-report=term-missing --cov-report=xml --cov-fail-under=90
+      - name: Upload coverage report
+        if: matrix.python == '3.13'
+        uses: actions/upload-artifact@v4
+        with:
+          name: engine-coverage
+          path: career-game-prototype/coverage.xml

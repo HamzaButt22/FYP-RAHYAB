@@ -2,7 +2,6 @@
 !include ../_style/rahyaab-uml.iuml
 title Onboarding (UML activity diagram)
 start
-:Choose language;
 :Read welcome cards;
 repeat
   if (Has a class code?) then (yes)

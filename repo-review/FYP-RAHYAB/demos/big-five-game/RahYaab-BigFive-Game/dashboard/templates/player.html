@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+{% block title %}{{ player.name }} - RahYaab{% endblock %}
+{% block content %}
+<p class="muted small"><a href="/">&larr; Dashboard</a></p>
+<h1>{{ player.name }} {% if player.is_demo %}<span class="pill demo">demo bot</span>{% endif %}</h1>
+<p class="sub">Player #{{ player.player_id }} &middot; created {{ player.created_at }} &middot; {{ sessions|length }} session(s)</p>
+
+{% if not sessions %}
+  <div class="card empty">This player has no sessions yet.</div>
+{% else %}
+<div class="row" style="margin-bottom:16px">
+  <label for="sess">Session</label>
+  <select id="sess">
+    {% for s in sessions %}<option value="{{ s.session_id }}" {{ 'selected' if s.session_id == sid }}>{{ s.session_id }} - {{ s.status }} ({{ s.n_events }} events)</option>{% endfor %}
+  </select>
+  <button id="reprocess">Re-run analysis</button>
+  <a id="rawlink" href="#">Raw events &rarr;</a>
+</div>
+
+<div class="grid g2">
+  <div class="card"><h2>OCEAN scores</h2><div id="traits"></div><p class="small muted" id="model"></p></div>
+  <div class="card"><h2>Profile shape</h2><div id="radar" style="text-align:center"></div></div>
+</div>
+<div class="card" style="margin-top:16px"><h2>Behavioral evidence</h2><div id="evidence" class="grid g2"></div></div>
+<div class="grid g2" style="margin-top:16px">
+  <div class="card"><h2>Behavioral features</h2><div id="features"></div></div>
+  <div class="card"><h2>Session information</h2><div id="sessinfo"></div><h3>Telemetry statistics</h3><div id="stats"></div></div>
+</div>
+<h2 style="margin-top:26px">Telemetry for this session</h2>
+<div id="telemetry"></div>
+{% endif %}
+{% endblock %}
+{% block scripts %}
+{% if sessions %}
+<script>
+const E = RY.esc, SESSIONS = {{ sessions|tojson }};
+const FEAT_LABEL = {exploration:'Exploration', planning:'Planning & persistence', social:'Social', pressure:'Risk & pressure', decision:'Decision timing', raw:'Raw counts'};
+async function show(sid) {
+  const s = SESSIONS.find(x => x.session_id === sid);
+  document.getElementById('rawlink').href = '/sessions/' + encodeURIComponent(sid) + '/events';
+  document.getElementById('sessinfo').innerHTML = `<table>
+    <tr><td>Session</td><td class="mono">${E(sid)}</td></tr><tr><td>Status</td><td><span class="pill ${s.status}">${s.status}</span></td></tr>
+    <tr><td>Started</td><td>${E(s.started_at)}</td></tr><tr><td>Duration</td><td>${RY.fmtDur(s.duration_ms)}</td></tr>
+    <tr><td>Game version / seed</td><td>${E(s.game_version)} / ${E(s.seed)}</td></tr></table>`;
+  const [res, feats, tel] = await Promise.all([
+    fetch('/api/sessions/' + sid + '/result').then(r => r.ok ? r.json() : null),
+    RY.get('/api/sessions/' + sid + '/features'), RY.get('/api/sessions/' + sid + '/telemetry')]);
+  if (res) {
+    RY.traitBars(document.getElementById('traits'), res.scores, res.labels);
+    RY.radar(document.getElementById('radar'), res.scores);
+    document.getElementById('model').textContent = `Model: ${res.model_name} ${res.model_version} - validated: ${res.is_validated ? 'yes' : 'NO (prototype)'}`;
+    document.getElementById('evidence').innerHTML = RY.TRAITS.map(t => { const ev = res.evidence[t];
+      return `<div><h3 style="color:${RY.TRAIT_COLOR[t]}">${E(ev.trait)}: ${ev.label} (${Math.round(ev.score)})</h3><div class="small">${E(ev.headline)}</div>
+      <ul class="ev small">${ev.indicators.map(i => `<li>${E(i)}</li>`).join('')}</ul>
+      <div class="small muted" style="margin-top:6px">Coverage ${Math.round(ev.coverage * 100)}% &middot; confidence ${E(ev.confidence)}. ${E(ev.caveat)}</div></div>`; }).join('');
+  } else {
+    ['traits','radar','evidence'].forEach(id => document.getElementById(id).innerHTML = '<div class="empty">No result for this session (assessment not completed).</div>');
+    document.getElementById('model').textContent = '';
+  }
+  const groups = {}; feats.forEach(f => (groups[f.feature_group] ||= []).push(f));
+  const tbl = fs => `<table>${fs.map(f => `<tr><td class="mono">${E(f.feature_name)}</td><td style="text-align:right"><b>${(+f.feature_value).toFixed(3)}</b></td></tr>`).join('')}</table>`;
+  document.getElementById('features').innerHTML = feats.length ? Object.entries(groups).map(([g, fs]) =>
+    g === 'raw' ? `<details class="feat-group"><summary>${FEAT_LABEL[g]} (${fs.length}) - the counts behind the rates</summary>${tbl(fs)}</details>`
+                : `<div class="feat-group"><h3>${FEAT_LABEL[g] || g}</h3>${tbl(fs)}</div>`).join('')
+    : '<div class="empty">No features computed.</div>';
+  const n = Object.values(tel.event_counts || {}).reduce((a, b) => a + b, 0);
+  document.getElementById('stats').innerHTML = `<table><tr><td>Total events</td><td><b>${n}</b></td></tr><tr><td>Decisions made</td><td><b>${(tel.decision_times || []).length}</b></td></tr><tr><td>Setbacks (failures)</td><td><b>${(tel.risk?.failures || []).length}</b></td></tr></table>`;
+  renderTelemetry(document.getElementById('telemetry'), tel);
+}
+const sel = document.getElementById('sess');
+sel.addEventListener('change', () => { history.replaceState(null, '', '?session=' + encodeURIComponent(sel.value)); show(sel.value); });
+document.getElementById('reprocess').addEventListener('click', async () => { const r = await RY.post('/api/sessions/' + sel.value + '/reprocess'); if (r.error) alert(r.error); else show(sel.value); });
+show(sel.value);
+</script>
+{% endif %}
+{% endblock %}

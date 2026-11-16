@@ -6,8 +6,7 @@ import { Redirect } from 'expo-router';
 import { useAppState } from '@/state/AppState';
 
 export default function Start() {
-  const { language, session, onboardingDone } = useAppState();
-  if (!language) return <Redirect href="/language" />;
+  const { session, onboardingDone } = useAppState();
   if (!session) return <Redirect href="/welcome" />;
   if (!onboardingDone) return <Redirect href="/consent" />;
   return <Redirect href="/home" />;

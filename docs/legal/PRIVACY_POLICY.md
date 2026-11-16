@@ -1,6 +1,6 @@
 # Rahyaab privacy policy (draft for review)
 
-**Draft v0.1, 5 Nov 2026.** For the pilot. It must be reviewed by the supervisor and the university's ethics or legal office before it is published. A plain-language Urdu version (in the app and at `/ur/privacy`) is required. This draft reflects `docs/security/DATA_GOVERNANCE.md` and `DPIA.md`; if they change, change this too.
+**Draft v0.1, 5 Nov 2026.** For the pilot. It must be reviewed by the supervisor and the university's ethics or legal office before it is published. It is English only, in plain language at about Grade 6 reading level; English only since 16 Nov 2026 (ADR-0016). This draft reflects `docs/security/DATA_GOVERNANCE.md` and `DPIA.md`; if they change, change this too.
 
 ---
 

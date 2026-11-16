@@ -1,9 +1,8 @@
 // The text box inside a Field: 56 dp tall, a 2 dp red border when there is a problem, a focus ring
-// otherwise. Codes are typed in Latin letters; nicknames may be Urdu, so they follow the app's script.
+// otherwise. Codes get wide letter spacing.
 
 import { forwardRef, useState, type ComponentRef } from 'react';
 import { StyleSheet, TextInput, type TextInputProps } from 'react-native';
-import { useTranslation } from 'react-i18next';
 
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, space, typography } from '@/theme/tokens';
@@ -22,10 +21,8 @@ export const TextInputBox = forwardRef<TextInputHandle, Props>(function TextInpu
   ref,
 ) {
   const { colors } = useTheme();
-  const { i18n } = useTranslation();
   const [focused, setFocused] = useState(false);
-  const urdu = i18n.language === 'ur' && !code;
-  const font = urdu ? typography.urduBody : typography.bodyL;
+  const font = typography.bodyL;
   return (
     <TextInput
       ref={ref}

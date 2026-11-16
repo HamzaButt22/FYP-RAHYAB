@@ -55,15 +55,15 @@ Pick issue (MVP sprint)  →  "Plan this, citing FR/TC IDs and files"  →  corr
 > Implement `POST /v1/auth/student/join` exactly as specified in docs/api/openapi.yaml, using the tables in database/schema.sql. Follow FR-03, FR-04, FR-100 and FR-102, and design/specs/forms-and-errors.md (field `errors[]` with message keys; generic code errors per NFR-74). First write pytest tests for TC-ONB-02, TC-ONB-03, TC-ONB-04, TC-VAL-03, TC-VAL-07 and TC-EDGE-06. Then implement, and run `ruff`, `mypy` and `pytest`.
 
 **Mobile screen:**
-> Build screens S-01 to S-03 in Expo Router (SDK 58; read the versioned docs first). Use `design/tokens/theme.ts` for every colour, space and font; no hex values in components. Match `design/screens/S-01…`, `S-03…` and `S-03e…` HTML in light and dark. Add `accessibilityLabel`s and a read-aloud button (FR-96). Use pickers for class and birth year. Run `npx expo lint` and `npx tsc --noEmit`.
+> Build screens S-02 to S-03 in Expo Router (S-01, the language choice, is removed, ADR-0016) (SDK 58; read the versioned docs first). Use `design/tokens/theme.ts` for every colour, space and font; no hex values in components. Match `design/screens/S-02…`, `S-03…` and `S-03e…` HTML in light and dark. Add `accessibilityLabel`s and a read-aloud button (FR-96). Use pickers for class and birth year. Run `npx expo lint` and `npx tsc --noEmit`.
 
 **Scoring:**
 > In `backend/scoring`, implement the congruence recommender from SRS §12.6 M3(b) and the eligibility gates and `routes` from design/game/frameworks/streams.json (FR-44, FR-45, FR-99 with the anti-push rule in EDGE_CASES §3.3). Pure functions only. Tests first: TC-SCORE-01, TC-SCORE-04, TC-EDGE-01 to TC-EDGE-04 and 20 golden profiles.
 
 **Content (Zahid, the game):**
-> Draft Week 1 scene 1 in Ink, following GAME_DESIGN.md §6–9 and pairs.json week 1, with tags `#pair`, `#left` and `#voice`. Roman Urdu dialogue, at most 2 lines per message, Grade 6 level. Mark every line for Urdu-editor review.
+> Draft Week 1 scene 1 in Ink, following GAME_DESIGN.md §6–9 and pairs.json week 1, with tags `#pair`, `#left` and `#voice`. English dialogue, at most 2 lines per message, Grade 6 level. Check every line against that level.
 
-Treat AI-drafted dialogue and Urdu as a **first draft**. A native editor and a "cringe check" with real teens are still required (T-CONT).
+Treat AI-drafted dialogue as a **first draft**. A "cringe check" with real teens is still required (T-CONT).
 
 **Tests and resilience:**
 > Write a Locust file for the load, spike and soak profiles in docs/testing/TEST_STRATEGY.md §3.1, against staging only, using synthetic tokens from the seed script.
@@ -92,7 +92,7 @@ The team has three kinds of assistant. Use each for what it is best at, and keep
 |---|---|---|---|
 | **Primary coding agent** (your paid plan, in VS Code or the terminal) | Agentic work across many files: reading the docs, planning, editing, running tests | The task loop in §3: features against FR/TC IDs, refactors, test suites, CI files, migrations, debugging failing tests | Large mechanical rewrites you could script; pasting secrets |
 | **Gemini Pro** (student plan; Gemini Code Assist in VS Code, Gemini in the browser, NotebookLM) | Very long context; Google Search grounding; reading PDFs | **Second-opinion reviews** of diffs; research (board rules, Expo and Play policy changes; always confirm with the source); turning `docs/` into report chapters and slides; NotebookLM over the SRS, GDD and research notes to rehearse viva questions | Final facts without a citation |
-| **Local Qwen3-32B** (Ollama on your PC; Continue extension in VS Code) | Private, free, offline, unlimited | Autocomplete and quick explanations; drafting **synthetic** test data and fixtures; reviewing anything that must not leave your machine; Roman Urdu dialogue *drafts* | Big multi-file changes (slower, less reliable); anything that needs the latest library versions |
+| **Local Qwen3-32B** (Ollama on your PC; Continue extension in VS Code) | Private, free, offline, unlimited | Autocomplete and quick explanations; drafting **synthetic** test data and fixtures; reviewing anything that must not leave your machine; English dialogue *drafts* | Big multi-file changes (slower, less reliable); anything that needs the latest library versions |
 
 **Setting up the local model (once):**
 
@@ -124,6 +124,6 @@ ollama pull qwen3:32b
 1. Commit `design/`, `docs/` and `project-summary/`. Run the `git rm --cached` step in `docs/devops/CI_CD.md` §7.
 2. Scaffold the monorepo (prompt above). Add the CI workflows from `CI_CD.md` §2, starting with lint, typecheck and tests.
 3. Build the FastAPI skeleton with `/health`, the schema v1 migration, and the join endpoint with its tests.
-4. Build the Expo theme from `theme.ts`, plus screens S-01 to S-03 with field help.
+4. Build the Expo theme from `theme.ts`, plus screens S-02 to S-03 with field help.
 5. Write the seed script for schools, classes and consent (MVP §2.3).
 6. Demo join → home on the reference phone at the sprint review.

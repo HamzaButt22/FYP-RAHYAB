@@ -7,10 +7,6 @@
     "school": "School",
     "settings": "Settings"
   },
-  "language": {
-    "switchTo": "اردو",
-    "switchLabel": "Show the dashboard in Urdu"
-  },
   "demo": "Sample data. The real class list appears here once staff sign-in is built.",
   "roster": {
     "title": "Class {{name}}",

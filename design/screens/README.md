@@ -1,10 +1,10 @@
 # App screens (final brand)
 
-55 screens of the Rahyaab app, the parent pages, the teacher dashboard and the admin console, in light and dark. Phones are 390 × 844, tablets 768 × 1024, and the dashboard and admin console 1280 × 800. Screen IDs match `docs/project/SCREENS.md` and the SRS.
+54 screens of the Rahyaab app (S-01 Language was removed on 16 Nov 2026, English only, ADR-0016), the parent pages, the teacher dashboard and the admin console, in light and dark. Phones are 390 × 844, tablets 768 × 1024, and the dashboard and admin console 1280 × 800. Screen IDs match `docs/project/SCREENS.md` and the SRS.
 
 **Ways to open them:**
 - **Figma:** [page "02 App screens" (light)](https://www.figma.com/design/X9jZDn1tm89JOfKNlmpq36?node-id=1-58) and [page "03 Dark mode, parent & teacher" (dark)](https://www.figma.com/design/X9jZDn1tm89JOfKNlmpq36?node-id=1-59). The screens are grouped into five flow sections, and every layer is editable.
-  - **Not in Figma yet:** the 31 screens added on 5 Nov 2026 (everything except the original 24). The Figma Starter plan's MCP call limit was reached. Import them later with `../figma/rahyaab-screens-light.html` and `-dark.html`, which already include all 55 (html.to.design plugin, or the Figma MCP when the limit resets).
+  - **Not in Figma yet:** the 31 screens added on 5 Nov 2026 (everything except the original 24). The Figma Starter plan's MCP call limit was reached. Import them later with `../figma/rahyaab-screens-light.html` and `-dark.html`, which already include all 54 (html.to.design plugin, or the Figma MCP when the limit resets).
 - **Browser:** open `index.html` for the gallery, or any screen file directly. Add `?theme=dark` for dark mode. With no parameter, each file follows the system setting.
 - **Images:** `png/` holds @2x PNGs (`<screen>-light.png`, `<screen>-dark.png`); `png/store/` holds the Play Store screenshots.
 
@@ -24,7 +24,7 @@
 | Flow | Screens |
 |---|---|
 | 0 System | **S-00 Splash** · **S-00b Loading (building the Blueprint)** · **S-28 Offline** · **S-19 Profiles and PIN** · **S-29 Re-link on a new phone** |
-| 1 Onboarding | S-01 Language · S-02 Welcome · S-03 Join · **S-03e Join with field help** · **S-03i Join without a code (parent OTP; post-MVP)** · S-04 Family OK slip · S-05 Profile · S-06 Avatar |
+| 1 Onboarding | S-01 Language: Removed 16 Nov 2026 (English only, ADR-0016) · S-02 Welcome · S-03 Join · **S-03e Join with field help** · **S-03i Join without a code (parent OTP; post-MVP)** · S-04 Family OK slip · S-05 Profile · S-06 Avatar |
 | 2 Play a week | S-07 Home · S-08a Plan your week · S-08b Scene with Dil/Duniya · S-08c Task (pack the boot, with button controls) · S-08d Value moment · S-09 Sunday diary · S-21 The letter |
 | 3 Results | S-10 Blueprint slide · S-10b Your paths · **S-10c Is your group right for you?** · S-11 Why this? · S-14 Share with family |
 | 4 Explore, family, you | S-12 Explore · S-13 Stream detail · **S-15 Saved** · **S-16 Career detail** · **S-17 History** · S-23 Try a day · S-25 Family · S-18 You, with the Accessibility settings · **S-20 Help** · **S-26 School** · **S-27 Reminders** · **S-31 Class check-in** |
@@ -46,18 +46,18 @@ These follow `../specs/accessibility.md`:
 
 Order and captions for the listing (`docs/project/STORE_AND_SEARCH.md` §1.4). The files are in `png/store/`.
 
-| # | File | Screen | Caption (English) | Caption (Urdu) |
-|---|---|---|---|---|
-| 1 | `01-letter.png` | S-21 | Read a letter from future you | مستقبل کے اپنے آپ کا خط پڑھیں |
-| 2 | `02-plan-week.png` | S-08a | Plan your week, your way | اپنا ہفتہ اپنی مرضی سے بنائیں |
-| 3 | `03-dil-duniya.png` | S-08b | Choose what you'd really do | وہ چنیں جو آپ واقعی کریں گے |
-| 4 | `04-everyday-task.png` | S-08c | Solve everyday puzzles | روزمرہ کی پہیلیاں حل کریں |
-| 5 | `05-blueprint.png` | S-10 | Get your Blueprint | اپنا بلیو پرنٹ حاصل کریں |
-| 6 | `06-family-report.png` | P-01 | Share a report with family | گھر والوں کے ساتھ رپورٹ شیئر کریں |
-| 7 | `07-explore.png` | S-12 | Explore every stream | ہر گروپ کے بارے میں جانیں |
-| 8 | `08-safe-accessible.png` | S-18 | Private, safe, read aloud | محفوظ، نجی، آواز کے ساتھ |
+| # | File | Screen | Caption |
+|---|---|---|---|
+| 1 | `01-letter.png` | S-21 | Read a letter from future you |
+| 2 | `02-plan-week.png` | S-08a | Plan your week, your way |
+| 3 | `03-dil-duniya.png` | S-08b | Choose what you'd really do |
+| 4 | `04-everyday-task.png` | S-08c | Solve everyday puzzles |
+| 5 | `05-blueprint.png` | S-10 | Get your Blueprint |
+| 6 | `06-family-report.png` | P-01 | Share a report with family |
+| 7 | `07-explore.png` | S-12 | Explore every stream |
+| 8 | `08-safe-accessible.png` | S-18 | Private, safe, read aloud |
 
-Have a native Urdu editor review the Urdu captions before launch. For the Urdu listing, make a copy of each `store/*.html` file, set `dir="rtl"`, use the Urdu caption in Gulzar, and point the frame at the Urdu version of the screen once it exists.
+The listing is English only (ADR-0016). Urdu captions and the Urdu listing were removed on 16 Nov 2026.
 
 ## 5. Changing a screen
 

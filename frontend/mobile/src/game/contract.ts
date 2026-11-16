@@ -1,4 +1,4 @@
-// The game–app contract, version 1 (RFC-0005). The only thing a game module and the app have to agree on.
+// The game–app contract, version 2 (RFC-0005). The only thing a game module and the app have to agree on.
 //
 // The app owns everything around the game: identity, consent, saving and uploading, results, settings.
 // A game module owns everything inside its screen: story, mechanics, art, timing, how many screens.
@@ -14,7 +14,9 @@
 
 import type { ComponentType } from 'react';
 
-export const CONTRACT_VERSION = '1.1.0'; // 1.1.0: step params in the context; week_complete is the host's
+// 1.1.0: step params in the context; week_complete is the host's.
+// 2.0.0 (16 Nov 2026): English only (ADR-0016): no locale or rtl in the context; title is one string.
+export const CONTRACT_VERSION = '2.0.0';
 
 /** Event types the server accepts (envelope v3.0.0, docs/api/openapi.yaml `Event`). */
 export const EVENT_TYPES = [
@@ -68,9 +70,6 @@ export type JsonObject = { [key: string]: JsonValue };
 
 /** What the app tells a module. Read-only; it changes only between runs. */
 export interface GameContext {
-  /** 'ur' is right to left: lay out with start/end, not left/right. */
-  locale: 'en' | 'ur';
-  rtl: boolean;
   /** Week of the year-long story, 0 for the prologue (envelope `week`, 0–4). */
   week: number;
   /** A practice run: its events are marked practice and never scored. */
@@ -130,7 +129,8 @@ export interface GameModule {
   version: string;
   kind: 'task' | 'scene' | 'activity' | 'other';
   measures: Construct[];
-  title: { en: string; ur: string };
+  /** The module's name in English, for the game lab and the logs. */
+  title: string;
   /** The contract version the module was written for. */
   contract: string;
   Screen: ComponentType<GameModuleProps>;

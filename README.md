@@ -1,4 +1,4 @@
-# Rahyaab (راہ یاب)
+# Rahyaab
 
 A game-based stream and career guidance app for Pakistani students in classes 8–12. Students play a short story game, "Your Year", on an ordinary Android phone; from their choices and puzzles the app estimates their interests and abilities and suggests three education paths they are eligible for, with reasons and a Plan B. Families read the result through a WhatsApp link; teachers follow their classes on a dashboard.
 

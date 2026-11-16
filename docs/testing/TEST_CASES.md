@@ -54,7 +54,7 @@ Feature: Share with family (US-15, US-16, FR-66, FR-67)
   Scenario: Create and revoke a link
     Given a stored recommendation
     When the student creates a family link and sends it on WhatsApp
-    Then the parent sees the Urdu report in 3 s or less on 3G
+    Then the parent sees the report in 3 s or less on 3G
     And when the student revokes the link, the page returns "410 Gone"
 
 Feature: Is your group right for you? (FR-99)
@@ -77,10 +77,10 @@ Feature: Guided field help (FR-102, NFR-74)
     Then the student sees the same message as for an expired code, with help to fix it
 
 Feature: Read aloud (FR-96)
-  Scenario: Urdu voice missing
-    Given Urdu mode and no Urdu text-to-speech voice on the phone
+  Scenario: English voice missing
+    Given no English text-to-speech voice on the phone
     When the student taps the speaker on a scene line
-    Then the recorded clip plays, or a one-time hint explains how to install the voice
+    Then a one-time hint explains how to install the voice
     And no audio or text is sent to any server
 ```
 
@@ -90,7 +90,7 @@ Feature: Read aloud (FR-96)
 
 | ID | Title | Steps | Expected | Req | Level | Type | P |
 |---|---|---|---|---|---|---|---|
-| TC-ONB-01 | Language choice persists | Choose اردو at S-01 → restart app | All screens in Urdu, RTL mirrored | FR-01, NFR-27 | T-E2E | A | 1 |
+| TC-ONB-01 | Removed 16 Nov 2026 (English only, ADR-0016) | — | — | FR-01 (removed) | — | — | — |
 | TC-ONB-02 | No identifying fields | Inspect S-03 to S-06 and the join request body | No name, phone, email or photo fields; request matches `JoinRequest` | NFR-44 | T-PRIV | A | 1 |
 | TC-ONB-03 | Invalid class code | Enter `RYB-XXX` | Plain error with a fix; no profile created | FR-03 | T-INT | A | 1 |
 | TC-ONB-04 | Join rate limits | (a) 11 joins in 15 min with the same device public key; (b) 5 wrong claim codes in an hour from one device, then a classmate's good code; 30 wrong claim codes in one class from many devices; (c) 40 devices joining one valid code from one IP | (a) 11th → `429` with `Retry-After`; (b) claim codes for that class pause for the hour (generic `404`, teacher notified through the audit log) while joins **without** a claim code still work, so one student cannot block a class; (c) all 40 succeed (the per-IP ceiling is 300) | NFR-40, NFR-67 | T-INT | A | 1 |
@@ -202,15 +202,15 @@ Feature: Read aloud (FR-96)
 
 | ID | Title | Steps | Expected | Req | Level | Type | P |
 |---|---|---|---|---|---|---|---|
-| TC-A11Y-01 | TalkBack walkthrough | Onboarding → a week → Blueprint → share, in EN and UR | Every control is announced with role and state; focus order follows reading order | NFR-25 | T-A11Y | M | 1 |
+| TC-A11Y-01 | TalkBack walkthrough | Onboarding → a week → Blueprint → share | Every control is announced with role and state; focus order follows reading order | NFR-25 | T-A11Y | M | 1 |
 | TC-A11Y-02 | Switch Access | The same flow with two-switch scanning | Completed with no drag | NFR-65, FR-98 | T-A11Y | M | 1 |
-| TC-A11Y-03 | 200% font | System font at 200% | No clipped text; Nastaliq not cut | NFR-22 | T-A11Y | A | 1 |
+| TC-A11Y-03 | 200% font | System font at 200% | No clipped text | NFR-22 | T-A11Y | A | 1 |
 | TC-A11Y-04 | High contrast | Turn on high contrast | All text ≥ 7:1; borders and focus ≥ 3:1 | NFR-64 | T-A11Y | A | 1 |
-| TC-A11Y-05 | Read aloud | Tap the speaker on a scene line, the letter and a task instruction | Reads in the right language; highlights the sentence; a second tap stops it | FR-96 | T-A11Y | M | 1 |
+| TC-A11Y-05 | Read aloud | Tap the speaker on a scene line, the letter and a task instruction | Reads the text in English; highlights the sentence; a second tap stops it | FR-96 | T-A11Y | M | 1 |
 | TC-A11Y-06 | Not colour alone | Greyscale screenshots of the Blueprint and the scene | Dil and Duniya, bands and doors are still distinguishable | NFR-24 | T-A11Y | A | 1 |
 | TC-A11Y-07 | Parent page | axe-core on P-01; 320 px wide; 200% zoom | 0 serious or critical; no horizontal scroll | NFR-22 | T-A11Y | A | 1 |
-| TC-L10N-01 | Key completeness | i18n lint | 100% of keys in `en`, `ur`, `roman` | NFR-27 | T-L10N | A | 1 |
-| TC-L10N-02 | RTL layout | Screenshot diff of every screen in `ur` | Mirrored correctly; numbers and Latin text isolated | NFR-27 | T-L10N | A | 2 |
+| TC-L10N-01 | Key completeness | i18n lint | 100% of strings come from `en.json`; no hard-coded strings | NFR-27 | T-L10N | A | 1 |
+| TC-L10N-02 | Removed 16 Nov 2026 (English only, ADR-0016) | — | — | NFR-27 | — | — | — |
 
 ### 2.9 Performance and devices
 
@@ -264,7 +264,7 @@ Feature: Read aloud (FR-96)
 | ID | Title | Steps | Expected | Req | Level | Type | P |
 |---|---|---|---|---|---|---|---|
 | TC-VAL-01 | Code auto-format | Type `ryb4k2` | Shows `RYB-4K2`; no error | FR-102 | T-UNIT | A | 1 |
-| TC-VAL-02 | Code format error | Type `RYB-4K` and leave the field | "Codes have 6 letters and numbers, like RYB-4K2." (EN and UR); focus stays; a speaker button reads it | FR-102, NFR-73 | T-E2E | A | 1 |
+| TC-VAL-02 | Code format error | Type `RYB-4K` and leave the field | "Codes have 6 letters and numbers, like RYB-4K2."; focus stays; a speaker button reads it | FR-102, NFR-73 | T-E2E | A | 1 |
 | TC-VAL-03 | Code rejected by the server | Use a well-formed but unknown code | Generic "That code didn't work…" with help; the **same** status, message and timing as an expired code (±50 ms) | NFR-74 | T-SEC | A | 1 |
 | TC-VAL-04 | Nickname is a real full name | Enter "Ayesha Khan" (and "Ayesha" alone) | "Ayesha Khan" is refused by the app and the server (`full_name`) with the hint "like Ayesha_10"; "Ayesha" alone is accepted | FR-102 | T-UNIT | A | 2 |
 | TC-VAL-05 | Nickname with a phone number or email | "ali03001234567" or "a@b.com" | Blocked with "Please don't add a phone number or email" | FR-102, NFR-44 | T-UNIT | A | 1 |
@@ -272,7 +272,7 @@ Feature: Read aloud (FR-96)
 | TC-VAL-07 | Server field errors | POST join with 3 bad fields (bypassing the client) | `422` problem+json with `errors[]`: 3 entries `{field, code, message_key}`; no input echoed | FR-102 | T-INT | A | 1 |
 | TC-VAL-08 | Help after repeated failure | Fail the code twice | A help card offers "Ask your teacher" and "Join without a code" | FR-103 | T-E2E | A | 2 |
 | TC-VAL-09 | Rate-limit message | 6 failed joins | "Try again in N minutes" with a countdown; no other details | NFR-74 | T-INT | A | 1 |
-| TC-VAL-10 | Message quality audit | Script over all message keys | 100% follow problem + fix + example; Grade 6 or lower (EN); Urdu present for every key | NFR-73 | T-L10N | A | 1 |
+| TC-VAL-10 | Message quality audit | Script over all message keys | 100% follow problem + fix + example; Grade 6 or lower; read-aloud available for every key | NFR-73 | T-L10N | A | 1 |
 
 ### 2.13 Performance, resilience and robustness (`TEST_STRATEGY.md` §3.1)
 
@@ -285,7 +285,7 @@ Feature: Read aloud (FR-96)
 | TC-PERF-09 | Client endurance | Bot plays all 4 weeks without a restart | PSS ≤ 300 MB; frames within NFR-06; no crash | NFR-06, NFR-07 | T-PERF | A | 1 |
 | TC-PERF-10 | Mutation score | mutmut on scoring | ≥ 70% killed | NFR-50 | T-UNIT | A | 3 |
 | TC-MONKEY-01 | Monkey, nightly | `adb shell monkey -s <seed> --throttle 50 -v 10000` | 0 crashes or ANRs | NFR-30 | T-REL | A | 1 |
-| TC-MONKEY-02 | Monkey, release | 50,000 events × 3 seeds, run twice: once with the app's language pre-set to EN and once to UR (set through a debug-only intent before the run, since monkey cannot choose it); device, API level, build hash and seed recorded per run | 0 crashes or ANRs; 0 event loss | NFR-30, NFR-31 | T-REL | A | 1 |
+| TC-MONKEY-02 | Monkey, release | 50,000 events × 3 seeds, run twice; device, API level, build hash and seed recorded per run | 0 crashes or ANRs; 0 event loss | NFR-30, NFR-31 | T-REL | A | 1 |
 | TC-MONKEY-03 | Random taps in tasks | Maestro random-tap flow inside each task | Task still completes or exits cleanly; no stuck state | NFR-30 | T-REL | A | 2 |
 | TC-CHAOS-01 | Database down | Stop Postgres for 5 min under load | API returns 503 with `Retry-After`; phones keep events queued; full recovery and 0 loss after restart; alert fires | NFR-31, NFR-76 | T-REL | A | 1 |
 | TC-CHAOS-02 | API worker killed | Kill one Uvicorn worker under load | The other worker serves; the container restarts; no request lost beyond retries | NFR-33, NFR-76 | T-REL | A | 1 |

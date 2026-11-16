@@ -32,8 +32,8 @@ Anything not listed here is **post-MVP**.
 
 | Feature | Requirement | MVP | When | Note |
 |---|---|---|---|---|
-| Language choice; English UI with Roman Urdu dialogue | FR-01 | ✅ | F1 | |
-| Urdu-script UI and RTL | FR-01, NFR-27 | ✅ | F2 | Needed for government schools in the pilot |
+| English UI (all copy in `en.json`) | FR-01 | ✅ | F1 | English only since 16 Nov 2026 (ADR-0016) |
+| Urdu-script UI and RTL | FR-01, NFR-27 | Removed | — | Removed 16 Nov 2026 (English only, ADR-0016) |
 | Onboarding, class code, nickname, **guided field help** | FR-02–04, FR-102 | ✅ | F1 | |
 | Age handling (13–17 parent consent; 18+ self-consent; over-age routes) | FR-100 | ✅ | F1 (rules), F2 (routes) | |
 | School-path consent: numbered forms with claim codes, recorded by the teacher (seed script in F1, dashboard screen in F2) | FR-05, FR-06 | ✅ | F1 | The only consent path in the MVP |
@@ -53,7 +53,7 @@ Anything not listed here is **post-MVP**.
 | Value moments | FR-92 | ✅ | F2 | Low effort; reuses scenes |
 | The letter | FR-94 | ✅ | F1 | |
 | Read-aloud (phone voice, English) | FR-96 | ✅ | F1 | |
-| Read-aloud in Urdu, with the recorded audio pack | FR-96, FR-32 | ✅ | F2 | Fixed text (instructions, prologue) as whole clips; the personalised Blueprint and parent report as **assembled clips** (each stream name, fit phrase and sentence template recorded once, about 150 clips). F1 uses the phone voice only for English text; Roman Urdu is never read by an English voice (it mispronounces it), so F1 shows a "listen in Urdu: coming soon" note instead. **Decided 15 Nov 2026: record only if needed.** The phone's own Urdu voice comes first; the recordings are only the fallback for phones without one. The reference phone is checked in S5 and student phones in usability round 1 (22–26 Feb); if many lack an Urdu voice, the instructions and prologue are recorded first. Recording and review: WBS 6.5 (Hamza, with a native speaker), ~2 days |
+| Read-aloud in Urdu, with the recorded audio pack | FR-96, FR-32 | Removed | — | Removed 16 Nov 2026 (English only, ADR-0016); WBS 6.5 removed. English read-aloud (above) stays and is the main help for weaker readers |
 | Accessibility settings (text size, contrast, easy read, reduce motion) | FR-97 | ✅ | F2 | Text size and reduce motion come free from the OS in F1 |
 | Avatar builder | FR-30 | ✅ (simple) | F2 | Preset parts only |
 | Room objects, reputation, relationship ranks | FR-31 | ❌ post-MVP | — | |
@@ -77,7 +77,7 @@ Anything not listed here is **post-MVP**.
 | Blueprint slides | FR-52 | ✅ (5 slides) | F2 |
 | Stream library (offline) | FR-60, FR-65 | ✅ (streams only) | F1 |
 | Career pages from O*NET | FR-61 | ✅ (cached, top 50 careers) | F2 |
-| Share link and the Urdu/English parent page | FR-66–68 | ✅ | F2 |
+| Share link and the English parent page | FR-66–68 | ✅ | F2 |
 | Parent view of several children (browser-only list) | FR-105 | ✅ | F2 |
 | Parent PDF export | FR-69 | ❌ post-MVP | — |
 | Scoring baselines: rules + congruence | FR-44 | ✅ | F1: congruence; F2: + rules (AHP) |
@@ -115,17 +115,19 @@ Also required in the MVP:
 
 **Deferred:** NFR-16 (iOS), NFR-56 (more languages), NFR-68 (Play Integrity).
 
+**Decision, 16 Nov 2026 (ADR-0016):** the interface is English only. Urdu UI, right-to-left layout, Urdu fonts, Roman Urdu dialogue, Urdu read-aloud and recorded audio (WBS 6.5), and the Urdu store listing are removed from the MVP. Paper consent forms for parents keep their Urdu versions.
+
 ## 3. Timeline (re-planned 9 Nov 2026)
 
 | Sprint | Dates | Increment |
 |---|---|---|
-| S1 | 2–13 Nov 2026 | Monorepo, CI, FastAPI skeleton, schema v1, join + consent-slip seed, Expo shell with theme and onboarding (with field help). **Ethics application package** (forms, Urdu reviews, DPIA, protocol) |
+| S1 | 2–13 Nov 2026 | Monorepo, CI, FastAPI skeleton, schema v1, join + consent-slip seed, Expo shell with theme and onboarding (with field help). **Ethics application package** (forms, native-speaker review of the Urdu consent forms, DPIA, protocol) |
 | S2 | 16–27 Nov | Week loop + inkjs; prologue and Week 1; outbox + `/events:batch`; V1 simulation part 1. **Ethics application submitted** when the package is complete |
 | S3 | 30 Nov–11 Dec | Planning task end to end first, then logic and numerical (button modes); congruence scorer + eligibility rules; vertical-slice playtest; **re-estimate the other task families from the planning task's real time** |
 | S4 | 14–25 Dec | **FYP-1 demo (weeks 17–18; exact day set by the department) on the demo slice:** join with a class code and consent slip, prologue and Week 1, the planning task, sync, and a class 9–10 top-3 with "Why this?" from verified gates. Then weeks 2–4 (short, F1 script done 18 Dec); the letter · **Checkpoint 1** |
 | S5 | 4–15 Jan 2027 | Rest of F1: logic and numerical tasks, stream library, English read-aloud; hardening on the reference phone; fault, load and monkey tests; report chapters (FYP-1 submission) |
 | Break | 18–29 Jan | Semester exams and break (half capacity): buffer for FYP-1 spill-over, V1 write-up |
-| S6 | 1–12 Feb | Spatial, abstract and verbal tasks; Urdu UI; class 8, 11–12 and O/A-Level modes; technical paths for every class; F2 Ink script (3 scenes a week) |
+| S6 | 1–12 Feb | Spatial, abstract and verbal tasks; class 8, 11–12 and O/A-Level modes; technical paths for every class; F2 Ink script (3 scenes a week) |
 | S7 | 15–26 Feb | Group fit check and routes; class check-in; parent page (several children); teacher dashboard with staff login, MFA, reset and the consent-slip screens; PIN profiles; Blueprint; avatar; accessibility settings. **Usability round 1** (22–26 Feb). **Ethics approval needed by 15 Feb** · **Feature freeze 26 Feb** · **Checkpoint 2** |
 | S8 | 1–12 Mar | **Pentest on the frozen build**; resilience run; staging, production and backups; consent-form drives start in the schools |
 | S9 | 15–26 Mar | **Fix sprint** (pentest, usability round 1, resilience findings); **pilot build 26 Mar**; school onboarding and teacher training |
@@ -142,7 +144,7 @@ Drop items in this order, **starting with 1**. Never drop the core.
 
 1. Avatar builder, Blueprint slides, O*NET career pages and value moments (about 65 h; keep a default avatar, the results list and the stream library)
 2. Learned-ranker experiment and the provisional offline result (about 50 h; congruence vs rules stays as the model comparison, results arrive after sync)
-3. Urdu recorded audio and the verbal task (about 45 h; keep the phone's Urdu voice and 5 task families)
+3. ~~Urdu recorded audio~~ (removed 16 Nov 2026, ADR-0016) and the verbal task (about 45 h as estimated on 9 Nov, which included the recorded audio; not re-estimated; keep 5 task families)
 4. Counsellor labelling tool (use a spreadsheet)
 
 **Already cut (9 Nov 2026):** individual sign-up with parent OTP (moved to post-MVP).
@@ -171,5 +173,5 @@ Drop items in this order, **starting with 1**. Never drop the core.
 - the LLM explanations;
 - Play Integrity;
 - iOS;
-- more languages;
+- more languages (the interface is English only since 16 Nov 2026, ADR-0016);
 - the public website and store launch.

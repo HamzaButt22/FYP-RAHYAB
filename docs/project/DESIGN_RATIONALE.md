@@ -1,5 +1,7 @@
 # Design rationale: why each choice was made
 
+English only since 16 Nov 2026 (ADR-0016): the Urdu interface, right-to-left layout and Urdu fonts are no longer part of the design.
+
 This document explains, in one place, **why** Rahyaab looks, reads, plays and computes the way it does: the brand, colours, type, screens, words, game, frameworks, models, data, security, accessibility and technology. Each row gives the decision, the reason, and where the evidence or detail lives.
 
 **Detailed sources:**
@@ -16,7 +18,7 @@ This document explains, in one place, **why** Rahyaab looks, reads, plays and co
 |---|---|
 | **A game, not a test.** Teens drop long questionnaires; families distrust "a quiz said so" | One story game; no rating scales; no timers or right/wrong feedback |
 | **Guidance, not a verdict.** A wrong stream can cost two years | Top 3 + Plan B + confidence + "talk to your family"; costly routes never pushed |
-| **Families decide together.** 82.6% of students rely on parents | Parent report through WhatsApp; Urdu first; read-aloud |
+| **Families decide together.** 82.6% of students rely on parents | Parent report through WhatsApp; plain English; read-aloud |
 | **Cheap phones, weak internet** | Offline-first, ≤ 35 MB, no reaction-time scoring, 48 px targets |
 | **Minors' privacy first** | No names, phone numbers or photos; consent gate; no third-party SDKs |
 | **Explainable to a parent and an examiner** | IRT and congruence over black boxes; "Why this?" on every result |
@@ -25,7 +27,7 @@ This document explains, in one place, **why** Rahyaab looks, reads, plays and co
 
 | Decision | Reason | Evidence |
 |---|---|---|
-| **Name: Rahyaab (راہ یاب, "one who finds the way")** | Urdu, easy to say in both scripts, and says what the app does | BRAND_DECISIONS §1 |
+| **Name: Rahyaab ("one who finds the way")** | From Urdu and Persian, easy to say, and says what the app does | BRAND_DECISIONS §1 |
 | **Mascot: Hudhud, the hoopoe** | **Guide:** in Attar's *Conference of the Birds* the hoopoe guides the birds, who discover the answer was themselves. That matches "the answer is you". **Familiar:** the hoopoe is native to Pakistan and known from the story of Hazrat Suleman, so it feels local without being a cartoon child | BRAND_DECISIONS §1 |
 | **Chubby (B2), flat style** | Friendly but not childish (v1 was rejected as "a children's story app"); simple shapes animate cheaply in Rive and read well at small sizes | BRAND_DECISIONS history |
 | **Branch logo** | The "r" drawn as a branch with a dotted path: a choice of roads, growth, and an organic feel. Chosen by family vote | BRAND_DECISIONS final decisions |
@@ -50,7 +52,6 @@ Every text pair meets **WCAG 2.2 AA (4.5:1)**. A high-contrast theme reaching 7:
 |---|---|
 | **Bricolage Grotesque 800** for headings | Warm and characterful without being childish; reads well at large sizes; free (OFL) |
 | **Plus Jakarta Sans** for text | Very legible at 15–17 px on low-resolution screens; open shapes; free (OFL) |
-| **Gulzar** for Urdu | A Nastaliq face designed for screens; line heights are generous (34 px) so Nastaliq is never cut off |
 | **Atkinson Hyperlegible** (optional reading font) | Designed for low vision; offered in the accessibility settings |
 | **Lucide icons**, outline, 2 px | One consistent free set (ISC licence); the outline style matches the type weight |
 
@@ -59,7 +60,7 @@ Every text pair meets **WCAG 2.2 AA (4.5:1)**. A high-contrast theme reaching 7:
 | Screen | Why it exists | Key design choice and reason |
 |---|---|---|
 | S-00 Splash / loading | Brand moment while the app starts | Hudhud lands on the branch in 1.5 s, then the app loads. Long waits show what is happening ("Digging through your four weeks…") instead of a spinner |
-| S-01 Language | Urdu and English speakers start equal | Asked first, before any text that needs reading |
+| S-01 Language | Removed 16 Nov 2026 (English only, ADR-0016) | The app opens at S-02; the ID is kept so references resolve |
 | S-02 Welcome | Set expectations: no right answers, no clock | Reduces test anxiety; introduces the letter hook |
 | S-03 Join (S-03e field help) | Join a class **without** personal data | Class code + nickname only; pickers instead of typing; help that never leaks (forms spec) |
 | S-04 Family consent | The law and ethics need a parent's OK for minors | QR code + WhatsApp, because parents may not have the app |
@@ -70,7 +71,7 @@ Every text pair meets **WCAG 2.2 AA (4.5:1)**. A high-contrast theme reaching 7:
 | S-10/S-10b/S-11 Blueprint, Why this? | The result, with reasons | Top 3 with fit bands in words, doors with sources, Plan B; "Why this?" for trust |
 | S-10c Group fit | Students already in a group need guidance too | Open options first; costly routes only on request or with strong evidence |
 | S-12/S-13/S-16 Explore | Students know few careers | Offline stream pages with tests, doors and alternatives |
-| S-14/P-01 Share, parent report | Families decide | Preview exactly what the parent sees; Urdu-first page with Listen |
+| S-14/P-01 Share, parent report | Families decide | Preview exactly what the parent sees; plain English page with Listen |
 | S-18 You and accessibility | Control and inclusion | All accessibility settings in one place |
 | S-25 Family | Show who can see what | Transparency about sharing; stop sharing at any time |
 | S-28 Offline, S-29 Re-link | Real conditions: no internet, new phones | Clear "saved on your phone" message; teacher re-link instead of a password |
@@ -85,10 +86,10 @@ Every text pair meets **WCAG 2.2 AA (4.5:1)**. A high-contrast theme reaching 7:
 | Rule | Reason |
 |---|---|
 | Grade 6 reading level or lower; at most 2 lines per message | Mixed literacy; teens skim |
-| Roman Urdu dialogue, Urdu-script UI option, English toggle | How Pakistani teens actually text; Urdu script for read-aloud |
+| Short, plain English with English read-aloud | The main help for weaker readers, including students from Urdu-medium schools who may read English less fluently (ADR-0016) |
 | Never "wrong", "fail", "score", "verdict" | Reduces anxiety; results are a starting point |
 | Confidence in words ("fairly sure"), and uncertainty as frequency ("in 10 versions of you, 6 fit…") | People understand frequencies better than probabilities |
-| Gender-neutral wording; Urdu verbs follow the student's chosen form | Inclusion |
+| Gender-neutral wording | Inclusion |
 | Errors say the problem, the fix and an example, but stay generic about secrets | Helpful to users, useless to attackers (forms spec §4) |
 
 ## 7. Game design
@@ -129,7 +130,7 @@ Every text pair meets **WCAG 2.2 AA (4.5:1)**. A high-contrast theme reaching 7:
 
 ## 10. Accessibility
 
-Read-aloud (Urdu included), text up to 200%, high contrast, easy read, a reading font, reduce motion, button alternatives for every drag, and TalkBack and Switch Access support. Unmeasurable tasks are **not measured**, never failed. Reason: WCAG 2.2 AA, and fairness. The details are in `design/specs/accessibility.md`.
+English read-aloud, text up to 200%, high contrast, easy read, a reading font, reduce motion, button alternatives for every drag, and TalkBack and Switch Access support. Unmeasurable tasks are **not measured**, never failed. Reason: WCAG 2.2 AA, and fairness. The details are in `design/specs/accessibility.md`.
 
 ## 11. Technology
 

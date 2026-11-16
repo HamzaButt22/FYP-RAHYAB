@@ -12,16 +12,18 @@
 
 All game and library content ships as a **signed, versioned content pack**. This covers:
 - the compiled Ink story;
-- string tables (Roman Urdu, Urdu script, English);
+- string tables (English only, ADR-0016);
 - task item banks;
 - frameworks and streams;
 - the recorded audio list.
 
 The app bundles one pack and can download newer packs, so writers can fix a line without an app release.
 
+Since 16 Nov 2026 the interface is English only (ADR-0016), so the pack has one string table.
+
 ## Motivation
 
-Story text, Urdu wording and eligibility rules will change throughout the pilot. An app release takes days of review. Shipping JavaScript hot fixes for content would mix code and content and skip content review (§5.7).
+Story text, wording and eligibility rules will change throughout the pilot. An app release takes days of review. Shipping JavaScript hot fixes for content would mix code and content and skip content review (§5.7).
 
 ## Proposal
 
@@ -31,7 +33,7 @@ Story text, Urdu wording and eligibility rules will change throughout the pilot.
 content-pack/
   manifest.json            # id, version (CalVer), min_app, sha256 of every file, signature
   story/your-year.ink.json # compiled by inklecate in CI
-  strings/{en,ur,roman}.json
+  strings/en.json
   tasks/{spatial,abstract,numerical,logic,planning,verbal}.json
   frameworks/{riasec,pairs,abilities,work_values,streams,scoring}.json   # from design/game/frameworks
   audio/index.json         # clip id → file, duration, transcript key
@@ -52,7 +54,7 @@ Each check fails the pack if it doesn't pass:
 - the Ink compiles;
 - the pairs cover `pairs.json` (each pair ≥ 2, each type ≥ 10);
 - the JSON schema validates;
-- every string key exists in all three languages;
+- every string key used by the app exists in `en.json`;
 - readability ≤ Grade 6 for English;
 - every eligibility rule has a `source_url` and a `last_verified` date.
 

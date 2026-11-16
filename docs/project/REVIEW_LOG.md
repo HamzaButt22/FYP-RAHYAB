@@ -1,5 +1,7 @@
 # Independent review log (7–9 Nov 2026)
 
+16 Nov 2026: the interface is now English only (ADR-0016); entries below are kept as written.
+
 Before development, the full design documentation was split into nine topic packs and reviewed independently by five general-purpose AI models (shown here as Reviewers A–E), with one fixed prompt that required an exact quote as evidence for every issue. The team then checked every issue against the files: each quote was searched for in the repository, and each issue was marked **confirmed** (and fixed), **false** (with the reason), **won't fix** (with the reason) or **team decision**.
 
 This log is evidence for the committee that the design was checked by more than its authors (`COMMITTEE_QA.md`).

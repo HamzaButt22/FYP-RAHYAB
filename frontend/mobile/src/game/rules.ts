@@ -43,7 +43,7 @@ export function moduleProblems(m: Partial<GameModule>): string[] {
     }
     if (m.measures.includes('none') && m.measures.length > 1) out.push("measures: 'none' goes alone");
   }
-  if (!m.title?.en?.trim() || !m.title?.ur?.trim()) out.push('title: needs both en and ur');
+  if (typeof m.title !== 'string' || !m.title.trim()) out.push('title: needs a name');
   if (!m.contract || m.contract.split('.')[0] !== CONTRACT_VERSION.split('.')[0]) {
     out.push(`contract: written for ${m.contract ?? 'no version'}, the app speaks ${CONTRACT_VERSION}`);
   }

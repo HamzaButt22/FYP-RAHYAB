@@ -7,6 +7,8 @@ The schedule follows `MVP.md` §3. Sprints are 2 weeks long and start on Mondays
 - **individual sign-up with parent OTP** moves to post-MVP (the pilot uses the school path only);
 - the **pilot runs 5 April – 14 May 2027 with classes 8–10** (6 weeks, finishing before Eid al-Adha and away from the class 11–12 board exams); class 11–12 and O/A-Level modes are rule-checked and usability-tested, not validated.
 
+English only since 16 Nov 2026 (ADR-0016): the Urdu UI, right-to-left layout and Urdu audio (WBS 6.5) are removed. Paper consent forms keep their Urdu versions and the native-speaker review. The hours below were not re-estimated.
+
 ## 1. Owners and backups
 
 Work is split so that each person carries about the same load (§2), and every critical package has a second person who reviews its code and could take it over.
@@ -34,8 +36,8 @@ A bottom-up estimate in hours, made on 9 Nov 2026 before any code exists. Coding
 | Platform and DevOps | Monorepo and CI, Docker and environments, backups, resilience suite, pentest and fixes | 125 |
 | Backend | Join, consent slips, re-link, staff login with MFA and reset, telemetry, results, library, share links, parent pages, dashboard API, admin, retention, audit (individual OTP sign-up removed: −30) | 275 |
 | Scoring and research | V1 simulation, production M1 scorer, congruence and gates, rules for all class modes, M2, AHP, M3 comparison, fairness, validation analysis | 320 |
-| Mobile app | Shell, Urdu RTL, week loop and story, outbox, 6 task families, accessible modes, results, fit check, PIN, share, read-aloud, avatar, provisional result, performance | 485 |
-| Content and UX | Ink script, stream and board rules, dashboard UI, usability rounds, Urdu translation and audio (OTP consent page removed: −10) | 250 |
+| Mobile app | Shell, week loop and story, outbox, 6 task families, accessible modes, results, fit check, PIN, share, read-aloud, avatar, provisional result, performance | 485 |
+| Content and UX | Ink script, stream and board rules, dashboard UI, usability rounds (Urdu translation and audio removed 16 Nov 2026, ADR-0016; hours not re-estimated; OTP consent page removed: −10) | 250 |
 | Pilot and fieldwork | School recruitment, consent drives, running the pilot, counsellor panel | 80 |
 | Reports and process | FYP-1 and final reports, ethics package, slides and demos, meetings | 310 |
 | **Total** | | **1,845** |
@@ -53,7 +55,7 @@ A bottom-up estimate in hours, made on 9 Nov 2026 before any code exists. Coding
 |---|---|---|---|---|
 | **1** | **Project management** | | | |
 | 1.1 | Scope sign-off | SRS v1.4, MVP, this plan, supervisor approval | HB | S1 |
-| 1.2 | Ethics | Application package: consent forms (all Urdu versions reviewed by a native speaker), DPIA reviewed by the ethics office, protocol, school permission letters; submission when complete (S2); **approval needed by 15 Feb 2027** | HB | S1–S2 → approval |
+| 1.2 | Ethics | Application package: consent forms (Urdu versions reviewed by a native speaker), DPIA reviewed by the ethics office, protocol, school permission letters; submission when complete (S2); **approval needed by 15 Feb 2027** | HB | S1–S2 → approval |
 | 1.3 | Reporting | FYP-1 chapters 1–5 (chapters 1–2: DS, draft by 15 Dec 2026, HB as backup); final report; slides | All | S4–S5, S14–Final |
 | 1.4 | Tracking | Issue estimates, burn-down per sprint, checkpoint reviews | HB | Every sprint |
 | **2** | **Platform and DevOps** | | | |
@@ -71,7 +73,7 @@ A bottom-up estimate in hours, made on 9 Nov 2026 before any code exists. Coding
 | 4.3 | M3 recommender | Congruence + gates + routes; AHP weights; rules vs congruence comparison; learned-ranker experiment (stretch goal, only if time allows); fairness | HB | S3–S4, S14 |
 | 4.4 | Validation study | Mini-IP sessions, reliability, panel labels, V2–V8 analysis | ZB (V2–V4), HB (V5–V8, panel labels) | S10–S14 |
 | **5** | **Mobile app** | | | |
-| 5.1 | Shell and onboarding | Theme, i18n, S-01–S-06, field help, age rules, claim code | HB | S1 |
+| 5.1 | Shell and onboarding | Theme, i18n (English only), S-02–S-06, field help, age rules, claim code | HB | S1 |
 | 5.2 | Week loop and story | inkjs bridge, planner, scenes, diary, letter | ZB (game modules), HB (week loop host, RFC-0005) | S2–S4 |
 | 5.3 | Tasks | Planning first, then logic and numerical (FYP-1); spatial, abstract, verbal (FYP-2) | ZB | S3, S6 |
 | 5.4 | Results | Blueprint, Why this?, group fit check, check-in, share | HB | S4, S6–S7 |
@@ -82,7 +84,7 @@ A bottom-up estimate in hours, made on 9 Nov 2026 before any code exists. Coding
 | 6.2 | Stream data | `streams.json` verification for every board and path, O*NET profiles, routes | ZB (board routes), HB (O*NET profiles) | S3–S7 |
 | 6.3 | Dashboard UI | D-01–D-11, including the consent-slip screens (D-03 roster started 15 Nov 2026) | HB | S7 |
 | 6.4 | Usability | Round 1 (22–26 Feb), round 2 (12–16 Apr) | HB | S7, S10 |
-| 6.5 | Urdu audio | **Only if needed** (decided 15 Nov 2026): first check whether the phones speak Urdu: the reference phone in S5 (with English read-aloud), student phones in usability round 1 (22–26 Feb). If many lack an Urdu voice, record the instructions and prologue first, the assembled Blueprint clips last; if most have one, cut it (MVP §4, item 3) | HB (a native speaker records, with written permission to use the voice) | S5, S7 |
+| 6.5 | Urdu audio | **Removed 16 Nov 2026 (English only, ADR-0016).** Was: record Urdu clips only if phones lacked an Urdu voice. English read-aloud stays | — | — |
 | **7** | **Pilot and release** | | | |
 | 7.1 | Freeze and pentest | Feature freeze 26 Feb; pentest on the frozen build (S8); fix sprint (S9); restore drill | HB | S8–S9 |
 | 7.2 | Pilot build | Pilot APK, 26 Mar | HB | S9 |
@@ -103,7 +105,7 @@ The source is `diagrams/gantt.puml` (PlantUML). Bars are linked by dependencies,
 | Milestone | Date | Exit criteria |
 |---|---|---|
 | Scope sign-off | 13 Nov 2026 | Supervisor approves the SRS, MVP and this plan |
-| Ethics application submitted | by 27 Nov 2026 | The complete package, including the Urdu reviews |
+| Ethics application submitted | by 27 Nov 2026 | The complete package, including the native-speaker review of the Urdu consent forms |
 | **FYP-1 demo** | Weeks 17–18 (14–25 Dec 2026; exact day set by the department) | The demo slice (`MVP.md` §3, S4) end to end on a budget phone; V1 simulation results; chapters 1–5 in draft. **Checkpoint 1** |
 | FYP-1 complete | 15 Jan 2027 | The rest of F1 (`MVP.md` §2) and the final FYP-1 chapters |
 | Ethics approval | by 15 Feb 2027 | Approval letter; otherwise the fallback below starts |

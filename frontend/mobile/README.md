@@ -39,17 +39,15 @@ Checks CI runs: `pnpm typecheck`, `pnpm lint` and `pnpm test` (unit tests of pla
 
 | Folder | What |
 |---|---|
-| `app/` | Screens and navigation (expo-router). `language.tsx` is S-01; `(onboarding)/` holds S-02 Welcome, S-03 Join and the under-13 stop screen; `consent.tsx` is S-04 (the family's consent slip); `(tabs)/` holds Home, Explore, Family and You. Which group is reachable depends on the saved language, the sign-in and the onboarding state (`Stack.Protected` in `app/_layout.tsx`) |
-| `components/` | Shared pieces: `AppText` (brand type scale, switches to Gulzar in Urdu), `Button`, `Screen`, `Header` (back and "?"), `Field` with `TextInputBox`, `ChoiceRow` and `SelectBox` (forms with field help), `HelpCard`, `Notice`, `LanguageOption`, `Placeholder` |
+| `app/` | Screens and navigation (expo-router). `(onboarding)/` holds S-02 Welcome, S-03 Join and the under-13 stop screen; `consent.tsx` is S-04 (the family's consent slip); `(tabs)/` holds Home, Explore, Family and You. Which group is reachable depends on the sign-in and the onboarding state (`Stack.Protected` in `app/_layout.tsx`) |
+| `components/` | Shared pieces: `AppText` (brand type scale), `Button`, `Screen`, `Header` (back and "?"), `Field` with `TextInputBox`, `ChoiceRow` and `SelectBox` (forms with field help), `HelpCard`, `Notice`, `Placeholder` |
 | `api/` | `client.ts`: JSON requests to the API; problem+json errors come back as codes, never as server text |
 | `join/` | S-03 and S-04 logic: `rules.ts` (code formatting, nickname and age checks that match the server's; tested in `rules.test.ts`), `nicknameIdeas.ts` (nickname ideas and variants for a taken nickname, never from names), `joinApi.ts` (join and claim, with every server answer mapped), `commonNames.ts` (generated: `python tools/check_names.py --write`) |
-| `i18n/` | All interface text in `locales/en.json` and `locales/ur.json` (keys `domain.screen.element`). No text is written directly in a screen (NFR-27). Choosing Urdu restarts the app in right-to-left layout |
-| `state/` | Saved settings (language, onboarding) in the Keystore-backed secure store; `session.ts`: the refresh token in the secure store, the access token in memory only, and refresh signed with the device key |
+| `i18n/` | All interface text in `locales/en.json` (keys `domain.screen.element`). No text is written directly in a screen (NFR-27). English only (ADR-0016); the app is always left to right |
+| `state/` | Saved settings (onboarding) in the Keystore-backed secure store; `session.ts`: the refresh token in the secure store, the access token in memory only, and refresh signed with the device key |
 | `theme/` | Tokens and `useTheme()` (light, dark, high contrast) |
 
-**Urdu text is never cut off (fixed 15 Nov 2026):** Android 15+ wraps text by the ink of the letters, React Native measures by their widths, and Nastaliq ink overhangs; `plugins/withAdvanceWidthText.js` makes Android wrap like React Native, and `AppText` adds room above the first line and below the last, and narrow no-break spaces where lines start and end (each word gap becomes a zero-width space plus a narrow no-break space, so a wrapped line starts with room too). Urdu size and line height are scaled together by `AppText` itself, because Android 14+ scales large `sp` values less than small ones and Nastaliq lines then ran into each other at 200% text. Use `AppText` for all visible text. **After pulling this change, run `pnpm android` once** (the plugin changes the native theme).
-
-**Urdu text is a draft.** A native Urdu editor must review `locales/ur.json` before the pilot (SRS §7.4). Use `start`/`end` in styles, never `left`/`right`, so layouts mirror correctly in Urdu.
+**English only (ADR-0016, 16 Nov 2026):** the Urdu interface, right-to-left layout, the Gulzar font and the Nastaliq text fixes were removed. Use `AppText` for all visible text. **After pulling this change, run `pnpm android` once** (an Android theme plugin was removed, which changes native code).
 
 **Native code (`modules/device-key/`):** our own Kotlin module for the device key (ADR-0011). It creates an EC P-256 key in the Android Keystore (StrongBox when the phone has it), returns the public key, and signs only refresh requests: it adds the `rahyaab-refresh-v1:` prefix itself, so nothing else in the app can use the key. It also returns secure random bytes (`randomHex`) for the outbox database key. Expo links it automatically; after changing it, run `pnpm android` again.
 

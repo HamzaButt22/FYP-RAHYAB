@@ -93,7 +93,6 @@ export const fontFamily = {
   sans: 'PlusJakartaSans_500Medium',
   sansSemibold: 'PlusJakartaSans_600SemiBold',
   sansBold: 'PlusJakartaSans_700Bold',
-  urdu: 'Gulzar_400Regular',
   reading: 'AtkinsonHyperlegible_400Regular',
 } as const;
 
@@ -106,10 +105,6 @@ export const typography = {
   body: { fontFamily: fontFamily.sans, fontSize: 15, lineHeight: 22 },
   label: { fontFamily: fontFamily.sansBold, fontSize: 14, lineHeight: 20 },
   caption: { fontFamily: fontFamily.sansSemibold, fontSize: 12, lineHeight: 16, letterSpacing: 0.4 },
-  urduTitle: { fontFamily: fontFamily.urdu, fontSize: 24, lineHeight: 44 },
-  urduBodyL: { fontFamily: fontFamily.urdu, fontSize: 21, lineHeight: 38 },
-  urduBody: { fontFamily: fontFamily.urdu, fontSize: 19, lineHeight: 34 },
-  urduLabel: { fontFamily: fontFamily.urdu, fontSize: 17, lineHeight: 30 },
   readingBody: { fontFamily: fontFamily.reading, fontSize: 17, lineHeight: 26 },
 } as const;
 

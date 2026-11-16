@@ -39,7 +39,6 @@
   --screen-gutter: 16px;
   --font-display: "Bricolage Grotesque", "Plus Jakarta Sans", system-ui, sans-serif;
   --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
-  --font-urdu: Gulzar, "Noto Nastaliq Urdu", serif;
   --font-reading: "Atkinson Hyperlegible", "Plus Jakarta Sans", system-ui, sans-serif;
   color-scheme: light;
 }
@@ -156,8 +155,4 @@
   --focus: #0A4D4D;
   color-scheme: light;
 }
-.urdu-title { font-family: var(--font-urdu); font-size: 24px; line-height: 44px; }
-.urdu-body-l { font-family: var(--font-urdu); font-size: 21px; line-height: 38px; }
-.urdu-body { font-family: var(--font-urdu); font-size: 19px; line-height: 34px; }
-.urdu-label { font-family: var(--font-urdu); font-size: 17px; line-height: 30px; }
 .reading-body { font-family: var(--font-reading); font-size: 17px; line-height: 26px; font-weight: 400; }

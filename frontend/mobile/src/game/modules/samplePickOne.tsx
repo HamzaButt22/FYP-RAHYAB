@@ -1,7 +1,7 @@
 // A sample module that shows every part of the contract in one small screen. It is NOT game content:
 // the real modules (the week loop, the story, the task families) are Zahid's to design.
 //
-// It shows how a module: reads the context (language, right-to-left, the step's params), uses its saved
+// It shows how a module: reads the context (the week, practice, the step's params), uses its saved
 // progress, sends agreed events (scene_start, choice_made), tries an idea with host.experiment(), and
 // finishes. Copy it as a starting point; nothing here limits what a real module looks like.
 //
@@ -18,32 +18,18 @@ import { useTheme } from '@/theme/ThemeProvider';
 import { radius, space, touchMin } from '@/theme/tokens';
 import { CONTRACT_VERSION, type GameModule, type GameModuleProps } from '../contract.ts';
 
-// A module brings its own words. Urdu still needs a native speaker's review (like the rest of the app).
+// A module brings its own words.
 const TEXT = {
-  en: {
-    note: 'A sample to test the game–app contract, not real game content.',
-    again: 'You have played this sample before.',
-    prompt: 'Which would you rather do this Saturday?',
-    R: 'Fix the radio at home',
-    I: 'Find out why the sky is blue',
-    A: 'Design a poster for school',
-    S: 'Help a friend study',
-    E: 'Run the class food stall',
-    C: 'Keep the class accounts in order',
-    done: 'Done',
-  },
-  ur: {
-    note: 'یہ کھیل اور ایپ کے رابطے کو جانچنے کا نمونہ ہے، اصل کھیل نہیں۔',
-    again: 'آپ یہ نمونہ پہلے کھیل چکے ہیں۔',
-    prompt: 'اس ہفتے کو آپ کیا کرنا پسند کریں گے؟',
-    R: 'گھر کا ریڈیو ٹھیک کرنا',
-    I: 'معلوم کرنا کہ آسمان نیلا کیوں ہے',
-    A: 'اسکول کے لیے پوسٹر بنانا',
-    S: 'دوست کو پڑھائی میں مدد دینا',
-    E: 'کلاس کا کھانے کا اسٹال چلانا',
-    C: 'کلاس کا حساب کتاب ترتیب سے رکھنا',
-    done: 'ہو گیا',
-  },
+  note: 'A sample to test the game–app contract, not real game content.',
+  again: 'You have played this sample before.',
+  prompt: 'Which would you rather do this Saturday?',
+  R: 'Fix the radio at home',
+  I: 'Find out why the sky is blue',
+  A: 'Design a poster for school',
+  S: 'Help a friend study',
+  E: 'Run the class food stall',
+  C: 'Keep the class accounts in order',
+  done: 'Done',
 } as const;
 
 type Option = 'R' | 'I' | 'A' | 'S' | 'E' | 'C';
@@ -51,7 +37,7 @@ const TYPES: readonly string[] = ['R', 'I', 'A', 'S', 'E', 'C'];
 
 function SamplePickOne({ context, host, saved }: GameModuleProps) {
   const { colors } = useTheme();
-  const text = TEXT[context.locale];
+  const text = TEXT;
   const { left, right, item: itemParam } = context.params ?? {};
   const item = typeof itemParam === 'string' ? itemParam : 'sample_pick_one';
   // From the week plan (its schedule already swaps sides between rounds), or, without params, a random
@@ -82,8 +68,7 @@ function SamplePickOne({ context, host, saved }: GameModuleProps) {
   const done = () => {
     if (picked === null) return;
     const index = order.indexOf(picked);
-    // In Urdu the row is mirrored, so the first option is on the right.
-    const side = (index === 0) !== context.rtl ? 'left' : 'right';
+    const side = index === 0 ? 'left' : 'right';
     host.emit({
       type: 'choice_made',
       itemId: item,
@@ -132,10 +117,10 @@ function SamplePickOne({ context, host, saved }: GameModuleProps) {
 
 export const samplePickOne: GameModule = {
   id: 'sample-pick-one',
-  version: '1.1.0',
+  version: '2.0.0',
   kind: 'scene',
   measures: ['interests'],
-  title: { en: 'Sample: pick one', ur: 'نمونہ: ایک چنیں' },
+  title: 'Sample: pick one',
   contract: CONTRACT_VERSION,
   Screen: SamplePickOne,
 };

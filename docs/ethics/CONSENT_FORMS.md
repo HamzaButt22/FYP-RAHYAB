@@ -2,9 +2,9 @@
 
 **Draft v0.1, 5 Nov 2026.** For the Riphah ethics application. These expand the outline in SRS §17.4.
 
-- **Urdu:** Forms A and B have Urdu first drafts below, which a **native editor must check** before use. Forms C, D, E and the withdrawal form are **English only for now**; their Urdu versions must be written and reviewed before the ethics application (tracked in `project-summary/README.md`, "Still to do").
-- **Reading level:** keep both languages at Grade 6 or lower.
-- **Paper and screen:** forms are printed for the school path. The same text appears on screen (S-04, P-02) with a Listen button.
+- **Urdu (paper forms):** Forms A and B have Urdu first drafts below for the paper forms parents sign, which a **native editor must check** before use. Forms C, D, E and the withdrawal form are **English only for now**; their Urdu versions must be written and reviewed before the ethics application (tracked in `project-summary/README.md`, "Still to do").
+- **Reading level:** keep the English and Urdu versions at Grade 6 or lower.
+- **Paper and screen:** forms are printed for the school path. The English text appears on screen (S-04, P-02) with a Listen button. The Urdu versions of Forms A and B are for the paper forms only.
 
 **Placeholders to fill:**
 - `[Ethics ref no.]`

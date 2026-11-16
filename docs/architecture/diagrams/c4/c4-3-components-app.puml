@@ -8,7 +8,7 @@ Container(api, "API", "FastAPI")
 Container_Boundary(app, "Mobile app (Expo, React Native)") {
   Component(screens, "Screens", "expo-router", "S-00 to S-31")
   Component(a11y, "Accessibility services", "expo-speech", "Read-aloud, settings, reduce motion")
-  Component(i18n, "i18n", "i18next", "en, ur, Roman Urdu, RTL")
+  Component(i18n, "i18n", "i18next", "en only (ADR-0016)")
   Component(week, "Week loop controller", "TypeScript", "Planner, scenes, diary, letter")
   Component(ink, "Story runtime bridge", "inkjs", "External functions to tasks and telemetry")
   Component(tasks, "Task modules", "Skia, Reanimated", "6 families, TaskModule interface, button modes")

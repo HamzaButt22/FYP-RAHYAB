@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}RahYaab Dashboard{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body>
+  <header class="top">
+    <div class="brand">Rah<span>Yaab</span> &middot; Big Five Game Dashboard</div>
+    <nav>
+      <a href="{{ url_for('pages.index') }}" class="{{ 'on' if page == 'dashboard' }}">Dashboard</a>
+      <a href="{{ url_for('pages.telemetry') }}" class="{{ 'on' if page == 'telemetry' }}">Telemetry</a>
+    </nav>
+    <div class="right" id="health">...</div>
+  </header>
+  <main>
+    <div class="note"><b>Prototype scoring.</b> Big Five values are behavioral indicators from a transparent weighted model with design-assumption weights. They are <b>not</b> a validated psychometric measurement.</div>
+    {% block content %}{% endblock %}
+  </main>
+  <script src="{{ url_for('static', filename='js/charts.js') }}"></script>
+  <script>RY.get('/api/health').then(h => document.getElementById('health').textContent = 'DB: ' + h.db.split(/[\\/]/).slice(-2).join('/')).catch(() => document.getElementById('health').textContent = 'API offline');</script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

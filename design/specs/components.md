@@ -52,7 +52,7 @@ One recommended stream or course in the Blueprint, Explore and the parent report
 
 ## LogoLockup
 
-The Branch mark with the lowercase wordmark and the Urdu name; the three app icons below.
+The Branch mark with the lowercase wordmark; the three app icons below.
 
 - Use `branch-light.svg` on light grounds and `branch-dark.svg` on dark ones (adaptive colours table in the brand book).
 - Wordmark in `display` 800, letter-spacing −4%, gap between mark and word half the mark's width.

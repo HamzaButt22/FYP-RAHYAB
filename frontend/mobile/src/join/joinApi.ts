@@ -16,7 +16,7 @@ export type JoinForm = {
   grade: number;
   birthYear: number;
   birthMonth: number;
-  lang: 'en' | 'ur';
+  lang: 'en'; // English only (ADR-0016)
 };
 
 /** Answers shared by joining and claiming. */

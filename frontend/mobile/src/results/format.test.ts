@@ -7,7 +7,6 @@ import { test } from 'node:test';
 import { bandDots, doorPhrases, reasonPhrase, stateFromProblem, type Door } from './format.ts';
 
 const en = JSON.parse(readFileSync(new URL('../i18n/locales/en.json', import.meta.url), 'utf8'));
-const ur = JSON.parse(readFileSync(new URL('../i18n/locales/ur.json', import.meta.url), 'utf8'));
 
 function has(dict: Record<string, unknown>, key: string): boolean {
   let node: unknown = dict;
@@ -34,7 +33,7 @@ test('doors say their state, then the board check, note and route', () => {
   ]);
 });
 
-test('every key the result screen can show exists in English and Urdu', () => {
+test('every key the result screen can show exists in en.json', () => {
   const keys = [
     'results.title', 'results.provisional', 'results.planB', 'results.why', 'results.hideWhy', 'results.basedOn',
     'results.confidenceLabel', 'results.sources', 'results.doorsTitle', 'results.retry', 'results.loading',
@@ -52,7 +51,6 @@ test('every key the result screen can show exists in English and Urdu', () => {
   ];
   for (const key of keys) {
     assert.ok(has(en, key), `en.json is missing ${key}`);
-    assert.ok(has(ur, key), `ur.json is missing ${key}`);
   }
 });
 

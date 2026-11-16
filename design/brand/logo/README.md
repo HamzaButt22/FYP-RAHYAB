@@ -8,11 +8,11 @@ The `svg/` files are the editable masters. `png/` holds exports at 64 to 1024px.
 | `branch-dark` | Dark grounds |
 | `branch-on-terracotta` | Terracotta (`primary`) grounds |
 | `branch-mono-black` / `branch-mono-white` | One-colour print, stamps, photos |
-| `lockup-horizontal-*`, `lockup-stacked-*` | Logo + "rahyaab" + راہ یاب |
+| `lockup-horizontal-*`, `lockup-stacked-*` | Logo + "rahyaab" |
 
 **About the lockup SVGs:**
 - They keep the words as live text, so you can still edit them.
-- On a machine without Bricolage Grotesque and Gulzar, the text shows in a fallback font.
+- On a machine without Bricolage Grotesque, the text shows in a fallback font.
 - Before printing, or sending to anyone outside the team, convert the text to outlines in Figma (Flatten).
 - The PNG lockups are already rendered with the right fonts.
 

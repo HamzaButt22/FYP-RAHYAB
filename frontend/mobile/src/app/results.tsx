@@ -27,7 +27,7 @@ import { radius, space } from '@/theme/tokens';
 type Translate = (key: string, options?: Record<string, unknown>) => string;
 
 /** Translation by a key built at run time (server codes, stream ids). format.test.ts checks every such key
- * exists in en.json and ur.json, which the typed `t` cannot do for keys it does not know in advance. */
+ * exists in en.json, which the typed `t` cannot do for keys it does not know in advance. */
 function useTx(): Translate {
   const { t } = useTranslation();
   return t as unknown as Translate;
