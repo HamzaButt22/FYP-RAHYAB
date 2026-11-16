@@ -37,7 +37,7 @@ export function IdeaChips({ title, ideas, onPick, pickLabel, moreLabel, onMore }
               { borderColor: colors.secondary, backgroundColor: pressed ? colors.sunken : colors.surface },
             ]}
           >
-            <AppText variant="label" color="secondaryText" script="latin">
+            <AppText variant="label" color="secondaryText">
               {idea}
             </AppText>
           </Pressable>

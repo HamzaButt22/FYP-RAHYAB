@@ -1,6 +1,5 @@
-// D-03 Teacher: class roster (design/screens/D-03-teacher-class-roster.html), in English and Urdu.
+// D-03 Teacher: class roster (design/screens/D-03-teacher-class-roster.html).
 // The data is a fixed sample until staff sign-in and the dashboard API exist; the page says so.
-// Layout uses logical properties only (inline-start/end), so it mirrors for Urdu without extra rules.
 
 import logo from '../../../design/brand/logo/svg/branch-light.svg';
 import { useI18n } from './i18n';
@@ -14,8 +13,7 @@ type Row = {
 };
 
 const SAMPLE = {
-  // The year range is isolated (U+2066 … U+2069): in right-to-left text "2026–27" would show as "27–2026".
-  school: { en: 'Govt. Girls High School · 2026–27', ur: 'گورنمنٹ گرلز ہائی اسکول · ⁦2026–27⁩' },
+  school: 'Govt. Girls High School · 2026–27',
   className: '9-B',
   started: [28, 34] as const,
   ready: 19,
@@ -32,13 +30,13 @@ const SAMPLE = {
 const NAV = ['classes', 'students', 'reports', 'school', 'settings'] as const;
 
 export function Roster() {
-  const { lang, setLang, t } = useI18n();
+  const { t } = useI18n();
   return (
     <div className="layout">
       <nav className="side" aria-label={t('nav.label')}>
         <div className="brand">
           <img src={logo} alt="" aria-hidden="true" width={26} height={26} />
-          <span className="brand-word" lang="en">
+          <span className="brand-word">
             rahyaab
           </span>
         </div>
@@ -56,19 +54,10 @@ export function Roster() {
 
         <header className="head">
           <div>
-            <p className="muted">{SAMPLE.school[lang]}</p>
-            <h1 className="h1">{t('roster.title', { name: '⁨' + SAMPLE.className + '⁩' })}</h1>
+            <p className="muted">{SAMPLE.school}</p>
+            <h1 className="h1">{t('roster.title', { name: SAMPLE.className })}</h1>
           </div>
           <div className="actions">
-            <button
-              type="button"
-              className="btn lang"
-              lang={lang === 'ur' ? 'en' : 'ur'}
-              aria-label={t('language.switchLabel')}
-              onClick={() => setLang(lang === 'ur' ? 'en' : 'ur')}
-            >
-              {t('language.switchTo')}
-            </button>
             <button type="button" className="btn secondary">
               {t('roster.export')}
             </button>
@@ -114,7 +103,7 @@ export function Roster() {
                 {SAMPLE.rows.map((row) => (
                   <tr key={row.nickname}>
                     <td>
-                      <b className="nickname" dir="ltr">
+                      <b className="nickname">
                         {row.nickname}
                       </b>
                     </td>

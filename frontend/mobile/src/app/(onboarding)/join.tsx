@@ -67,7 +67,7 @@ const NONE: Shown = { code: null, nickname: null, grade: null, birth: null };
 export default function JoinScreen() {
   const { t } = useTranslation();
   const { colors } = useTheme();
-  const { language, signedIn, finishOnboarding } = useAppState();
+  const { signedIn, finishOnboarding } = useAppState();
 
   const [code, setCode] = useState('');
   const [nickname, setNickname] = useState('');
@@ -164,7 +164,7 @@ export default function JoinScreen() {
       grade: grade!,
       birthYear: birthYear!,
       birthMonth: birthMonth!,
-      lang: language ?? 'en',
+      lang: 'en',
     });
     if (outcome.kind === 'joined') {
       // Navigation follows the new state (index.tsx): Home when a slip was already claimed, else S-04.

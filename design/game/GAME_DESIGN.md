@@ -1,5 +1,7 @@
 # Rahyaab: Game Design Document (final, v3, 4 Nov 2026)
 
+16 Nov 2026: the game text, dialogue and choices are English only (ADR-0016).
+
 **Product:** Rahyaab, a career guidance app for Pakistani students in **class 8–12 (ages about 13–18; a class-8 student under 13 cannot sign up)**. Students play one story game, "Your Year". From how they play, the app estimates their interests, abilities and work values. It then recommends an education stream or field, with a Plan B, for the student and their family to discuss.
 
 **Rule:** game-based assessment. There are no questionnaires in the student app; the only self-report element is the optional one-tap "meh / okay / loved it" reaction after a scene (a 3-category rating, scored in M1).
@@ -57,7 +59,7 @@
 ## 2. Audience and needs
 
 **Who:**
-- Pakistani students in class 8–12, **boys and girls alike** (gender is never used to choose a path), in every province, Urdu and English medium, public and private schools, cities, towns and villages, including technical-school, O/A-Level and private students.
+- Pakistani students in class 8–12, **boys and girls alike** (gender is never used to choose a path), in every province, Urdu and English medium schools, public and private schools, cities, towns and villages, including technical-school, O/A-Level and private students.
 - Most play on budget Android phones in the PKR 20,000–50,000 tiers (itel, Tecno, Infinix, Redmi), often shared with family.
 
 **The decision each class faces:**
@@ -84,7 +86,7 @@ The full rules are in `docs/project/EDGE_CASES.md`.
 - **Parents decide.** 82.6% of students rely on parents, and about 30% are "clearly not allowed to choose". The family must be part of the product.
 - **Structured assessment helps.** In a 2025 Pakistani study of 1,445 students, those counselled with psychometric testing reported more career-decision confidence than those given general guidance (Saya et al.).
 - **Thinking about real work matters most.** In like2be, a career game tested with 809 students, *cognitive stimulation* predicted gains in job knowledge; enjoyment and flow alone did not. So the game must also make students think about real work (section 8.5).
-- **What teens want:** to be treated as near-adults, short sessions, no test feeling, Roman Urdu / English, and their own culture on screen.
+- **What teens want:** to be treated as near-adults, short sessions, no test feeling, plain English, and their own culture on screen.
 
 ---
 
@@ -102,7 +104,7 @@ The full rules are in `docs/project/EDGE_CASES.md`.
 **Positioning: "Explore before you lock in."** No product in Pakistan is all of these:
 - the only **game-first**, mobile-first stream advisor built for Pakistani streams and gates;
 - **under 40 minutes**;
-- **bilingual**;
+- **plain English at about Grade 6 reading level, with read-aloud**;
 - **bringing parents in**;
 - with **published validation** (our pilot) instead of an unexplained "AI".
 
@@ -321,7 +323,7 @@ Then the plain report for parents and teachers.
 | Task families × levels | 6 × 4 |
 | Job simulations | 4 (MVP) → 8 |
 | Characters | 10 + Hudhud, 4 expressions each |
-| Dialogue | ≈1,200–1,500 lines, Roman Urdu / English; English-only toggle |
+| Dialogue | ≈1,200–1,500 lines, English only |
 
 **Tools:**
 - Ink with the free Inky editor.
@@ -419,10 +421,10 @@ Then the plain report for parents and teachers.
 
 | | |
 |---|---|
-| **Job** | Rewrite the already computed result into 2–3 warm sentences in English or Roman Urdu |
-| **Default** | Bilingual templates (no AI). These ship first. |
-| **Optional model** | A small open-weights multilingual LLM (7–8B class; for example a Llama-3.1-8B base with Urdu adaptation such as UrduLLaMA, or Qwen2.5-7B, checking each licence), **self-hosted**. Minors' data never goes to a third-party API. |
-| **Fine-tuning** | **LoRA / QLoRA** adapters on ≈500–1,000 explanation pairs the team writes (result → good explanation, in both languages) |
+| **Job** | Rewrite the already computed result into 2–3 warm sentences in English |
+| **Default** | English templates (no AI). These ship first. |
+| **Optional model** | A small open-weights LLM (7–8B class; for example a Llama-3.1-8B base or Qwen2.5-7B, checking each licence), **self-hosted**. Minors' data never goes to a third-party API. |
+| **Fine-tuning** | **LoRA / QLoRA** adapters on ≈500–1,000 explanation pairs the team writes (result → good explanation, in English) |
 | **Guardrails** | The LLM **never ranks or decides**. Every stream and reason it names must appear in its input. A gender-swap audit on 200 synthetic profiles allows at most a 5-point gap in STEM mentions. Readability ≤ Grade 6. It ships only if humans prefer it to the templates. |
 
 ### Not ML, but automated
@@ -454,7 +456,7 @@ Then the plain report for parents and teachers.
 |---|---|---|---|---|
 | Open-Source Psychometrics **RIASEC** test responses | ≈145,828 people; 48 items (1–5); age, gender, education, **major**; also 10 TIPI items | Free download for research (verify the exact licence) | M1 pre-calibration and simulation; M3 vignettes; maybe major → stream pre-training | Mostly adult, Western, online volunteers. Hence pilot recalibration. |
 | **O\*NET** database and Web Services | ~900 occupations with RIASEC codes, work values, tasks | Team has a Web Services account; attribution required | Stream RIASEC profiles (M3b), career pages, work values matching | US occupations: we localise routes and drop US wages. The Work Values file is no longer updated. |
-| **O\*NET Interest Profiler (Mini-IP)** | 30 items | Via Web Services, unchanged, in English | Validation benchmark only, in supervised pilot sessions, never in the app | Urdu use would need the Developer License |
+| **O\*NET Interest Profiler (Mini-IP)** | 30 items | Via Web Services, unchanged, in English | Validation benchmark only, in supervised pilot sessions, never in the app | Any translated version would need the Developer License |
 | **ICAR** (SAPA project) | ≈97,000 people; matrix and 3D rotation items, among others | Public-domain items; data for scientific use | Design reference for task families and difficulty | Don't ship ICAR items. It was too hard in one Malaysian sample, so calibrate locally. |
 | Pakistani rules (boards, PMDC, PEC, IBCC) | Rule tables | Public | Eligibility gates | Re-check every year |
 | **Rahyaab pilot** (to collect) | Target 150–300 students, with parent consent | Our own, consented | Recalibrate M1, calibrate M2, validate, fairness | Must follow the ethics plan (section 16) |
@@ -530,7 +532,7 @@ Letter / meter from latest M1 SE  ◄────────── results + "w
 | Prologue + Week 1 polished, then Weeks 2–4 | Map exploration, value moments, 4 job simulations | All 8 simulations, new term, family co-play |
 | 6 task families × 4 levels | Rive animation for the cast | Voice acting |
 | M1 (simulation-calibrated), M2 (staircase), M3 (b) congruence + gates | Pilot calibration, M3 (c) comparison, fairness audit | M4 explanations (if the audits pass) |
-| Letter / meter, Blueprint, family share | Urdu-script parent report | School dashboard analytics |
+| Letter / meter, Blueprint, family share | Parent report page (P-01, plain English with read-aloud) | School dashboard analytics |
 
 **Build order:** vertical slice (prologue + Week 1) → playtest → Weeks 2–4 → scoring service → pilot.
 
@@ -563,7 +565,7 @@ Letter / meter from latest M1 SE  ◄────────── results + "w
 2. Is the one-tap "meh / okay / loved it" acceptable under the game-only rule?
 3. Is the letter-from-future-you hook approved?
 4. Should job simulations count in scoring, or stay exploration-only? We recommend exploration-only for the FYP.
-5. Will the O\*NET Mini-IP benchmark be English-only with read-aloud, or will we apply for the Developer License to validate an Urdu version?
+5. Will the O\*NET Mini-IP benchmark be English-only with read-aloud, or will we apply for the Developer License to validate a translated version?
 6. Are Riphah GPU resources available if M4 is attempted?
 7. May the app show "re-take class 9 in another group" as a route, on request and only with high or medium confidence, with a teacher flag?
 8. Should learners aged 18+ and over-age learners be allowed in the pilot, or only offered the app outside the study?
@@ -583,7 +585,6 @@ Letter / meter from latest M1 SE  ◄────────── results + "w
 - RIASEC dataset fields (subset documentation): https://rdrr.io/github/Rkabacoff/qacr/man/holland.html ; Kaggle mirror: https://baselight.app/u/kaggle/dataset/lucasgreenwell_holland_code_riasec_test_responses
 - O\*NET Work Values: https://www.onetcenter.org/dictionary/30.0/text/work_values.html
 - ICAR (Condon & Revelle 2014): https://personality-project.org/revelle/publications/condon.icar.14.pdf ; Cambridge Psychometrics Centre: https://www.psychometrics.cam.ac.uk/research/the-international-cognitive-ability-resource-icar ; PsychArchives deposit: https://www.psycharchives.org/en/item/be35b8b4-2bc7-4691-964d-52cfc1cf17a9
-- UrduLLaMA 1.0: https://arxiv.org/abs/2502.16961
 - react-native-svg filters (15.4 release): https://newreleases.io/project/npm/react-native-svg/release/15.4.0
 - Career Guidance PK (Google Play): https://play.google.com/store/apps/details?id=neuron.solutions.pk.careerguidance
 - CareerCoachs: https://careercoachs.com/online-career-counselling/pakistan

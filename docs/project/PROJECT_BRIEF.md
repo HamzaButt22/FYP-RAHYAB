@@ -19,8 +19,8 @@ Rahyaab is a BSCS Final Year Project at Riphah International University (FYP-1 F
 
 | User | Surface | Core need |
 |---|---|---|
-| Students, class 8–12 (Matric, Intermediate, O/A-Level), often on shared, low-end phones | Mobile app (Urdu/English) | Discover their interests, strengths and values; see which paths fit and what each one opens or closes |
-| Parents/guardians | Web link, no app | A plain Urdu/English report, honest entry odds, alternatives, consent |
+| Students, class 8–12 (Matric, Intermediate, O/A-Level), often on shared, low-end phones | Mobile app (English) | Discover their interests, strengths and values; see which paths fit and what each one opens or closes |
+| Parents/guardians | Web link, no app | A plain English report, honest entry odds, alternatives, consent |
 | Teachers/counsellors | Web dashboard | Class progress, flags, one-page student summaries, CSV export |
 | Admin/researchers | Web console | Schools and class codes, content packs, model versions, audit, de-identified exports |
 
@@ -48,7 +48,7 @@ Careers appear as "where this path leads". Eligibility rules (e.g. no medicine w
 
 **In scope:**
 
-- Bilingual onboarding with class-code join, nickname and PIN, and parental consent before any data leaves the phone.
+- Onboarding with class-code join, nickname and PIN, and parental consent before any data leaves the phone.
 - **"Your Year":** prologue, 4 weeks, the letter, the Blueprint, and "Try a day" simulations (4 in FYP-2).
 - Offline play with event sync.
 - Server-side scoring and ranking.
@@ -79,7 +79,7 @@ Careers appear as "where this path leads". Eligibility rules (e.g. no medicine w
 4. **Explainable top-3 + Plan B.** Never a single verdict. Every recommendation shows its reasons, confidence, eligibility doors with sources, a Plan B, and the line "a starting point, not a verdict".
 5. **Privacy for minors.** Nickname only; no CNIC, phone, email, location or photos from students; no third-party SDKs that receive student data. Parental consent comes before any sync. Research use is opt-in and off by default. Data is exportable and deletable. The ICO Children's Code is the benchmark.
 6. **Offline-first.** Every event is written to SQLite before the story advances, and sync is idempotent. Every week is playable without internet on a 4 GB Android phone.
-7. **Urdu + English.** Roman Urdu / English dialogue, full Urdu UI (Gulzar, RTL), switchable at any time, at a Grade 6 reading level.
+7. **English only.** Plain English at a Grade 6 reading level, with English read-aloud, icons and pictures beside text, and short sentences. English only since 16 Nov 2026 (ADR-0016). Students from Urdu-medium schools may read English less fluently; the analysis records each school's medium and reports results by medium. Paper consent forms for parents keep their Urdu versions.
 8. **Ethical gamification.** No streaks, loss framing, leaderboards or loot boxes. Rewards are for participation, never for answers. Pause any time with progress kept. Notifications are opt-in only.
 9. **Fair on cheap phones and across genders.** Score choices, accuracy and level on the first attempt; response time is logged but never scored. Gender is never a model input, and a fairness audit checks the results.
 
@@ -88,7 +88,7 @@ Careers appear as "where this path leads". Eligibility rules (e.g. no medicine w
 - **Logo:** the Branch.
 - **Mascot:** Hudhud (chubby hoopoe).
 - **Colours:** terracotta and teal on parchment, with a deep-teal dark mode.
-- **Fonts:** Bricolage Grotesque + Plus Jakarta Sans + Gulzar.
+- **Fonts:** Bricolage Grotesque + Plus Jakarta Sans.
 - **Icons:** Lucide.
 
 Files are in `design/brand`, tokens in `design/tokens`.
@@ -148,7 +148,7 @@ A change is done only when all of the following hold:
 
 1. It is merged through a reviewed PR with CI green (tsc strict, ESLint, ruff, mypy, Jest/pytest, coverage gates, content and story-tag validator).
 2. Its acceptance criteria are demonstrated, with tests. Scoring changes also need TS↔Python **parity tests**.
-3. It works in **Urdu RTL and English** and in light and dark mode. It passes accessibility checks (48 dp targets, design tokens only, labels, no colour-only meaning) and runs on the reference low-end Android device or its emulator profile.
+3. It works in light and dark mode. It passes accessibility checks (48 dp targets, design tokens only, labels, no colour-only meaning) and runs on the reference low-end Android device or its emulator profile.
 4. New telemetry events are documented. Docs, ADRs and OpenAPI are updated. It has been demoed in the sprint review.
 
 ## Key references

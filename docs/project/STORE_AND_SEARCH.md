@@ -35,7 +35,7 @@
 > • Class 11–12: medicine, engineering, computer science, business, design, law and more, with entry tests like MDCAT and ECAT
 >
 > Made for Pakistani students and families
-> • English and Urdu, with Roman Urdu dialogue
+> • Plain English, with read-aloud
 > • A family report your parents can open from a WhatsApp link, no app needed
 > • Explore streams, subjects, entry tests, costs and careers
 > • "Try a day" job simulations: triage patients, wire a solar setup, debug a game, run a stall
@@ -51,24 +51,17 @@
 
 The full description is about 1,700 characters, well under 4,000. It names every stream, class and test that people search for, once each, in natural sentences.
 
-### 1.2 Urdu listing (localized, `ur`)
+### 1.2 Listing language
 
-| Field | Text |
-|---|---|
-| **App name** | راہ یاب: کیریئر اور گروپ گائیڈ |
-| **Short description** | کہانی والا گیم کھیلیں، اپنا میٹرک گروپ، ایف ایس سی یا یونیورسٹی کا راستہ چنیں۔ (78 characters) |
-
-The full description is a faithful Urdu version of §1.1, reviewed by a native Urdu editor. Keep stream names as people type them (ایف ایس سی پری میڈیکل، آئی سی ایس، آئی کام، ایم ڈی کیٹ).
+English only since 16 Nov 2026 (ADR-0016). There is no Urdu listing.
 
 ### 1.3 Search terms people use (to weave into copy and screenshots)
 
 | Language | Terms |
 |---|---|
 | English | career counselling Pakistan, stream selection, which group after class 8, FSc pre medical or pre engineering, ICS or FSc, after matric what to do, career guidance app, university field, MDCAT, ECAT |
-| Roman Urdu | matric ke baad kya karein, konsa group lun, FSc ya ICS, career guidance |
-| Urdu | کیریئر کونسلنگ، میٹرک کے بعد کیا کریں، کون سا گروپ لوں، ایف ایس سی یا آئی سی ایس |
 
-**Before launch:** check these terms in **Play Console → Store listing experiments** and the Google Ads Keyword Planner (Pakistan, Urdu and English), then keep the top ones in the title, short description and the first lines of the full description.
+**Before launch:** check these terms in **Play Console → Store listing experiments** and the Google Ads Keyword Planner (Pakistan, English), then keep the top ones in the title, short description and the first lines of the full description.
 
 ### 1.4 Graphics
 
@@ -77,7 +70,7 @@ The full description is a faithful Urdu version of §1.1, reviewed by a native U
 | App icon | 512 × 512 PNG | `design/brand/app-icon/png/icon-ios-expo.png` (1024, scale down) |
 | Feature graphic | 1024 × 500 | `design/brand/store/play-feature-graphic-1024x500.png` |
 | Phone screenshots | 8 at 1080 × 1920, each with a 4–6 word caption | From `design/screens/png/` (§4 of `design/screens/README.md`) |
-| Screenshot order | 1 the letter · 2 plan your week · 3 Dil vs Duniya · 4 an everyday task · 5 the Blueprint · 6 family report · 7 Explore streams · 8 privacy and accessibility | Captions in English and Urdu |
+| Screenshot order | 1 the letter · 2 plan your week · 3 Dil vs Duniya · 4 an everyday task · 5 the Blueprint · 6 family report · 7 Explore streams · 8 privacy and accessibility | Captions in English |
 | Promo video (optional) | 30 s, the GT Road splash scene → a week → the letter opening | Later |
 
 ### 1.5 Policy and trust fields
@@ -94,14 +87,14 @@ The full description is a faithful Urdu version of §1.1, reviewed by a native U
 | Deletion | In the app (You → Delete my data) and through the web page `rahyaab.pk/delete` |
 | Location, contacts, photos, advertising ID | Not collected |
 
-- **Privacy policy URL:** the website (§2), in English and Urdu.
+- **Privacy policy URL:** the website (§2), in English.
 - **Ratings:** ask for a rating with the Play In-App Review API **only** after the Blueprint and a successful family share, never during play, at most once.
 
 ---
 
 ## 2. Website SEO (rahyaab.pk or a university subdomain; placeholder)
 
-A small, fast, static site in English and Urdu. It is the home for the privacy policy, the parent and school information, and shared links.
+A small, fast, static site in English. It is the home for the privacy policy, the parent and school information, and shared links.
 
 ### 2.1 Pages
 
@@ -113,12 +106,11 @@ A small, fast, static site in English and Urdu. It is the home for the privacy p
 | `/schools/` | Class codes, dashboard, privacy agreement | Rahyaab for schools and teachers |
 | `/how-it-works/` | The game, the frameworks (RIASEC, abilities, values), the validation study in plain words | How Rahyaab works: interests, strengths and values |
 | `/privacy/`, `/accessibility/`, `/.well-known/security.txt` | Policies | — |
-| `/ur/...` | Urdu versions of every page | — |
 
 ### 2.2 Technical SEO
 
 - **Fast and indexable:** server-rendered or static HTML (no content only in JavaScript); good Core Web Vitals on 3G; images in WebP with alt text.
-- **Language versions:** `hreflang` pairs (`en-PK`, `ur-PK`), canonical URLs, `sitemap.xml`, a `robots.txt` that allows public pages and blocks `/p/` (parent share links) and the dashboard.
+- **Language:** `lang="en"` on every page (English only), canonical URLs, `sitemap.xml`, a `robots.txt` that allows public pages and blocks `/p/` (parent share links) and the dashboard.
 - **Structured data (JSON-LD):**
   - `MobileApplication` (name, operating system, category, offers price 0, publisher);
   - `Organization`;
@@ -135,7 +127,7 @@ AI assistants answer questions like "which FSc group is best for computer scienc
 
 1. **Answer real questions directly.** Each stream page opens with a two-sentence plain answer, then details (subjects, doors, tests, Plan B), with dated sources (PMDC, PEC, IBCC, boards).
 2. **Facts in text, not images.** Tables of streams, gates and tests as HTML, with dates.
-3. **One consistent identity:** always "Rahyaab (راہ یاب)", the same one-line description, the same publisher (the Riphah FYP team), and links between the site, the Play listing and any university page.
+3. **One consistent identity:** always "Rahyaab", the same one-line description, the same publisher (the Riphah FYP team), and links between the site, the Play listing and any university page.
 4. **Show evidence:** publish the validation study summary and the frameworks (RIASEC, ICAR-style abilities, O\*NET work values) on `/how-it-works/`. AI systems favour pages that explain method and cite sources.
 5. **`llms.txt`** at the site root: a short markdown map of the key pages and facts. It's an emerging convention; it's cheap to add.
 6. **Allow reputable AI crawlers** in `robots.txt` for public pages (Google-Extended, GPTBot and similar, as the team decides). Always block parent share links, the dashboard and the API.
@@ -145,9 +137,9 @@ AI assistants answer questions like "which FSc group is best for computer scienc
 
 ## 4. Launch checklist
 
-- [ ] Title, short and full descriptions final in English and Urdu; checked against the Play metadata policy.
-- [ ] 8 screenshots with captions (EN, UR), feature graphic, icon.
+- [ ] Title, short and full descriptions final in English; checked against the Play metadata policy.
+- [ ] 8 screenshots with captions, feature graphic, icon.
 - [ ] IARC rating, target audience, Data safety form, privacy policy URL.
-- [ ] Website live with `hreflang`, sitemap, JSON-LD, Open Graph, `llms.txt`, `security.txt`.
+- [ ] Website live with sitemap, JSON-LD, Open Graph, `llms.txt`, `security.txt`.
 - [ ] Store listing experiment set up (two icon or screenshot variants), run for at least 2 weeks.
 - [ ] Search terms reviewed in Play Console after the first month; copy adjusted.

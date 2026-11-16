@@ -38,7 +38,7 @@ After 4 weeks the letter opens as the **Blueprint**, followed by optional **"Try
 | ID | Screen | Contents | Notes |
 |---|---|---|---|
 | S-00 | Splash and loading | Splash (Hudhud lands on the branch, 1.5 s); S-00b long loading while the Blueprint is built, with what is happening and the barred meter. No spinner without words |
-| S-01 | Language | English / اردو tiles; changeable later | |
+| S-01 | Language | **Removed 16 Nov 2026 (English only, ADR-0016).** The app opens at S-02 | |
 | S-02 | Welcome | Branch logo, "Play your year. Find your raah.", up to 3 cards (Hudhud and the letter · plan your week · "No right answers. No clock."), privacy in one line | Hudhud waving |
 | S-03i | Join without a code (**post-MVP**, cut 9 Nov 2026; not linked from S-03) | Individual path: the parent's mobile number for an OTP consent link; "I'm 18 or older" for self-consent (FR-03, FR-100) |
 | S-03 | Join | **Class code**, nickname, class 8–12, birth month and year (neutral age gate; soft check for unusual class and age). The consent-slip code is entered on S-04, not here: the server answers a wrong class code and a wrong slip code the same way, so one form could not say which was wrong. A typed age never grants consent: 18+ self-consent needs a Form C recorded by the school (`AGE_ASSURANCE.md`) | No name, phone, email, CNIC or photo from students. **S-03e** shows the field-help states: format hint, error with fix and example, nickname warning, a help card after 2 failures (FR-102) |
@@ -94,7 +94,7 @@ After 4 weeks the letter opens as the **Blueprint**, followed by optional **"Try
 
 | ID | Screen | Contents |
 |---|---|---|
-| S-18 | You and settings | Avatar, class, board. **Look:** theme, text size, reduce motion. **Language.** Notifications (off by default). Research opt-in (off). Download my data. Delete my data. Sign out (wipes local data) |
+| S-18 | You and settings | Avatar, class, board. **Look:** theme, text size, reduce motion. Notifications (off by default). Research opt-in (off). Download my data. Delete my data. Sign out (wipes local data) |
 | S-19 | Profiles and PIN | Several students on one phone; switch with PIN |
 | S-26 | School | Join a class with a code; leave the class |
 | S-29 | Re-link profile | Restore on a new phone with a teacher re-link code or the family link |
@@ -107,9 +107,9 @@ After 4 weeks the letter opens as the **Blueprint**, followed by optional **"Try
 
 | ID | Screen | Contents |
 |---|---|---|
-| P-01 | Family report | The child's top paths in plain Urdu/English, reasons, honest entry odds, cost and duration ranges, Plan B, a "talk about it together" checklist, disclaimer. Branch logo only; no mascot |
+| P-01 | Family report | The child's top paths in plain English, reasons, honest entry odds, cost and duration ranges, Plan B, a "talk about it together" checklist, disclaimer. Branch logo only; no mascot |
 | P-01b | My children | A parent's saved children on this phone only (opt-in), with a switcher; expired links shown as "ask for a new link" (FR-105) |
-| P-02 | Consent and manage | Who is asking, what the app does, exactly what is collected; **Allow / Don't allow**; later: withdraw consent, request deletion, change language |
+| P-02 | Consent and manage | Who is asking, what the app does, exactly what is collected; **Allow / Don't allow**; later: withdraw consent, request deletion |
 | P-03 | PDF / image | One-page WhatsApp-friendly version, readable in greyscale |
 | P-04 | Upgrade (future) | Detailed family PDF or a counsellor session; outside SRS v1.1 scope (see §5) |
 
@@ -151,7 +151,7 @@ After 4 weeks the letter opens as the **Blueprint**, followed by optional **"Try
 | Plan | Who pays | What's in it |
 |---|---|---|
 | **Free** | — | The whole game, the Blueprint, top 3 + Plan B, Explore, family report. The core is never paywalled |
-| **Family report+** (one-time, [PRICE] PKR) | Parent via P-04 | Detailed family PDF in Urdu/English, a new term after 3 months with comparison |
+| **Family report+** (one-time, [PRICE] PKR) | Parent via P-04 | Detailed family PDF in English, a new term after 3 months with comparison |
 | **Counsellor session** ([PRICE] PKR) | Parent | A 30-minute call with a partner counsellor, who receives the Blueprint (with consent) |
 | **School** (per seat per year, [PRICE]) | School | Dashboard, class reports, bulk invites |
 

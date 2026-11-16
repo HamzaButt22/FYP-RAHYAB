@@ -1,0 +1,85 @@
+{
+  "model_name": "WeightedScoringEngine",
+  "model_version": "0.1-prototype",
+  "is_validated": false,
+  "disclaimer": "PROTOTYPE SCORING. The weights and feature ranges below are transparent design assumptions chosen by the project team, NOT values fitted to validated data. Scores are behavioural indicators from a short game session and must not be treated as a clinical or psychometrically validated Big Five measurement. Calibrate against a validated questionnaire (e.g. BFI-2 / IPIP-NEO) before drawing conclusions.",
+  "min_coverage": 0.4,
+  "classification": {"low_max": 39, "high_min": 70},
+
+  "feature_ranges": {
+    "_comment": "[low, high] -> 0..1. Rates that are already 0..1 need no entry. These ranges are assumptions to be calibrated.",
+    "route_diversity":           [0.10, 0.55],
+    "exploration_time_ratio":    [0.00, 0.70],
+    "strategy_diversity":        [0.00, 1.00],
+    "planning_time":             [3.0, 40.0],
+    "error_rate":                [0.00, 0.30],
+    "social_engagement_depth":   [1.0, 4.0],
+    "pressure_latency_ratio":    [0.7, 2.0],
+    "decision_change_rate":      [0.0, 2.0],
+    "repeated_checking_rate":    [0.0, 2.0],
+    "mean_recovery_time_s":      [0.0, 6.0],
+    "decision_time_cv":          [0.2, 1.0],
+    "erratic_movement_rate":     [0.0, 0.6],
+    "post_event_reaction_s":     [0.0, 3.0]
+  },
+
+  "traits": {
+    "openness": {
+      "description": "Curiosity and novelty seeking: exploration, novelty and strategy diversity.",
+      "confidence": "medium",
+      "terms": [
+        {"feature": "exploration_rate",       "weight": 0.25},
+        {"feature": "route_diversity",        "weight": 0.15},
+        {"feature": "novel_action_rate",      "weight": 0.20},
+        {"feature": "exploration_time_ratio", "weight": 0.10},
+        {"feature": "strategy_diversity",     "weight": 0.15},
+        {"feature": "novel_choice_rate",      "weight": 0.15}
+      ]
+    },
+    "conscientiousness": {
+      "description": "Planning, follow-through, accuracy and resource management.",
+      "confidence": "medium",
+      "terms": [
+        {"feature": "planning_time",        "weight": 0.20},
+        {"feature": "resource_efficiency",  "weight": 0.20},
+        {"feature": "completion_rate",      "weight": 0.15},
+        {"feature": "strategy_consistency", "weight": 0.15},
+        {"feature": "error_rate",           "weight": -0.15},
+        {"feature": "task_persistence",     "weight": 0.15}
+      ]
+    },
+    "extraversion": {
+      "description": "Social engagement, conversation initiation and activity/excitement seeking.",
+      "confidence": "medium",
+      "terms": [
+        {"feature": "social_interaction_rate",     "weight": 0.35},
+        {"feature": "interaction_initiation_rate", "weight": 0.35},
+        {"feature": "social_engagement_depth",     "weight": 0.20},
+        {"feature": "risk_taking_rate",            "weight": 0.10}
+      ]
+    },
+    "agreeableness": {
+      "description": "Helping, sharing and cooperating rather than competing.",
+      "confidence": "medium",
+      "terms": [
+        {"feature": "helping_rate",     "weight": 0.30},
+        {"feature": "cooperation_rate", "weight": 0.30},
+        {"feature": "sharing_rate",     "weight": 0.25},
+        {"feature": "competition_rate", "weight": -0.15}
+      ]
+    },
+    "neuroticism": {
+      "description": "Behavioural stress-response indicators under pressure and uncertainty (hesitation, re-checking, second-guessing, slow recovery, risk avoidance). A short game is a weak proxy for emotional reactivity.",
+      "confidence": "low",
+      "terms": [
+        {"feature": "pressure_latency_ratio",  "weight": 0.20},
+        {"feature": "decision_change_rate",    "weight": 0.20},
+        {"feature": "repeated_checking_rate",  "weight": 0.20},
+        {"feature": "risk_avoidance_rate",     "weight": 0.15},
+        {"feature": "mean_recovery_time_s",    "weight": 0.10},
+        {"feature": "erratic_movement_rate",   "weight": 0.10},
+        {"feature": "decision_time_cv",        "weight": 0.05}
+      ]
+    }
+  }
+}

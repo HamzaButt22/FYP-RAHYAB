@@ -1,6 +1,6 @@
 # Rahyaab terms of use (draft for review)
 
-**Draft v0.1, 5 Nov 2026.** Must be reviewed before publishing, with an Urdu version.
+**Draft v0.1, 5 Nov 2026.** Must be reviewed before publishing. English only since 16 Nov 2026 (ADR-0016).
 
 1. **What Rahyaab is.** A free guidance game that suggests study paths. **It is a starting point for a conversation with your family and teachers, not a decision or a guarantee.** Admission rules change; always check with your board, college or university.
 2. **Who can use it.** Students aged 13 and older in class 8–12, or older learners, with parent or guardian consent if under 18. Parents, teachers and school staff use it as described in the privacy policy.

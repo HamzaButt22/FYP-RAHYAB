@@ -2,11 +2,11 @@
 
 | Field | Value |
 |---|---|
-| Project | Rahyaab (راہ یاب): game-based stream guidance for Pakistani class 8–12 students (ages about 13–18) |
+| Project | Rahyaab: game-based stream guidance for Pakistani class 8–12 students (ages about 13–18) |
 | Programme | BSCS Final Year Project, Riphah International University, Fall 2026 (FYP-1) → Spring 2027 (FYP-2) |
 | Team | Zahid Bashir, Hamza Butt, Daniyal Sarwar |
 | Supervisor | Zeeshan Ali |
-| Document | SRS + design specification (IEEE/ISO/IEC 29148:2018 structure), version 1.5, 11 Nov 2026 (v1.4: 7 Nov; v1.3: 5 Nov; v1.2 and v1.1: 4–5 Nov 2026; v1.0: 31 Oct 2026) |
+| Document | SRS + design specification (IEEE/ISO/IEC 29148:2018 structure), version 1.6, 16 Nov 2026 (v1.5: 11 Nov; v1.4: 7 Nov; v1.3: 5 Nov; v1.2 and v1.1: 4–5 Nov 2026; v1.0: 31 Oct 2026) |
 | Status | Draft for supervisor review. Supersedes the instrument sections of Template-04 v1.4 and the proposal slides |
 | Repository location | `docs/project/SRS.md` (short summary in `docs/project/PROJECT_BRIEF.md`) |
 
@@ -82,6 +82,13 @@
 > - **Commercial model:** FR-107 (institution licences with seats; pilot licences) and FR-108 (individual subscriptions, post-MVP), ADR-0015.
 > - **Stream data:** gates carry a verification level and an official source; two wrong rules corrected (ICS → engineering, Pre-Medical → engineering); path RIASEC profiles are to be derived from O*NET occupational interest data (`tools/onet_profiles.py`).
 > - **Totals:** 108 FRs, 77 NFRs.
+>
+> **Change log, v1.6 (16 Nov 2026), English only** (`docs/architecture/adr/ADR-0016-english-only-interface.md`).
+>
+> - **Interface:** the app, teacher dashboard, parent page, store listing, notifications, read-aloud, privacy notice and terms are English only. The Urdu interface, right-to-left layout, Urdu fonts, the language choice screen S-01, Roman Urdu dialogue and recorded Urdu audio are removed (§7.4).
+> - **Removed requirements:** FR-01, FR-32, US-01 and feature F27 are marked *Removed 16 Nov 2026*; IDs are not renumbered.
+> - **Reworded to English only:** FR-06, FR-11, FR-58, FR-61, FR-67, FR-74, FR-77, FR-91, FR-96, FR-102, NFR-26, NFR-27, NFR-56, NFR-73, US-16, and the related screens, tests and risk RK-16.
+> - **Kept:** the Urdu versions of the paper consent forms for parents (Forms A and B), the Urdu-script check on nicknames (FR-102) and `school.medium` as a research covariate.
 
 ## Contents
 
@@ -240,7 +247,7 @@ Key literature is cited through [R1]/[R2]. Examples: Fadillah et al. 2025 (game-
 |---|---|---|
 | A-01 | Expo SDK 58 / React Native 0.88 / React 19.3 (as in the prototype `package.json`) remain stable for the project's duration | Pin versions; upgrade only between releases |
 | A-02 | The OpenPsychometrics/Kaggle RIASEC dataset (~145,828 responses, 48 items) is licensed for research use. Its items are public-domain markers that game options are mapped to for simulated pre-calibration **(verify item source and licence)** [GD §13; REV §3.3] | M1 pre-training falls back to pilot-only calibration |
-| A-03 | The team's O*NET Web Services account allows (a) occupation content with attribution, and (b) research use of the Interest Profiler (Mini-IP) **unchanged, in English**. An Urdu translation would require the Developer License [R1; REV §3.7] | Benchmark is given in English only; noted as a limitation |
+| A-03 | The team's O*NET Web Services account allows (a) occupation content with attribution, and (b) research use of the Interest Profiler (Mini-IP) **unchanged, in English**. [R1; REV §3.7] | Benchmark is given in English only; noted as a limitation |
 | A-04 | Pilot schools will collect paper or school-mediated parental consent. SMS OTP is a later option (cost) | Individual sign-up stays behind a feature flag |
 | A-05 | The FYP-1 progress presentation is in the second half of January 2027, after finals | Shift sprints S4–S5 |
 | A-06 | Hosting is one small Linux VM (2 vCPU / 4 GB) in the UAE or Mumbai region, or a Pakistani provider, at about US$10–60/month [N6 §6] (estimate, verify) | Use the university server if available |
@@ -256,13 +263,13 @@ Key literature is cited through [R1]/[R2]. Examples: Fadillah et al. 2025 (game-
 | Stakeholder | Interest in Rahyaab | Power over outcome | Quadrant / strategy | Key needs (source) |
 |---|---|---|---|---|
 | Students, class 8–12 | Very high: the decision affects their next 2–6 years | Low on their own; decisions are collective [N1 Q5] | High interest, low power → **involve closely** (co-design, usability tests) | Discover interests, choose a group, wider career awareness, no exam feel, privacy on shared phones [N1 Q1–Q5] |
-| Parents/guardians | High | **Very high**: parental influence β = .50; 82.6% of students rely on parents [R1; R2] | High/high → **manage closely** | Urdu report, prospects, cost, entry tests, local options, safe options for daughters, consent [N2] |
+| Parents/guardians | High | **Very high**: parental influence β = .50; 82.6% of students rely on parents [R1; R2] | High/high → **manage closely** | A plain-English report, prospects, cost, entry tests, local options, safe options for daughters, consent [N2] |
 | Teachers / school counsellors | Medium–high | Medium: they gatekeep classroom use; teacher bias can steer girls [R2, Carlana] | **Keep involved** | Minutes per class, not per student; roster, flags, one-page summary, export [N2] |
 | School principals / chains | Medium | High (access, procurement) | **Keep satisfied** | Data agreement, no ads, offline, branded report, CSV [N2] |
 | FYP supervisor and committee | High | Very high (grades) | **Manage closely** | Locked scope, CCP, measurable experiments, Git evidence [REV §1–2] |
 | University ethics committee | Medium | Very high (pilot go/no-go) | **Keep satisfied** | Consent/assent, minimisation, retention, risk handling |
 | Boards, IBCC, PMDC, PEC | Low (unaware of the app) | High: they set the rules | **Monitor**; cite and date every rule | Correct gates [R1 §1] |
-| Govt/NGO channels (PEF, NAVTTC/TEVTA, Teach For Pakistan) | Low now | High for scale-up | **Keep informed** later | Free pilots, Urdu, offline, impact evidence [N2] |
+| Govt/NGO channels (PEF, NAVTTC/TEVTA, Teach For Pakistan) | Low now | High for scale-up | **Keep informed** later | Free pilots, offline, impact evidence [N2] |
 | Data providers (O*NET, dataset owners) | Low | Medium (licences) | **Comply** | Attribution, licence terms [R1] |
 | Development team | High | High | — | Clear backlog, CI, fair split of work [REV §8] |
 
@@ -271,11 +278,11 @@ Key literature is cited through [R1]/[R2]. Examples: Fadillah et al. 2025 (game-
 **P1. Ayesha, 15, Grade 9 (early term), government girls' high school, Sahiwal**
 
 - **Device and access:** uses her mother's Tecno Spark (4 GB RAM, Android 14). The phone is shared with two siblings and full of WhatsApp media. She gets the phone for about 30 minutes in the evening, with 3–4 hours of load-shedding most days [N6 §1–2].
-- **Language:** Urdu medium; reads English slowly [N6 §3].
+- **Language:** Urdu-medium school; reads English slowly [N6 §3]. The English-only interface (ADR-0016) is a risk for her: short sentences, Grade 6 wording, English read-aloud and icons help, and a teacher can explain the app in class.
 - **Situation:** she likes the computer period and drawing. Her aunt says biology "keeps doctor open". Her father decides with her uncle [N1 Q5; N2].
 - **Wants:** to know whether Computer or Biology suits her, and what each one closes.
 - **Fears:** someone else seeing her results; looking "wrong".
-- **Design implications:** PIN profile; offline play; Urdu-first; results private by default; a shareable Urdu parent view; honest doors (Biology vs CS); female role models in ICS and engineering.
+- **Design implications:** PIN profile; offline play; plain Grade 6 English with read-aloud; results private by default; a shareable parent view; honest doors (Biology vs CS); female role models in ICS and engineering.
 
 **P2. Rayan, 16, O-Level (Year 11), private chain school, Lahore**
 
@@ -288,10 +295,10 @@ Key literature is cited through [R1]/[R2]. Examples: Fadillah et al. 2025 (game-
 
 **P3. Tariq Mehmood, 47, father, runs a hardware shop, Faisalabad**
 
-- **Language and channels:** reads Urdu; uses WhatsApp daily, mostly voice notes and forwards; no email [N2].
+- **Language and channels:** reads Urdu more easily than English; uses WhatsApp daily, mostly voice notes and forwards; no email [N2].
 - **Situation:** wants his son in medicine "for respect". He knows MDCAT is hard but not the odds: 140,071 candidates for about 22,000 seats [R1 §1].
 - **Wants:** to know what the boy is good at, what each option costs and leads to, and whether it is safe to rely on.
-- **Design implications:** a link that opens without installing anything; plain Urdu; honest odds; alternatives with outcomes; a "talk together" checklist; a consent he understands.
+- **Design implications:** a link that opens without installing anything; very plain English with a Listen button (the paper consent form is in Urdu); honest odds; alternatives with outcomes; a "talk together" checklist; a consent he understands.
 
 **P4. Ms Sadia Rauf, 34, computer teacher and career coordinator, private school campus, Rawalpindi**
 
@@ -311,17 +318,17 @@ Key literature is cited through [R1]/[R2]. Examples: Fadillah et al. 2025 (game-
 | Step | Day | What happens | Touchpoints | Emotion / risk | Design response |
 |---|---|---|---|---|---|
 | 1 | Day 0, school | Teacher gives a class code and a consent slip | Paper slip, class code | Curious | Consent collected by the school (A-04) |
-| 2 | Day 1 | Chooses Urdu, enters the code, picks a nickname and PIN, builds an avatar (2 min) | S-01–S-05 | Worried it is a test | "No right or wrong answers" framing; ≤ 3 intro screens |
+| 2 | Day 1 | Enters the code, picks a nickname and PIN, builds an avatar (2 min) | S-02–S-05 | Worried it is a test | "No right or wrong answers" framing; ≤ 3 intro screens |
 | 3 | Day 1 | Plays the prologue: Hudhud brings the letter; then Week 1. Power cut in the second scene | S-07, S-08 | Curious, then annoyed | Autosave after every choice; resumes at the same moment |
 | 4 | Day 2 | Week 2: plans the code jam, the clinic and the stall; packs the car boot for Nani's trip (spatial task) | S-08 | Engaged by the story | Story uses familiar places; untimed tasks with no score shown |
 | 5 | Days 3–4 | Weeks 3–4; the letter gets more readable each Sunday | S-09, S-21 | Wants to see the letter | The letter shows real certainty, and says so when it is unsure |
 | 6 | Day 4 | Blueprint: (1) Science-Computer → ICS, (2) Science-Biology → Pre-Med, (3) Humanities with Computer elective; confidence Medium | S-10, S-11 | Relief, then a question: "Can I still be a doctor?" | Doors: Biology keeps MBBS open; Computer closes it. Plan B shown |
-| 7 | Day 5 | Shares the Urdu parent view with her mother on WhatsApp | S-14, P-01 | Nervous | She previews exactly what the parent will see; the link can be revoked |
+| 7 | Day 5 | Shares the parent view with her mother on WhatsApp | S-14, P-01 | Nervous | She previews exactly what the parent will see; the link can be revoked |
 | 8 | Week 2 | Teacher prints her summary for the PTM | D-04 | — | One-page summary with "talk together" questions |
 
 **J2. Tariq (parent)**
 
-Opens the WhatsApp link → language auto-detected (Urdu) → sees "what your child enjoyed and was strong at", the top-3 options with doors and odds, Plan B, and five "talk together" questions → optionally confirms consent or asks for deletion → closes the page. No app, account or password.
+Opens the WhatsApp link → sees "what your child enjoyed and was strong at", the top-3 options with doors and odds, Plan B, and five "talk together" questions → optionally confirms consent or asks for deletion → closes the page. No app, account or password.
 
 **J3. Ms Sadia (teacher)**
 
@@ -394,7 +401,7 @@ So Rahyaab ships five layers. Each layer maps to an ingredient:
 |---|---|---|
 | The story game (choices, tasks, value moments) | Self-exploration and measurement | Yes |
 | Explained results (top-3, reasons, confidence, doors, Plan B) | Individualised interpretation and feedback | Yes |
-| Stream and career library (O*NET-backed, localised) | World-of-work information | Yes (stream pages); careers Should |
+| Stream and career library (O*NET-backed, Pakistani routes) | World-of-work information | Yes (stream pages); careers Should |
 | Role-model stories (incl. female leads in CS/engineering) | Modelling [R2, Sharma 2020] | Should |
 | Parent view + teacher dashboard | Support building / human in the loop | Yes (parent); teacher dashboard Should in R1, Must in R2 |
 
@@ -404,7 +411,7 @@ What Rahyaab deliberately does **not** add: social, chat, university search, sch
 
 | # | Feature | Priority | Release | Justification (research) |
 |---|---|---|---|---|
-| F1 | Bilingual onboarding (Urdu/English), ≤ 3 screens, "no right or wrong answers" | M | R1 | Teen impatience; framing reduces test feel [N4 §1, §5] |
+| F1 | Onboarding in English, ≤ 3 screens, "no right or wrong answers" | M | R1 | Teen impatience; framing reduces test feel [N4 §1, §5] |
 | F2 | School-code sign-up, nickname only, school-mediated consent; individual sign-up with parent OTP | M / S | R1 / R2 | Minors' consent; no phone needed for girls [N1 Q5; N6 §5] |
 | F3 | Multi-profile with PIN on a shared device; wipe on sign-out | M | R1 | 28% of women use only someone else's phone [N6 §1] |
 | F4 | Home: "Your Year" hub with this week, the letter and your room; save/resume; ~5 min weeks | M | R1 | Session benchmarks 4.5–6 min; GCG completion drop [N3 §3; R2] |
@@ -419,8 +426,8 @@ What Rahyaab deliberately does **not** add: social, chat, university search, sch
 | F13 | Eligibility rules engine (board, council) with doors | M | R1 | PMDC/PEC/IBCC/TEVTA rules [R1 §1] |
 | F14 | Results: top-3 cards, sorted bars, bands, confidence, Plan B, "Why this?" | M | R1 | Radar charts mislead; shortlists help [N4 §7; R2, Gati] |
 | F15 | Stream library (offline) | M | R1 | Narrow career awareness [N1 Q1] |
-| F16 | Career pages from the O*NET API, localised, saved shortlist | S | R2 | Table stakes in mature products [N5] |
-| F17 | Parent share link + Urdu/English parent view | M | R1 | Parents decide [R2; N2] |
+| F16 | Career pages from the O*NET API (English, with Pakistani routes), saved shortlist | S | R2 | Table stakes in mature products [N5] |
+| F17 | Parent share link + English parent view | M | R1 | Parents decide [R2; N2] |
 | F18 | Parent PDF/image for WhatsApp | S | R2 | WhatsApp channel (inferred) [N2] |
 | F19 | Counsellor dashboard (roster, flags, summary, notes, CSV) | S → M | R2 | Committed scope; blended guidance works better [REV §2; R2] |
 | F20 | Admin: schools/codes, content packs, model registry, audit | M (codes) / S (rest) | R1 / R2 | Versioned scoring [N6 §4] |
@@ -430,7 +437,7 @@ What Rahyaab deliberately does **not** add: social, chat, university search, sch
 | F24 | Avatar, room objects, reputation tags, relationship ranks | S | R1 / R2 | Identification and a world that remembers; no unlocks tied to answers [GD §6.4] |
 | F25 | Reassessment after 90 days with "what changed" | S | R3 | Interests have state components; retakes are valued [R2; N5] |
 | F26 | Opt-in notifications (≤ 1/week, decision dates) | C | R3 | Episodic engagement [N5] |
-| F27 | Urdu audio narration of instructions | C | R3 | Literacy floor [N6 §3] |
+| F27 | Removed 16 Nov 2026 (English only, ADR-0016): Urdu audio narration of instructions. English read-aloud stays (FR-96) | — | — | — |
 | F28 | LLM rephrasing of explanations (M4) | C (research only) | R3 | Gender-bias risk [R2] |
 | F29 | Self-efficacy "I could learn this" stamp on activity cards | C | R3 | SCCT; separates "not interested" from "not confident" [R1 §2]. Needs supervisor sign-off that it stays within the game-only rule |
 | F30 | Chat, social feed, leaderboards, streaks, ads, in-app purchases | W | — | ICO Children's Code; PECA; anxiety [N4 §6; R1] |
@@ -571,7 +578,7 @@ A content item is age-appropriate when **all** of the following hold:
 4. No user-generated content, chat or links to social media [R1 §4].
 5. No ads and no in-app purchases.
 6. Modest clothing in all illustrations; religious and sectarian neutrality; no political symbols or flag colours used as brand colours (§8).
-7. Text at or below a Grade 6 reading level, in plain Urdu without Persianised vocabulary; Roman Urdu / English dialogue reviewed by teens for tone [N4 §1, §4].
+7. Text at or below a Grade 6 reading level, in plain English with short sentences; dialogue reviewed by teens for tone [N4 §1, §4].
 8. Regional and gender balance, with women shown in engineering, CS and trades and men in nursing and teaching. Parents are loving and anxious, never villains.
 9. A teen tone: neither babyish nor exam-like.
 
@@ -621,7 +628,7 @@ Each screen's contents, flows and the mapping from the retired v1 numbering are 
 
 | ID | Screen | Route | Purpose / key content | Release |
 |---|---|---|---|---|
-| S-01 | Language | `/(onboarding)/language` | Urdu / English, large tiles; changeable later | R1 |
+| S-01 | Language (removed) | — | Removed 16 Nov 2026 (English only, ADR-0016) | — |
 | S-02 | Welcome (≤ 3 cards) | `/(onboarding)/welcome` | Hudhud and the letter; "no right or wrong answers"; "about 30 min over a few days"; privacy in one line | R1 |
 | S-03 | Join | `/(onboarding)/join` | Class code or "I'm on my own"; class 8–12 picker; birth year (neutral gate) | R1 |
 | S-04 | Consent status / assent | `/(onboarding)/consent` | Student assent in plain words; parent consent status (pending/granted); what is and isn't collected | R1 |
@@ -636,9 +643,9 @@ Each screen's contents, flows and the mapping from the retired v1 numbering are 
 | S-13 | Stream detail | `/streams/[id]` | Subjects per board, duration, entry tests, doors, careers, role-model story, "Try a day" link | R1 (Try a day R2) |
 | S-14 | Share with parent | `/share` | Preview of exactly what the parent sees; create, copy or WhatsApp link; revoke; expiry | R1 |
 | S-15 | Saved | `/saved` | Shortlisted streams and careers | R2 |
-| S-16 | Career detail | `/careers/[code]` | Localised O*NET-based summary, Pakistani route, attribution | R2 |
+| S-16 | Career detail | `/careers/[code]` | O*NET-based summary, Pakistani route, attribution | R2 |
 | S-17 | History / retake | `/history` | Past profiles; "what changed"; retake after 90 days | R3 |
-| S-18 | Settings and privacy | `/settings` | Language, reduced motion, text size preview, notifications (off by default), research opt-in (off), download my data, delete my data, sign out (wipes local data) | R1 |
+| S-18 | Settings and privacy | `/settings` | Reduced motion, text size preview, notifications (off by default), research opt-in (off), download my data, delete my data, sign out (wipes local data) | R1 |
 | S-19 | Profile switcher / PIN | `/profiles` | Multiple students on one phone | R1 |
 | S-20 | Help | `/help` | How it works, how scoring works (plain language), talk to a teacher | R1 |
 | S-21 | The letter | `/letter` | The letter from future you at its current readability, with a plain line on what certainty means | R1 |
@@ -655,8 +662,8 @@ Each screen's contents, flows and the mapping from the retired v1 numbering are 
 
 | ID | Screen | Purpose |
 |---|---|---|
-| P-01 | Parent report (`/p/{token}`) | Child's strengths (bands), top-3 with doors, odds and Plan B; "talk together" checklist; disclaimer; language toggle |
-| P-02 | Consent page (`/c/{token}`) | Notice (Urdu/English), grant or withdraw consent by OTP; request deletion |
+| P-01 | Parent report (`/p/{token}`) | Child's strengths (bands), top-3 with doors, odds and Plan B; "talk together" checklist; disclaimer |
+| P-02 | Consent page (`/c/{token}`) | Notice (English), grant or withdraw consent by OTP; request deletion |
 | P-03 | PDF/image export | WhatsApp-friendly one-page version, greyscale-safe |
 | D-01 | Login + MFA | |
 | D-02 | Classes overview | Completion %, flags count per class |
@@ -680,7 +687,7 @@ Each screen's contents, flows and the mapping from the retired v1 numbering are 
 
 ```mermaid
 flowchart TD
-  L[S-01 Language] --> W[S-02 Welcome] --> J[S-03 Join] --> C[S-04 Consent/Assent] --> PR[S-05 Profile] --> AV[S-06 Avatar] --> H[S-07 Home]
+  W[S-02 Welcome] --> J[S-03 Join] --> C[S-04 Consent/Assent] --> PR[S-05 Profile] --> AV[S-06 Avatar] --> H[S-07 Home]
   H --> WK[S-08 Week player] --> DI[S-09 Sunday diary] --> H
   H --> LT[S-21 The letter]
   H --> MAP[S-22 City map]
@@ -702,7 +709,7 @@ Top to bottom, in a single scroll. Card patterns follow ecommerce conventions, w
 
 1. **Header.** "Your Blueprint", the date, and "Based on 4 weeks of play". A confidence chip (High/Medium/Low with an icon and a word) plus a one-line explanation ("Play one more week to make this more certain").
 2. **Top-3 stream cards** (rank 1 expanded, ranks 2–3 collapsed; never a single verdict):
-   - stream name (Urdu + English) and level ("Intermediate");
+   - stream name (English) and level ("Intermediate");
    - **fit band chip:** Strong fit ●●● / Good fit ●●○ / Worth a look ●○○. The dots and the words carry the meaning, not colour;
    - **2–3 reasons with icons**, generated from the stored contribution vector: "You often chose *building and fixing* activities (Realistic)", "Your *spatial* task level was strong";
    - **doors:** ✓ open (e.g., "BS Computer Science"), ↗ with an extra step (e.g., "Engineering: Additional Maths"), ✕ closes (e.g., "MBBS: needs Biology"). Each door has a "why" tooltip naming the rule source;
@@ -750,42 +757,39 @@ The parent view (P-01) has the same structure without "Why this?" detail. It add
 
 ### 7.3 Accessibility (WCAG 2.2 AA plus Android guidance)
 
-- **Contrast:** text ≥ 4.5:1 (no large-text relaxation for Urdu, because Nastaliq's apparent size varies); non-text UI and chart marks ≥ 3:1 [N4 §2]. The computed values are in §8.
+- **Contrast:** text ≥ 4.5:1 (no large-text relaxation); non-text UI and chart marks ≥ 3:1 [N4 §2]. The computed values are in §8.
 - **Targets:** ≥ 48 × 48 dp, spacing ≥ 8 dp in grids; primary game buttons ≥ 56 dp (exceeds WCAG 2.5.8's 24 px).
 - **Never colour only:** choices use a check icon and a label; bands use dots and a word; errors use an icon and text; doors use the ✓/↗/✕ glyphs and words [WCAG 1.4.1].
-- **Font scaling:** layouts work at 200% font scale. No fixed heights on text containers, which clip Nastaliq [N4 §4].
+- **Font scaling:** layouts work at 200% font scale. No fixed heights on text containers, so larger text is never clipped [N4 §4].
 - **Accommodations:** read-aloud, accessibility settings and accessible task modes are FR-96–98. High contrast and alternative input are NFR-64–65. The full specification is `design/specs/accessibility.md`.
-- **Screen reader:** every control has an `accessibilityLabel` in the active language describing its purpose. Games expose an accessible mode: button-driven, with announced state (e.g., "Tile at row 2, column 3, elbow, connected").
+- **Screen reader:** every control has an `accessibilityLabel` in English describing its purpose. Games expose an accessible mode: button-driven, with announced state (e.g., "Tile at row 2, column 3, elbow, connected").
 - **Motion:** respect the OS reduced-motion setting (`AccessibilityInfo.isReduceMotionEnabled`); no flashing more than 3 times per second.
 - **Authentication:** no cognitive test without an alternative (WCAG 3.3.8). The PIN is optional on personal phones, and a teacher can reset it.
 - **Colour-vision deficiency:** red-green CVD affects roughly 1.4–5.8% of Pakistani males [N4 §2]. The data-viz palette is checked by simulation (§8.4).
 
-### 7.4 Urdu, RTL and typography
+### 7.4 Language and typography
 
-- **Fonts:**
-  - Urdu: **Gulzar** (OFL), with Noto Nastaliq Urdu as the fallback.
-  - Latin: **Bricolage Grotesque** 800 for display and **Plus Jakarta Sans** for interface text (both OFL) [BR].
-  - Fonts are bundled, subset, and loaded with `expo-font`. Jameel Noori Nastaleeq is not used (licence unclear) [N4 §4].
-- **Sizes and line height:** see the type scale in §8.5. Urdu body is 2–3 sp larger than English with **line-height ≈ 1.8** (headings ≥ 1.4). Set `includeFontPadding: false` on Android and test descenders [N4 §4].
-- **RTL:** in Urdu the layout mirrors through `I18nManager.forceRTL`, which **needs an app reload** [R1 §4]. The language switch is offered only between scenes; before the reload the app commits the Ink story state and the outbox (FR-35, FR-95) and afterwards resumes at the same point (tested in TC-OFF). Use `start`/`end` styles, never `left`/`right`.
-- **Mirroring rules:**
-  - mirror: navigation, back arrows, progress direction, list chevrons;
-  - do **not** mirror: numbers, chart axes, task grids (the planning task is orientation-dependent), media controls.
-- **Bidi:** English terms and numbers inside Urdu strings are wrapped with Unicode isolates (FSI…PDI) through an i18n helper.
-- **Numerals:** Western digits (0–9) in both languages, matching common Pakistani usage for marks and phone numbers. To be user-tested [N4 §4].
-- **Language quality:** first Urdu drafts may come from self-hosted machine translation, but **every string is reviewed by a native Urdu editor**. Keys use the `domain.screen.element` pattern. Strings are never concatenated.
+English only since 16 Nov 2026 (ADR-0016). The app, the teacher dashboard, the parent page, the store listing, notifications, read-aloud and the privacy notice and terms are in English. There is no Urdu interface, no right-to-left layout and no language switch. The Urdu and right-to-left requirements of v1.5 are marked *Removed 16 Nov 2026* where they appear (FR-01, FR-32, S-01, US-01).
+
+- **Fonts:** **Bricolage Grotesque** 800 for display and **Plus Jakarta Sans** for interface text (both OFL) [BR]. Fonts are bundled, subset, and loaded with `expo-font`. See the type scale in §8.5.
+- **Reading level:** all student-facing copy is at or below a Grade 6 reading level (Flesch-Kincaid), in short sentences, with an icon or picture beside the text where it helps. This is the main help for students who read English less fluently, such as students from Urdu-medium schools (NFR-26).
+- **Read-aloud:** every story line, choice, task instruction and the parent page can be read aloud in English (FR-96). It matters more now: it is the main help for weaker readers.
+- **Limitation:** students from Urdu-medium schools may read English less fluently, which can lower engagement and add measurement error. Mitigations: the reading level, read-aloud, icons and pictures, and teachers explaining the app in class. Analysis records each school's medium (`school.medium`) and reports results by medium.
+- **Paper consent and assent forms** for parents (Forms A and B) keep their **Urdu versions**, because parents must understand what they agree to. They need a native speaker's review before submission (§17.4).
+- **Numerals:** Western digits (0–9), matching common Pakistani usage for marks and phone numbers. To be user-tested [N4 §4].
+- **Strings:** all copy lives in `en.json` through i18next, so a language could be added later without touching screens. Keys use the `domain.screen.element` pattern. Strings are never concatenated.
 
 ### 7.5 Writing and tone guide
 
-| Use (EN) | Avoid (EN) | Use (UR, editor to confirm) | Avoid (UR) |
-|---|---|---|---|
-| activity, challenge, game, task | test, exam, quiz, assessment | سرگرمی، کھیل، پہیلی | امتحان، ٹیسٹ |
-| your profile, what you enjoyed | your score, your result, marks | آپ کی پروفائل، آپ کی دلچسپیاں | نمبر، نتیجہ (board-result connotation) |
-| strong / developing / emerging | high/low ability, weak, failed | مضبوط پہلو | کمزور، فیل |
-| fits you well, worth exploring | you should become, best career | — | — |
-| saved, come back anytime | don't lose your progress! | محفوظ ہو گیا | — |
+| Use | Avoid |
+|---|---|
+| activity, challenge, game, task | test, exam, quiz, assessment |
+| your profile, what you enjoyed | your score, your result, marks (board-result connotation) |
+| strong / developing / emerging | high/low ability, weak, failed |
+| fits you well, worth exploring | you should become, best career |
+| saved, come back anytime | don't lose your progress! |
 
-**Voice.** Warm, direct, respectful, second person, short sentences. Explanations are evidence-first ("You chose…", "You reached…") rather than labels ("You are an artist"). Results are always hedged ("points toward", "starting point"). Wording is gender-neutral, and Urdu verb gender adapts to the profile's chosen form (or uses neutral constructions where possible).
+**Voice.** Warm, direct, respectful, second person, short sentences. Explanations are evidence-first ("You chose…", "You reached…") rather than labels ("You are an artist"). Results are always hedged ("points toward", "starting point"). Wording is gender-neutral.
 
 ### 7.6 Anxiety-reducing framing and ethical gamification (ICO Children's Code)
 
@@ -883,9 +887,8 @@ This palette is unchanged from v1.0. Every colour is ≥ 3:1 against white and p
 | `body` | Plus Jakarta Sans | 15 / 22 | 500 | Default UI text |
 | `label` | Plus Jakarta Sans | 14 / 20 | 700 | Buttons, tabs, chips |
 | `caption` | Plus Jakarta Sans | 12 / 16 | 600 | Small caps labels (minimum size) |
-| `urdu-body` | Gulzar | 18 / 34 | 400 | All Urdu text |
 
-Fonts are bundled through `@expo-google-fonts`. Containers are never fixed-height, so Nastaliq never clips. Display styles cap OS font scaling at 1.3 (`maxFontSizeMultiplier`); body text scales to 200%.
+Fonts are bundled through `@expo-google-fonts`. Containers are never fixed-height, so text never clips. Display styles cap OS font scaling at 1.3 (`maxFontSizeMultiplier`); body text scales to 200%.
 
 ### 8.6 Spacing, shape, elevation and layout
 
@@ -918,17 +921,17 @@ Columns: **P** = MoSCoW priority; **Rel** = first release; **AC** = acceptance c
 
 | ID | Requirement (the system shall…) | P | Rel | Acceptance criteria | Src |
 |---|---|---|---|---|---|
-| FR-01 | Ask for Urdu or English on first launch, and let the language be changed at any time in Settings | M | R1 | Language persists across restarts. Switching reloads the app in the correct direction (RTL/LTR) without losing progress | [N6 §3; N4 §4] |
+| FR-01 | **Removed 16 Nov 2026 (English only, ADR-0016).** The language choice (S-01) and the language switch no longer exist; the app is in English only | — | — | — | — |
 | FR-02 | Show ≤ 3 onboarding cards stating that there are no right or wrong answers, the expected time, and the privacy summary | M | R1 | Onboarding is skippable; median completion ≤ 60 s in usability tests | [N4 §1, §5] |
 | FR-03 | Let a student join with a **class code** (school path) or as an individual, using a **nickname only**. Email, phone number, CNIC or B-Form are not requested from students | M (code) / S (individual) | R1 / post-MVP (individual) | No form field for name, phone, email or ID exists on student screens (UI audit) | [N1 Q5; N6 §5] |
 | FR-04 | Apply a neutral age gate (class 8–12 + birth month and year, with no pre-selected value). The server computes the age against today's date (no fixed year limits). Users under 13 or outside class 8–12 receive a neutral "Rahyaab is for class 8–12" message and no data is stored. The birth month and year are used only to set the age band and are then discarded; the band is re-checked at the yearly class check-in (FR-101), so a student who turns 18 moves to self-consent | M | R1 | **Given** birth month and year imply age < 13 today, **when** the student continues, **then** onboarding stops, nothing is stored, and the same neutral message and error code are used for every out-of-range case | ICO Std 13 |
 | FR-05 | Record **verifiable parental consent** before any data leaves the device. Methods: (a) **school path (preferred):** the teacher prints numbered forms with one-time claim codes (Form A for a parent, Form C for an adult student), records each signed form by its serial **together with the student's age band from the school's admission register**, and the student enters the claim code at join, which binds the consent to the new profile (RFC-0004, `AGE_ASSURANCE.md`); (b) a parent OTP link (SMS) with a guardian attestation for individual sign-ups. Each consent record stores the notice version, method, timestamp, scope and, for (a), the slip and the recording teacher. The method is approved by the ethics office before the pilot | M | R1 (a) / post-MVP (b) | **Given** consent is pending, **when** the student plays, **then** events stay in the local outbox (sync blocked). **When** consent is recorded, **then** queued events sync. **If** consent is not obtained within 14 days, **then** local data is purged after an on-screen warning. A claim code works once; an unrecorded or expired slip does not grant consent | [N2; N6 §5; R1 §4] |
-| FR-06 | Show a student **assent** screen in plain language (what is collected, why, who sees it, how to delete), with an explicit "I agree" | M | R1 | Readability ≤ Grade 6 (EN); Urdu reviewed; assent is stored with its version | Ethics; ICO Std 4 |
+| FR-06 | Show a student **assent** screen in plain language (what is collected, why, who sees it, how to delete), with an explicit "I agree" | M | R1 | Readability ≤ Grade 6; assent is stored with its version | Ethics; ICO Std 4 |
 | FR-07 | Support **multiple student profiles on one device**, with a profile switcher. A 4-digit PIN is optional while a phone has one profile and **required** as soon as it has two or more. Failed PIN tries persist in the encrypted database; after 10 failures the profile reopens only with a re-link code or a parent OTP. Signing out wipes that profile's local data after a successful sync | M | R1 | **Given** two profiles A and B (so both have PINs), **when** B is active, **then** none of A's results, nickname or progress is visible without A's PIN; restarting the app does not reset the failure count | N6 §1 |
 | FR-08 | Collect profile data: class (8–12), board (FBISE / Punjab BISE / Sindh / KP / Balochistan / AKU-EB / Cambridge), current group (class 9–12) or O/A-Level, and district. Optional Matric/9th marks per subject, which can be skipped | M (optional marks: S) | R1 | Every field except class and board can be skipped; marks validated 0–100% or grade letters | [GD §2] |
 | FR-09 | Keep **research participation** as a separate opt-in, off by default, with separate parental consent | M | R1 | Default state is off; research exports include only opted-in records | AADC [R1 §4] |
 | FR-10 | Provide **download my data** (JSON + readable summary) and **delete my data** from Settings. Delete completes server-side within 30 days and removes the profile locally at once | M | R2 | Deletion removes the profile, events, estimates and share links; the audit entry keeps only a pseudonymous ID and a timestamp | [N6 §5] |
-| FR-11 | Show a bilingual privacy notice at ≤ Grade 6 reading level, with a version number | M | R1 | Notice is reachable from S-02, S-04 and S-18 | [N6 §5] |
+| FR-11 | Show an English privacy notice at ≤ Grade 6 reading level, with a version number | M | R1 | Notice is reachable from S-02, S-04 and S-18 | [N6 §5] |
 | FR-12 | Allow profile recovery on a new device through a teacher-issued re-link code (school path) or a parent OTP (individual path) | S | R2 | The re-linked profile restores server-side results; local unsynced data from the old device is not recoverable (stated) | — |
 
 ### 9.2 The story game ("Your Year")
@@ -954,7 +957,7 @@ Columns: **P** = MoSCoW priority; **Rel** = first release; **AC** = acceptance c
 | FR-29 | Provide **"Try a day" job simulations** (4 in R2) unlocked after the Blueprint, each ending with two reflection taps | S | R2 | Sims emit `sim_complete`, `reflection`; they never change the ranking in v1 | [GD §8.5] |
 | FR-30 | Provide an **avatar builder** with modest dress options (hijab/dupatta/cap/none), skin tones, hair, glasses and outfit colours | S | R1 | All options available from the start (no unlocks); no photos | [N3 §5] |
 | FR-31 | Provide **room objects, reputation tags and relationship ranks** that react to the pattern of choices (Ink variables and callbacks) | S | R2 | No tag or object depends on a "right" answer; ranks never decrease | [GD §6.4] |
-| FR-32 | Offer optional **Urdu audio narration** for instructions | C | R3 | Audio for 100% of instruction strings; captions on | [N6 §3] |
+| FR-32 | **Removed 16 Nov 2026 (English only, ADR-0016).** Recorded Urdu audio narration (WBS 6.5) is not built. English read-aloud is FR-96 | — | — | — | — |
 | FR-33 | Load all game content (compiled Ink story, task banks, `design/game/frameworks/*.json`, streams) from versioned **content packs** | M | R1 | Changing a line of dialogue needs no code change; the pack version is logged in every event | [GD §9] |
 
 ### 9.3 Telemetry and offline sync
@@ -995,7 +998,7 @@ Columns: **P** = MoSCoW priority; **Rel** = first release; **AC** = acceptance c
 | FR-55 | Offer an optional RIASEC hexagon in fixed R-I-A-S-E-C order | C | R2 | Axis order is fixed; not the default view | [N4 §7] |
 | FR-56 | Provide **"Why this?"** for each stream, listing the top contributing choices, tasks and rules applied, from the stored contribution vector | M | R1 | Every reason shown is traceable to a non-zero contribution | [R2 Yu 2021] |
 | FR-57 | Show next steps (share with family, talk to a teacher, explore, Try a day) and the disclaimer on every results view | M | R1 | Present in S-10 and P-01 | [N5; R1] |
-| FR-58 | Generate explanations from **bilingual templates** (no LLM in production R1–R2) | M | R1 | All template slots are filled; readability ≤ Grade 6 | [R2] |
+| FR-58 | Generate explanations from **templates** (no LLM in production R1–R2) | M | R1 | All template slots are filled; readability ≤ Grade 6 | [R2] |
 | FR-59 | (Research) Generate an LLM-rephrased explanation offline on de-identified, synthetic or opted-in profiles, gated by the M4 audit | C | R3 | Only after passing T-FAIR-04; never in the student app before approval | §12.6 M4 |
 
 ### 9.6 Stream and career library
@@ -1003,7 +1006,7 @@ Columns: **P** = MoSCoW priority; **Rel** = first release; **AC** = acceptance c
 | ID | Requirement | P | Rel | Acceptance criteria | Src |
 |---|---|---|---|---|---|
 | FR-60 | Provide **stream pages** for all supported streams: subjects per board, duration, entry tests (MDCAT/ECAT/NET etc.), doors, typical cost range (labelled as an estimate), Plan B routes, sources and last-verified date | M | R1 | All streams in §1.2 are present; each fact has a source | [R1 §1; N1 Q1] |
-| FR-61 | Provide **career pages** from O*NET Web Services occupation data, fetched and cached **server-side**, localised (Urdu summary, Pakistani route via stream and degree, local entry tests). US wages and outlook are excluded. The required O*NET attribution is shown | S | R2 | The app never calls O*NET directly; attribution appears on every career page **(verify wording on onetcenter.org)** | [GD §13; A-03] |
+| FR-61 | Provide **career pages** from O*NET Web Services occupation data, fetched and cached **server-side**, in English (Pakistani route via stream and degree, local entry tests). US wages and outlook are excluded. The required O*NET attribution is shown | S | R2 | The app never calls O*NET directly; attribution appears on every career page **(verify wording on onetcenter.org)** | [GD §13; A-03] |
 | FR-62 | Let students **save/shortlist** streams and careers | S | R2 | Saved items sync and appear in S-15 | [N5] |
 | FR-63 | Include **role-model stories** (text + illustration, with consent) for each stream, including women in engineering/CS and men in nursing/teaching | S | R2 | ≥ 1 counter-stereotypical story per stream | [R2 Sharma; R1] |
 | FR-64 | Include a short "how jobs are changing (AI and automation)" note per stream | C | R3 | Reviewed by the supervisor | [N1 Q4] |
@@ -1014,7 +1017,7 @@ Columns: **P** = MoSCoW priority; **Rel** = first release; **AC** = acceptance c
 | ID | Requirement | P | Rel | Acceptance criteria | Src |
 |---|---|---|---|---|---|
 | FR-66 | Let the student create a **share link** (random token ≥ 128 bits, expiry 30 days by default, revocable) after previewing exactly what the parent will see | M | R1 | **Given** a revoked link, **when** opened, **then** the page shows "This link is no longer active" and no data | ICO Std 13 [N4 §6] |
-| FR-67 | Render the **parent report** (P-01) as a lightweight bilingual web page that needs no app or login | M | R1 | Page weight ≤ 150 KB without fonts; works on Android Go browsers | [N2] |
+| FR-67 | Render the **parent report** (P-01) as a lightweight English web page that needs no app or login | M | R1 | Page weight ≤ 150 KB without fonts; works on Android Go browsers | [N2] |
 | FR-68 | Include a **talk-together checklist**, honest entry odds (dated), cost/duration ranges and alternatives. **Entry odds** are published admission figures, never a personal probability: seats ÷ applicants (or merit-list closing marks) for the latest admission cycle, for a named institution group and region, with the source and year, shown as "about 1 in N applicants got a seat in 2026" | M | R1 | Every figure has a source, a year and a region; content review sign-off; no figure older than 2 admission cycles | [R1 §3; N2] |
 | FR-69 | Export the parent report as a **one-page image/PDF** for WhatsApp, readable in greyscale | S | R2 | ≤ 500 KB; legible when printed in greyscale | [N2; N4 §7] |
 | FR-70 | Let parents **grant or withdraw consent and request deletion** via OTP (P-02) | S | post-MVP | Withdrawal stops sync and triggers the deletion flow | [N6 §5] |
@@ -1026,10 +1029,10 @@ Columns: **P** = MoSCoW priority; **Rel** = first release; **AC** = acceptance c
 | FR-71 | Staff log in with email + password + one-time code (TOTP or email OTP) | M | R2 | No access without the second factor | ASVS L2 |
 | FR-72 | Show a **class roster** with per-week completion status | M | R2 | Status updates within 5 minutes of student sync | [N2] |
 | FR-73 | Show **automatic flags**: not started (> 7 days after joining), incomplete, low confidence, large interest–ability mismatch, rushed or straight-lined play, flat profile | S | R2 | Flag rules are configurable; each flag has a plain explanation and a suggested action | [N2] |
-| FR-74 | Generate a **one-page printable student summary** | S | R2 | Prints on A4 portrait; bilingual toggle | [N2; YouScience] |
+| FR-74 | Generate a **one-page printable student summary** | S | R2 | Prints on A4 portrait | [N2; YouScience] |
 | FR-75 | Show **class-level distributions**, suppressing any cell with fewer than 5 students | S | R2 | k-anonymity rule unit-tested | Privacy |
 | FR-76 | Let staff add short **notes** per student, visible only to staff of the same school | C | R2 | RBAC test | [N2] |
-| FR-77 | Export the roster and bands as **CSV** (UTF-8 BOM) | S | R2 | Opens correctly in Excel with Urdu nicknames | [N2] |
+| FR-77 | Export the roster and bands as **CSV** (UTF-8 BOM) | S | R2 | Opens correctly in Excel, including nicknames with accented or non-Latin characters | [N2] |
 | FR-78 | Restrict staff to **students of their own classes** whose consent covers teacher visibility | M | R2 | Authorisation tests T-SEC-05 | ASVS L2 |
 | FR-79 | Provide a **blinded labelling tool** for the counsellor panel (M3 labels): vignettes without names or gender, collecting a ranked top-3 from each rater | S | R2 | Inter-rater κ is computed automatically | §12.6 M3 |
 
@@ -1063,18 +1066,18 @@ Columns: **P** = MoSCoW priority; **Rel** = first release; **AC** = acceptance c
 
 | ID | Requirement | P | Rel | Acceptance criteria | Src |
 |---|---|---|---|---|---|
-| FR-91 | Implement the **verbal task** (pick or edit the message that calms the group-chat fight) | M | R1 | Bank ≥ 12 items over 4 levels; Roman Urdu and English versions reviewed | [GD §8.3] |
+| FR-91 | Implement the **verbal task** (pick or edit the message that calms the group-chat fight) | M | R1 | Bank ≥ 12 items over 4 levels; English items reviewed by teens | [GD §8.3] |
 | FR-92 | Implement **value moments**: 4–6 dilemmas between O\*NET work values, scored as Bradley–Terry counts and used only for explanations and tie-breaks | S | R2 | Each value appears ≥ 2 times; removing values from M3 does not change any top-1 in golden tests | [GD §8.4; `work_values.json`] |
 | FR-93 | Show a one-tap **reaction** (meh / okay / loved it) after each scene and simulation. This is the app's only self-report item: a short 3-category rating about something the student has just played | M | R1 | Skippable; logged as 0/1/2; used by M1's GRM component | [GD §11.1] |
 | FR-94 | Show **the letter from future you**, whose readable share follows M1's mean SE (`scoring.json` letter_reveal), can go down, and never overstates certainty | M | R1 | **Given** mean SE rises after a surprising week, **when** the diary shows, **then** fewer words are readable and Hudhud says so | [GD §6.1] |
 | FR-95 | Run the narrative from **compiled Ink JSON** through inkjs, with external functions to launch tasks, record choices and update the letter; story state saved after every choice | M | R1 | Golden playthroughs produce identical event streams; state restores after a kill | [GD §10] |
-| FR-96 | **Read aloud.** A speaker button sits on every story line, choice, task instruction, diary, letter and Blueprint slide. It uses the phone's own text-to-speech (`expo-speech`). In Urdu mode the app reads the Urdu-script line with an `ur-PK` voice; if the phone has none, it falls back to the recorded audio pack (FR-32). The parent page has a "Listen" button (Web Speech API) | M | R1 | **Given** no Urdu voice is installed, **when** Urdu read-aloud is tapped, **then** the recorded clip plays, or a one-time install hint shows for lines without a clip. The current sentence is highlighted; a second tap stops reading. No audio or text leaves the phone | [A11Y §2] |
+| FR-96 | **Read aloud.** A speaker button sits on every story line, choice, task instruction, diary, letter and Blueprint slide. It uses the phone's own text-to-speech (`expo-speech`) in English. Read-aloud is the main help for weaker readers (ADR-0016). The parent page has a "Listen" button (Web Speech API) | M | R1 | **Given** the phone has no English voice installed, **when** read-aloud is tapped, **then** a one-time install hint shows. The current sentence is highlighted; a second tap stops reading. No audio or text leaves the phone | [A11Y §2] |
 | FR-97 | **Accessibility settings** (You → Accessibility, S-18): auto-read, reading speed, text size up to 200%, high contrast, easy read, reading font (Atkinson Hyperlegible), reduce motion and haptics | M | R1 | Each setting is saved per profile and applies without a restart. Defaults follow Android: auto-read is **off** when TalkBack is on (TalkBack already speaks; a third voice would overlap), the speaker button stays available, and reduce motion follows the system | [A11Y §1] |
 | FR-98 | **Accessible task modes.** Every task family can be played with buttons instead of drag. Vision-dependent tasks (spatial, abstract) are **not measured** under TalkBack unless the student opts in. Only the fact that a task was played in accessible mode (and so not measured) is stored; the app never records which assistive technology is used | M | R1 | Every task can be completed with Switch Access. Unmeasured tasks are stored as missing, and the event data contains no screen-reader or switch identifier | [A11Y §4] |
 | FR-99 | **Current-group and current-stream fit check, with routes.** For classes 9–12, show how well the current Matric group or Intermediate stream fits. When a better-fitting path is behind a closed door, list the real routes to it: switch now (inside the board's window), re-take class 9 in another group, add the missing subject, or an alternative route. Each route shows its cost, its rule source and date, and who must agree. "Stay and do well where you are" and the open paths always come first | M | R2 | Shown automatically only if confidence is medium or high, the gap is ≥ δ_route and the window is open; otherwise behind "See other routes". Raises a `route_question` teacher flag (TC-EDGE-01–05) | [EDGE §3] |
 | FR-100 | **Age handling.** Under 13: neutral stop, nothing stored. 13–17: parental consent. 18+: self-consent, family sharing optional. **The age band that decides consent is the one the school records from its admission register (FR-05a); the student's own answer only stops under-13s and sets a provisional band, and a self-declared adult gets no self-consent. A mismatch raises an `age_mismatch` flag.** Learners older than usual for their class are allowed and get older-learner routes (private candidate, open schooling, technical). Age is stored as a band only. Unusual class and age combinations get a soft confirmation, never an error. Adults are excluded from research data unless the ethics approval covers them | M | R1 | TC-EDGE-06–09, TC-AGE-01–04 | [EDGE §4; AGE_ASSURANCE] |
 | FR-101 | **Class check-in.** Confirm class, board, group and situation at reassessment, 9 months after joining, or when the student edits them. Re-rank for the new mode, reusing estimates that are less than 12 months old. Keep old results as history | S | R2 | TC-EDGE-10, TC-EDGE-11 | [EDGE §2, §5] |
-| FR-102 | **Guided field validation.** Every input explains what is wrong, how to fix it and gives an example, in the current language, with read-aloud. Pickers and input masks prevent errors. The server returns field-level `errors[]` as message keys and never echoes input. Nicknames are unique within a class, ignoring case (`taken`; the app offers numbered variants), and the app offers nickname ideas that are never built from names. Nicknames are checked for real full names (two common names; blocked, decided 14 Nov 2026: one name alone is allowed), phone numbers and emails (blocked), offensive words (blocked), and zero-width and bidi characters (stripped) | M | R1 | TC-VAL-01–07, TC-VAL-09 | [FORMS §1–4] |
+| FR-102 | **Guided field validation.** Every input explains what is wrong, how to fix it and gives an example, in English, with read-aloud. Pickers and input masks prevent errors. The server returns field-level `errors[]` as message keys and never echoes input. Nicknames are unique within a class, ignoring case (`taken`; the app offers numbered variants), and the app offers nickname ideas that are never built from names. Nicknames are checked for real full names, including names typed in Urdu letters (two common names; blocked, decided 14 Nov 2026: one name alone is allowed), phone numbers and emails (blocked), offensive words (blocked), and zero-width and bidi characters (stripped) | M | R1 | TC-VAL-01–07, TC-VAL-09 | [FORMS §1–4] |
 | FR-103 | **Help everywhere.** A "?" on every screen; empty states that explain the next step; an offline FAQ; a one-tap "Ask your teacher" flag (with consent); a Hudhud tip after 2 failures | S | R2 | TC-VAL-08 | [FORMS §5] |
 | FR-104 | **Non-standard learners.** "My situation" options: repeating a class, private candidate, returning learner, changed board, O-Level or A-Level, DAE, madrassa or foreign certificate. Each maps to rules and routes with sources (including IBCC equivalence notes) | S | R2 | Golden profiles per situation | [EDGE §2, §5] |
 | FR-105 | **Parents with several children.** Each child's report and consent stay separate. The parent page can save children's report links **on the parent's own phone only** (opt-in, off by default) and switch between them. The server never links siblings | S | R2 | TC-SHARE-08 | [RFC-0004] |
@@ -1125,7 +1128,7 @@ The NFRs are organised by the nine 25010:2023 characteristics. The 2023 edition 
 | NFR-09 | API latency at 50 concurrent virtual users | `/events:batch` and `/results` p95 ≤ 800 ms, p99 ≤ 2 s (server-side) | Locust load test (T-PERF-03) |
 | NFR-10 | Result computation | p95 ≤ 2 s from request to stored recommendation | Load test |
 | NFR-11 | App size | Play download ≤ 35 MB per ABI (AAB); installed ≤ 120 MB; installs with 150 MB free | `bundletool get-size`; CI size budget check |
-| NFR-12 | Data use | First content sync ≤ 1 MB (excluding optional audio pack); telemetry ≤ 200 KB compressed per sitting; whole assessment ≤ 3 MB | Network trace in E2E |
+| NFR-12 | Data use | First content sync ≤ 1 MB; telemetry ≤ 200 KB compressed per sitting; whole assessment ≤ 3 MB | Network trace in E2E |
 | NFR-13 | Battery | ≤ 5% per 20-minute session on a 5,000 mAh RLD | Battery historian, 3 runs |
 
 ### 10.3 Compatibility
@@ -1149,8 +1152,8 @@ The NFRs are organised by the nine 25010:2023 characteristics. The 2023 edition 
 | NFR-23 | Touch targets | ≥ 48 × 48 dp; ≥ 8 dp gaps in game grids; primary game buttons ≥ 56 dp | Lint rule + Accessibility Scanner |
 | NFR-24 | No colour-only meaning | 0 occurrences | Grey-scale and CVD-simulated screenshot review |
 | NFR-25 | Screen reader | 100% of interactive elements labelled in both languages; every game completable in accessible mode | TalkBack walkthrough |
-| NFR-26 | Readability | English student strings Flesch-Kincaid ≤ Grade 6; ≤ 2 lines per message; Urdu editor sign-off | Script in CI + review |
-| NFR-27 | Localization completeness | 100% keys in `ur` and `en`; no hard-coded strings; correct RTL mirroring | i18n lint; RTL screenshot tests |
+| NFR-26 | Readability | English student strings Flesch-Kincaid ≤ Grade 6; ≤ 2 lines per message | Script in CI + review |
+| NFR-27 | Localization completeness | 100% of strings come from `en.json`; no hard-coded strings. English only since 16 Nov 2026 (ADR-0016); the Urdu and RTL parts are removed | i18n lint |
 | NFR-28 | Reduced motion respected | 100% of animations obey the OS setting | Manual test |
 | NFR-29 | Engagement (completion funnel) | ≥ 70% of starters reach the Blueprint (4 weeks) within 14 days in the pilot (cf. GCG 57% → 41% across levels [R2]) | Pilot analytics |
 
@@ -1199,7 +1202,7 @@ The NFRs are organised by the nine 25010:2023 characteristics. The 2023 edition 
 
 | ID | Requirement | Target | Verification |
 |---|---|---|---|
-| NFR-56 | Language extensibility | A new language (e.g., Sindhi, Pashto) can be added with string files + font only | Pseudo-locale test |
+| NFR-56 | Language extensibility | English only since 16 Nov 2026 (ADR-0016). A language can be added later with a new strings file (a right-to-left language also needs layout and font work) | Pseudo-locale test |
 | NFR-57 | Scalability | 5,000 students / 50 schools on one 4 vCPU / 8 GB VM. Workload model: 20% of students play on a school day; peak hour = 30% of those; 250 concurrent app sessions at peak, each sending one event batch per scene (about every 3 min) plus 1 result compute per week. At that load: p95 ≤ 800 ms for batches, p95 ≤ 2 s for compute, error rate < 0.5%, CPU < 70%, memory < 75%. Stateless API containers can scale horizontally | Locust profile `peak_250` (TEST_STRATEGY §3.1) on staging with 5,000 seeded students |
 | NFR-58 | Installability | Full backend starts with `docker compose up` on a clean Linux host in ≤ 15 min | Deploy test |
 
@@ -1228,7 +1231,7 @@ Details: `design/specs/accessibility.md` and `docs/security/SECURITY.md`.
 | NFR-70 | Pre-pilot penetration test | MASTG + ASVS L2 manual test by someone who did not write the code; 0 open critical or high findings at the pilot | Penetration test report |
 | NFR-71 | Secure CI | gitleaks, CodeQL, Semgrep and Bandit, plus dependency review on every PR; GitHub Actions pinned by commit SHA; least-privilege tokens; signing keys only in the CI/EAS secret store | CI configuration review |
 | NFR-72 | No personal data in logs or previews | 0 personal data in logs, crash reports, notifications or app-switcher previews; `FLAG_SECURE` on result and share screens; `allowBackup=false` | Log sampling; MobSF; manual test |
-| NFR-73 | Error-message quality | 100% of validation messages state the problem, the fix and an example; ≤ Grade 6 (EN); an Urdu version and read-aloud for every key | TC-VAL-10 script |
+| NFR-73 | Error-message quality | 100% of validation messages state the problem, the fix and an example; ≤ Grade 6; read-aloud for every key | TC-VAL-10 script |
 | NFR-74 | Help that doesn't leak | Auth, code and token errors are identical in message, status and timing (±50 ms) whether the object exists or not; no input echoed; bidi and zero-width characters stripped | TC-VAL-03, TC-VAL-06, TC-VAL-09 |
 | NFR-75 | Resilience under load | Spike of 300 joins in 60 s: ≥ 99% success after retries. Soak of 8 h at the `peak_250` load: memory growth ≤ 10%, and p95 in the last hour within 10% of p95 in the first hour (5-minute windows). Break point ≥ 3× the pilot peak (pilot peak = 250 concurrent sessions, NFR-57), with graceful 429/503 and full recovery within 5 minutes after load drops | TC-PERF-05–07 |
 | NFR-76 | Fault recovery | Database outage, worker kill, disk full and slow database cause no data loss; the service recovers automatically; alerts fire within 5 min | TC-CHAOS-01–04 |
@@ -1292,7 +1295,7 @@ flowchart LR
 | Stakeholders | Parent (consent), teacher (class code), ethics committee |
 | Preconditions | App installed; the teacher has given a class code; the school has recorded parental consent for the roster code |
 | Trigger | First launch |
-| Main success scenario | 1. Student chooses a language (FR-01). 2. Reads ≤ 3 welcome cards (FR-02). 3. Enters the class code; the system validates it online, or caches it for later validation if offline (FR-03). 4. Picks grade and birth year; the system checks the age gate (FR-04). 5. Reads the assent screen and taps "I agree" (FR-06). 6. Sets a nickname and an optional PIN, board, group and district (FR-07, FR-08). 7. Builds an avatar (FR-30). 8. The system creates a pseudonymous profile, links it to the class and checks the consent status → "granted" (FR-05). 9. The prologue starts: Hudhud brings the letter |
+| Main success scenario | 1. Student reads ≤ 3 welcome cards (FR-02). 2. Enters the class code; the system validates it online, or caches it for later validation if offline (FR-03). 3. Picks grade and birth year; the system checks the age gate (FR-04). 4. Reads the assent screen and taps "I agree" (FR-06). 5. Sets a nickname and an optional PIN, board, group and district (FR-07, FR-08). 6. Builds an avatar (FR-30). 7. The system creates a pseudonymous profile, links it to the class and checks the consent status → "granted" (FR-05). 8. The prologue starts: Hudhud brings the letter |
 | Extensions | 3a. Invalid code → plain error with a fix; retry. 3b. Offline → the profile is created locally with sync blocked until validation. 4a. Age < 13 or not class 8–12 → neutral stop, nothing stored. 8a. Consent pending → banner "Waiting for your parent's OK"; play is allowed locally; purge after 14 days (FR-05). 6a. Shared phone → PIN is required when a second profile exists |
 | Postconditions | Profile exists; assent version stored; consent state known |
 | NFRs | NFR-21 (≤ 3 min to first game), NFR-44, NFR-45 |
@@ -1327,7 +1330,7 @@ flowchart LR
 |---|---|
 | Primary actor | Student; secondary: Parent |
 | Preconditions | A result exists |
-| Main success scenario | 1. Student taps Share. 2. The system shows a preview of the parent report in the chosen language. 3. Student taps "Create link". 4. The system creates a token (expires in 30 days) and opens the OS share sheet with a short bilingual message. 5. Student picks WhatsApp and a contact. 6. Parent opens the link and sees P-01 (UC-09). 7. The student sees the "Shared on [date]" status and can revoke |
+| Main success scenario | 1. Student taps Share. 2. The system shows a preview of the parent report. 3. Student taps "Create link". 4. The system creates a token (expires in 30 days) and opens the OS share sheet with a short English message. 5. Student picks WhatsApp and a contact. 6. Parent opens the link and sees P-01 (UC-09). 7. The student sees the "Shared on [date]" status and can revoke |
 | Extensions | 2a. Student edits nothing (results are not editable), but can choose to hide ability bands from the parent view (S). 4a. Offline → link creation is queued and the student is told. 7a. Revoke → the link is dead immediately |
 | Postconditions | Share link stored with scope and expiry |
 | NFRs | NFR-42, NFR-46; FR-67 page weight |
@@ -1340,7 +1343,7 @@ flowchart LR
 | UC-04 | Record and sync telemetry | System | Events → SQLite outbox → batched idempotent POST → server validation/quarantine → ack → local mark synced |
 | UC-06 | Compute recommendation | Scoring service | θ estimation → bands → fusion → rules → ranking → Plan B → explanations → store |
 | UC-07 | Explore streams and careers | Student | Browse the stream library offline; open career pages from the server cache; save items |
-| UC-09 | View parent report | Parent | Open the link; read the bilingual report; download the image/PDF; grant or withdraw consent |
+| UC-09 | View parent report | Parent | Open the link; read the report; download the image/PDF; grant or withdraw consent |
 | UC-10 | Reassess | Student | After 90 days, play a new term; compare versions |
 | UC-11 | Manage my data | Student/parent | Download, delete, research opt-in/out, sign out with wipe |
 | UC-12 | Review class progress and flags | Teacher | Roster, flags, summary, notes, print, CSV |
@@ -1352,7 +1355,7 @@ flowchart LR
 
 | ID | Story | Acceptance criteria (summary) | FR |
 |---|---|---|---|
-| US-01 | As a student, I want to pick Urdu or English first, so that I understand everything | Given first launch, when I tap اردو, then all screens are Urdu RTL after reload | FR-01 |
+| US-01 | **Removed 16 Nov 2026 (English only, ADR-0016).** Was: pick Urdu or English first | — | FR-01 (removed) |
 | US-02 | As a student, I want to join my class with a code and a nickname, so that I don't share personal details | No name/phone/email fields; an invalid code shows a fix | FR-03 |
 | US-03 | As a student on my mother's phone, I want my own PIN profile, so that my siblings can't see my results | Switching profiles hides the other's data; sign-out wipes local data | FR-07 |
 | US-04 | As a student, I want to stop and continue later, so that a power cut doesn't waste my time | Kill the app mid-scene → resume at the same moment | FR-15, FR-35 |
@@ -1367,7 +1370,7 @@ flowchart LR
 | US-13 | As a student, I want a Plan B for every option, so that I'm not stuck if plan A fails | ≥ 1 Plan B per card | FR-46 |
 | US-14 | As a student, I want "Why this?", so that I can check the app isn't random | Lists the top choices, tasks and rules applied | FR-56 |
 | US-15 | As a student, I want to send my parent a WhatsApp link, so that we can talk about it | Preview → link → share sheet; revoke works | FR-66, FR-67 |
-| US-16 | As a parent, I want an Urdu page with odds and alternatives, so that I can make an informed decision with my child | P-01 renders in ≤ 3 s on 3G; checklist present | FR-67, FR-68 |
+| US-16 | As a parent, I want a plain-English page with odds and alternatives, so that I can make an informed decision with my child | P-01 renders in ≤ 3 s on 3G; checklist present | FR-67, FR-68 |
 | US-17 | As a student, I want to read about each stream offline, so that I can explore without data | Stream pages open in airplane mode | FR-60, FR-65 |
 | US-18 | As an admin, I want to create class codes, so that teachers can onboard classes | Code CRUD; rotation | FR-80 |
 | US-19 | As a developer, I want scoring to be versioned and re-runnable, so that results are reproducible | Rescore reproduces stored results | FR-40, FR-47 |
@@ -1394,7 +1397,7 @@ flowchart LR
     TEL --> DB[(expo-sqlite WAL, encrypted<br/>events outbox, progress, content cache)]
     DB --> SYNC[Sync worker<br/>batch, gzip, backoff]
     UI --> PROV[Provisional scorer TS<br/>baseline only]
-    UI --> I18N[i18next ur/en + RTL]
+    UI --> I18N[i18next, en only]
   end
   SYNC -- HTTPS JSON --> API
   subgraph Server [Linux VM - Docker Compose]
@@ -1461,7 +1464,7 @@ flowchart LR
 | `item` | id, kind (planner_option / choice / reaction / task_item / value_dilemma), construct, pair, content_version, text_keys, params JSONB (TIRT loadings and thresholds, GRM a, b_k, Rasch b) | Story choices, task items, dilemmas |
 | `trait_estimate` | id, student_id, construct (R..C; SPA, ABS, NUM, LOG, PLN, VRB; six work values), theta, se, band, model_version, computed_at | |
 | `recommendation` | id, student_id, mode (matric/inter/university/alevel), ranked JSONB (stream_id, fit, band, confidence, reasons, doors, plan_b), features JSONB, contributions JSONB, rules_applied, model_version, content_version, input_hash, created_at | Immutable |
-| `stream` | id, level (matric/inter/university/alevel), names {ur,en}, riasec_profile[6], ability_support, subjects_by_board, entry_tests, doors, plan_b, sources, last_verified | From `design/game/frameworks/streams.json` |
+| `stream` | id, level (matric/inter/university/alevel), names {en}, riasec_profile[6], ability_support, subjects_by_board, entry_tests, doors, plan_b, sources, last_verified | From `design/game/frameworks/streams.json` |
 | `eligibility_rule` | id, board, applies_to, condition (JSON logic), effect (closed/extra_step), source_url, effective_from, effective_to, last_verified | |
 | `career` | onet_code, title_en, title_ur, summary_ur, pk_route, stream_links, attribution, fetched_at | Server cache |
 | `saved_item` | student_id, kind, ref_id | |
@@ -1589,13 +1592,13 @@ This extends `telemetry_schema.py` v2.0.0 [PROTO]: the schema version and monoto
 
 #### M4 (optional, research only) — LLM explanation with gender-swap audit
 
-- **Input:** the de-identified computed result only (stream IDs, bands, top contributions). Output: a 2–3 sentence Urdu/English rephrasing.
-- **Model:** a small open-weights multilingual instruction model (7–8B class, e.g. a Llama-3.1-8B base with Urdu adaptation such as UrduLLaMA, or Qwen2.5-7B; licences checked), run **self-hosted/offline** on research compute (Riphah GPU portal if needed), with **LoRA/QLoRA** adapters fine-tuned on 500–1,000 team-written explanation pairs. No third-party API receives minors' data [GD §12].
+- **Input:** the de-identified computed result only (stream IDs, bands, top contributions). Output: a 2–3 sentence English rephrasing.
+- **Model:** a small open-weights instruction model (7–8B class, e.g. a Llama-3.1-8B base or Qwen2.5-7B; licences checked), run **self-hosted/offline** on research compute (Riphah GPU portal if needed), with **LoRA/QLoRA** adapters fine-tuned on 500–1,000 team-written explanation pairs. No third-party API receives minors' data [GD §12].
 - **Audit:**
   - counterfactual gender swap on 200 synthetic profiles: STEM-mention rate gap ≤ 5 pp (a GPT-4o-mini pilot showed 93% vs 27% [R2]);
   - factual consistency: automatic check that every stream and reason named ⊆ the input, 0 contradictions;
   - readability ≤ Grade 6;
-  - human rating of Urdu fluency (2 raters).
+  - human rating of fluency (2 raters).
 - **Baseline:** the bilingual templates (FR-58).
 - **Rule:** the LLM never ranks. It ships only if it beats the templates on human preference without failing any audit.
 
@@ -1655,7 +1658,7 @@ Everyone writes tests for their own code and reviews at least one PR from each t
 - **Conventional Commits:** `feat(planner): randomise option positions (#42)`, `fix(sync): dedupe on event_id`, `test(scoring): TIRT EAP fixtures`.
 - **Identity:** one consistent name/email per member (`.mailmap` for old history).
 - **Hygiene:** no generated files, `__pycache__`, `.env`, real session data or credentials in the repo (fix the existing `.pyc`, `tmp_check.js` and session JSON files) [REV §8]. Secret scanning and Dependabot are on.
-- **Templates:** PR template with linked issue, screenshots (EN + UR), test evidence, checklist (a11y, i18n, telemetry documented). Issue templates: story, bug, experiment.
+- **Templates:** PR template with linked issue, screenshots, test evidence, checklist (a11y, i18n, telemetry documented). Issue templates: story, bug, experiment.
 - **CI (GitHub Actions):**
   - `mobile`: pnpm install → `tsc --noEmit` → ESLint → Jest (unit, parity) → bundle size check.
   - `api`/`scoring`: ruff → mypy → pytest with coverage gates (NFR-50) → pip-audit.
@@ -1672,7 +1675,7 @@ Everyone writes tests for their own code and reviews at least one PR from each t
 - linked FR/NFR IDs;
 - screen reference (S-/D-/P-) or API contract;
 - telemetry events listed (if it touches the game);
-- Urdu/English strings identified;
+- strings added to `en.json`;
 - estimate ≤ 3 days, otherwise split;
 - dependencies resolved.
 
@@ -1680,7 +1683,7 @@ Everyone writes tests for their own code and reviews at least one PR from each t
 
 - code merged via a reviewed PR; CI green;
 - unit tests (and parity tests for scoring); acceptance criteria demonstrated;
-- works in Urdu RTL and English; accessibility checks (labels, targets, contrast tokens only);
+- works in English; accessibility checks (labels, targets, contrast tokens only);
 - runs on the RLD or an emulator profile;
 - no new lint warnings; docs/ADR/OpenAPI updated;
 - demoed in sprint review; issue closed with a link to the PR.
@@ -1692,7 +1695,7 @@ Dates assume A-05. Sprints start on Mondays.
 | Sprint | Dates | Goal / main deliverables |
 |---|---|---|
 | S0 | 29 Oct – 1 Nov 2026 | Lock scope (this SRS); update Template-04 to v1.5 (game-only, CCP table, streams, gates, datasets) and present to the supervisor; restructure the repo into the monorepo (archive old games) |
-| S1 | 2 – 13 Nov | Expo shell: onboarding (S-01–S-05), i18n + RTL, design tokens from `design/tokens/theme.ts`; FastAPI skeleton, Postgres schema v1, class-code join; CI pipelines. **Submit the ethics application** (consent/assent templates, §17) |
+| S1 | 2 – 13 Nov | Expo shell: onboarding (S-02–S-05), i18n (English only), design tokens from `design/tokens/theme.ts`; FastAPI skeleton, Postgres schema v1, class-code join; CI pipelines. **Submit the ethics application** (consent/assent templates, §17) |
 | S2 | 16 – 27 Nov | Week loop + inkjs + outbox + sync; prologue + Week 1 vertical slice (planner, 3 scenes, fixed pair schedule); `/events:batch`; M1 notebook part 1 (simulate game choices from the 145k dataset, fit TIRT) |
 | S3 | 30 Nov – 11 Dec | Tasks: calibration block, planning (ported, parity-tested), abstract, logic; vertical-slice playtest (10–15 teens); scoring baselines (a) rules + (b) congruence; `streams.json` v1 + rules engine |
 | S4 | 14 – 25 Dec (reduced capacity, exam preparation) | Weeks 2–4 scripts; spatial, numerical, verbal tasks; the letter; Blueprint v1, Why this?, stream library offline, parent share link + P-01 v1; M1 simulation results; report chapters 1–3 drafts |
@@ -1704,7 +1707,7 @@ Dates assume A-05. Sprints start on Mondays.
 
 | Milestone | Target | Content |
 |---|---|---|
-| M-A (S6–S7) | end of Feb | Value moments, room/reputation, city map; full Urdu with editor review; adaptive pair selection on device (FR-19); usability round 1 (5–8 teens) |
+| M-A (S6–S7) | end of Feb | Value moments, room/reputation, city map; adaptive pair selection on device (FR-19); usability round 1 (5–8 teens) |
 | M-B (S8) | mid-Mar | Counsellor dashboard + admin console; individual sign-up with OTP; R2 pilot build in the Play closed track; ethics approval in hand |
 | M-C (S9–S10) | Apr | **Pilot** in 3–4 schools (validation study §14.4); counsellor panel labelling; usability round 2 |
 | M-D (S11–S12) | May | M2 reliability and latency ablation; M3 ranker vs baselines, fairness, SHAP; M4 (optional); 4 Try-a-day simulations; reassessment |
@@ -1720,7 +1723,7 @@ Dates assume A-05. Sprints start on Mondays.
 | LO4 Algorithms and trade-offs (20) | M1 choices-vs-accuracy curve; M2 latency ablation; M3 baselines vs ranker, accuracy vs fairness; M4 audit |
 | LO5 Modern tools (10) | Expo/Skia/Reanimated/Rive, Ink/inkjs, FastAPI, PostgreSQL, Docker, GitHub Actions, R thurstonianIRT/mirt, LightGBM/SHAP, Locust, Maestro |
 | LO6 Git teamwork (15) | Issues per WBS item, branch-per-issue, reviewed PRs, balanced commits per member |
-| LO7 Communication (10) | Report chapters, bilingual UI copy, demo, presentation, user-study reports |
+| LO7 Communication (10) | Report chapters, UI copy, demo, presentation, user-study reports |
 
 
 ## 14. Verification and validation plan
@@ -1732,14 +1735,14 @@ Dates assume A-05. Sprints start on Mondays.
 | T-UNIT | Unit | Staircase, TIRT/GRM EAP, letter reveal, congruence, rules engine, outbox, i18n helpers, bands, flags | Jest (TS), pytest (Python) | Every PR |
 | T-PAR | Parity / replay | **T-PAR-01** planning task TS vs `power_grid.py`; **T-PAR-02** compiled Ink tags vs `pairs.json` coverage and golden playthrough event streams; **T-PAR-03** provisional TS baseline vs server baseline on 200 golden profiles; **T-PAR-04** rescore reproducibility (same version → bit-identical) | Golden JSONL logs generated by the Python engine and its bots [PROTO]; shared fixtures in `content/fixtures/` | Every PR touching games/scoring |
 | T-INT | Integration | API + DB: join, consent gate (**T-INT-01**), events batch (**T-INT-02**), idempotency (**T-INT-03**), results compute, share tokens, RBAC | pytest + httpx + a Postgres test container | Every PR |
-| T-E2E | End-to-end | Onboarding → prologue → a week → offline → sync → Blueprint → share, in Urdu and English | **Maestro** flows on an Android emulator + 1 real device | Nightly, release |
+| T-E2E | End-to-end | Onboarding → prologue → a week → offline → sync → Blueprint → share | **Maestro** flows on an Android emulator + 1 real device | Nightly, release |
 | T-REL | Fault injection | **T-REL-01** 100 forced kills / airplane toggles / low-storage runs; 0 loss | adb scripts + Maestro | Release |
 | T-DEV | Device matrix | RLD (Tecno/Infinix 4 GB, Android 14–15), Samsung Galaxy A0x/A1x, Redmi A-series, an Android 11 device, a 5.5″ small screen; font 200%; dark mode | Manual checklist + screenshots | Each release |
 | T-PERF | Performance | **T-PERF-01** cold/warm start; **T-PERF-02** fps/jank (Flashlight, Perfetto); **T-PERF-03** API load (Locust, 50–250 VUs); size budget; battery | — | Release |
 | T-SEC | Security | **T-SEC-01** MASVS L1 + PRIVACY checklist; **T-SEC-02** ASVS L2 + ZAP; **T-SEC-03** secret scan; **T-SEC-04** dependency audit; **T-SEC-05** authorisation matrix | MASTG, ZAP, gitleaks, pip-audit, pnpm audit | CI + pre-pilot |
 | T-PRIV | Privacy | **T-PRIV-01** data inventory vs manifest/network trace; **T-PRIV-02** export de-identification; **T-PRIV-03** retention and deletion jobs | Scripts + review | Pre-pilot |
 | T-A11Y | Accessibility | WCAG 2.2 AA checks, TalkBack walkthrough, CVD simulation, 200% font | Accessibility Scanner, axe, manual | Release |
-| T-L10N | Localisation | Missing keys, RTL screenshots, bidi isolation, Urdu editor sign-off | i18n lint, screenshot diff | Release |
+| T-L10N | Localisation | Missing keys and hard-coded strings in `en.json` (English only since 16 Nov 2026, ADR-0016; RTL, bidi and Urdu sign-off checks removed) | i18n lint | Release |
 | T-CONT | Content | Pair coverage, age-appropriateness checklist (§5.7), teen "cringe check", rule sources, readability | Validator + 2-person review | Every content pack |
 | T-USAB | Usability | Think-aloud + SUS | §14.3 | M-A, M-C |
 | T-PSY | Psychometric | Validation study | §14.4 | M-C/M-D |
@@ -1758,12 +1761,12 @@ Record TTID/TTFD, fps, memory, battery and crash/ANR. Any regression greater tha
 ### 14.3 Usability testing
 
 - **Two kinds of round.** Rounds 1–2 are **formative**: 5–8 students each, used to find and fix problems; their SUS and task success are reported per round as indicators only, never as proof that NFR-19/20 are met. The **summative** measure is taken in the pilot: SUS from all pilot students who reach the Blueprint (target ≥ 100), reported as the mean with a 95% CI; task success = completed tasks ÷ attempted tasks across the scripted tasks.
-- **Participants per round:** 5–8 class 8–12 students. Each round includes ≥ 50% girls, ≥ 2 government/Urdu-medium students and ≥ 1 O-Level student. Parents (3–4) and teachers (2–3) are tested on P-01 and the dashboard.
+- **Participants per round:** 5–8 class 8–12 students. Each round includes ≥ 50% girls, ≥ 2 government/Urdu-medium school students and ≥ 1 O-Level student. Parents (3–4) and teachers (2–3) are tested on P-01 and the dashboard.
 - **Rounds:** Round 1 at M-A on the R1 prototype; Round 2 at M-C on the pilot build.
 - **Method:**
   - consented, moderated think-aloud on the student's own or a provided budget phone;
   - tasks: join, play the prologue and Week 1 (including one task), resume after a forced exit, read the Blueprint and explain one reason back in your own words, share with a parent;
-  - measures: task success, time, errors, SUS (Urdu/English versions), a single state-anxiety item ("How tense did you feel?" on a 1–5 scale), and three comprehension questions on the results.
+  - measures: task success, time, errors, SUS, a single state-anxiety item ("How tense did you feel?" on a 1–5 scale), and three comprehension questions on the results.
 - **Acceptance (summative, pilot):** NFR-19 (SUS ≥ 70), NFR-20 (≥ 90% task success). At least 80% correctly explain why their top stream was suggested and that it is "not final".
 
 ### 14.4 Psychometric validation study (pilot, M-C)
@@ -1773,7 +1776,7 @@ This is the core validity experiment. It closes the gap that no adolescent game-
 - **Design:** a cross-sectional multitrait-multimethod design with a retest subset. Requires university ethics approval and school permission first.
 - **Sample:** target N = 150 (minimum 100) class 8–12 students from 3–4 schools, ≥ 40% girls, including at least one government/Urdu-medium school. The literature suggests 300–600 for full invariance testing [R2]. That larger sample is a stretch goal and is reported as a limitation if not reached.
 - **Precision (computed):** with N = 100, a Fisher-z 95% CI around r = .50 spans about .34–.63; with N = 150, about .37–.61.
-- **Benchmark:** the **O*NET Interest Profiler (Mini-IP, 30 items) via O*NET Web Services**, administered **once, unchanged, in English**, in a supervised research session outside the student app (A-03). Order is counterbalanced with the games. The benchmark is a research instrument, not part of the product [GD §4]. A researcher may read items aloud for Urdu-medium students (record this as a covariate).
+- **Benchmark:** the **O*NET Interest Profiler (Mini-IP, 30 items) via O*NET Web Services**, administered **once, unchanged, in English**, in a supervised research session outside the student app (A-03). Order is counterbalanced with the games. The benchmark is a research instrument, not part of the product [GD §4]. A researcher may read items aloud for students from Urdu-medium schools (record this as a covariate).
 - **Analyses:**
   1. Convergent validity: r(game θ_type, O*NET type score) per scale with 95% CIs. Literature benchmarks between established inventories are .31–.80 [R2]. Hypothesis: r ≥ .50 for at least 4 of 6 scales.
   2. Discriminant validity: MTMM. Same-type correlations should exceed different-type correlations.
@@ -1830,14 +1833,14 @@ Likelihood (L) and impact (I) are rated 1–5. Score = L × I.
 | RK-06 | Games perform poorly on low-end phones (jank, size) | 3 | 4 | 12 | Skia + worklets; procedural items; size budget in CI; profile on the RLD from S2 | Hamza |
 | RK-07 | Team capacity drops during finals / an uneven Git history | 4 | 3 | 12 | Light sprint S4; documentation during finals; issue-based task split; per-member PR targets | Team |
 | RK-08 | School access is refused or limited | 3 | 4 | 12 | Approach 6 schools for 3–4; offer free use and a teacher report; use the supervisor's and university's networks | Hamza |
-| RK-09 | Parental-consent friction lowers participation | 4 | 3 | 12 | School-mediated paper consent in Urdu; short notice; teacher explains; expect 40–60% return and over-recruit | Hamza |
+| RK-09 | Parental-consent friction lowers participation | 4 | 3 | 12 | School-mediated paper consent (Urdu and English forms); short notice; teacher explains; expect 40–60% return and over-recruit | Hamza |
 | RK-10 | Licence issues (O*NET IP modification, dataset item licence, OpenMoji share-alike, DiceBear styles) | 3 | 3 | 9 | Use the IP unchanged in English; verify dataset and asset licences in S1; keep a licence register | Hamza |
 | RK-11 | Eligibility rules change (e.g., IBCC 2025 open entry) or are wrong per board | 4 | 4 | 16 | Data-driven rules with effective dates and sources; "check with your board" notice; teacher review of streams.json each term | Zahid |
 | RK-12 | Mode effect: story choices do not behave like the Likert ratings used to simulate them | 4 | 3 | 12 | Treat 145k-based parameters as priors only; recalibrate on the pilot; compare fixed vs adaptive | Zahid |
 | RK-13 | Recommender or teachers reinforce gender stereotypes | 3 | 5 | 15 | Gender excluded from features; fairness audit; counter-stereotypical role models; teacher guide warning about bias [R2, Carlana] | Team |
 | RK-14 | Hosting cost or free-tier limits (EAS, VM) | 2 | 2 | 4 | Local EAS builds; a single VM; university server fallback (A-06) | Zahid |
 | RK-15 | Expo SDK 58 / RN 0.88 breaking changes or immature libraries | 3 | 3 | 9 | Pin versions; upgrade only between releases; avoid unmaintained libraries | Hamza |
-| RK-16 | Urdu quality or RTL bugs damage trust | 3 | 3 | 9 | Native editor review; RTL screenshot tests; early usability round with Urdu-medium students | Hamza |
+| RK-16 | English-only copy is hard for students from Urdu-medium schools to read, which lowers engagement and adds measurement error (ADR-0016) | 3 | 3 | 9 | Grade 6 reading level; English read-aloud; icons and pictures; teacher explains in class; early usability round with Urdu-medium school students; results reported by school medium | Hamza |
 | RK-17 | Students misread results as a verdict and families over-rely on them | 3 | 4 | 12 | Top-3 + Plan B + disclaimers + confidence; parent checklist; comprehension check in usability tests | Team |
 | RK-18 | Writing volume (≈1,200–1,500 dialogue lines) slips, or the tone feels cringe to teens | 4 | 3 | 12 | Vertical slice first; reuse scene templates; teen cringe check per scene; cut to 3 weeks if needed and report the effect on certainty | Zahid |
 | RK-19 | Thurstonian IRT is poorly identified with few forced choices | 3 | 3 | 9 | GRM taps and planner choices anchor the scale; identification checks in simulation; fall back to GRM + planner scoring if needed | Zahid |
@@ -1854,7 +1857,7 @@ Legend:
 
 | Req | Short name | Source | Design element | Verification |
 |---|---|---|---|---|
-| FR-01 | Language choice | N6 §3, N4 §4 | S-01, §7.4 i18n/RTL | E2E, T-L10N |
+| FR-01 | Language choice (removed 16 Nov 2026, ADR-0016) | N6 §3, N4 §4 | — | — |
 | FR-02 | Onboarding framing | N4 §1, §5 | S-02, §7.5 | T-USAB |
 | FR-03 | Code/nickname join | N1 Q5, N6 §5 | S-03, `POST /auth/student/join` | IT, T-PRIV-01 |
 | FR-04 | Neutral age gate | ICO Std 13 | S-03 | UT, E2E |
@@ -1885,7 +1888,7 @@ Legend:
 | FR-29 | Try a day | GD §8.5 | S-23 | E2E |
 | FR-30 | Avatar | N3 §5 | S-06 | T-USAB |
 | FR-31 | Room, tags, relationships | GD §6.4 | §5.6, Ink variables | Review vs §7.6 |
-| FR-32 | Audio narration | N6 §3 | content audio pack | T-L10N |
+| FR-32 | Urdu audio narration (removed 16 Nov 2026, ADR-0016) | N6 §3 | — | — |
 | FR-33 | Content packs | GD §9 | compiled Ink, `frameworks/*.json` | T-CONT |
 | FR-34 | Event envelope v3 | PROTO | §12.5 | UT, E2E |
 | FR-35 | Durable writes | N6 §2 | SQLite WAL outbox | T-REL-01 |
@@ -1991,7 +1994,7 @@ These instruments are for **requirements elicitation and evaluation research**. 
 
 - **Approvals:** every instrument needs ethics approval; minors need parental consent and their own assent.
 - **Translation protocol:**
-  - forward translation to Urdu by a native speaker;
+  - forward translation to Urdu by a native speaker (the parent consent forms and the parent survey; the app itself is English only, ADR-0016);
   - independent back-translation;
   - reconciliation;
   - cognitive pre-test with 3 students.
@@ -2016,7 +2019,7 @@ Unless stated otherwise, items use a 5-point scale: 1 = Strongly disagree … 5 
 | 10 | I would rather play short games than fill a long form to learn about my interests | Scale | G4 |
 | 11 | Tests about "what suits me" make me nervous | Scale | G4 |
 | 12 | Which games do you play most? (Ludo / Carrom / PUBG / Free Fire / Candy Crush-type puzzles / word games / none / other) | Multi-select | G5 |
-| 13 | I'd prefer the app in: Urdu / English / both / Roman Urdu | Choice | G6 |
+| 13 | How easily do you read English? (very easily / with some effort / with difficulty) | Choice | G6 |
 | 14 | I would share my results with: parents / one parent / sibling / teacher / no one | Multi-select | G3, G7 |
 | 15 | It would worry me if someone else using my phone could see my results | Scale | G1 |
 | 16 | What would you most want to know about a stream? (rank: jobs, salary, cost, entry tests, local colleges, what you study) | Rank | G8 |
@@ -2036,7 +2039,7 @@ Unless stated otherwise, items use a 5-point scale: 1 = Strongly disagree … 5 
 | 7 | What would make you trust such an app? (school recommends / explanations / teacher involved / university-backed) | Multi-select | G9 |
 | 8 | Have you discussed group choice with your child's teacher? | Yes/No | G2 |
 | 9 | Would a short "how to talk with your child" guide help? | 5-point scale | G3 |
-| 10 | Preferred language and format (Urdu text / English / voice note / printed page) | Choice | G6, G11 |
+| 10 | Preferred format for information about your child (written message / voice note / printed page) | Choice | G11 |
 | 11 | Would you pay for a detailed report or counsellor session? If yes, up to how much (PKR 0 / ≤ 500 / ≤ 1,000 / ≤ 2,000 / more)? | Choice | G13 |
 | 12 | Any concern about a game or app giving career advice? | Open | G12 |
 
@@ -2086,7 +2089,7 @@ Unless stated otherwise, items use a 5-point scale: 1 = Strongly disagree … 5 
 | G3. Who decides, and willingness to share with parents (no Pakistani survey [N1 Q1; N2]) | Parent view design | Student Q6, Q14; Parent Q9 |
 | G4. Game vs form preference and test anxiety in Pakistani teens (no data [N1 Q4]) | "No test feel" claim | Student Q10, Q11; pilot anxiety item |
 | G5. Pakistani teen game preferences by gender (no representative data [N3 §1]) | Art and genre direction | Student Q12 |
-| G6. Urdu / English / Roman-Urdu preference | Localisation priorities | Student Q13; Parent Q10 |
+| G6. How easily students read English | Reading-level and read-aloud priorities (ADR-0016) | Student Q13 |
 | G7. Privacy expectations on shared phones | Defaults | Student Q14, Q15 |
 | G8. Information families need about streams [N2] | Stream page and parent report content | Student Q16; Parent Q5 |
 | G9. What builds trust in algorithmic advice (no Pakistani data [N1 Q4]) | Explanations | Student Q17; Parent Q7 |
@@ -2100,7 +2103,7 @@ Unless stated otherwise, items use a 5-point scale: 1 = Strongly disagree … 5 
 ### 17.6 Open questions for the supervisor
 
 1. Does an "I could learn this" stamp on activity cards (F29), or the one-tap "meh / okay / loved it" reaction (FR-93), stay within the "game-based" rule? *(Current position: the tap is described openly as a short self-report item, §1.2.)*
-2. Can the O*NET Mini-IP benchmark be given in English only, with read-aloud support, for Urdu-medium pilot students? Or should the team apply for the Developer License to validate an Urdu version?
+2. Is it acceptable to give the O*NET Mini-IP benchmark in English only, with read-aloud support, for pilot students from Urdu-medium schools? (Current position: yes; school medium is recorded as a covariate and reported as a limitation, ADR-0016.)
 3. ~~Does the department's CCP guide use the nine-row list?~~ **Answered (7 Nov 2026):** the Riphah guide lists nine characteristics; §3.2 uses its exact labels.
 4. Is a university-hosted server available for staging and the pilot (A-06)?
 5. Which schools can be approached for the pilot, and can the supervisor support the ethics application timeline (submission in November)?

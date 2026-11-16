@@ -1,0 +1,30 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://example.invalid/arcade-career-explorer/telemetry.schema.json",
+  "title": "Arcade Career Explorer telemetry request",
+  "description": "POST body accepted by /api/telemetry. Input events are restricted to each game's 15%-85% steady-state window. Baseline timing values are aggregate calibration references, not psychometric scores.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["session_id", "profile", "events"],
+  "properties": {
+    "session_id": {"type":"string","pattern":"^[A-Za-z0-9_-]{1,80}$"},
+    "profile": {
+      "type":"object",
+      "description":"Exploratory engagement summary. Not a validated Holland Code.",
+      "properties": {
+        "code":{"type":"string","pattern":"^[RIASEC]{0,6}$"},
+        "interpretation":{"type":"string"},
+        "ranking":{"type":"array","items":{"$ref":"#/$defs/rank"}},
+        "baseline":{"$ref":"#/$defs/baseline"},
+        "game_features":{"type":"object","additionalProperties":{"type":"object"}}
+      },
+      "additionalProperties":true
+    },
+    "events":{"type":"array","maxItems":20000,"items":{"$ref":"#/$defs/event"}}
+  },
+  "$defs": {
+    "rank":{"type":"object","required":["code","name","starts","completions","points","percent"],"properties":{"code":{"enum":["R","I","A","S","E","C"]},"name":{"type":"string"},"starts":{"type":"integer","minimum":0},"completions":{"type":"integer","minimum":0},"points":{"type":"number","minimum":0},"percent":{"type":"number","minimum":0,"maximum":100}},"additionalProperties":false},
+    "baseline":{"type":"object","properties":{"calibration_completed":{"type":"boolean"},"samples":{"type":"integer","minimum":0}},"additionalProperties":false},
+    "event":{"type":"object","required":["type","game","progress"],"properties":{"type":{"enum":["input","error","hint","first_action","kinematic_path"]},"game":{"enum":["R","I","A","S","E","C"]},"action":{"type":"string"},"kind":{"type":"string"},"progress":{"type":"number","minimum":0,"maximum":1},"normalized_inter_input_delay":{"type":["number","null"],"minimum":0},"normalized_recovery_delay":{"type":["number","null"],"minimum":0},"relative_first_action_delay":{"type":"number","minimum":0},"path_deviation_index":{"type":"number","minimum":0},"sample_count":{"type":"integer","minimum":0},"streak":{"type":"integer","minimum":0}},"additionalProperties":true}
+  }
+}

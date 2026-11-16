@@ -1,16 +1,16 @@
 # Rahyaab brand guidelines
 
-Rahyaab (راہ یاب, "the one who finds the way") is a career guidance app for Pakistani students in classes 8 to 12. Students play "Your Year", a story game, and get stream and course suggestions they can talk through with their family. This system is the single source for its colours, type, logo, mascot and core components, in light and dark.
+Rahyaab ("the one who finds the way", from Urdu and Persian) is a career guidance app for Pakistani students in classes 8 to 12. Students play "Your Year", a story game, and get stream and course suggestions they can talk through with their family. This system is the single source for its colours, type, logo, mascot and core components, in light and dark.
 
 **Promise:** Find your raah, and bring your family with you.
-**Taglines:** "Play your year. Find your raah." (English-led) · "Apni raah. Apni kahani." (Urdu-led)
+**Tagline:** "Play your year. Find your raah." (English only, ADR-0016)
 
 ## Who it is for, and what that means for design
 
 - **Students in classes 8 to 12 (about 13 to 18), mostly on mid and low-end Android phones, often shared.** Keep screens light: flat colour, SVG art, no heavy imagery. Every tap target is at least `touch-min` (48px). Text never goes below `caption` (12px).
 - **They want to be treated as near-adults.** No cartoon pep, no streaks, no leaderboards, no "great job!". Hudhud is a calm older-cousin guide, not a cheerleader.
 - **Parents decide and pay.** Parent and teacher screens use the same tokens but stay quieter: `bg` and `surface`, `text`, `secondary-text` for fit labels, the logo only and no mascot.
-- **Bilingual.** The student app has two languages, chosen on S-01: **English** (with Roman Urdu dialogue) and **Urdu** (Urdu script, right-to-left, read aloud by an Urdu voice; SRS FR-01, `design/specs/accessibility.md`). Parent views are Urdu-first. Set Urdu text in the `urdu-*` styles only (title, body-l, body, label); Nastaliq needs the tall line height. Roman Urdu is never read by a text-to-speech voice.
+- **English only.** The app, the teacher dashboard, the parent page and the store listing are in English (ADR-0016). Dialogue is plain English, and all copy lives in one translation file (`en.json`). Read-aloud uses an English voice. Set text in the `title`, `body-l`, `body` and `label` styles.
 - **Bright outdoor light and cheap screens.** Every text pair below is WCAG AA (4.5:1) or better in both themes. Graphics that carry meaning are 3:1 or better. `accent` (saffron) is only about 1.6:1 on `bg`, so it is decorative: a saffron "new" dot always has a 1.5px `text`-coloured ring or a "New" label. The high-contrast theme (`contrast` in tokens.json) gives 7:1 text and ≥ 3:1 control borders.
 
 ## Colour
@@ -49,7 +49,7 @@ An **r** drawn as a living branch: the dotted line straight up is the path every
 | Terracotta tile | `#FFFFFF` | `#FBD9A8` | `brand/app-icon/svg/icon-terracotta.svg` |
 
 - **App icon:** `brand/app-icon/svg/icon-ios-expo.svg` (branch on parchment) is the default store icon; `brand/app-icon/svg/icon-terracotta.svg` is the alternative; `brand/app-icon/svg/icon-dark.svg` is for dark launchers.
-- **Wordmark:** "rahyaab" in lowercase, `display` family at 800, letter-spacing −4%, set to the right of the branch with a gap of half the mark's width. Urdu lockup: راہ یاب in `urdu`.
+- **Wordmark:** "rahyaab" in lowercase, `display` family at 800, letter-spacing −4%, set to the right of the branch with a gap of half the mark's width.
 - **Minimum size:** 24px. Below 32px, drop the dotted line.
 - **Do not:** recolour the branch outside this table, put it on a photo, add a shadow or outline, or use the textured versions (road, log, pencil) as the logo. Those are illustration only.
 
@@ -67,9 +67,8 @@ A chubby hoopoe (B2). In Attar's *Conference of the Birds* the hoopoe guides the
 
 - `display` (Bricolage Grotesque 800) for `display-xl`, `display-l` and `heading`: one display style per screen. `heading` carries scene narration.
 - `sans` (Plus Jakarta Sans) for everything else: `title`, `body-l` for choices and reading, `body` as the default, `label` for buttons and tabs, `caption` for small caps meta.
-- `urdu` (Gulzar) for all Urdu via `urdu-body`, right to left.
-- A fourth font, **Atkinson Hyperlegible**, is the optional reading font (You → Accessibility, FR-97); it covers Latin text only.
-- All four are free Google Fonts under the OFL; bundle them in the app (do not load from the network at runtime). Budget: only the weights in use (Bricolage 800; Jakarta 500, 600, 700; Gulzar 400; Atkinson 400), subset to the scripts needed, about 1.2 MB in total.
+- A third font, **Atkinson Hyperlegible**, is the optional reading font (You → Accessibility, FR-97); it covers Latin text only.
+- All three are free Google Fonts under the OFL; bundle them in the app (do not load from the network at runtime). Budget: only the weights in use (Bricolage 800; Jakarta 500, 600, 700; Atkinson 400), subset to Latin text. The earlier estimate of about 1.2 MB included Gulzar and has not been re-measured.
 
 ## Space, shape, depth
 
@@ -79,7 +78,7 @@ A chubby hoopoe (B2). In Attar's *Conference of the Birds* the hoopoe guides the
 
 ## Voice
 
-Hudhud speaks like a calm, well-travelled older cousin, in English with light Roman Urdu. Short sentences. It never judges, never says "correct" or "wrong", and never claims more certainty than the model has.
+Hudhud speaks like a calm, well-travelled older cousin, in plain English. Short sentences. It never judges, never says "correct" or "wrong", and never claims more certainty than the model has.
 
 - First launch: "Salaam! I'm Hudhud. Birds have followed me on long journeys before. This one's yours."
 - Planner: "Three things this week. You can't do everything, and nobody can."

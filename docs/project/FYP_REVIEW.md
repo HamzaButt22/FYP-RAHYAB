@@ -1,5 +1,7 @@
 # Rahyaab FYP review
 
+16 Nov 2026: the interface is now English only (ADR-0016); entries below are kept as written.
+
 Reviewed on 29 Oct 2026, against:
 
 - the two research reports (`reports/Career guidance games app Pakistan.md`, `reports/Career guidance games literature review.md`)

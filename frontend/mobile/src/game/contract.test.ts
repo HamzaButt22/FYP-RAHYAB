@@ -14,7 +14,7 @@ const good: GameModule = {
   version: '1.0.0',
   kind: 'scene',
   measures: ['interests'],
-  title: { en: 'Sample', ur: 'نمونہ' },
+  title: 'Sample',
   contract: CONTRACT_VERSION,
   Screen,
 };
@@ -26,7 +26,7 @@ function setup(overrides: Partial<RunOptions> = {}) {
   const clock = { tick: (ms: number) => (now += ms) };
   const run = createRun({
     module: good,
-    context: { locale: 'en', rtl: false, week: 2, practice: false, a11yMode: false, reducedMotion: false },
+    context: { week: 2, practice: false, a11yMode: false, reducedMotion: false },
     sessionId: '0192f3c8-7a1e-7c3d-9b2a-5f1e2d3c4b5a',
     contentVersion: 'dev-2026.11.0',
     sink,
@@ -41,12 +41,12 @@ function setup(overrides: Partial<RunOptions> = {}) {
 
 test('a well-made module passes, and each mistake is named', () => {
   assert.deepEqual(moduleProblems(good), []);
-  const bad = moduleProblems({ ...good, id: 'Planning Week', version: '1', measures: [], title: { en: 'x', ur: '' } });
+  const bad = moduleProblems({ ...good, id: 'Planning Week', version: '1', measures: [], title: ' ' });
   assert.equal(bad.length, 4);
   assert.match(moduleProblems({ ...good, measures: ['aptitude:XYZ' as never] })[0], /not one of/);
   assert.match(moduleProblems({ ...good, measures: ['none', 'values'] })[0], /goes alone/);
-  assert.match(moduleProblems({ ...good, contract: '2.0.0' })[0], /app speaks/);
-  assert.deepEqual(moduleProblems({ ...good, contract: '1.4.0' }), []); // minor versions stay compatible
+  assert.match(moduleProblems({ ...good, contract: '1.1.0' })[0], /app speaks/);
+  assert.deepEqual(moduleProblems({ ...good, contract: '2.1.0' }), []); // minor versions stay compatible
   assert.match(registryProblems([good, good]).join(), /two modules have this id/);
 });
 
@@ -153,7 +153,7 @@ test('experiments stay on the phone and saved progress comes back next run', () 
   assert.deepEqual(run.log.experiments.map((x) => x.name), ['changed_mind']);
   const again = createRun({
     module: good,
-    context: { locale: 'ur', rtl: true, week: 0, practice: true, a11yMode: true, reducedMotion: true },
+    context: { week: 0, practice: true, a11yMode: true, reducedMotion: true },
     sessionId: 's',
     contentVersion: 'dev-2026.11.0',
     sink,

@@ -99,7 +99,7 @@ class JoinRequest(BaseModel):
     birth_month: int = Field(ge=1, le=12)
     claim_code: str | None = Field(default=None, pattern=r"^[A-Z0-9]{4}-[A-Z0-9]{4}$")
     nickname: str = Field(max_length=100)
-    lang: Literal["ur", "en"]
+    lang: Literal["en"]  # English only (ADR-0016)
     device: DeviceInfo
 
     @field_validator("nickname")

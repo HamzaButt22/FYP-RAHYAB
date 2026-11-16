@@ -43,7 +43,7 @@ Which laws, policies and standards apply to Rahyaab, what each one asks of us, a
 | **Profiling of children:** off by default, with safeguards | Recommendations are framed as "starting points", with a top-3 + Plan B, confidence and "ask an adult". Gender is excluded from features, and a fairness audit runs | NFR-59, NFR-60, FR-48 | T-FAIR-01–03 | Designed |
 | **No nudges or dark patterns** (ICO std 13) | No streaks, leaderboards, loss framing, timers or push spam | NFR-63, FR-86 | Design review | Designed |
 | **High privacy by default** (ICO std 7) | Research opt-in off; sharing off until the student creates a link; task strengths can be hidden | FR-09, FR-66 | UI test | Designed |
-| **Transparency** | Bilingual privacy notice; "Why this?" for every result | FR-11, FR-56 | Content review | Designed |
+| **Transparency** | English privacy notice; "Why this?" for every result | FR-11, FR-56 | Content review | Designed |
 | **Data subject rights:** access, deletion, withdrawal | Download my data; delete my data (≤ 30 days); parents can withdraw consent by link | FR-10, FR-70, NFR-46 | T-PRIV-03 | Designed |
 | **Retention limits** | Retention schedule (`DATA_GOVERNANCE.md` §3) and automated jobs | FR-84, NFR-46 | T-PRIV-03 | Designed |
 | **Breach notification** | Runbook; notify schools and parents within 72 hours | NFR-49 | Tabletop exercise | Planned (M-B) |
@@ -69,7 +69,7 @@ Which laws, policies and standards apply to Rahyaab, what each one asks of us, a
 | **Account deletion** | Apps that let users create accounts must offer deletion **in the app and through a web link** | You → Download/Delete my data (FR-10), plus a web deletion request page (`rahyaab.pk/delete`) linked from the listing and the Data safety form | **Launch blocker**: owner Hamza Butt, built in S8 with the parent pages |
 | **User Data: prominent disclosure and consent** | Disclose before collecting; follow the privacy policy | Onboarding assent + privacy notice; consent gate | Designed |
 | **Permissions** | Request only what is needed | INTERNET (and VIBRATE) only | Designed |
-| **Privacy policy** | Linked in the listing and in the app | Website `/privacy/`, in English and Urdu | Planned |
+| **Privacy policy** | Linked in the listing and in the app | Website `/privacy/`, in English | Planned |
 
 ### 2.4 Accessibility (S3)
 
@@ -83,7 +83,7 @@ Which laws, policies and standards apply to Rahyaab, what each one asks of us, a
 |---|---|---|---|
 | O*NET Web Services and data | O*NET terms; database under CC BY 4.0 | Attribution on career pages and in the report wherever O*NET-derived path profiles are used (`tools/onet_profiles.py` records the version); Interest Profiler used unchanged, in English (A-03) | **Verify** the current terms |
 | OpenPsychometrics RIASEC dataset (~145k) | Published with the dataset | Used for calibration only; cite it; not redistributed | **Verify** the licence |
-| Bricolage Grotesque, Plus Jakarta Sans, Gulzar, Atkinson Hyperlegible | SIL OFL 1.1 | Keep the licence file with the fonts | Designed |
+| Bricolage Grotesque, Plus Jakarta Sans, Atkinson Hyperlegible | SIL OFL 1.1 | Keep the licence file with the fonts | Designed |
 | Lucide icons | ISC | Keep the notice | Designed |
 | Ink and inkjs | MIT | Keep the notice | Designed |
 

@@ -84,7 +84,7 @@ Yes. The guide has **one** CCP framework with **nine characteristics**, and asks
 
 1. **"Isn't this just a questionnaire with graphics?"** No. Every choice is a forced choice between two career types inside a story, scored by a model built for that kind of data (Thurstonian IRT). We test whether this matches a real questionnaire (V2) and whether students prefer it (V8). Forced choice also reduces "everything sounds good" answers.
 2. **"How can a game know the right stream?"** It doesn't, and we never claim it does. It estimates interests, abilities and values with a margin of error, ranks the paths a student is eligible for, explains why, and always gives a Plan B (`SCIENTIFIC_BASIS.md` §1).
-3. **"What is new here?"** No validated, game-based, offline, Urdu-first stream guide for Pakistani boards exists. The research contribution is the measured agreement between story choices and a standard inventory.
+3. **"What is new here?"** No validated, game-based, offline stream guide for Pakistani boards exists. The research contribution is the measured agreement between story choices and a standard inventory.
 
 **About the science**
 
@@ -124,5 +124,6 @@ Saying these first builds trust with the committee:
 - The app is **designed, not yet built**. Validity results exist only after the pilot (FYP-2); only V1 can be done in FYP-1.
 - Calibration data are mostly adult and Western; they are used as a starting point and recalibrated locally.
 - Board and council rules are dated and sourced, but some still need confirming with the boards.
-- The Urdu text needs review by a native speaker before the pilot.
+- The app is **English only** (ADR-0016). Students from Urdu-medium schools may read English less fluently, which can lower engagement and add measurement error unrelated to interests or abilities. Mitigations: copy at about a Grade 6 reading level, English read-aloud on every screen, icons and pictures beside text, short sentences, and teacher explanation in class. The analysis records each school's medium and reports results by medium (ADR-0016). This is stated as a limitation in the final report.
+- The Urdu paper consent forms need review by a native speaker before the pilot.
 - The ethics approval for the pilot is still to be obtained.

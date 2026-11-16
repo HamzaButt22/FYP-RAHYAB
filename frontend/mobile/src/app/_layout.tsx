@@ -1,10 +1,9 @@
 // Root of the app: loads the brand fonts and saved settings behind the splash screen, then sends the
-// student to the right place: language choice (S-01), onboarding (S-02, S-03), the family slip (S-04) or the
-// main tabs. Each group is locked with Stack.Protected, so a deep link cannot skip joining.
+// student to the right place: onboarding (S-02, S-03), the family slip (S-04) or the main tabs. The
+// interface is English only (ADR-0016). Each group is locked with Stack.Protected, so a deep link cannot skip joining.
 
 import { BricolageGrotesque_800ExtraBold } from '@expo-google-fonts/bricolage-grotesque';
 import { AtkinsonHyperlegible_400Regular } from '@expo-google-fonts/atkinson-hyperlegible';
-import { Gulzar_400Regular } from '@expo-google-fonts/gulzar';
 import {
   PlusJakartaSans_500Medium,
   PlusJakartaSans_600SemiBold,
@@ -24,7 +23,7 @@ import { ThemeProvider, useTheme } from '@/theme/ThemeProvider';
 SplashScreen.preventAutoHideAsync();
 
 function Navigation() {
-  const { ready, language, session, onboardingDone } = useAppState();
+  const { ready, session, onboardingDone } = useAppState();
   const { colors, scheme } = useTheme();
   useBackgroundSync(session?.consentState ?? null);
 
@@ -37,16 +36,13 @@ function Navigation() {
     <>
       <Stack screenOptions={{ headerShown: false, contentStyle: { backgroundColor: colors.bg } }}>
         <Stack.Screen name="index" />
-        <Stack.Protected guard={!language}>
-          <Stack.Screen name="language" />
-        </Stack.Protected>
-        <Stack.Protected guard={!!language && !session}>
+        <Stack.Protected guard={!session}>
           <Stack.Screen name="(onboarding)" />
         </Stack.Protected>
-        <Stack.Protected guard={!!language && !!session}>
+        <Stack.Protected guard={!!session}>
           <Stack.Screen name="consent" />
         </Stack.Protected>
-        <Stack.Protected guard={!!language && !!session && onboardingDone}>
+        <Stack.Protected guard={!!session && onboardingDone}>
           <Stack.Screen name="(tabs)" />
           <Stack.Screen name="results" />
           <Stack.Screen name="play" />
@@ -66,7 +62,6 @@ export default function RootLayout() {
     PlusJakartaSans_500Medium,
     PlusJakartaSans_600SemiBold,
     PlusJakartaSans_700Bold,
-    Gulzar_400Regular,
     AtkinsonHyperlegible_400Regular,
   });
   // If a font fails to load, carry on with the system font rather than a blank screen.

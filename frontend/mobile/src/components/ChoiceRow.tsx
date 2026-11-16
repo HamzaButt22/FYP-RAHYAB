@@ -1,5 +1,5 @@
 // A row of equal buttons where one can be chosen (the class picker, 8 to 12). Selection is a thick border
-// AND announced as "selected", never colour alone (SRS §7.3). Mirrors in Urdu like the rest of the layout.
+// AND announced as "selected", never colour alone (SRS §7.3).
 
 import { Pressable, StyleSheet, View } from 'react-native';
 
@@ -39,7 +39,7 @@ export function ChoiceRow<T extends string | number>({ options, value, onChange,
               selected && { backgroundColor: colors.surface, borderColor: colors.text, borderWidth: 2 },
             ]}
           >
-            <AppText variant="title" align="center" script="latin">
+            <AppText variant="title" align="center">
               {String(option)}
             </AppText>
           </Pressable>

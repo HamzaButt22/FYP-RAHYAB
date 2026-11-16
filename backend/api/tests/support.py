@@ -176,7 +176,7 @@ class World:
             "birth_year": 2011,
             "birth_month": 5,
             "nickname": f"Kid_{secrets.token_hex(3)}",  # unique within the class (schema v1.5)
-            "lang": "ur",
+            "lang": "en",
             "device": {
                 "device_tier": "low",
                 "os_major": 13,

@@ -115,7 +115,7 @@ Data is encrypted in transit, and users can request deletion.
 Follow `SECURITY.md` §7:
 1. Contain.
 2. Assess: what data, whose, and how much.
-3. Notify the schools and parents within **72 hours**, in Urdu and English (NFR-49). The team has no parent contacts on the school path, so it sends each school's coordinating teacher a ready-to-forward message (Urdu and English) and records the school's acknowledgement; on the individual path the parent gets an SMS.
+3. Notify the schools and parents within **72 hours**, in plain English (NFR-49). The team has no parent contacts on the school path, so it sends each school's coordinating teacher a ready-to-forward message (plain English) and records the school's acknowledgement; on the individual path the parent gets an SMS.
 4. Write a post-incident note.
 
 Keep a breach register (date, scope, actions), even for near misses.

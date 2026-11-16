@@ -131,7 +131,7 @@ The student sees **DAE, Pre-Engineering and ICS** as their top 3. The reasons ar
 
 **What N = 100–150 can and cannot support.** It is enough for V2 (convergent correlations), V4 and V8. It is **not** enough for stable structural modelling or 2PL item calibration, so V3, the Rasch calibration of each ability family and the learned ranker are reported as **exploratory** with confidence intervals.
 
-**Language protocol for V2.** The Mini-IP licence does not allow a modified (translated) version without O*NET's permission. Students read it in English; a researcher reads each item aloud in English and may explain a word from a fixed glossary, never the item. Students are asked to self-rate English reading (3 levels). V2 is reported for all students and separately by school medium; the main validity claim rests on the group with adequate English reading. Applying for permission for an Urdu version is an open question for the supervisor (SRS §17.6).
+**Language protocol for V2.** The Mini-IP licence does not allow a modified (translated) version without O*NET's permission. Students read it in English; a researcher reads each item aloud in English and may explain a word from a fixed glossary, never the item. Students are asked to self-rate English reading (3 levels). V2 is reported for all students and separately by school medium; the main validity claim rests on the group with adequate English reading. The app itself is English only since 16 Nov 2026 (ADR-0016), so no Urdu version of the benchmark is planned.
 
 **Sample-size precision:**
 - With N = 100, a 95% confidence interval around r = .50 spans about .34–.63.
@@ -191,6 +191,7 @@ If Rahyaab does not beat the questionnaire baseline, we report that honestly; th
 | Calibration data are mostly adult, Western volunteers | Used only as priors; recalibrated on Pakistani pilot data |
 | Choosing in a story is not rating items (a mode effect) | V2 tests it directly; recalibration; "planner vs scene" agreement check |
 | The Mini-IP benchmark is in English | Researcher reads items aloud for Urdu-medium students; recorded as a covariate |
+| The app is English only (ADR-0016): Urdu-medium students may read English less fluently | Grade 6 reading level, English read-aloud, icons and pictures, short sentences, teacher explanation; school medium recorded and results reported by medium (V2, V6); stated as a limitation in the final report |
 | Few forced choices → weak identification | GRM taps and planner anchors; identification checks in simulation (RK-19) |
 | Path profiles are first-version heuristics | Replaced with O*NET-derived profiles and counsellor AHP weights before the pilot |
 | Social desirability ("doctor = respect") | Forced choice; family-neutral framing; no option is marked "better" |

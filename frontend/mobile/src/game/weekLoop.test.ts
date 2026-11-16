@@ -1,5 +1,5 @@
 /// <reference types="node" />
-// Run with `pnpm test`. The week loop (FR-13-15, FR-52), the sample plan, and week_complete (contract 1.1.0).
+// Run with `pnpm test`. The week loop (FR-13-15, FR-52), the sample plan, and week_complete (contract 1.1.0, now 2.0.0).
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 import { test } from 'node:test';
@@ -110,14 +110,14 @@ test('the sample plan follows the pairs.json target schedule exactly', () => {
 });
 
 const module: GameModule = {
-  id: 'm', version: '1.0.0', kind: 'scene', measures: ['interests'], title: { en: 'M', ur: 'م' },
+  id: 'm', version: '1.0.0', kind: 'scene', measures: ['interests'], title: 'M',
   contract: CONTRACT_VERSION, Screen: () => null,
 };
 
 function newRun(sink: MemorySink, store = new MemoryStore(), saveKey?: string) {
   return createRun({
     module,
-    context: { locale: 'en', rtl: false, week: 2, practice: false, a11yMode: false, reducedMotion: false },
+    context: { week: 2, practice: false, a11yMode: false, reducedMotion: false },
     sessionId: 's', contentVersion: 'dev', sink, store, saveKey, strict: true,
     monotonic: () => 0, wallClock: () => Date.UTC(2026, 10, 15),
   });

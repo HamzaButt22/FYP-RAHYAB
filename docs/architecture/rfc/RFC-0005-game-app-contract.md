@@ -1,4 +1,4 @@
-# RFC-0005: Game–app contract (version 1)
+# RFC-0005: Game–app contract (version 2)
 
 | | |
 |---|---|
@@ -7,7 +7,7 @@
 | **Reviewers** | Zahid Bashir (game) |
 | **Created / decided** | 2026-11-15 / — |
 | **Requirements** | NFR-52, FR-13–17, FR-35, FR-52, FR-98; ADR-0002, RFC-0002 |
-| **Contract version** | 1.1.0 (15 Nov 2026: `params` in the context, `week_complete` sent by the host, the week loop). 1.0.0 modules still work. |
+| **Contract version** | 2.0.0 (16 Nov 2026: English only, ADR-0016: `locale` and `rtl` removed from the context, `title` is one string). 1.1.0 (15 Nov 2026): `params` in the context, `week_complete` sent by the host, the week loop. Modules written for 1.x are refused until updated. |
 
 ## Summary
 
@@ -32,7 +32,7 @@ The app and the game meet in three small places, and nowhere else: what the app 
 
 ### 1. `GameContext`: what the app tells a module
 
-`locale` (`en` or `ur`), `rtl`, `week` (0 for the prologue), `practice` (never scored), `a11yMode` (accessible task mode, FR-98: played but stored as not measured), `reducedMotion`, and `params` (1.1.0, optional): what this step of the week plan asks the module to show, such as which pair of options. It is plain JSON from the plan; a module that needs none ignores it.
+`week` (0 for the prologue), `practice` (never scored), `a11yMode` (accessible task mode, FR-98: played but stored as not measured), `reducedMotion`, and `params` (1.1.0, optional): what this step of the week plan asks the module to show, such as which pair of options. It is plain JSON from the plan; a module that needs none ignores it.
 
 It never includes the student's name, nickname or id. A module doesn't need them, so it can't leak them.
 
@@ -68,7 +68,7 @@ A broken call **throws in development builds**, so the author sees it at once. I
 | `version` | The module's own version, like 1.0.0 |
 | `kind` | task, scene, activity or other |
 | `measures` | What it gives evidence for (see below) |
-| `title` | English and Urdu |
+| `title` | The module's name in English (for the game lab and logs) |
 | `contract` | The contract version it was written for |
 | `Screen` | Its React Native component |
 
@@ -120,7 +120,7 @@ The game lab is a developer-only screen (`src/app/game-lab.tsx`, locked with `St
 ### The sample module
 
 `modules/samplePickOne.tsx` is a two-option choice that uses every part of the contract:
-- context and right-to-left (the recorded `side` is mirrored in Urdu);
+- the context (the recorded `side` is where the picked option was on screen);
 - `params` from the week plan (`left`, `right`, `item`), or a random order when played alone;
 - saved progress ("played before");
 - `scene_start` and `choice_made`, with the options in random order;
@@ -136,7 +136,7 @@ It is not game content. Copy it as a starting point.
 - Experiments never leave the phone.
 - The game lab exists only in development builds.
 - Accessible task mode is passed to every module and recorded on every event, so an accessible run is never scored as a measured one (FR-98).
-- Right-to-left layout and reduced motion are in the context, so every module can respect them.
+- Reduced motion is in the context, so every module can respect it.
 
 ## Alternatives
 
@@ -149,7 +149,7 @@ It is not game content. Copy it as a starting point.
 - `src/game/contract.test.ts` (`pnpm test`) covers the module, event and data checks, the envelope fields and limits, the never-decreasing time, `quit` on leaving, development versus release behaviour, experiments and saved progress, and UUIDv7.
 - `src/game/weekLoop.test.ts` covers the week loop: every step in order, each week finished once, results opening only after four scored weeks, resuming and fitting saved progress to a changed plan, plan mistakes, the sample plan matching `pairs.json`, `week_complete` sent once and only by the host, and per-step saved state.
 - **Built:** events go to the encrypted SQLite outbox (ADR-0010) and `POST /v1/events:batch`; saved progress and the week's place are in the same database. Modules did not change.
-- **Tested on the emulator (15 Nov 2026, Urdu and English):** the prologue and the first steps of week 1 played through Home and the player; the server received the planned pairs, the practice flag on week 0 and one `week_complete`; a break and a full app restart resumed at the same step.
+- **Tested on the emulator (15 Nov 2026):** the prologue and the first steps of week 1 played through Home and the player; the server received the planned pairs, the practice flag on week 0 and one `week_complete`; a break and a full app restart resumed at the same step.
 
 ## Open questions
 

@@ -32,7 +32,7 @@ sunday are closed
 [Planning task, then logic and numerical] as [T1] starts at [WL]'s end and lasts 10 days
 [Results, letter, library] as [RES] starts at [T1]'s end and lasts 10 days
 [FYP-1 demo] as [DEMO] happens 2027-01-15
-[Tasks (3 more), Urdu, all class modes] as [T2] starts 2027-02-01 and lasts 10 days
+[Tasks (3 more), all class modes] as [T2] starts 2027-02-01 and lasts 10 days
 [Fit check, check-in, share, accessibility] as [FC] starts at [T2]'s end and lasts 10 days
 [Feature freeze] as [FF] happens 2027-02-26
 [Pentest on frozen build] as [PT] starts 2027-03-01 and lasts 10 days

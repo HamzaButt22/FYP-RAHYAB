@@ -8,10 +8,10 @@ Everything the team has signed off, and where its editable master lives. When so
 | 2 | **Mascot: chubby Hudhud (B2)** in terracotta and teal. The same bird in light and dark; in dark mode it gets a cream die-cut edge | Oct 2026 | `brand/mascot/svg/hudhud-*.svg` (10 poses, each with a `-dark` version) | `brand/mascot/png/` (@1x, @2x, @3x) |
 | 3 | **App icon and splash** built from the Branch mark | Oct 2026 | `brand/app-icon/svg/` | `brand/app-icon/png/` |
 | 4 | **Palette and tokens:** terracotta #B54A2F, teal #1F7A7A, accent #F2B33D; light and dark sets | Nov 2026 | `tokens/tokens.json` (master), mirrored in `tokens.css`, `theme.ts`, `tokens.dtcg.json` and the Figma variables | — |
-| 5 | **Type:** Bricolage Grotesque (display), Plus Jakarta Sans (UI), Gulzar (Urdu), Atkinson Hyperlegible (reading-font option) | Nov 2026 | `tokens/tokens.json`, `brand/BRAND_GUIDELINES.md` | — |
+| 5 | **Type:** Bricolage Grotesque (display), Plus Jakarta Sans (UI), Atkinson Hyperlegible (reading-font option) | Nov 2026 | `tokens/tokens.json`, `brand/BRAND_GUIDELINES.md` | — |
 | 6 | **Icons:** Lucide, outline, 2 px stroke, 24 px | Nov 2026 | — | — |
 | 7 | **Store feature graphic** | Nov 2026 | `brand/store/` | `play-feature-graphic-1024x500.png` |
-| 8 | **App screens:** 55 screens, light and dark, final brand: student app, parent pages, dashboard, admin and tablet layouts | Nov 2026 | `screens/*.html`; Figma pages 02 and 03 (24 imported; the 31 newer screens are pending import) | `screens/png/`, `screens/png/store/` |
+| 8 | **App screens:** 54 screens (S-01 Language removed 16 Nov 2026, English only, ADR-0016), light and dark, final brand: student app, parent pages, dashboard, admin and tablet layouts | Nov 2026 | `screens/*.html`; Figma pages 02 and 03 (24 imported; the 31 newer screens are pending import) | `screens/png/`, `screens/png/store/` |
 | 9 | **Design system sheet** | Nov 2026 | Figma page 01 (`figma/README.md`); `figma/rahyaab-design-system.html` | — |
 | 10 | **Game design ("Your Year", GDD v3) and frameworks** | Nov 2026 | `game/GAME_DESIGN.md`, `game/frameworks/*.json` | — |
 | 11 | **Accessibility spec** | Nov 2026 | `specs/accessibility.md` | — |
@@ -24,5 +24,7 @@ Everything the team has signed off, and where its editable master lives. When so
 - the roots and GT Road logo ideas.
 
 `docs/project/BRAND_DECISIONS.md` records why each option was rejected.
+
+English only since 16 Nov 2026 (ADR-0016).
 
 **Engineering design** (architecture, API, data model, security, tests) lives in `docs/`. Start at `docs/README.md`.

@@ -49,13 +49,13 @@ How we will know that Rahyaab works, is safe, and measures what it claims to mea
 | **Parity / golden** | TS vs Python baselines; Ink coverage; golden playthrough event streams; rescore reproducibility | Shared fixtures in `content/fixtures/` | Hamza + Zahid | Every PR touching games or scoring | 100% match |
 | **Contract** | The FastAPI schema matches `docs/api/openapi.yaml`; generated TS types compile | **Drift:** export the schema FastAPI generates and diff it against `openapi.yaml` (`oasdiff`), failing on any difference. **Fuzzing:** Schemathesis (property-based). openapi-typescript for the types | Zahid | Every PR | 0 drift (oasdiff); 0 5xx under fuzzing (Schemathesis) |
 | **Integration** | API + PostgreSQL: join, consent gate, batch, idempotency, results, share, RBAC | pytest + httpx + a Testcontainers Postgres | Zahid | Every PR | All pass |
-| **E2E** | Onboarding → prologue → week → offline → sync → Blueprint → share (EN + UR) | Maestro | Hamza | Nightly + release | All pass on an emulator and the reference low-end device (RLD) |
+| **E2E** | Onboarding → prologue → week → offline → sync → Blueprint → share | Maestro | Hamza | Nightly + release | All pass on an emulator and the reference low-end device (RLD) |
 | **Fault injection** | Kill, airplane mode, low storage, clock change | adb scripts + Maestro | Hamza | Release | 0 events lost |
 | **Performance** | Cold start, frame rate, memory, API load, bundle size | Flashlight, Perfetto, Locust | Hamza (app), Zahid (API) | Release | NFR-04–13 |
 | **Security** | MASVS L1 + PRIVACY, ASVS L2, ZAP, SAST, secrets, dependencies, authorisation matrix, pentest | MobSF, ZAP, CodeQL, Semgrep, Bandit, gitleaks | Zahid (lead); pentest by a non-author | CI + pre-pilot | 0 open critical or high |
 | **Privacy** | Data inventory vs manifest and network trace; export de-identification; retention | mitmproxy (on a test device), scripts | Zahid | Pre-pilot | 100% match with the inventory |
 | **Accessibility** | Scanner + TalkBack + Switch Access + 200% font + high contrast + CVD simulation | Accessibility Scanner, axe-core, manual | Daniyal | Release | 0 critical issues |
-| **Localisation** | Missing keys, RTL screenshots, bidi isolation, Urdu editor sign-off | i18n lint, screenshot diff | Daniyal | Release | 100% of keys |
+| **Localisation** | Missing keys and hard-coded strings in `en.json` (English only since 16 Nov 2026, ADR-0016) | i18n lint | Daniyal | Release | 100% of keys |
 | **Content** | Pair coverage, age-appropriateness, "cringe check", readability, rule sources | Validator + 2-person review | Daniyal | Every content pack | All pass |
 | **Usability** | Think-aloud + SUS with 5–8 teens per round | §14.3 | Daniyal | M-A, M-C | SUS ≥ 70 |
 | **Psychometric / fairness** | Convergent validity, reliability, DIF, matched-score audit | R, Python | Zahid | M-C, M-D | Reported against hypotheses |
@@ -72,7 +72,7 @@ These tests check behaviour **under pressure and failure**, not just correctness
 | **Soak (endurance)** | Leaks, connection-pool exhaustion, log or disk growth | Load profile at 60% | 8 hours (12 h before the pilot) | Memory growth ≤ 10% per worker; no rise in p95 latency over time; database connections stable; disk growth as forecast | Weekly + pre-pilot |
 | **Break-point (capacity)** | Where exactly does it fail, and how? | Step +25 virtual users every 5 min until the error rate passes 5% or p95 passes 5 s | Until failure | **Record** the break point and the first bottleneck (CPU, database, workers); must be ≥ 3× the pilot peak; failure must be graceful (no corruption) | Each milestone |
 | **Volume** | Big tables | Seed 5,000 students, 20 million events, 12 monthly partitions | — | Roster query p95 ≤ 500 ms; rescore job ≤ 1 h; retention job drops a partition in ≤ 1 min | Pre-pilot |
-| **Monkey (client)** | Random input crashes or freezes | `adb shell monkey` (50,000 events, seeded, throttle 50 ms) and Maestro random-tap flows on the reference device, in EN and UR | 3 seeds per build | 0 crashes and 0 ANRs; 0 event loss; the app always reachable from Home | Nightly (10k events); release (50k) |
+| **Monkey (client)** | Random input crashes or freezes | `adb shell monkey` (50,000 events, seeded, throttle 50 ms) and Maestro random-tap flows on the reference device | 3 seeds per build | 0 crashes and 0 ANRs; 0 event loss; the app always reachable from Home | Nightly (10k events); release (50k) |
 | **Client endurance** | Phone stability across a whole game | Play all 4 weeks without restarting (bot-driven), in the low-memory profile | ~60 min | Memory (PSS) ≤ 300 MB throughout (NFR-07); frames stay within NFR-06; battery ≤ 5% per 20 min | Release |
 | **Chaos (server)** | Does it survive real failures? | Scripted faults on staging (see TC-CHAOS) | Database down, worker killed, disk full, slow database, network loss, clock skew, restore from backup | No data loss; clear user messages; automatic recovery; alerts fire; RTO ≤ 4 h, RPO ≤ 24 h | Monthly + pre-pilot |
 | **Chaos (client)** | Hostile phone conditions | Airplane-mode flapping, storage 99% full, process kill, OS low-memory kill, time zone and clock change, revoked token mid-sync | — | 0 event loss; resume at the last choice; the user sees what to do | Release (T-REL) |
@@ -107,7 +107,7 @@ All of these produce a report saved as a CI artifact. A regression of more than 
 | Gate | Entry | Exit |
 |---|---|---|
 | **PR merge** | Story meets the Definition of Ready (SRS §13.4) | Required CI checks green; 1 review; new code has tests |
-| **Sprint review** | Stories done | Acceptance criteria demonstrated on the RLD or an emulator, in EN + UR |
+| **Sprint review** | Stories done | Acceptance criteria demonstrated on the RLD or an emulator |
 | **R1 (FYP-1 demo)** | All R1 Must stories merged | E2E pass; 0 open critical or high defects; T-PERF budgets met on the RLD |
 | **Pilot (M-C)** | R2 Must items done; ethics approval | Pentest done with 0 open critical/high; T-PRIV passed; T-A11Y passed; restore drill passed; supervisor sign-off |
 | **Store release** | Pilot feedback triaged | Data safety form matches the inventory; Play pre-launch report clean; checklist in `STORE_AND_SEARCH.md` §4 |
@@ -139,7 +139,7 @@ All of these produce a report saved as a CI artifact. A regression of more than 
 | S2 | Outbox and sync integration; idempotency; golden playthrough for Week 1 |
 | S3 | Task parity tests; staircase properties; vertical-slice playtest |
 | S4 | Blueprint and gates golden tests; share-link security tests; first accessibility pass |
-| S5 | RLD performance; fault injection; E2E in EN + UR; R1 exit |
+| S5 | RLD performance; fault injection; E2E; R1 exit |
 | M-A / M-B | Usability round 1; Schemathesis; ZAP authenticated scan; MobSF |
 | Pre-pilot | Pentest; T-PRIV; restore drill; accessibility walkthrough with 2 students with a disability |
 | M-C / M-D | Usability round 2; psychometric and fairness analyses |
@@ -156,6 +156,6 @@ All of these produce a report saved as a CI artifact. A regression of more than 
 | Risk | Mitigation |
 |---|---|
 | Too few real low-end devices | Borrow from the pilot schools; emulator profiles; prioritise the RLD |
-| Urdu reviewers are not available in time | Book the editor per content pack; RTL screenshot automation catches layout bugs early |
+| Students from Urdu-medium schools find the English copy hard to read (ADR-0016) | Grade 6 copy checked in CI; English read-aloud; usability rounds include Urdu-medium school students |
 | Pentest skills inside the team | Use the MASTG and ASVS checklists; ask the university security lab; tester must not be the author |
 | Flaky E2E tests on CI emulators | Retry once; quarantine flaky tests with an issue; keep E2E few and critical |

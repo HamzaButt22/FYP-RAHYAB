@@ -2,6 +2,8 @@
 
 The first two weeks of development, in order. The scope comes from `MVP.md` (Sprint 1–2), the repository steps from `docs/devops/REPOSITORY.md`, and how to use AI assistants from `BUILD_GUIDE.md`. **Setting up a new computer** (tools, Android SDK, emulator or phone, debugging, known errors) is in `NEW_DEVICE_SETUP.md`.
 
+The interface is English only since 16 Nov 2026 (ADR-0016). Lines below that mention Urdu are history.
+
 ## 1. Before anyone writes code (this week)
 
 | # | Task | Who | Done when | Status (13 Nov 2026) |
@@ -104,8 +106,8 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 | Schema v1 migration (Alembic) from `schema.sql`: school, class, student, consent, device, refresh_token | Zahid | §12.4 |
 | `POST /auth/student/join` with field errors and generic code errors | Zahid | FR-03, FR-04, FR-100, FR-102; TC-ONB-02–04, TC-VAL-03, TC-VAL-07 |
 | Seed script: schools, classes, consent slips (synthetic) | Zahid | MVP §2.3 |
-| Expo app: theme from `theme.ts`, fonts, i18n (en/ur), navigation shell | Hamza | NFR-27 |
-| Screens S-00, S-01, S-02, S-03 / S-03e with field help and pickers | Hamza | FR-01–04, FR-102; TC-VAL-01–02 |
+| Expo app: theme from `theme.ts`, fonts, i18n (en only), navigation shell | Hamza | NFR-27 |
+| Screens S-00, S-02, S-03 / S-03e with field help and pickers | Hamza | FR-01–04, FR-102; TC-VAL-01–02 |
 | Secure store, tokens, encrypted SQLite set-up | Hamza | NFR-39 |
 | Ink: prologue draft, and Week 1 scene 1 with tags | Zahid (from Daniyal, 14 Nov) | FR-20, FR-95 |
 | Verify `streams.json` class 9–10 paths and gates with sources | Zahid (from Daniyal, 14 Nov) | FR-45, NFR-03 |
@@ -122,11 +124,11 @@ The mobile app is debugged with Expo's own tools: run the `mobile: start Expo` t
 - **Class-code security** (14 Nov, branch `fix/class-code-security`): the admin command for schools, licences, classes, codes (rotate, expire) and numbered consent slips; codes stored as keyed hashes (`CODE_PEPPER`); wrong slip codes limited per phone instead of pausing the whole class; rate-limit replies no longer reveal the limit. Then: class lists with consent-form numbers, removing students, blocking and unblocking phones, end of year (admin command); nickname ideas on S-03 and nicknames unique within a class (schema v1.5, migration 0003).
 - **School files and archive** (14 Nov, branch `feat/register-and-archive`): encrypted Excel slips and class register (generated password); removing a student archives them and `student-restore` undoes it (schema v1.6, migration 0004).
 
-Open: the other two welcome cards; read-aloud on field messages (FR-96); the soft check for an unusual class and age (EDGE_CASES §4); rude-word nickname check (forms-and-errors §2); Urdu tall letters such as the madda on آ are clipped in one-line Urdu labels on Android; the encrypted SQLite outbox; the Ink prologue; `streams.json` board routes for Sindh, Balochistan and AJK; the ethics submission; review of `frontend/mobile/src/i18n/locales/ur.json` by a native Urdu editor.
+Open: the other two welcome cards; read-aloud on field messages (FR-96); the soft check for an unusual class and age (EDGE_CASES §4); rude-word nickname check (forms-and-errors §2); the encrypted SQLite outbox; the Ink prologue; `streams.json` board routes for Sindh, Balochistan and AJK; the ethics submission.
 
 **Definition of done** (SRS §13.4):
 - code with tests, CI green, one review;
-- works in English and Urdu;
+- works in English;
 - accessibility labels on every control;
 - documentation and OpenAPI updated;
 - demoed at the sprint review.

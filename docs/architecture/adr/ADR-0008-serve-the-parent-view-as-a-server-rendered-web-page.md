@@ -9,7 +9,7 @@
 
 ## Context
 
-Many parents have low-end phones, little storage, and limited Urdu or English literacy. Asking them to install an app would lose most of them.
+Many parents have low-end phones, little storage, and limited Urdu or English literacy. Asking them to install an app would lose most of them. Since 16 Nov 2026 the parent page is English only (ADR-0016).
 
 ## Decision
 

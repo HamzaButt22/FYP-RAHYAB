@@ -17,7 +17,7 @@ Everything a developer needs to build Rahyaab's look, in one folder. Nothing out
 | `brand/store/` | Google Play feature graphic | — |
 | `brand/BRAND_GUIDELINES.md` | Rules for colour, logo, mascot, type, voice | — |
 | `tokens/` | Design tokens: `tokens.json` (master), `tokens.dtcg.json` (Figma / Tokens Studio), `tokens.css` (web), `theme.ts` (React Native) | `tokens.json` |
-| `screens/` | The 55 app, parent, dashboard, admin and tablet screens in light and dark, the PNG exports, and the 8 Play Store screenshots | `screens/*.html` and the Figma file |
+| `screens/` | The 54 app, parent, dashboard, admin and tablet screens in light and dark, the PNG exports, and the 8 Play Store screenshots | `screens/*.html` and the Figma file |
 | `specs/` | Component specs, responsive rules, accessibility and accommodations (`accessibility.md`), and forms, errors and help (`forms-and-errors.md`) | — |
 | `figma/` | Figma link, plus importable copies of the design-system sheet and the screens | the Figma file |
 | `previews/` | Live, responsive previews in light and dark | — |
@@ -33,7 +33,7 @@ Project documents, research, and the engineering design (architecture, API, secu
 1. **Fonts:**
 
    ```bash
-   npx expo install expo-font @expo-google-fonts/bricolage-grotesque @expo-google-fonts/plus-jakarta-sans @expo-google-fonts/gulzar
+   npx expo install expo-font @expo-google-fonts/bricolage-grotesque @expo-google-fonts/plus-jakarta-sans
    ```
 
 2. **SVG logo and mascot:**
@@ -66,6 +66,5 @@ Project documents, research, and the engineering design (architecture, API, secu
 
 - **Scene illustrations and the avatar builder:** the screens use placeholder shapes for these.
 - **High-contrast theme tokens:** NFR-64 needs 7:1 contrast; see `specs/accessibility.md`.
-- **Urdu (right-to-left) versions** of the screens.
 
 Icons are decided: **Lucide** (ISC licence; `lucide-react-native`), outline, 2px stroke, 24px (SRS §8.7).

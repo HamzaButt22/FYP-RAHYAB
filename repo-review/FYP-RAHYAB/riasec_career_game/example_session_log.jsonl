@@ -1,0 +1,10 @@
+{"session_id":"demo-01","event":"session_start","timestamp":"2026-10-06T10:00:00.000Z","monotonic_ms":0,"age_band":"18-24","under18":false,"device":"desktop"}
+{"session_id":"demo-01","event":"hub_layout","timestamp":"2026-10-06T10:00:00.125Z","monotonic_ms":125,"layout":["E","A","C","R","I","S"]}
+{"session_id":"demo-01","event":"game_enter","timestamp":"2026-10-06T10:00:04.500Z","monotonic_ms":4500,"game":"E","mode":"forced"}
+{"session_id":"demo-01","event":"input","timestamp":"2026-10-06T10:00:06.200Z","monotonic_ms":6200,"game":"E","action":"pump","risk":20,"value":25}
+{"session_id":"demo-01","event":"input","timestamp":"2026-10-06T10:00:08.900Z","monotonic_ms":8900,"game":"E","action":"cash_out","value":40,"risk":31}
+{"session_id":"demo-01","event":"game_end","timestamp":"2026-10-06T10:00:09.700Z","monotonic_ms":9700,"game":"E","mode":"forced","score":80}
+{"session_id":"demo-01","event":"game_enter","timestamp":"2026-10-06T10:00:11.500Z","monotonic_ms":11500,"game":"A","mode":"forced"}
+{"session_id":"demo-01","event":"input","timestamp":"2026-10-06T10:00:17.200Z","monotonic_ms":17200,"game":"A","action":"paint_stroke","stroke_count":14}
+{"session_id":"demo-01","event":"game_end","timestamp":"2026-10-06T10:00:18.300Z","monotonic_ms":18300,"game":"A","mode":"forced","score":70}
+{"session_id":"demo-01","event":"report_generated","timestamp":"2026-10-06T10:00:35.000Z","monotonic_ms":35000,"profile":[{"code":"E","label":"Lead","value":78},{"code":"A","label":"Create","value":72},{"code":"S","label":"Support","value":65}]}

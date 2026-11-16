@@ -12,7 +12,7 @@ actor Parent
 participant ":ParentView" as View
 Student -> App : share with family
 activate App
-App -> Api : POST /share-links (scope, lang)
+App -> Api : POST /share-links (scope)
 activate Api
 Api -> Api : new 128-bit token
 Api -> Db : INSERT share_link (sha256, 30 days)
@@ -26,7 +26,7 @@ activate View
 View -> Db : look up hash; check expiry, revoked
 alt link active
   View -> Db : load stored recommendation
-  View --> Parent : Urdu-first report, Listen
+  View --> Parent : report, Listen
   opt parent taps "Save to this phone"
     View --> Parent : added to "My children" (browser only)
   end

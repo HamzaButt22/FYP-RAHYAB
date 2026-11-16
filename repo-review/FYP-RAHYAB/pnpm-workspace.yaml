@@ -1,0 +1,2 @@
+minimumReleaseAgeExclude:
+  - expo-router@58.0.27

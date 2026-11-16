@@ -5,7 +5,6 @@
   "dependencies": {
     "@expo-google-fonts/atkinson-hyperlegible": "^0.4.1",
     "@expo-google-fonts/bricolage-grotesque": "^0.4.1",
-    "@expo-google-fonts/gulzar": "^0.4.2",
     "@expo-google-fonts/plus-jakarta-sans": "^0.4.2",
     "expo": "~58.0.23",
     "expo-constants": "~58.0.15",

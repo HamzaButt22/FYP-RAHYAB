@@ -6,7 +6,7 @@
 
 import { router } from 'expo-router';
 import { useEffect, useRef, useState } from 'react';
-import { I18nManager, StyleSheet, View } from 'react-native';
+import { StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
 import { AppText } from '@/components/AppText';
@@ -34,7 +34,7 @@ type Shown =
 const goHome = () => (router.canGoBack() ? router.back() : router.replace('/home'));
 
 export default function PlayScreen() {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { session } = useAppState();
   const studentId = session?.studentId ?? '';
   const consented = useRef(false);
@@ -61,12 +61,9 @@ export default function PlayScreen() {
         if (!cancelled) setView({ kind: 'problem' }); // the plan names a module this build does not have
         return;
       }
-      const locale = i18n.language === 'ur' ? 'ur' : 'en';
       const run = createRun({
         module,
         context: {
-          locale,
-          rtl: I18nManager.isRTL,
           week: here.week.week,
           practice: here.week.practice,
           a11yMode: false,
@@ -101,7 +98,7 @@ export default function PlayScreen() {
     return () => {
       cancelled = true;
     };
-  }, [studentId, i18n.language]);
+  }, [studentId]);
 
   const title =
     view.kind === 'playing'
@@ -135,8 +132,6 @@ export default function PlayScreen() {
             run={view.playing.run}
             module={view.playing.module}
             context={{
-              locale: i18n.language === 'ur' ? 'ur' : 'en',
-              rtl: I18nManager.isRTL,
               week: view.playing.week.week,
               practice: view.playing.week.practice,
               a11yMode: false,

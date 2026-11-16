@@ -4,6 +4,7 @@
 |---|---|
 | **Version** | 1.0 (4 Nov 2026) |
 | **Status** | Baseline for implementation (Sprint 1 onward) |
+| **Language** | English only since 16 Nov 2026 (ADR-0016) |
 | **Authors** | Zahid Bashir (backend, data), Hamza Butt (mobile), Daniyal Sarwar (UX, content) |
 | **Supervisor** | Zeeshan Ali |
 | **Inputs** | SRS (v1.1 when written; current v1.5: `docs/project/SRS.md`), GDD v3 (`design/game/GAME_DESIGN.md`), ADRs (`adr/`), RFCs (`rfc/`), API spec (`docs/api/openapi.yaml`) |
@@ -21,7 +22,7 @@ Every diagram is an editable **PlantUML** source (`.puml`) in [`diagrams/`](diag
 | 4 GB Android phones, ≤ 35 MB download, offline play | Native Expo app; Skia/Reanimated tasks; encrypted SQLite outbox | ADR-0002, ADR-0010 |
 | Minors' data, consent before upload | Pseudonymous identity; consent gate in the API; no third-party SDKs | ADR-0007, ADR-0011, RFC-0002 |
 | Reproducible, explainable, versioned scoring | Server-side Python scoring; append-only events; model registry | ADR-0004–0006, RFC-0003 |
-| Parents with low-end phones and varied literacy | Server-rendered, Urdu-first parent page with read-aloud | ADR-0008, RFC-0004 |
+| Parents with low-end phones and varied literacy | Server-rendered, English parent page with read-aloud | ADR-0008, RFC-0004, ADR-0016 |
 | Team of 3, one VM, FYP timeline | Modular monolith; Docker Compose; one monorepo | ADR-0003, ADR-0012, ADR-0014 |
 | Writers edit the story without code | Ink + inkjs; signed content packs | ADR-0009, RFC-0001 |
 | Accessibility (WCAG 2.2 AA) | Native controls; read-aloud; accessible task modes | `design/specs/accessibility.md` |
@@ -140,7 +141,7 @@ Environments and the release process are in `docs/devops/CI_CD.md`.
 
 | Diagram | Flow |
 |---|---|
-| [activity-onboarding](diagrams/uml/activity-onboarding.svg) | Language → code or individual path → age gate → assent → profile → consent → prologue |
+| [activity-onboarding](diagrams/uml/activity-onboarding.svg) | Code or individual path → age gate → assent → profile → consent → prologue |
 | [activity-play-week](diagrams/uml/activity-play-week.svg) | The full week loop, with commit points |
 | [activity-recommendation](diagrams/uml/activity-recommendation.svg) | Evidence → M1, M2 and values in parallel → confidence → recommender → gates → Plan B → explanations → store |
 
@@ -188,7 +189,7 @@ The data stores D1–D8 map to tables as follows:
 | **Privacy and compliance** | Consent gate; minimisation; retention schedule; Play policies; PDP Bill (draft) principles | `docs/security/COMPLIANCE.md`, `DATA_GOVERNANCE.md` |
 | **Encryption** | SQLCipher + Keystore on the phone; TLS 1.2+; disk encryption; AES-GCM columns; age backups | `DATA_GOVERNANCE.md` §4 |
 | **Accessibility** | Native controls, read-aloud, settings, accessible task modes, contrast tokens | `design/specs/accessibility.md` |
-| **Localisation** | i18next (en, ur, Roman Urdu), RTL, Nastaliq-safe layouts, Urdu-script lines for read-aloud | SRS §7.4 |
+| **Localisation** | English only: i18next with one string file (`en.json`), so a language can be added later without touching screens | ADR-0016 |
 | **Observability** | GlitchTip, Uptime Kuma, request IDs, logs with no personal data, alerts | `docs/devops/CI_CD.md` §5 |
 | **Testing** | Pyramid + parity + security, privacy, a11y and psychometric layers | `docs/testing/TEST_STRATEGY.md` |
 

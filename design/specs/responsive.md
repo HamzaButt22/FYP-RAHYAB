@@ -24,7 +24,7 @@ One design adapts to every screen. Get the rules from `getLayout(width)` in `des
    - Dil and Duniya cards stack vertically;
    - the mascot strip hides the bird and keeps the line.
 7. **Orientation (WCAG 1.3.4):** the app is not locked. In landscape on phones and tablets, reading and story screens use the tablet two-pane layout (scene on the left, choices on the right); task screens keep their board centred and letterboxed with controls beside it. Rotation is tested on every screen in usability round 1.
-8. **Urdu and RTL:** Urdu screens mirror the layout (`I18nManager.forceRTL` for Urdu-only views) and use `urdu-body`, whose line height is 34 at 18px. Numbers stay as Western digits.
+8. **Text direction:** English only, left to right (ADR-0016). Layouts are not mirrored and `I18nManager.forceRTL` is not used.
 9. **Dark mode:** follow the system setting by default, with an override in You → Look.
    - Use `getColors(scheme)`.
    - Swap `branch-light` ↔ `branch-dark` and `hudhud` ↔ `hudhud-dark`.

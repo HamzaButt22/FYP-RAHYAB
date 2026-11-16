@@ -15,7 +15,6 @@
 - **Type:**
   - Bricolage Grotesque 800 for display (`display-xl` 40/44, `display-l` 32/36, `heading` 24/30);
   - Plus Jakarta Sans for text (`title` 18/24, `body-l` 17/26, `body` 15/22, `label` 14/20, `caption` 12/16);
-  - Gulzar for Urdu (`urdu-title` 24/44, `urdu-body-l` 21/38, `urdu-body` 19/34, `urdu-label` 17/30);
   - Atkinson Hyperlegible as the optional reading font (`reading-body` 17/26).
 - **High contrast:** a third colour theme, `contrast` (7:1 text, ≥ 3:1 control borders), in tokens.json.
 - **Spacing:** 4, 8, 12, 16, 24, 32.
@@ -84,7 +83,7 @@ The hoopoe also fits for other reasons:
   - point `r=5` at (52,15).
 - **At 24 px and below:** no dotted line, stroke 9, point r 6.5.
 - **App icon:** the mark on a **cinnamon** tile, with a cream point and kohl stroke. Alternates are cream and night tiles.
-- **Wordmark:** "rahyaab", lowercase, Bricolage Grotesque 700, tracking −3%. Urdu: راہ یاب in Gulzar.
+- **Wordmark:** "rahyaab", lowercase, Bricolage Grotesque 700, tracking −3%.
 - **Hero lockup:** Hudhud perched on the end of the shoulder stroke, standing on the path you chose. Use it on the splash, the store listing and posters.
 
 ---
@@ -186,8 +185,7 @@ The warm cream, coral energy and jade that you liked are kept. **Cinnamon now le
 
 **Type:**
 - **Bricolage Grotesque 700/800** for headings;
-- **Plus Jakarta Sans** for UI;
-- **Gulzar** for Urdu.
+- **Plus Jakarta Sans** for UI.
 
 All are on Google Fonts under the OFL.
 
@@ -197,7 +195,7 @@ All are on Google Fonts under the OFL.
 
 **Voice rules:**
 - A well-travelled older cousin: warm, curious, a little witty.
-- Roman Urdu and English mixed.
+- Plain English, short sentences (English only since 16 Nov 2026, ADR-0016).
 - Never judges, never says "correct" or "wrong", never guilt-trips.
 - Never claims more certainty than the model has.
 

@@ -26,7 +26,7 @@ The free (Starter) plan allows one variable mode and three pages. That is why li
 4. Go to page **03 Dark mode, parent & teacher** and repeat with `import-pending-dark.html`; delete the 5 old dark frames.
 5. Rename frames if needed to the pattern "S-07 Home · light".
 
-`rahyaab-screens-light.html` and `rahyaab-screens-dark.html` in this folder contain all 55 screens, already updated. The pages include the parent report (P-01) and the teacher dashboard (D-03). On both pages, the screens are grouped into five sections:
+`rahyaab-screens-light.html` and `rahyaab-screens-dark.html` in this folder contain all 54 screens (S-01 Language removed 16 Nov 2026, English only, ADR-0016), already updated. The pages include the parent report (P-01) and the teacher dashboard (D-03). On both pages, the screens are grouped into five sections:
 1. Onboarding;
 2. Play a week;
 3. Results;

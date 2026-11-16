@@ -43,7 +43,7 @@
 - **Minimisation:** nothing beyond what the result needs; age as a band; gender only for research and kept apart; marks optional.
 - **Purpose limitation:** guidance; research only with a separate opt-in. No ads, no sale, no third-party analytics (ADR-0007).
 - **Accuracy:** students can update their profile and class (FR-101). Results show confidence and are never final.
-- **Transparency:** an assent screen, a privacy notice and the privacy policy at Grade 6 level in Urdu and English, with read-aloud; "Why this?" for every result.
+- **Transparency:** an assent screen, a privacy notice and the privacy policy at Grade 6 level in English, with read-aloud; "Why this?" for every result.
 - **Rights:** download and delete in the app (FR-10); parents can withdraw (FR-70); deletion within 30 days.
 - **Children's best interests (ICO standard 1):** no nudges, streaks or loss framing; no single verdict; "talk to your family"; costly routes are never pushed.
 

@@ -69,7 +69,7 @@
       "rule": "fit >= strong -> 'strong'; fit >= good -> 'good'; otherwise 'worth_a_look'"
     },
     "plan_b": "For each of the top 3, the path outside the top 3 whose RIASEC profile correlates most with it (a related option); if every other path is in the top 3, the next-ranked path. Always at least one.",
-    "reasons": "2-3 reason codes per card, from the stored contributions only: the student's top interest types that the path's profile shares, ability support when measured, and the doors the rules engine set. Codes, never text: the app words them in English or Urdu."
+    "reasons": "2-3 reason codes per card, from the stored contributions only: the student's top interest types that the path's profile shares, ability support when measured, and the doors the rules engine set. Codes, never text: the app words them in English."
   },
   "confidence": {
     "high": "all interest SE <= .35 and coverage 100% and top-1 vs top-4 margin >= delta",

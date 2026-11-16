@@ -23,7 +23,7 @@ Each team member commits under their own GitHub account so contributions are vis
 - Acceptance criteria met and covered by tests.
 - CI and Security green; coverage gate holds.
 - Reviewed and approved by a teammate.
-- User-facing text is translatable (Urdu and English).
+- User-facing text is in `en.json` (the app is English only, ADR-0016).
 - Accessibility checked for UI changes (48dp targets, contrast, never colour alone).
 - SRS or docs updated if behaviour changed.
 

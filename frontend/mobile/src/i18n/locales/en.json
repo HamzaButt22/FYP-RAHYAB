@@ -1,7 +1,6 @@
 {
   "common": {
     "appName": "rahyaab",
-    "appNameUrdu": "راہ یاب",
     "continue": "Continue",
     "comingSoon": "Coming soon",
     "logoLabel": "Rahyaab logo",
@@ -10,16 +9,6 @@
     "close": "Close"
   },
   "onboarding": {
-    "language": {
-      "title": "Choose your language",
-      "englishName": "English",
-      "englishNote": "Roman Urdu dialogue",
-      "englishLabel": "English, with Roman Urdu dialogue",
-      "urduName": "اردو",
-      "urduNote": "Urdu script",
-      "urduLabel": "Urdu, in Urdu script",
-      "hint": "You can change this anytime in You → Language."
-    },
     "welcome": {
       "mascotLabel": "Hudhud the hoopoe, carrying a letter",
       "title": "A letter from you, five years from now.",
@@ -99,7 +88,7 @@
     "you": "You"
   },
   "home": {
-    "title": "Salaam!",
+    "title": "Hello!",
     "consentPendingTitle": "Waiting for your family's OK",
     "consentPendingBody": "Until then, nothing you play is saved.",
     "consentPendingAction": "Enter the slip code",
@@ -136,8 +125,7 @@
   },
   "you": {
     "title": "You",
-    "languageHeading": "Language",
-    "languageNote": "The app restarts to change the language.",
+    "body": "Settings for text size, read-aloud and motion will be here.",
     "devReset": "Start onboarding again (development build only)"
   },
   "consent": {
