@@ -1734,6 +1734,16 @@ components:
             coverage: { type: number, minimum: 0, maximum: 1 }
             weeks_played: { type: integer }
             top_interest_types: { type: array, items: { type: string, enum: [R, I, A, S, E, C] } }
+            interest_profile:
+              type: array
+              description: Every interest type, strongest first, with how often it was chosen when offered (no counts on results stored before 17 Nov 2026)
+              items:
+                type: object
+                required: [type]
+                properties:
+                  type: { type: string, enum: [R, I, A, S, E, C] }
+                  chosen: { type: integer, minimum: 0 }
+                  offered: { type: integer, minimum: 0 }
             differentiation: { type: number }
         paths:
           type: array
@@ -1751,6 +1761,21 @@ components:
                     contribution: { type: number }
               reasons: { type: array, items: { $ref: '#/components/schemas/Reason' } }
               rules_applied: { type: array, items: { type: string } }
+              path_types:
+                type: array
+                description: The three interest types this path suits most (its profile in streams.json)
+                items: { type: string, enum: [R, I, A, S, E, C] }
+              rules:
+                type: array
+                description: Each rule behind the doors, where it comes from and when it was last checked
+                items:
+                  type: object
+                  required: [id, source, verification]
+                  properties:
+                    id: { type: string }
+                    source: { type: string }
+                    verification: { type: string, enum: [primary, reported, unverified] }
+                    last_verified: { type: [string, 'null'], format: date }
         rules_applied: { type: array, items: { type: string } }
 
     Evidence:

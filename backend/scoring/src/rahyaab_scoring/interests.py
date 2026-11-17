@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import math
 from collections.abc import Iterable
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from statistics import NormalDist
 
 RIASEC = ("R", "I", "A", "S", "E", "C")
@@ -37,9 +37,10 @@ class Choice:
 class InterestScores:
     theta: dict[str, float]
     se: dict[str, float]
-    comparisons: dict[str, int]
+    comparisons: dict[str, int]  # how often each type was offered
     coverage: float  # 0..1, share of the pair coverage target reached
     choices: int  # valid choices counted
+    wins: dict[str, int] = field(default_factory=dict)  # how often each type was chosen ("Why this?")
 
 
 def canonical_pair(pair: str) -> str | None:
@@ -73,4 +74,4 @@ def score(choices: Iterable[Choice]) -> InterestScores:
         theta[t] = _NORMAL.inv_cdf(p)
         se[t] = math.sqrt(p * (1.0 - p) / (seen[t] + 1)) / _NORMAL.pdf(theta[t])
     coverage = sum(min(n, EACH_PAIR_MIN) for n in per_pair.values()) / (EACH_PAIR_MIN * len(PAIRS))
-    return InterestScores(theta, se, seen, coverage, counted)
+    return InterestScores(theta, se, seen, coverage, counted, wins)
