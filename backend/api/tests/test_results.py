@@ -208,6 +208,23 @@ def test_why_shows_contributions_and_rules_only_to_the_owner(
     assert api.get("/v1/results/latest", headers=other.headers).status_code == 404
 
 
+def test_why_explains_choices_path_types_and_rule_sources(
+    api: TestClient, world: World, pack: str
+) -> None:  # FR-56: a real explanation, not only a count
+    s = Student(api, world, pack)
+    s.play(choices("IRCSEA"))  # I always wins, A always loses; every pair twice
+    body = api.get(f"/v1/results/{s.compute().json()['id']}/why", headers=s.headers).json()
+    profile = body["evidence"]["interest_profile"]
+    assert [p["type"] for p in profile] == list("IRCSEA")
+    assert profile[0] == {"type": "I", "chosen": 10, "offered": 10}
+    assert profile[-1] == {"type": "A", "chosen": 0, "offered": 10}
+    for path in body["paths"]:
+        assert len(path["path_types"]) == 3 and set(path["path_types"]) <= set(RIASEC)
+        assert {r["id"] for r in path["rules"]} == set(path["rules_applied"])
+        for rule in path["rules"]:
+            assert rule["source"] and rule["verification"] in {"primary", "reported", "unverified"}
+
+
 def test_classes_without_a_recommender_yet_say_so(api: TestClient, world: World, pack: str) -> None:
     s = Student(api, world, pack, grade=11)
     s.play(choices("IRCSEA"))

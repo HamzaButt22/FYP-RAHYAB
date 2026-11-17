@@ -203,6 +203,8 @@ def recommend(
         "se": {t: round(scores.se[t], 4) for t in RIASEC},
         "coverage": round(scores.coverage, 4),
         "choices": scores.choices,
+        "chosen": dict(scores.wins),  # per type: chosen / offered, shown in "Why this?" (FR-56)
+        "offered": dict(scores.comparisons),
         "differentiation": round(congruence.differentiation(scores.theta), 4),
         "weeks_played": context.weeks_played,
     }

@@ -39,7 +39,10 @@ export function SelectBox<T extends string | number>({
   const { colors } = useTheme();
   const [open, setOpen] = useState(false);
   const chosen = options.find((o) => o.value === value);
-  const initialIndex = Math.max(0, options.findIndex((o) => o.value === value));
+  // Long lists (birth year) open scrolled to the chosen row, with two rows of context above it. Short lists
+  // (board, group) never scroll: scrolling them pushed the rows above the chosen one out of view.
+  const chosenIndex = options.findIndex((o) => o.value === value);
+  const initialIndex = options.length > LONG_LIST && chosenIndex > 2 ? chosenIndex - 2 : undefined;
 
   return (
     <>
@@ -105,6 +108,7 @@ export function SelectBox<T extends string | number>({
 }
 
 const ROW = 56;
+const LONG_LIST = 8; // more rows than fit in the sheet on a small phone
 
 const styles = StyleSheet.create({
   box: {

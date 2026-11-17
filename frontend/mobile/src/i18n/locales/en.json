@@ -253,6 +253,21 @@
     "why": "Why this?",
     "hideWhy": "Hide",
     "basedOn": "Based on {{choices}} choices over {{weeks}} weeks.",
+    "whyChoicesTitle": "What your choices showed",
+    "whyChose": "You chose {{types}} {{chosen}} of the {{offered}} times it was offered.",
+    "whyStrongest": "Your strongest interests: {{types}}.",
+    "whyPathTitle": "What this path suits",
+    "whyPathSuits": "People who enjoy {{types}}.",
+    "whyDecidedTitle": "What decided it",
+    "whyDecidedInterests": "How closely your interests match this path. Your task results are not counted yet, so this is a first look.",
+    "whyDecidedBoth": "How closely your interests match this path, and your task results.",
+    "whyRulesTitle": "Rules we checked",
+    "whyRule": {
+      "primary": "From an official source: {{source}}.",
+      "reported": "Reported in the news, so ask your school to confirm: {{source}}.",
+      "unverified": "Not checked yet, so ask your school: {{source}}."
+    },
+    "whyChecked": "Last checked {{date}}.",
     "sources": "Rules come from official sources, checked on the dates in our records.",
     "retry": "Try again",
     "state": {

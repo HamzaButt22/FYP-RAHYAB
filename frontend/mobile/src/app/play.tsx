@@ -24,7 +24,14 @@ import { useAppState } from '@/state/AppState';
 import { getKv, getOutbox, outboxSink, SESSION_ID, syncNow } from '@/sync/runtime';
 import { space } from '@/theme/tokens';
 
-type Playing = { run: Run; module: GameModule; week: Week; params: JsonObject | undefined };
+type Playing = {
+  run: Run;
+  module: GameModule;
+  week: Week;
+  params: JsonObject | undefined;
+  /** 1-based step number in this week, so the student can see where the week ends. */
+  step: number;
+};
 type Shown =
   | { kind: 'loading' }
   | { kind: 'playing'; playing: Playing }
@@ -91,7 +98,7 @@ export default function PlayScreen() {
           else void startNext();
         },
       });
-      if (!cancelled) setView({ kind: 'playing', playing: { run, module, week: here.week, params: here.step.params } });
+      if (!cancelled) setView({ kind: 'playing', playing: { run, module, week: here.week, params: here.step.params, step: progress.stepIndex + 1 } });
     };
 
     void startNext().catch(() => !cancelled && setView({ kind: 'problem' }));
@@ -127,6 +134,9 @@ export default function PlayScreen() {
       ) : null}
       {view.kind === 'playing' ? (
         <View style={styles.column}>
+          <AppText variant="label" color="muted">
+            {t('home.stepOf', { n: view.playing.step, total: view.playing.week.steps.length })}
+          </AppText>
           <GameScreen
             key={view.playing.run.runId}
             run={view.playing.run}

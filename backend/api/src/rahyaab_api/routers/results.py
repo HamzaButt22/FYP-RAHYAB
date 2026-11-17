@@ -242,13 +242,17 @@ def result_evidence(
     if row is None:  # someone else's result looks exactly like a missing one
         raise ProblemError(404, "not_found", "No such result")
     ranked, features, contributions = row.ranked, row.features, row.contributions
-    _, scoring = frameworks()
+    streams, scoring = frameworks()
     weights = scoring["m3_recommender"]["congruence"]["weights"]
+    profiles = {p["id"]: p for level in streams["by_class"].values() for p in level["paths"]}
+    gates = {g["id"]: g for g in streams["gates"]}
     paths = []
     for card in ranked:
         sid = card["stream_id"]
         contrib = contributions.get(sid, {})
         total_w = sum(weights[k] for k in contrib) or 1.0
+        rule_ids = sorted({g for d in card.get("doors", []) for g in d.get("gates", [])})
+        riasec = profiles.get(sid, {}).get("riasec", {})
         paths.append(
             {
                 "stream_id": sid,
@@ -257,10 +261,31 @@ def result_evidence(
                     for k, v in sorted(contrib.items(), key=lambda kv: -kv[1])
                 ],
                 "reasons": card.get("reasons", []),
-                "rules_applied": sorted({g for d in card.get("doors", []) for g in d.get("gates", [])}),
+                "rules_applied": rule_ids,
+                # The interest types this path suits most (its O*NET-derived profile in streams.json).
+                "path_types": sorted(riasec, key=lambda t: -riasec[t])[:3],
+                # Each rule behind the doors, with where it comes from and when it was last checked.
+                "rules": [
+                    {
+                        "id": gid,
+                        "source": gates[gid].get("source", ""),
+                        "verification": gates[gid].get("verification", "unverified"),
+                        "last_verified": gates[gid].get("last_verified"),
+                    }
+                    for gid in rule_ids
+                    if gid in gates
+                ],
             }
         )
-    top_types = sorted(features["theta"], key=lambda t: -features["theta"][t])[:3]
+    theta = features["theta"]
+    top_types = sorted(theta, key=lambda t: -theta[t])[:3]
+    chosen, offered = features.get("chosen"), features.get("offered")
+    # Every type, strongest first, with how often it was chosen when offered (results stored before
+    # 17 Nov 2026 have no counts; the app then shows the order only).
+    interest_profile = [
+        {"type": t, **({"chosen": chosen[t], "offered": offered[t]} if chosen and offered else {})}
+        for t in sorted(theta, key=lambda t: -theta[t])
+    ]
     return {
         "result_id": str(result_id),
         "confidence": row.confidence,
@@ -269,6 +294,7 @@ def result_evidence(
             "coverage": features.get("coverage", 0),
             "weeks_played": features.get("weeks_played", 0),
             "top_interest_types": top_types,
+            "interest_profile": interest_profile,
             "differentiation": features.get("differentiation"),
         },
         "paths": paths,
