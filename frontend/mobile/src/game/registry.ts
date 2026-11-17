@@ -2,9 +2,10 @@
 // outbox and the results never change for it (NFR-52). The game lab lists exactly these.
 
 import type { GameModule } from './contract.ts';
+import { inkStory } from './modules/inkStory.tsx';
 import { samplePickOne } from './modules/samplePickOne.tsx';
 
-export const GAME_MODULES: GameModule[] = [samplePickOne];
+export const GAME_MODULES: GameModule[] = [inkStory, samplePickOne];
 
 export function findModule(id: string): GameModule | undefined {
   return GAME_MODULES.find((m) => m.id === id);

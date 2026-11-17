@@ -327,7 +327,7 @@ Then the plain report for parents and teachers.
 
 **Tools:**
 - Ink with the free Inky editor.
-- Tags on each choice, e.g. `#pair:R-A #left:R #voice:dil`.
+- Tags on each choice, as built: `#type:R` on each of the two options, `#item:id` on the line before them, `#speaker:Name` on lines (`design/game/story/README.md`).
 - A CI script checks pair coverage and tags.
 - Every scene gets a "cringe check" by 2–3 real teens.
 

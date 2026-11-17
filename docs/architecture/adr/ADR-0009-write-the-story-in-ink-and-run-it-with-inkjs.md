@@ -18,6 +18,8 @@ The story is written in **Ink** (inkle, MIT licence), compiled to JSON in CI, an
 - External functions launch tasks, record choices and update the letter.
 - A CI check verifies that the compiled story covers `pairs.json` (T-PAR-02).
 
+**As built (17 Nov 2026):** the story host is the `ink-story` game module (`frontend/mobile/src/game/modules/inkStory.tsx`, bridge in `src/game/story/runner.ts`, inkjs 2.4.0). Measured choices use `#type:X` on each of two options and `#item:id` on the line before them, instead of `#pair`; `#speaker:Name` names the speaker. Stories are compiled with inkjs's own compiler (`pnpm ink`), and `pnpm test` checks every story. The writing guide is `design/game/story/README.md`. Variables do not yet carry over between scenes, and external functions are not used yet.
+
 ## Consequences
 
 - **Good:** easy for writers; golden playthroughs can be tested; content updates ship as content packs (RFC-0001).

@@ -9,8 +9,7 @@ import {
   doorPhrases,
   reasonPhrase,
   stateFromProblem,
-  shortSource,
-  whyPhrases,
+  whyFor,
   type Door,
   type Evidence,
 } from './format.ts';
@@ -49,9 +48,7 @@ test('every key the result screen can show exists in en.json', () => {
     'results.state.more_play', 'results.state.more_play_body', 'results.state.consent', 'results.state.not_supported',
     'results.state.offline', 'results.state.signed_out', 'results.state.error', 'results.and', 'home.seePaths',
     'door.medicine', 'door.engineering', 'results.checkWithBoard',
-    'results.whyChoicesTitle', 'results.whyChose', 'results.whyStrongest', 'results.whyPathTitle', 'results.whyPathSuits',
-    'results.whyDecidedTitle', 'results.whyDecidedInterests', 'results.whyDecidedBoth', 'results.whyRulesTitle',
-    'results.whyChecked', ...['primary', 'reported', 'unverified'].map((v) => `results.whyRule.${v}`),
+    'results.whyCount', 'results.whyChoices', 'results.whyTop', 'results.whyPath',
     ...['strong', 'good', 'worth_a_look'].map((b) => `results.band.${b}`),
     ...['high', 'medium', 'low'].map((c) => `results.confidence.${c}`),
     ...['interest_match', 'ability_support', 'keeps_doors_open', 'path_strength'].map((r) => `results.reason.${r}`),
@@ -76,7 +73,7 @@ test('bands carry dots, and API problems map to states', () => {
   assert.equal(stateFromProblem(500, 'internal_error').kind, 'error');
 });
 
-test('"Why this?" says what the choices showed, what the path suits, what decided it and each rule source', () => {
+test('"Why this?" gives the top interests with how often they were picked, and what the path suits', () => {
   const evidence: Evidence = {
     result_id: 'r',
     confidence: 'medium',
@@ -87,34 +84,16 @@ test('"Why this?" says what the choices showed, what the path suits, what decide
         { type: 'R', chosen: 4, offered: 12 }, { type: 'E', chosen: 2, offered: 12 }, { type: 'A', chosen: 0, offered: 12 },
       ],
     },
-    paths: [{
-      stream_id: 'pre_medical',
-      contributions: [{ feature: 'interest', weight: 1, contribution: 0.7 }],
-      path_types: ['I', 'S', 'R'],
-      rules: [{ id: 'biology_for_medicine', source: 'PM&DC', verification: 'reported', last_verified: '2026-11-11' }],
-    }],
+    paths: [{ stream_id: 'pre_medical', contributions: [], path_types: ['I', 'S', 'R'] }],
   };
-  const w = whyPhrases(evidence, 'pre_medical');
-  assert.deepEqual(w.choices[0], {
-    key: 'results.whyChose', params: { chosen: '9', offered: '12' }, lists: { types: ['results.type.S'] },
+  assert.deepEqual(whyFor(evidence, 'pre_medical'), {
+    counts: [
+      { type: 'S', chosen: 9, offered: 12 }, { type: 'C', chosen: 8, offered: 12 }, { type: 'I', chosen: 7, offered: 12 },
+    ],
+    top: ['S', 'C', 'I'],
+    pathTypes: ['I', 'S', 'R'],
   });
-  assert.equal(w.choices.length, 3);
-  assert.deepEqual(w.path?.lists?.types, ['results.type.I', 'results.type.S', 'results.type.R']);
-  assert.equal(w.decided.key, 'results.whyDecidedInterests');
-  assert.deepEqual(w.rules, [{ phrase: { key: 'results.whyRule.reported', params: { source: 'PM&DC' } }, date: '2026-11-11' }]);
-  // Results stored before the counts existed: the order only.
-  const old = whyPhrases({ ...evidence, evidence: { ...evidence.evidence, interest_profile: undefined }, paths: [] }, 'x');
-  assert.deepEqual(old.choices, [
-    { key: 'results.whyStrongest', lists: { types: ['results.type.S', 'results.type.C', 'results.type.I'] } },
-  ]);
-  assert.equal(old.path, null);
-});
-
-test('rule sources are shortened to who said it and when, without web addresses', () => {
-  assert.equal(
-    shortSource('PM&DC statement on the FSc (pre-medical) requirement, The Nation, 24 Oct 2026; regulations: https://pmdc.pk/x.pdf'),
-    'PM&DC statement on the FSc (pre-medical) requirement, The Nation, 24 Oct 2026',
-  );
-  assert.equal(shortSource('See https://example.pk/rules'), 'See');
-  assert.equal(shortSource('PEC Governing Body, 49th meeting (28 Jun 2024)'), 'PEC Governing Body, 49th meeting (28 Jun 2024)');
+  // Results stored before the counts existed: the order only, and no path line for an unknown path.
+  const old = whyFor({ ...evidence, evidence: { ...evidence.evidence, interest_profile: undefined } }, 'x');
+  assert.deepEqual(old, { counts: null, top: ['S', 'C', 'I'], pathTypes: [] });
 });

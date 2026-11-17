@@ -105,7 +105,8 @@ test('the sample plan follows the pairs.json target schedule exactly', () => {
     scored,
     schedule.map((s) => ({ week: s.week, id: `w${s.week}s${s.slot}`, left: s.left, right: s.right })),
   );
-  assert.deepEqual(planProblems(SAMPLE_PLAN, new Set(['sample-pick-one'])), []);
+  assert.deepEqual(planProblems(SAMPLE_PLAN, new Set(['sample-pick-one', 'ink-story'])), []);
+  assert.equal(SAMPLE_PLAN.weeks[0].steps[0].module, 'ink-story'); // the prologue is the sample Ink story
   assert.equal(SAMPLE_PLAN.weeks[0].practice, true);
 });
 
