@@ -7,6 +7,7 @@ import { useState } from 'react';
 import { Pressable, StyleSheet, View } from 'react-native';
 import { useTranslation } from 'react-i18next';
 
+import { useSettings } from '@/settings/SettingsProvider';
 import { toggleReading, useReading } from '@/speech/reader';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, space, touchMin } from '@/theme/tokens';
@@ -25,6 +26,7 @@ export function ListenButton({ id, text }: Props) {
   const { colors } = useTheme();
   const reading = useReading(id) >= 0;
   const [message, setMessage] = useState<string | null>(null);
+  const { effective } = useSettings();
 
   async function press() {
     setMessage(null);
@@ -37,6 +39,7 @@ export function ListenButton({ id, text }: Props) {
     }
   }
 
+  if (!effective.readAloud) return null; // the student turned speaker buttons off (FR-97)
   const Icon = reading ? CircleStop : Volume2;
   return (
     <View style={styles.wrap}>

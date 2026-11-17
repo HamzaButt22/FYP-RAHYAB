@@ -15,6 +15,8 @@ import { Pressable, StyleSheet, View } from 'react-native';
 import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
 import { ListenButton } from '@/components/ListenButton';
+import { useSettings } from '@/settings/SettingsProvider';
+import { toggleReading } from '@/speech/reader';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, space, touchMin } from '@/theme/tokens';
 import { CONTRACT_VERSION, type GameModule, type GameModuleProps } from '../contract.ts';
@@ -78,6 +80,21 @@ function InkStory({ context, host, saved }: GameModuleProps) {
     setEnded(step.ended);
     shownAt.current = clock();
   };
+
+  // Auto-read (FR-97): each new block reads itself, then the choices, with the same reading as its speaker
+  // button. Off by default, and never while TalkBack runs.
+  const { effective } = useSettings();
+  const last = entries[entries.length - 1];
+  const blockId = `story:${knot}:${entries.length}`;
+  const blockText =
+    last?.kind === 'lines'
+      ? [last.lines.map((l) => l.text).join(' '), choices.length ? `${choices.map((c) => c.text).join('. Or: ')}.` : '']
+          .filter(Boolean)
+          .join(' ')
+      : '';
+  useEffect(() => {
+    if (effective.autoRead && blockText) void toggleReading(blockId, blockText);
+  }, [effective.autoRead, blockId, blockText]);
 
   useEffect(() => {
     shownAt.current = Date.now();
@@ -143,10 +160,7 @@ function InkStory({ context, host, saved }: GameModuleProps) {
               ))}
             </View>
             {/* Read aloud (FR-96): one button for the whole block. */}
-            <ListenButton
-              id={`story:${knot}:${entries.length}`}
-              text={entry.lines.map((l) => l.text).join(' ')}
-            />
+            <ListenButton id={blockId} text={blockText} />
           </View>
         ),
       )}

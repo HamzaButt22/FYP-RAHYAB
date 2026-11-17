@@ -12,3 +12,10 @@ minimumReleaseAgeExclude:
 overrides:
   # GHSA-86w9-cpqp-85rv and related: node-forge <=1.4.0 (pulled in by @expo/cli). 1.4.1 is inside Expo's ^1.4.0 range.
   node-forge: ^1.4.1
+auditConfig:
+  ignoreGhsas:
+    # picomatch <=4.0.7 ReDoS (published 19 Oct 2026; no fixed version yet). It needs an attacker to supply the glob
+    # pattern. Here picomatch runs only in Metro, Jest and the Expo CLI on the developer's machine, with fixed
+    # patterns from config; it is not in the app on the phone and no user input becomes a glob. Remove this line
+    # once a fixed picomatch is released and `pnpm update picomatch` picks it up.
+    - GHSA-fc5q-39xc-vjpf

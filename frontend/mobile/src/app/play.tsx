@@ -20,6 +20,7 @@ import { ACTIVE_PLAN, loadProgress, moduleStore, saveProgress } from '@/game/pro
 import { findModule } from '@/game/registry';
 import { createRun, type Run } from '@/game/run';
 import { advance, currentStep, type Progress, type Week } from '@/game/weekLoop';
+import { useSettings } from '@/settings/SettingsProvider';
 import { useAppState } from '@/state/AppState';
 import { getKv, getOutbox, outboxSink, SESSION_ID, syncNow } from '@/sync/runtime';
 import { space } from '@/theme/tokens';
@@ -44,6 +45,11 @@ export default function PlayScreen() {
   const { t } = useTranslation();
   const { session } = useAppState();
   const studentId = session?.studentId ?? '';
+  const { effective } = useSettings();
+  const reducedMotion = useRef(false); // read when a step starts, without restarting play
+  useEffect(() => {
+    reducedMotion.current = effective.reduceMotion;
+  }, [effective.reduceMotion]);
   const consented = useRef(false);
   useEffect(() => {
     consented.current = session?.consentState === 'granted'; // read when a step ends, without restarting play
@@ -74,7 +80,7 @@ export default function PlayScreen() {
           week: here.week.week,
           practice: here.week.practice,
           a11yMode: false,
-          reducedMotion: false,
+          reducedMotion: reducedMotion.current,
           params: here.step.params,
         },
         sessionId: SESSION_ID,
@@ -145,7 +151,7 @@ export default function PlayScreen() {
               week: view.playing.week.week,
               practice: view.playing.week.practice,
               a11yMode: false,
-              reducedMotion: false,
+              reducedMotion: effective.reduceMotion,
               params: view.playing.params,
             }}
             crashMessage={t('play.problem')}
