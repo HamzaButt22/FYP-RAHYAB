@@ -16,6 +16,7 @@ import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 
 import '@/i18n';
+import { SettingsProvider, useSettings } from '@/settings/SettingsProvider';
 import { AppStateProvider, useAppState } from '@/state/AppState';
 import { useStopReadingInBackground } from '@/speech/reader';
 import { useBackgroundSync } from '@/sync/runtime';
@@ -72,10 +73,25 @@ export default function RootLayout() {
   if (!fontsLoaded && !fontError) return null;
 
   return (
-    <ThemeProvider>
-      <AppStateProvider>
+    <AppStateProvider>
+      <Themed>
         <Navigation />
-      </AppStateProvider>
-    </ThemeProvider>
+      </Themed>
+    </AppStateProvider>
   );
+}
+
+/** Settings belong to the signed-in student (FR-97); the theme follows their high-contrast setting. */
+function Themed({ children }: { children: React.ReactNode }) {
+  const { session } = useAppState();
+  return (
+    <SettingsProvider studentId={session?.studentId ?? null}>
+      <ThemeFromSettings>{children}</ThemeFromSettings>
+    </SettingsProvider>
+  );
+}
+
+function ThemeFromSettings({ children }: { children: React.ReactNode }) {
+  const { settings } = useSettings();
+  return <ThemeProvider highContrast={settings.highContrast}>{children}</ThemeProvider>;
 }

@@ -20,6 +20,7 @@ import { moduleProblems, registryProblems } from '@/game/rules';
 import { MemorySink, MemoryStore, createRun, uuidv7, type EventSink, type Run } from '@/game/run';
 import { getOutbox, outboxSink, syncNow } from '@/sync/runtime';
 import type { SyncOutcome } from '@/sync/sync';
+import { useSettings } from '@/settings/SettingsProvider';
 import { useTheme } from '@/theme/ThemeProvider';
 import { radius, space } from '@/theme/tokens';
 
@@ -47,6 +48,7 @@ function describe(outcome: SyncOutcome): string {
 
 export default function GameLab() {
   const { colors } = useTheme();
+  const { effective } = useSettings();
   const [a11yMode, setA11yMode] = useState(false);
   const [upload, setUpload] = useState(false);
   const [playing, setPlaying] = useState<{ module: GameModule; run: Run } | null>(null);
@@ -56,7 +58,7 @@ export default function GameLab() {
     week: 0,
     practice: true, // lab runs are never scored
     a11yMode,
-    reducedMotion: false,
+    reducedMotion: effective.reduceMotion,
   };
 
   const play = async (module: GameModule) => {

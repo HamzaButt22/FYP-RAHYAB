@@ -27,6 +27,8 @@ Every option is off by default except where Android already has a matching setti
 | **Haptics** | Light vibration on choices | On |
 | **Sound and music** | Optional lo-fi music; never carries meaning | Off |
 
+**As built (17 Nov 2026, app `src/settings/`):** Read aloud, Auto-read, Reading speed, Text size, High contrast, Reading font and Reduce motion work and are saved per student on the phone. Text size is four steps (100, 125, 150, 200%) rather than a slider, and the in-app size and Android's font size together stay at or below 200%. Three settings are **not built yet**: Easy read (there is no rewritten easy-read copy to switch to), Haptics, and Sound and music (the app has no vibration or sound yet). Each needs its content or feature first; until then the screen does not show a switch that would do nothing.
+
 ## 2. Read aloud (FR-96)
 
 - **App engine:** the phone's own text-to-speech through `expo-speech`. Nothing is sent to a server, and no third party hears the student.

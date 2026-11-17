@@ -164,8 +164,37 @@
   },
   "you": {
     "title": "You",
-    "body": "Settings for text size, read-aloud and motion will be here.",
     "devReset": "Start onboarding again (development build only)"
+  },
+  "settings": {
+    "title": "Accessibility",
+    "readAloud": "Read aloud",
+    "readAloudHint": "Show a speaker button next to lines, choices and explanations.",
+    "autoRead": "Auto-read",
+    "autoReadHint": "Read each new story line out loud by itself.",
+    "autoReadTalkBack": "Paused while TalkBack is on, so two voices don't talk at once. The speaker buttons still work.",
+    "readingSpeed": "Reading speed",
+    "speeds": {
+      "0_75": "0.75×",
+      "1": "1×",
+      "1_25": "1.25×",
+      "1_5": "1.5×"
+    },
+    "textSize": "Text size",
+    "textSizeHint": "Adds to your phone's text size, up to twice as big.",
+    "sizes": {
+      "1": "100%",
+      "1_25": "125%",
+      "1_5": "150%",
+      "2": "200%"
+    },
+    "sample": "This is how text looks.",
+    "readingFont": "Reading font",
+    "readingFontHint": "An easier-to-read font with more space between letters.",
+    "highContrast": "High contrast",
+    "highContrastHint": "Stronger colours that are easier to see.",
+    "reduceMotion": "Reduce motion",
+    "reduceMotionHint": "Fewer moving effects. On when your phone's own setting is on."
   },
   "profile": {
     "title": "Your details",
