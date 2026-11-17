@@ -105,6 +105,49 @@
     "pathsLocked": "Your paths open after {{weeks}} weeks of play, so they rest on enough of your choices.",
     "weeksDone": "{{n}} of {{total}} weeks done"
   },
+  "library": {
+    "title": "Explore",
+    "help": "Every study path, explained. Tap a path to see who it suits and where it can lead.",
+    "levels": {
+      "8": "After class 8",
+      "9-10": "After Matric",
+      "11-12": "After Intermediate"
+    },
+    "levelHints": {
+      "8": "Matric groups",
+      "9-10": "Intermediate streams and other routes",
+      "11-12": "University fields and other routes"
+    },
+    "suits": "Suits people who like {{list}}.",
+    "tests": "Entry tests: {{list}}",
+    "checkBadge": "Check with your school",
+    "whoTitle": "Who it suits",
+    "needsTitle": "What you need first",
+    "testsTitle": "Entry tests",
+    "leadsTitle": "Where it can lead",
+    "examplesTitle": "For example",
+    "durationTitle": "How long",
+    "notesTitle": "Good to know",
+    "similarTitle": "Similar paths to compare",
+    "verify": "Some details differ by board. Check them with your school.",
+    "subjectsTitle": "What you study",
+    "costTitle": "Typical cost (estimate)",
+    "costPerYear": "About PKR {{min}} to {{max}} a year.",
+    "costTotal": "About PKR {{min}} to {{max}} in total.",
+    "costNote": "An estimate: fees differ by school and city. Checked {{date}}.",
+    "missing": "Still being checked: {{list}}.",
+    "facts": {
+      "subjects": "subjects",
+      "duration": "how long it takes",
+      "cost": "typical cost"
+    },
+    "source": "Interest profile based on O*NET job data (U.S. Department of Labor).",
+    "next": {
+      "work": "Work",
+      "b_tech_later": "A B.Tech degree later"
+    },
+    "notFound": "This path is not in the library."
+  },
   "play": {
     "title": "Play",
     "help": "Pick what you like: no answer is right or wrong, and there is no timer. Take a break any time; you will carry on from here.",
@@ -114,10 +157,6 @@
     "prologueDone": "Practice done! Your first real week is ready.",
     "weekDone": "Week {{n}} done. Well done!",
     "takeBreak": "Take a break"
-  },
-  "explore": {
-    "title": "Explore",
-    "body": "Every stream, explained, will be here."
   },
   "family": {
     "title": "Family",
@@ -252,6 +291,7 @@
     "planB": "Plan B: {{name}}",
     "why": "Why this?",
     "hideWhy": "Hide",
+    "aboutPath": "More about this path",
     "basedOn": "Based on {{choices}} choices over {{weeks}} weeks.",
     "whyCount": "{{type}} {{chosen}} of {{offered}} times",
     "whyChoices": "You picked {{list}}.",

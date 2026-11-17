@@ -48,7 +48,7 @@ test('every key the result screen can show exists in en.json', () => {
     'results.state.more_play', 'results.state.more_play_body', 'results.state.consent', 'results.state.not_supported',
     'results.state.offline', 'results.state.signed_out', 'results.state.error', 'results.and', 'home.seePaths',
     'door.medicine', 'door.engineering', 'results.checkWithBoard',
-    'results.whyCount', 'results.whyChoices', 'results.whyTop', 'results.whyPath',
+    'results.aboutPath', 'results.whyCount', 'results.whyChoices', 'results.whyTop', 'results.whyPath',
     ...['strong', 'good', 'worth_a_look'].map((b) => `results.band.${b}`),
     ...['high', 'medium', 'low'].map((c) => `results.confidence.${c}`),
     ...['interest_match', 'ability_support', 'keeps_doors_open', 'path_strength'].map((r) => `results.reason.${r}`),

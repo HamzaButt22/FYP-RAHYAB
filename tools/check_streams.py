@@ -45,6 +45,20 @@ def main() -> int:
                 problems.append(f"path {pid}: riasec needs R, I, A, S, E, C in [0, 1]")
             if pid not in occupations:
                 problems.append(f"path {pid}: no occupation list in path_occupations.json")
+            # Stream library facts (FR-60): every fact shown to students needs a source and a check date.
+            boards = {"FBISE", "PUNJAB", "SINDH", "KPK", "BALOCHISTAN", "AJK", "CAMBRIDGE", "OTHER"}
+            for board, entry in (path.get("subjects_by_board") or {}).items():
+                if board not in boards:
+                    problems.append(f"path {pid}: subjects_by_board has an unknown board {board!r}")
+                if not entry.get("subjects") or not entry.get("source_url") or not entry.get("last_verified"):
+                    problems.append(f"path {pid}: subjects for {board} need subjects, source_url and last_verified")
+            cost = path.get("cost_estimate")
+            if cost is not None:
+                ok_range = isinstance(cost.get("min_pkr"), int) and isinstance(cost.get("max_pkr"), int)
+                if not ok_range or cost["min_pkr"] > cost["max_pkr"] or cost.get("per") not in {"year", "programme"}:
+                    problems.append(f"path {pid}: cost_estimate needs min_pkr <= max_pkr (whole PKR) and per year/programme")
+                if not cost.get("source_url") or not cost.get("last_verified"):
+                    problems.append(f"path {pid}: cost_estimate needs source_url and last_verified")
 
     counts = {level: 0 for level in LEVELS}
     for gate in streams["gates"]:

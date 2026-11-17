@@ -11,6 +11,7 @@ import { AppText } from '@/components/AppText';
 import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
 import { ListenButton } from '@/components/ListenButton';
+import { joinList } from '@/i18n/joinList';
 import { Screen } from '@/components/Screen';
 import {
   bandDots,
@@ -176,6 +177,15 @@ function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId
         </AppText>
       </Pressable>
       {why && why !== 'open' ? <WhyPanel evidence={why} streamId={card.stream_id} /> : null}
+      <Pressable
+        accessibilityRole="link"
+        onPress={() => router.push({ pathname: '/stream/[id]', params: { id: card.stream_id } })}
+        style={styles.whyButton}
+      >
+        <AppText variant="label" color="primaryText">
+          {t('results.aboutPath')}
+        </AppText>
+      </Pressable>
     </View>
   );
 }
@@ -208,11 +218,6 @@ function WhyPanel({ evidence, streamId }: { evidence: Evidence; streamId: string
       ) : null}
     </View>
   );
-}
-
-/** ["a", "b", "c"] -> "a, b and c" (the last joiner comes from en.json). */
-function joinList(items: string[], and: string): string {
-  return items.length <= 2 ? items.join(and) : `${items.slice(0, -1).join(', ')}${and}${items[items.length - 1]}`;
 }
 
 const styles = StyleSheet.create({

@@ -49,6 +49,7 @@ function Navigation() {
           <Stack.Screen name="results" />
           <Stack.Screen name="play" />
           <Stack.Screen name="profile" />
+          <Stack.Screen name="stream/[id]" />
         </Stack.Protected>
         <Stack.Protected guard={__DEV__}>
           <Stack.Screen name="game-lab" />
