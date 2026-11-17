@@ -50,5 +50,8 @@ VALUES ('dev-2026.11.0', 'matric', '0.1.0', 'dev', 'dev', '{"note": "development
 ON CONFLICT (id) DO NOTHING;
 
 INSERT INTO item (id, kind, construct, pair, content_version) VALUES
-  ('sample_pick_one', 'choice', 'interests', 'R-S', 'dev-2026.11.0')
+  ('sample_pick_one', 'choice', 'interests', 'R-S', 'dev-2026.11.0'),
+  -- The sample Ink story (design/game/story/sample.ink); runner.test.ts checks every measured choice is here.
+  ('story_prologue_saturday', 'choice', 'interests', 'R-S', 'dev-2026.11.0'),
+  ('story_prologue_fair', 'choice', 'interests', 'A-C', 'dev-2026.11.0')
 ON CONFLICT (id, content_version) DO NOTHING;

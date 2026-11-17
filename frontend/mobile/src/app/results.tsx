@@ -17,7 +17,7 @@ import {
   doorPhrases,
   reasonPhrase,
   type Evidence,
-  whyPhrases,
+  whyFor,
   type PathCard,
   type Phrase,
   type ResultState,
@@ -180,54 +180,31 @@ function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId
   );
 }
 
-/** "Why this?" (FR-56): what the choices showed, what the path suits, what decided it, and each rule's source. */
+/** "Why this?" (FR-56): two plain sentences: how often the student picked their top interests, and what the
+ * path suits. */
 function WhyPanel({ evidence, streamId }: { evidence: Evidence; streamId: string }) {
   const { t } = useTranslation();
-  const say = useSay();
+  const tx = useTx();
   const { colors } = useTheme();
-  const w = whyPhrases(evidence, streamId);
-  const basedOn = t('results.basedOn', {
-    choices: String(evidence.evidence.choices),
-    weeks: String(evidence.evidence.weeks_played),
-  });
-  const choiceLines = w.choices.map(say);
-  const ruleLines = w.rules.map((r) => `${say(r.phrase)}${r.date ? ` ${t('results.whyChecked', { date: shortDate(r.date) })}` : ''}`);
-  const spoken = [
-    t('results.whyChoicesTitle'), ...choiceLines,
-    ...(w.path ? [t('results.whyPathTitle'), say(w.path)] : []),
-    t('results.whyDecidedTitle'), say(w.decided), basedOn,
-    ...(ruleLines.length ? [t('results.whyRulesTitle'), ...ruleLines] : []),
-  ].join(' ');
+  const why = whyFor(evidence, streamId);
+  const typeName = (type: string) => tx(`results.type.${type}`);
+  const and = tx('results.and');
+  const picked = why.counts
+    ? t('results.whyChoices', {
+        list: joinList(
+          why.counts.map((c) =>
+            tx('results.whyCount', { type: typeName(c.type), chosen: String(c.chosen), offered: String(c.offered) }),
+          ),
+          and,
+        ),
+      })
+    : t('results.whyTop', { list: joinList(why.top.map(typeName), and) });
 
   return (
     <View style={[styles.why, { backgroundColor: colors.sunken }]}>
-      <View style={styles.titleRow}>
-        <AppText variant="label" style={styles.grow}>
-          {t('results.whyChoicesTitle')}
-        </AppText>
-        <ListenButton id={`why:${streamId}`} text={spoken} />
-      </View>
-      {choiceLines.map((line, i) => (
-        <AppText key={i}>{`• ${line}`}</AppText>
-      ))}
-      {w.path ? (
-        <>
-          <AppText variant="label">{t('results.whyPathTitle')}</AppText>
-          <AppText>{say(w.path)}</AppText>
-        </>
-      ) : null}
-      <AppText variant="label">{t('results.whyDecidedTitle')}</AppText>
-      <AppText>{say(w.decided)}</AppText>
-      <AppText color="muted">{basedOn}</AppText>
-      {ruleLines.length ? (
-        <>
-          <AppText variant="label">{t('results.whyRulesTitle')}</AppText>
-          {ruleLines.map((line, i) => (
-            <AppText key={i} variant="caption" color="muted">
-              {line}
-            </AppText>
-          ))}
-        </>
+      <AppText>{picked}</AppText>
+      {why.pathTypes.length ? (
+        <AppText>{t('results.whyPath', { list: joinList(why.pathTypes.map(typeName), and) })}</AppText>
       ) : null}
     </View>
   );
@@ -236,14 +213,6 @@ function WhyPanel({ evidence, streamId }: { evidence: Evidence; streamId: string
 /** ["a", "b", "c"] -> "a, b and c" (the last joiner comes from en.json). */
 function joinList(items: string[], and: string): string {
   return items.length <= 2 ? items.join(and) : `${items.slice(0, -1).join(', ')}${and}${items[items.length - 1]}`;
-}
-
-/** "2026-11-11" -> "11 Nov 2026" (falls back to the ISO date). */
-function shortDate(iso: string): string {
-  const d = new Date(`${iso}T00:00:00`);
-  return Number.isNaN(d.getTime())
-    ? iso
-    : d.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
 }
 
 const styles = StyleSheet.create({

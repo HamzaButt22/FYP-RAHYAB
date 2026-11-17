@@ -69,39 +69,24 @@ export interface Evidence {
   paths?: EvidencePath[];
 }
 
-/** "Why this?" for one card (FR-56), as phrases: what the choices showed, what the path suits, what decided
- * it, and the rules with their sources. The server sends codes and numbers; all wording is in en.json. */
-export interface WhyPhrases {
-  choices: Phrase[];
-  path: Phrase | null;
-  decided: Phrase;
-  rules: { phrase: Phrase; date: string | null }[];
+/** "Why this?" for one card (FR-56), kept short: how often the student picked their top interest types,
+ * and which types the path suits. The server sends codes and numbers; the wording is in en.json. */
+export interface Why {
+  /** Top three types with counts; null on results stored before the counts existed (then `top` only). */
+  counts: { type: InterestType; chosen: number; offered: number }[] | null;
+  top: InterestType[];
+  pathTypes: InterestType[];
 }
 
-export function whyPhrases(e: Evidence, streamId: string): WhyPhrases {
+export function whyFor(e: Evidence, streamId: string): Why {
   const profile: { type: InterestType; chosen?: number; offered?: number }[] =
     e.evidence.interest_profile ?? e.evidence.top_interest_types.map((type) => ({ type }));
   const top = profile.slice(0, 3);
   const counted = top.length > 0 && top.every((p) => p.chosen !== undefined && !!p.offered);
-  const choices: Phrase[] = counted
-    ? top.map((p) => ({
-        key: 'results.whyChose',
-        params: { chosen: String(p.chosen ?? 0), offered: String(p.offered ?? 0) },
-        lists: { types: [`results.type.${p.type}`] },
-      }))
-    : [{ key: 'results.whyStrongest', lists: { types: top.map((p) => `results.type.${p.type}`) } }];
-  const path = e.paths?.find((p) => p.stream_id === streamId);
-  const usesAbility = !!path?.contributions.some((c) => c.feature === 'ability');
   return {
-    choices,
-    path: path?.path_types?.length
-      ? { key: 'results.whyPathSuits', lists: { types: path.path_types.map((t) => `results.type.${t}`) } }
-      : null,
-    decided: { key: usesAbility ? 'results.whyDecidedBoth' : 'results.whyDecidedInterests' },
-    rules: (path?.rules ?? []).map((r) => ({
-      phrase: { key: `results.whyRule.${r.verification}`, params: { source: shortSource(r.source) } },
-      date: r.last_verified ?? null,
-    })),
+    counts: counted ? top.map((p) => ({ type: p.type, chosen: p.chosen ?? 0, offered: p.offered ?? 0 })) : null,
+    top: top.map((p) => p.type),
+    pathTypes: e.paths?.find((p) => p.stream_id === streamId)?.path_types ?? [],
   };
 }
 
@@ -152,12 +137,4 @@ export function stateFromProblem(status: number, code: string, firstErrorCode?: 
   if (status === 422 && code === 'mode_not_supported') return { kind: 'not_supported' };
   if (status === 401) return { kind: 'signed_out' };
   return { kind: 'error' };
-}
-
-/** The readable part of a rule's source: the first clause, without web addresses (the full citation stays in
- * streams.json). "PM&DC statement, The Nation, 24 Oct 2026; regulations: https://..." -> "PM&DC statement,
- * The Nation, 24 Oct 2026". */
-export function shortSource(source: string): string {
-  const first = source.split(';')[0].replace(/https?:\/\/\S+/g, '').replace(/\s+/g, ' ').trim();
-  return first.replace(/[\s,:(]+$/, '');
 }

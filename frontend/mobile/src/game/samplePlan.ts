@@ -1,5 +1,6 @@
 // The sample week plan, used until the game's real content exists (Zahid's scenes, planner and tasks).
-// Every step is the sample module showing one forced-choice pair, in the order of the target schedule in
+// The prologue (week 0) is the sample Ink story (design/game/story/sample.ink), played through the story host.
+// Every scored step is the sample module showing one forced-choice pair, in the order of the target schedule in
 // design/game/frameworks/pairs.json (30 choices over 4 weeks: 8, 8, 7, 7). weekLoop.test.ts checks that it
 // still matches that file. The prologue (week 0) is practice and never scored (FR-14).
 // Generated from pairs.json on 15 Nov 2026; regenerate when the schedule changes.
@@ -16,7 +17,11 @@ export const SAMPLE_PLAN: WeekPlan = {
   id: 'sample-2026.11.0',
   minutesPerStep: 1,
   weeks: [
-    { week: 0, practice: true, steps: [pick(0, 1, 'R', 'S'), pick(0, 2, 'A', 'C')] },
+    {
+      week: 0,
+      practice: true,
+      steps: [{ id: 'w0s1', module: 'ink-story', params: { story: 'sample', knot: 'prologue' } }],
+    },
     {
       week: 1,
       practice: false,
