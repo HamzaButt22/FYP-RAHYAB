@@ -1,5 +1,5 @@
 {
-  "version": "1.4.0",
+  "version": "1.4.1",
   "updated": "2026-11-15",
   "framework": "Pakistani education paths with RIASEC profiles, ability support and eligibility gates",
   "status": "RIASEC profiles derived from O*NET 31.0 occupational interest data on 2026-11-11 (tools/onet_profiles.py; occupations per path in path_occupations.json, to be reviewed by the counsellor panel). Gates carry a verification level and source; see verification_policy. Board-specific routes are being verified.",
@@ -937,7 +937,7 @@
           "tests": [
             "ISSB and service tests"
           ],
-          "notes": "Age, marks and medical limits apply; show as rules with sources",
+          "notes": "Age, marks and medical limits apply.",
           "verify": true,
           "riasec_source": {
             "method": "mean O*NET Occupational Interest (OI) profile of the occupations this path leads to",

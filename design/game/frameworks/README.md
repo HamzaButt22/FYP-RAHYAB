@@ -12,7 +12,21 @@ These files turn the frameworks in `design/game/GAME_DESIGN.md` (sections 11–1
 | `scoring.json` | Settings for models M1–M3, confidence levels, the letter reveal, fairness limits and what is never scored |
 
 **Rules:**
-- Writers tag Ink choices with the codes used here (`#pair:R-A #left:R #voice:dil`).
+- Writers tag Ink choices with the codes used here: `#type:R` on each of the two options and `#item:id` on the line before them (`design/game/story/README.md`).
 - A CI check compares the script's tags against `pairs.json`.
 - Stream profiles and gates are a first version: replace the profiles with O\*NET-derived values and counsellor AHP weights, and re-check the gates every year before each pilot or release.
 - Every `routes` entry starts as `verified: false`. The app hides an unverified route's board-specific details and shows "Check with your board" instead.
+
+## Stream library: facts still to add (FR-60)
+
+The app's stream library (Explore tab, `frontend/mobile/src/library/`) shows only what is in `streams.json`. It already shows who a path suits, entry tests, requirements, where it leads and its doors. Three facts are missing for almost every path, and the page says "Still being checked" until they are added. Add them per path, each with a source and a check date (`tools/check_streams.py` rejects them otherwise), then run `pnpm streams` in `frontend/mobile` to refresh the app's copy:
+
+```json
+"subjects_by_board": {
+  "FBISE": { "subjects": ["Physics", "Chemistry", "Biology"], "source_url": "https://...", "last_verified": "2026-11-20" }
+},
+"duration": "2 years",
+"cost_estimate": { "min_pkr": 20000, "max_pkr": 150000, "per": "year", "source_url": "https://...", "last_verified": "2026-11-20" }
+```
+
+Board codes: FBISE, PUNJAB, SINDH, KPK, BALOCHISTAN, AJK, CAMBRIDGE, OTHER. Cost is always shown as an estimate. The example values above are placeholders, not facts.
