@@ -2015,7 +2015,7 @@ components:
       properties:
         student_id: { type: string, format: uuid }
         nickname: { type: string }
-        form_serial: { type: [string, 'null'], description: The consent-form number, to match the school's paper register }
+        form_serial: { type: [string, 'null'], description: "The consent-form number, to match the school's paper register" }
         started: { type: boolean }
         week: { type: integer, minimum: 0, maximum: 4, description: The highest week finished (0 = none yet) }
         top_path_id: { type: [string, 'null'] }
