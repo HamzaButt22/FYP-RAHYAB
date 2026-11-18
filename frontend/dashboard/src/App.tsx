@@ -11,6 +11,7 @@ import { ApiError, parseRoute, staffAuth, tokenFromHash, type Challenge, type Me
 import { Forgot, ResetPassword, SignIn, TwoStep } from './AuthScreens';
 import { I18nProvider, useI18n } from './i18n';
 import { FormsPage } from './FormsPage';
+import { SchoolPage } from './SchoolPage';
 import { ClassesPage, RosterPage, Shell, StudentPage } from './Pages';
 import { SessionProvider } from './session';
 
@@ -86,9 +87,7 @@ function Dashboard() {
       };
       return (
         <SessionProvider value={{ me, signedOut, signOut }}>
-          <Shell>
-            <RoutedPage />
-          </Shell>
+          <RoutedPage />
         </SessionProvider>
       );
     }
@@ -106,8 +105,17 @@ function RoutedPage() {
     window.addEventListener('hashchange', follow);
     return () => window.removeEventListener('hashchange', follow);
   }, []);
-  if (route.page === 'class') return <RosterPage key={route.id} classId={route.id} />;
-  if (route.page === 'forms') return <FormsPage key={`forms:${route.id}`} classId={route.id} />;
-  if (route.page === 'student') return <StudentPage key={route.id} studentId={route.id} classId={route.classId} />;
-  return <ClassesPage />;
+  const page =
+    route.page === 'class' ? (
+      <RosterPage key={route.id} classId={route.id} />
+    ) : route.page === 'forms' ? (
+      <FormsPage key={`forms:${route.id}`} classId={route.id} />
+    ) : route.page === 'student' ? (
+      <StudentPage key={route.id} studentId={route.id} classId={route.classId} />
+    ) : route.page === 'school' ? (
+      <SchoolPage />
+    ) : (
+      <ClassesPage />
+    );
+  return <Shell active={route.page === 'school' ? 'school' : 'classes'}>{page}</Shell>;
 }

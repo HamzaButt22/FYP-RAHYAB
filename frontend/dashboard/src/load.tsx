@@ -28,8 +28,10 @@ export function useLoad<T>(load: () => Promise<T>, key: string): [Load<T>, () =>
     };
     // `load` is a new function every render; `key` says when the data to load is different.
   }, [key, attempt]);
+  // Data already on screen stays there while it is fetched again (no "Loading" flash, and messages next to it,
+  // such as "Invite sent", are not lost); only an error or a first load shows the loading state.
   const retry = () => {
-    setState({ status: 'loading' });
+    setState((current) => (current.status === 'ok' ? current : { status: 'loading' }));
     setAttempt((n) => n + 1);
   };
   return [state, retry];

@@ -153,7 +153,13 @@ def _insert_unique(
 
 
 def add_class(
-    conn: Connection, pepper: str, school_id: UUID, grade: int, section: str, days: int = DEFAULT_CODE_DAYS
+    conn: Connection,
+    pepper: str,
+    school_id: UUID,
+    grade: int,
+    section: str,
+    days: int = DEFAULT_CODE_DAYS,
+    actor: str = ACTOR,
 ) -> tuple[UUID, str]:
     """Creates a class and returns (class id, class code). The code is never shown again."""
     if not 1 <= days <= 365:
@@ -167,11 +173,13 @@ def add_class(
         new_class_code,
         pepper,
     )
-    _audit(conn, "class.add", f"class:{class_id}")
+    _audit(conn, "class.add", f"class:{class_id}", actor)
     return class_id, code
 
 
-def rotate_class_code(conn: Connection, pepper: str, class_id: UUID, days: int = DEFAULT_CODE_DAYS) -> str:
+def rotate_class_code(
+    conn: Connection, pepper: str, class_id: UUID, days: int = DEFAULT_CODE_DAYS, actor: str = ACTOR
+) -> str:
     """A new code for the class. The old code stops working at once; students who joined stay (FR-80)."""
     if not 1 <= days <= 365:
         raise AdminError("--days must be 1 to 365")
@@ -184,7 +192,7 @@ def rotate_class_code(conn: Connection, pepper: str, class_id: UUID, days: int =
         new_class_code,
         pepper,
     )
-    _audit(conn, "class.code_rotated", f"class:{class_id}")
+    _audit(conn, "class.code_rotated", f"class:{class_id}", actor)
     return code
 
 
