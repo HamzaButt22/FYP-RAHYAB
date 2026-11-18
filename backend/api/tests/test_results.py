@@ -8,12 +8,10 @@ import json
 import secrets
 import time
 import uuid
-from collections.abc import Iterator
 from typing import Any
 
-import pytest
 from fastapi.testclient import TestClient
-from sqlalchemy import Engine, text
+from sqlalchemy import text
 from support import World
 
 URL = "/v1/results/compute"
@@ -35,23 +33,6 @@ def choices(prefer: str, rounds: int = 2) -> list[tuple[str, str]]:
             a, b = pair.split("-")
             out.append((pair, a if prefer.index(a) < prefer.index(b) else b))
     return out
-
-
-@pytest.fixture
-def pack(admin: Engine) -> Iterator[str]:
-    pack_id = f"test-{secrets.token_hex(4)}"
-    with admin.begin() as conn:
-        conn.execute(
-            text(
-                "INSERT INTO content_pack (id, class_mode, min_app, sha256, signature, manifest, size_bytes, "
-                "storage_uri) VALUES (:id, 'matric', '0.1.0', 'x', 'x', '{}', 1, 'test://none')"
-            ),
-            {"id": pack_id},
-        )
-    yield pack_id
-    with admin.begin() as conn:
-        conn.execute(text("DELETE FROM game_run WHERE content_version = :p"), {"p": pack_id})
-        conn.execute(text("DELETE FROM content_pack WHERE id = :p"), {"p": pack_id})
 
 
 class Student:

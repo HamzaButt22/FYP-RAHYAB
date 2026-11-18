@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="referrer" content="no-referrer">
+  <title>Family report · Rahyaab</title>
+  {# The link preview (WhatsApp, Open Graph) never names the child or shows a result (TC-SHARE-07). #}
+  <meta property="og:title" content="A family report from Rahyaab">
+  <meta property="og:description" content="Open to see the report your child shared with you.">
+  <meta property="og:type" content="website">
+  <link rel="stylesheet" href="/p/static/tokens.css">
+  <link rel="stylesheet" href="/p/static/parent.css">
+  <script src="/p/static/parent.js" defer></script>
+</head>
+<body>
+  <div class="page">
+    <header class="top">
+      <span class="brand">rahyaab</span>
+      <button type="button" class="listen" id="listen" hidden aria-pressed="false">Listen</button>
+    </header>
+    {% block content %}{% endblock %}
+    <section class="children" id="children" hidden aria-labelledby="children-title">
+      <h2 id="children-title">My children</h2>
+      <p class="muted">Saved on this phone only. Each child shares their own report.</p>
+      <ul id="children-list"></ul>
+      <p class="muted small">Anyone using this phone can open saved reports. Remove a child at any time.</p>
+    </section>
+  </div>
+</body>
+</html>

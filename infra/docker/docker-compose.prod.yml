@@ -11,6 +11,7 @@ services:
     environment:
       APP_ENV: production
       DEBUG: "false"
+      PARENT_LINK_BASE: ${API_ORIGIN}         # family links are served by the API host (RFC-0004)
 
   jobs:
     image: ghcr.io/hamzabutt22/rahyaab-api:${RELEASE_TAG}

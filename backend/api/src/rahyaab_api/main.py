@@ -17,9 +17,11 @@ from rahyaab_api.routers import (
     dashboard,
     events,
     health,
+    parent,
     profile,
     results,
     school_setup,
+    share_links,
     staff_auth,
     student_auth,
 )
@@ -89,6 +91,8 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(dashboard.router, prefix="/v1")
     app.include_router(consent_records.router, prefix="/v1")
     app.include_router(school_setup.router, prefix="/v1")
+    app.include_router(share_links.router, prefix="/v1")
+    app.include_router(parent.router)  # /p/<token>: the family page lives at the site root (RFC-0004)
     return app
 
 
