@@ -28,6 +28,9 @@ patches:
       - op: replace
         path: /data/CORS_ALLOWED_ORIGINS
         value: https://dashboard.staging.rahyaab.pk
+      - op: replace
+        path: /data/DASHBOARD_URL
+        value: https://dashboard.staging.rahyaab.pk
   - target: { kind: HorizontalPodAutoscaler, name: api }
     patch: |-
       - op: replace

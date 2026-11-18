@@ -31,6 +31,9 @@ spec:
             - name: DATABASE_URL
               valueFrom:
                 secretKeyRef: { name: rahyaab-api, key: jobs-database-url }
+            - name: SMTP_URL                    # staff emails; without it they stay queued
+              valueFrom:
+                secretKeyRef: { name: rahyaab-api, key: smtp-url, optional: true }
           resources:
             requests: { cpu: 50m, memory: 128Mi }
             limits: { memory: 512Mi }

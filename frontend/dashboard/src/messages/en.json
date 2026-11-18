@@ -7,7 +7,7 @@
     "school": "School",
     "settings": "Settings"
   },
-  "demo": "Sample data. The real class list appears here once staff sign-in is built.",
+  "demo": "Sample data. Your real classes will appear here in the next update.",
   "roster": {
     "title": "Class {{name}}",
     "export": "Download the list",
@@ -31,5 +31,75 @@
     "preEngineering": "Pre-Engineering",
     "ics": "ICS (Computer Science)",
     "preMedical": "Pre-Medical"
+  },
+  "auth": {
+    "staff": "Staff",
+    "signOut": "Sign out",
+    "signedInAs": "Signed in as {{email}}",
+    "loading": "Loading…",
+    "signIn": {
+      "title": "Sign in",
+      "email": "Work email",
+      "password": "Password",
+      "submit": "Continue",
+      "forgot": "Forgot password?",
+      "note": "Two-step sign-in is required. Students don't sign in here."
+    },
+    "setup": {
+      "title": "Set up two-step sign-in",
+      "intro": "You do this once. After that, you only type a code from your phone.",
+      "step1": "Install an authenticator app on your phone, such as Google Authenticator or Microsoft Authenticator.",
+      "step2": "In the app, add an account and choose “Enter a setup key”. Name it Rahyaab and type this key:",
+      "keyLabel": "Setup key",
+      "step3": "The app now shows a 6-digit code that changes every 30 seconds. Type it below.",
+      "keepSafe": "Don't share this key or a photo of it.",
+      "show": "Show my setup key"
+    },
+    "code": {
+      "title": "Enter your 6-digit code",
+      "hint": "From your authenticator app.",
+      "label": "6-digit code",
+      "submit": "Verify",
+      "back": "Back to sign in",
+      "lostPhone": "Lost your phone? Ask your school's Rahyaab admin to reset your two-step sign-in."
+    },
+    "forgot": {
+      "title": "Reset your password",
+      "intro": "Type your work email. We'll send a link to choose a new password.",
+      "submit": "Send link",
+      "sent": "If an account exists for that email, we've sent a link. It works once, for 30 minutes.",
+      "again": "Send again",
+      "back": "Back to sign in",
+      "note": "You'll still need your two-step code after resetting."
+    },
+    "reset": {
+      "title": "Choose a password",
+      "password": "New password",
+      "confirm": "Type it again",
+      "hint": "At least 12 characters. A short sentence is easy to remember, like “green tea at four”.",
+      "submit": "Save password",
+      "done": "Your password is saved. Sign in with it now.",
+      "toSignIn": "Go to sign in",
+      "noToken": "This link is not complete. Open it again from your email, or ask for a new one.",
+      "newLink": "Ask for a new link"
+    },
+    "errors": {
+      "sign_in_failed": "Wrong email or password.",
+      "mfa_failed": "That code didn't work. Check the code in your app and try again.",
+      "challenge_expired": "That took too long. Please sign in again.",
+      "rate_limited": "Too many tries. Please wait {{minutes}} minutes and try again.",
+      "reset_link_invalid": "This link has expired or was already used. Ask for a new one.",
+      "mfa_setup_needed": "Ask your school's Rahyaab admin to reset your two-step sign-in.",
+      "network": "We couldn't reach Rahyaab. Check your internet and try again.",
+      "generic": "Something went wrong. Please try again.",
+      "check_fields": "Please check the boxes above.",
+      "too_short": "Use at least 12 characters.",
+      "too_long": "Use 128 characters or fewer.",
+      "common": "That password is too easy to guess. Try a short sentence instead.",
+      "contains_email": "Don't use your email name in your password.",
+      "mismatch": "The two passwords are not the same.",
+      "email": "Type your full email, like name@school.edu.pk.",
+      "code": "Type the 6 digits from your app."
+    }
   }
 }

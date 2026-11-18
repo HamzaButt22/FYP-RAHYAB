@@ -10,6 +10,7 @@ import base64
 import hashlib
 import os
 import secrets
+import tempfile
 import uuid
 from typing import Any
 
@@ -20,6 +21,13 @@ from sqlalchemy import Engine, text
 
 from rahyaab_api.codes import code_hash, new_claim_code, new_class_code
 from rahyaab_api.device_keys import refresh_message
+
+# The master key for restricted columns (restricted.py), in a temporary file like the Docker secret.
+_KEY_DIR = tempfile.mkdtemp(prefix="rahyaab-test-")
+MASTER_KEY = bytes(range(32))
+MASTER_KEY_FILE = os.path.join(_KEY_DIR, "data_key_wrapper")
+with open(MASTER_KEY_FILE, "w", encoding="ascii") as _f:
+    _f.write(base64.b64encode(MASTER_KEY).decode())
 
 JOIN_URL = "/v1/auth/student/join"
 REFRESH_URL = "/v1/auth/refresh"

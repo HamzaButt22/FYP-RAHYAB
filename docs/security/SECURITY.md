@@ -118,6 +118,16 @@ Everything left of the API is untrusted. The API re-checks identity, consent, ro
 4. **After a reset:** all sessions and other reset tokens for that account are revoked, the event is written to the audit log, and a "your password was changed" notice is emailed.
 5. **Admins** can force a reset or disable an account. Nobody can see or set another person's password, and there is no master password.
 
+**As built (17 Nov 2026; `backend/api/src/rahyaab_api/staff_auth.py`, `routers/staff_auth.py`, `staff_admin.py`, `mail.py`, `restricted.py`; dashboard `frontend/dashboard/src/AuthScreens.tsx`):**
+- **Sign-in (FR-71):** email + password returns a 10-minute challenge, never a session; the 6-digit TOTP code (RFC 6238, SHA-1, 30 s, one step either side) then sets the session cookie with a **new** token. A code is accepted once (`staff_user.mfa_last_step`, claimed in the same SQL statement that checks it). Wrong email and wrong password get the same `401` and, through a dummy argon2 check, the same timing. Limits: 5 per 15 minutes per email, 30 per IP; 5 wrong passwords in a row lock the account for 15 minutes, doubling up to a day; codes 5 per 15 minutes per account.
+- **First sign-in:** the dashboard shows a setup key to type into an authenticator app (no QR code yet, which would need a library). The key waits, sealed, on the challenge until its first code is right.
+- **Authenticator keys** are envelope-encrypted (AES-256-GCM, a data key per value) under the master key file `DATA_KEY_WRAPPER_FILE` and bound to the staff id (`restricted.py`, DATA_GOVERNANCE.md §4). Without the file the code step answers `503`; nothing is stored under a weaker key.
+- **Sessions:** `__Host-rahyaab_session`, HttpOnly, Secure, SameSite=Strict, Path=/; only the SHA-256 is stored; 30 minutes idle, 8 hours in all. Changes need `X-CSRF-Token` (an HMAC of the session id, from `GET /auth/staff/me`).
+- **Password rules:** 12–128 characters, not on a short built-in list of common passwords, all-digit or 3-letter repeats refused, and not containing the email name. **Gap:** no breached-password check (it would send hash prefixes to an outside service).
+- **Reset and invite links** are 22 characters from 62 (about 131 bits) in the URL fragment (`/reset#token=…`), so they never reach a server log or a Referer header; the dashboard removes the token from the address bar at once.
+- **Emails** are queued in `email_outbox` (the API may insert but not read it) and sent by the jobs worker over SMTP with TLS. `MAIL_TRANSPORT=log` writes them to the worker's log for local testing and is refused unless `APP_ENV` is development or test.
+- **Admin command:** `staff-add` (invite, 72 hours), `staff-invite`, `staff-reset`, `staff-disable`/`staff-enable`, `staff-mfa-reset` (lost phone), `staff-assign`/`staff-unassign`, `staff`; each audit-logged. **Not built:** backup codes (a lost phone needs `staff-mfa-reset`), a QR code for setup, and dashboard screens for these admin jobs (PR 3).
+
 ### 5.3 Helpful errors that don't leak
 
 Users get specific help on **format** ("Codes look like RYB-4K2"), but secrets and existence checks stay **generic and uniform**: the same message, status and timing whether a code, token or account exists or not.
@@ -262,12 +272,12 @@ An honest status for each check, so nobody mistakes a design for a working contr
 
 | Check | Rahyaab | Status |
 |---|---|---|
-| Protect admin routes | MFA session plus admin role; optional IP allowlist; no hidden routes (inventory test) | Designed |
+| Protect admin routes | MFA session plus admin role; optional IP allowlist; no hidden routes (inventory test) | Staff sign-in with password + authenticator code, session cookie and CSRF check **built and tested** (TC-SEC-17, 20–23, 17 Nov 2026). Role checks on `/dash/*` and `/admin/*`: designed (no such routes yet) |
 | Server-side access checks | As 9.1 | Designed |
 | Row-Level Security | **Not yet in the design.** Access is enforced in the API and by table grants. PostgreSQL RLS on student-linked tables (keyed by school, set per request with `SET LOCAL`) would add a second wall if an API check is ever missed | **Gap: decide in an ADR with the first dashboard API (FYP-2)** |
-| Verify email | Students give no email by design. Staff accounts exist only by admin invitation, and the invite link proves the address. (Parent phone OTP is post-MVP.) | Designed |
-| Hash passwords | argon2id (64 MB, 3 iterations), only for staff | Designed; library in the dependencies; not built |
-| No auth tokens in local storage | App: Android Keystore via `expo-secure-store`. Dashboard: `HttpOnly` `__Host-` cookie; nothing in `localStorage` | Designed |
+| Verify email | Students give no email by design. Staff accounts exist only by admin invitation, and the invite link proves the address. (Parent phone OTP is post-MVP.) | Staff invite **built and tested** (`staff-add`, TC-SEC-23); parent OTP post-MVP |
+| Hash passwords | argon2id (64 MB, 3 iterations, parallelism 1), only for staff | **Built and tested** (`staff_auth.py`; the parameters are checked by a unit test) |
+| No auth tokens in local storage | App: Android Keystore via `expo-secure-store`. Dashboard: `HttpOnly` `__Host-` cookie; nothing in `localStorage` | App **built**. Dashboard **built and tested**: the session is only in the `__Host-rahyaab_session` cookie (HttpOnly, Secure, SameSite=Strict); the dashboard code never sees it and stores nothing (TC-SEC-17) |
 | Secrets only on the server | Secrets come from env variables, Docker secrets or Kubernetes secrets; `EXPO_PUBLIC_*` values hold only the API URL; each container gets only its own variables | **Built and tested** (the API container cannot see the admin database password) |
 | Keep `.env` off GitHub | `.gitignore`, `git add --dry-run` check, gitleaks in CI | `.gitignore` **tested**; gitleaks written, runs after the first push |
 | No secrets in logs | No personal data or credentials in logs; database URLs are not logged | Designed; current code logs none |

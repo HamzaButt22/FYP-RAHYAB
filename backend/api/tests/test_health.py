@@ -53,6 +53,18 @@ def test_production_settings_refuse_unsafe_values() -> None:
         ).validate_for_runtime()
 
 
+def test_staff_email_links_must_be_https_outside_development() -> None:
+    with pytest.raises(ValueError, match="DASHBOARD_URL"):  # reset links would travel unencrypted
+        Settings(
+            app_env="production",
+            jwt_signing_key="x" * 40,
+            code_pepper="y" * 40,
+            database_url="postgresql+psycopg://u:p@db/x",
+            cors_allowed_origins=["https://dashboard.example.pk"],
+            dashboard_url="http://dashboard.example.pk",
+        ).validate_for_runtime()
+
+
 def test_cors_origins_from_environment(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setenv("CORS_ALLOWED_ORIGINS", "https://a.example.pk, https://b.example.pk")
     assert Settings().cors_allowed_origins == ["https://a.example.pk", "https://b.example.pk"]
@@ -74,6 +86,7 @@ def test_docs_are_off_outside_development_and_test() -> None:
             code_pepper="y" * 40,
             database_url="postgresql+psycopg://u:p@db/x",
             cors_allowed_origins=["https://dashboard.example.pk"],
+            dashboard_url="https://dashboard.example.pk",
         )
     )
     c = TestClient(app)

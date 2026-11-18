@@ -41,7 +41,9 @@ This document says what data Rahyaab holds, how long we keep it, how it is prote
 | `student` profile (nickname, class, board, group, district, **age band** and whether the school verified it, situation) | PostgreSQL | While active; deleted 12 months after the last activity, or within 30 days of a deletion request | Hard delete, cascading through the student's records | `retention` and `deletion` jobs (NFR-46) |
 | `guardian_contact` | PostgreSQL (encrypted column) | Until consent is withdrawn or the account is deleted | Hard delete | `deletion` job |
 | `research_demographics` (gender, medium; opt-in) | PostgreSQL, `research_ro` role only | Until the study ends, plus 1 year; deleted at once if research consent is withdrawn | Hard delete | `deletion` job |
-| `password_reset` tokens | PostgreSQL (hash only) | 30 minutes, then 7 days for the audit trail | Deleted | `retention` job |
+| `password_reset` tokens (reset and invite links) | PostgreSQL (hash only) | 30 minutes (reset) or 72 hours (invite), then 7 days for the audit trail | Deleted | jobs worker, hourly (`purge_staff_auth`) |
+| `staff_session` | PostgreSQL (token hash only) | 30 minutes idle or 8 hours, then 1 day | Deleted | jobs worker, hourly |
+| `email_outbox` (staff emails: address, template, link) | PostgreSQL; the API can write but not read it | Deleted as soon as it is sent; unsent after 3 days or 5 failed tries | Deleted | jobs worker |
 | `consent` records | PostgreSQL | Until the study ends + 1 year, or the period set by the ethics approval, whichever is shorter, as proof of consent. Only the consent fields are kept; the student link is replaced by a hash and no game data remains | Deleted | `retention` job |
 | `share_link` | PostgreSQL | 30 days (expiry) + 30 days | Deleted | `retention` job |
 | Staff notes and flags | PostgreSQL | Until the end of the academic year, or until the student leaves the class, whichever comes first (at most 12 months); resolved flags after 90 days | Deleted | `retention` job |
