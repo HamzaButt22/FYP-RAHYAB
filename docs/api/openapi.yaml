@@ -1117,10 +1117,37 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
 
   /dash/classes/{classId}/consent-slips:
+    get:
+      tags: [dashboard]
+      operationId: listConsentForms
+      summary: The class's paper consent forms by number, and what happened to each (D-11, FR-05a)
+      description: >-
+        Listed by form number, not by student. `nickname` is filled only for a claimed form whose teacher box was
+        ticked (FR-78). Claim codes are never returned. Teachers and counsellors of the class, the school admin
+        and a platform admin; audit-logged (`dash.consent_slips`).
+      security:
+        - staffSession: []
+      parameters:
+        - { $ref: '#/components/parameters/ClassId' }
+      responses:
+        '200':
+          description: Forms
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/ConsentForm' } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
     post:
       tags: [dashboard]
-      operationId: generateConsentSlips
-      summary: Print numbered consent forms, each with a one-time claim code on a tear-off slip (FR-05a)
+      operationId: printConsentForms
+      summary: Print numbered consent forms, each with a one-time claim code (FR-05a)
+      description: >-
+        Returns the same two files the admin command writes (`slips-print`): the slips to print (form number and
+        claim code) and the class register to keep at school, both Excel files encrypted with one new password.
+        The password is shown once and never stored in clear; a sealed copy is kept in `school_file` so the admin
+        command can give it again. Form A (`parent`) numbers A-0001…, Form C (`self`) C-0001…. At most 10 prints
+        per class per hour. `Cache-Control: no-store`. Audit-logged with the staff id.
       security:
         - staffSession: []
           csrfToken: []
@@ -1132,45 +1159,81 @@ paths:
           application/json:
             schema:
               type: object
-              required: [count]
+              additionalProperties: false
+              required: [count, kind]
               properties:
                 count: { type: integer, minimum: 1, maximum: 60 }
+                kind: { type: string, enum: [parent, self] }
       responses:
         '201':
-          description: Printable PDF of forms (form serial + claim code); codes are shown only in this PDF
+          description: The two encrypted files and their password (shown once)
           content:
-            application/pdf:
-              schema: { type: string, contentMediaType: application/pdf }
+            application/json:
+              schema:
+                type: object
+                required: [count, first, last, password, files]
+                properties:
+                  count: { type: integer }
+                  first: { type: string, example: A-0001 }
+                  last: { type: string, example: A-0010 }
+                  password: { type: string, writeOnly: false, description: Shown once; 20 characters in five groups }
+                  files:
+                    type: array
+                    items:
+                      type: object
+                      required: [name, content]
+                      properties:
+                        name: { type: string }
+                        content: { type: string, contentEncoding: base64, description: An encrypted .xlsx file }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
 
-  /dash/consent-slips/{formSerial}:record:
+  /dash/classes/{classId}/consent-slips/{formSerial}:record:
     post:
       tags: [dashboard]
-      operationId: recordConsentSlip
-      summary: Record that a signed form came back (the teacher's name and the time go to the audit log)
+      operationId: recordConsentForm
+      summary: Record that a signed form came back (FR-05a, FR-06, FR-78)
+      description: >-
+        The age band comes from the school's admission register, never from the student: Form A takes 13-15 or
+        16-17, Form C 18-19, 20-24 or 25+ (otherwise 422 on `age_band`). The research and teacher boxes are copied
+        from the signed form; without the teacher box the student never appears on the dashboard. The slip can
+        then be claimed once at join. Audit-logged with the staff id (`slip.record`).
       security:
         - staffSession: []
           csrfToken: []
       parameters:
-        - { in: path, name: formSerial, required: true, schema: { type: string, maxLength: 20 } }
+        - { $ref: '#/components/parameters/ClassId' }
+        - { in: path, name: formSerial, required: true, schema: { type: string, pattern: '^[AC]-[0-9]{4}$' } }
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
-              required: [signed, research_opt_in, notice_version]
+              additionalProperties: false
+              required: [age_band, research_opt_in, teacher_visible]
               properties:
-                signed: { type: boolean, const: true }
+                age_band: { type: string, enum: ['13-15', '16-17', '18-19', '20-24', '25+'] }
                 research_opt_in: { type: boolean }
-                notice_version: { type: string }
+                teacher_visible: { type: boolean }
       responses:
-        '200': { description: Recorded; the slip can now be claimed by one student at join }
+        '200':
+          description: Recorded
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ConsentForm' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: '`already_recorded`'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
 
   /dash/flags:
     get:
@@ -2048,6 +2111,21 @@ components:
           type: array
           items: { type: string, enum: [R, I, A, S, E, C] }
           description: The student's strongest interest types in order, at most 3; no numbers
+
+    ConsentForm:
+      type: object
+      properties:
+        serial: { type: string, example: A-0007 }
+        kind: { type: string, enum: [parent, self], description: Form A (parent) or Form C (adult student) }
+        status: { type: string, enum: [printed, recorded, claimed, expired] }
+        age_band: { type: [string, 'null'], description: 'From the admission register, once recorded' }
+        research_opt_in: { type: [boolean, 'null'], description: Null until the signed form is recorded }
+        teacher_visible: { type: [boolean, 'null'], description: Null until the signed form is recorded }
+        recorded_at: { type: [string, 'null'], format: date-time }
+        recorded_by: { type: [string, 'null'], description: The staff member's email }
+        claimed_at: { type: [string, 'null'], format: date-time }
+        nickname: { type: [string, 'null'], description: Only when claimed and the teacher box was ticked }
+        expires_at: { type: string, format: date-time }
 
     Flag:
       type: object

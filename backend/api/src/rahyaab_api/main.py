@@ -12,6 +12,7 @@ from rahyaab_api import __version__
 from rahyaab_api.db import make_engine
 from rahyaab_api.problems import FIELD_CODES, ProblemError, field_error, problem_response
 from rahyaab_api.routers import (
+    consent_records,
     consents,
     dashboard,
     events,
@@ -85,6 +86,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(results.router, prefix="/v1")
     app.include_router(profile.router, prefix="/v1")
     app.include_router(dashboard.router, prefix="/v1")
+    app.include_router(consent_records.router, prefix="/v1")
     return app
 
 

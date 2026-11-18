@@ -7,7 +7,7 @@
     GET   /dash/flags                          open flags across the caller's classes
     PATCH /dash/flags/{flagId}                 mark a flag as handled (needs the CSRF token)
 
-Who sees what is decided in one place (`_MY_CLASSES` and `_VISIBLE`):
+Who sees what is decided in one place (`MY_CLASSES` and `VISIBLE`):
 - teachers and counsellors: the classes assigned to them (staff_class); a school admin: every class of their
   school; a platform admin: every class (each read is audit-logged like everyone else's); researchers: none
   (403);
@@ -56,7 +56,7 @@ FLAG_WORDS = {
 }
 
 # The classes the caller may see. :role, :staff and :school come from the session, never from the request.
-_MY_CLASSES = """
+MY_CLASSES = """
     SELECT c.id FROM school_class c
     WHERE CAST(:role AS text) = 'admin'
        OR (CAST(:role AS text) = 'school_admin' AND c.school_id = :school)
@@ -64,8 +64,8 @@ _MY_CLASSES = """
            AND EXISTS (SELECT 1 FROM staff_class sc WHERE sc.staff_id = :staff AND sc.class_id = c.id))
 """
 
-# A student the caller may see (alias st), once the class is one of _MY_CLASSES.
-_VISIBLE = """
+# A student the caller may see (alias st), once the class is one of MY_CLASSES.
+VISIBLE = """
     st.archived_at IS NULL
     AND EXISTS (SELECT 1 FROM consent co WHERE co.student_id = st.id
                 AND co.type IN ('parent', 'self') AND co.withdrawn_at IS NULL)
@@ -183,15 +183,15 @@ def dash_change(staff: Annotated[sa.CurrentStaff, Depends(sa.require_csrf)]) -> 
     return staff
 
 
-def _scope(staff: sa.CurrentStaff) -> dict[str, Any]:
+def scope_params(staff: sa.CurrentStaff) -> dict[str, Any]:
     return {"role": staff.role, "staff": staff.staff_id, "school": staff.school_id}
 
 
-def _not_found() -> ProblemError:
+def not_found() -> ProblemError:
     return ProblemError(404, "not_found", "Not found")
 
 
-def _audit(conn: Connection, request: Request, staff: sa.CurrentStaff, action: str, obj: str) -> None:
+def audit(conn: Connection, request: Request, staff: sa.CurrentStaff, action: str, obj: str) -> None:
     ip = request.client.host if request.client else "unknown"
     conn.execute(
         text("INSERT INTO audit_log (actor, action, object, ip_hash) VALUES (:a, :act, :o, :ip)"),
@@ -218,16 +218,16 @@ def _row(r: Any, names: dict[str, str]) -> RosterRow:
     )
 
 
-def _class(conn: Connection, staff: sa.CurrentStaff, class_id: UUID) -> Any:
+def class_in_scope(conn: Connection, staff: sa.CurrentStaff, class_id: UUID) -> Any:
     row = conn.execute(
         text(
             f"SELECT c.id, c.grade, c.section, s.name AS school FROM school_class c "  # noqa: S608 - fixed SQL fragments only; every value is a bound parameter
-            f"JOIN school s ON s.id = c.school_id WHERE c.id = :c AND c.id IN ({_MY_CLASSES})"
+            f"JOIN school s ON s.id = c.school_id WHERE c.id = :c AND c.id IN ({MY_CLASSES})"
         ),
-        {"c": class_id, **_scope(staff)},
+        {"c": class_id, **scope_params(staff)},
     ).first()
     if row is None:
-        raise _not_found()
+        raise not_found()
     return row
 
 
@@ -263,22 +263,22 @@ def list_classes(
             text(
                 f"""
                 SELECT c.id, c.grade, c.section, s.name AS school,
-                  (SELECT count(*) FROM student st WHERE st.class_id = c.id AND {_VISIBLE}) AS enrolled,
-                  (SELECT count(*) FROM student st WHERE st.class_id = c.id AND {_VISIBLE}
+                  (SELECT count(*) FROM student st WHERE st.class_id = c.id AND {VISIBLE}) AS enrolled,
+                  (SELECT count(*) FROM student st WHERE st.class_id = c.id AND {VISIBLE}
                      AND {_STARTED}) AS started,
-                  (SELECT count(*) FROM student st WHERE st.class_id = c.id AND {_VISIBLE}
+                  (SELECT count(*) FROM student st WHERE st.class_id = c.id AND {VISIBLE}
                      AND EXISTS (SELECT 1 FROM recommendation r
                                  WHERE r.student_id = st.id)) AS blueprint_ready,
                   (SELECT count(*) FROM student st WHERE st.class_id = c.id AND st.archived_at IS NULL
-                     AND NOT ({_VISIBLE})) AS not_shown,
+                     AND NOT ({VISIBLE})) AS not_shown,
                   (SELECT count(*) FROM flag f JOIN student st ON st.id = f.student_id
-                     WHERE st.class_id = c.id AND {_VISIBLE} AND f.resolved_at IS NULL) AS open_flags
+                     WHERE st.class_id = c.id AND {VISIBLE} AND f.resolved_at IS NULL) AS open_flags
                 FROM school_class c JOIN school s ON s.id = c.school_id
-                WHERE c.id IN ({_MY_CLASSES})
+                WHERE c.id IN ({MY_CLASSES})
                 ORDER BY s.name, c.grade, c.section
                 """  # noqa: S608 - fixed SQL fragments only; every value is a bound parameter
             ),
-            _scope(staff),
+            scope_params(staff),
         ).all()
     return [
         ClassSummary(
@@ -308,12 +308,12 @@ def roster(
     after = _decode_cursor(cursor) if cursor else None
     names = _path_names()
     with get_engine(request).begin() as conn:
-        _class(conn, staff, class_id)
+        class_in_scope(conn, staff, class_id)
         rows = conn.execute(
             text(
                 _ROW
                 + f"""
-                WHERE st.class_id = :c AND {_VISIBLE}
+                WHERE st.class_id = :c AND {VISIBLE}
                   AND (CAST(:after_n AS text) IS NULL OR (lower(st.nickname), st.id) > (:after_n, :after_id))
                 ORDER BY lower(st.nickname), st.id
                 LIMIT :n
@@ -326,7 +326,7 @@ def roster(
                 "n": limit + 1,
             },
         ).all()
-        _audit(conn, request, staff, "dash.roster", f"class:{class_id}")
+        audit(conn, request, staff, "dash.roster", f"class:{class_id}")
     page = rows[:limit]
     more = len(rows) > limit
     return RosterPage(
@@ -341,12 +341,12 @@ def export_roster(
 ) -> Response:
     names = _path_names()
     with get_engine(request).begin() as conn:
-        cls = _class(conn, staff, class_id)
+        cls = class_in_scope(conn, staff, class_id)
         rows = conn.execute(
-            text(_ROW + f" WHERE st.class_id = :c AND {_VISIBLE} ORDER BY lower(st.nickname), st.id"),
+            text(_ROW + f" WHERE st.class_id = :c AND {VISIBLE} ORDER BY lower(st.nickname), st.id"),
             {"c": class_id},
         ).all()
-        _audit(conn, request, staff, "dash.export", f"class:{class_id}")
+        audit(conn, request, staff, "dash.export", f"class:{class_id}")
     out = io.StringIO()
     writer = csv.writer(out, lineterminator="\r\n")
     writer.writerow(
@@ -380,12 +380,12 @@ def student_summary(
     names = _path_names()
     with get_engine(request).begin() as conn:
         row = conn.execute(
-            text(_ROW + f" WHERE st.id = :s AND st.class_id IN ({_MY_CLASSES}) AND {_VISIBLE}"),
-            {"s": student_id, **_scope(staff)},
+            text(_ROW + f" WHERE st.id = :s AND st.class_id IN ({MY_CLASSES}) AND {VISIBLE}"),
+            {"s": student_id, **scope_params(staff)},
         ).first()
         if row is None:
-            raise _not_found()
-        cls = _class(conn, staff, row.class_id)
+            raise not_found()
+        cls = class_in_scope(conn, staff, row.class_id)
         method = conn.execute(
             text(
                 "SELECT method FROM consent WHERE student_id = :s AND type IN ('parent', 'self') "
@@ -411,7 +411,7 @@ def student_summary(
                     {"s": student_id, "h": rec.input_hash, "riasec": list(RIASEC)},
                 ).scalars()
             )
-        _audit(conn, request, staff, "dash.summary", f"student:{student_id}")
+        audit(conn, request, staff, "dash.summary", f"student:{student_id}")
     recommendation = None
     if rec is not None:
         ranked = rec.ranked if isinstance(rec.ranked, list) else json.loads(rec.ranked)
@@ -452,13 +452,13 @@ def list_flags(request: Request, staff: Annotated[sa.CurrentStaff, Depends(dash_
                 FROM flag f
                 JOIN student st ON st.id = f.student_id
                 JOIN school_class c ON c.id = st.class_id
-                WHERE f.resolved_at IS NULL AND c.id IN ({_MY_CLASSES}) AND {_VISIBLE}
+                WHERE f.resolved_at IS NULL AND c.id IN ({MY_CLASSES}) AND {VISIBLE}
                 ORDER BY f.created_at, f.id
                 """  # noqa: S608 - fixed SQL fragments only; every value is a bound parameter
             ),
-            _scope(staff),
+            scope_params(staff),
         ).all()
-        _audit(conn, request, staff, "dash.flags", f"flags:{len(rows)}")
+        audit(conn, request, staff, "dash.flags", f"flags:{len(rows)}")
     return [
         FlagOut(
             id=r.id,
@@ -487,13 +487,13 @@ def resolve_flag(
                 UPDATE flag f SET resolved_at = coalesce(f.resolved_at, now()),
                                   resolved_by = coalesce(f.resolved_by, :staff)
                 FROM student st
-                WHERE f.id = :f AND st.id = f.student_id AND st.class_id IN ({_MY_CLASSES}) AND {_VISIBLE}
+                WHERE f.id = :f AND st.id = f.student_id AND st.class_id IN ({MY_CLASSES}) AND {VISIBLE}
                 RETURNING f.id, f.resolved_at
                 """  # noqa: S608 - fixed SQL fragments only; every value is a bound parameter
             ),
-            {"f": flag_id, **_scope(staff)},
+            {"f": flag_id, **scope_params(staff)},
         ).first()
         if found is None:
-            raise _not_found()
-        _audit(conn, request, staff, "dash.flag_resolved", f"flag:{flag_id}")
+            raise not_found()
+        audit(conn, request, staff, "dash.flag_resolved", f"flag:{flag_id}")
     return {"id": str(found.id), "resolved_at": found.resolved_at.isoformat()}

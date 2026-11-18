@@ -146,6 +146,25 @@ export type Flag = {
   created_at: string;
 };
 
+export type ConsentForm = {
+  serial: string;
+  kind: 'parent' | 'self';
+  status: 'printed' | 'recorded' | 'claimed' | 'expired';
+  age_band: string | null;
+  research_opt_in: boolean | null;
+  teacher_visible: boolean | null;
+  recorded_at: string | null;
+  recorded_by: string | null;
+  claimed_at: string | null;
+  nickname: string | null;
+  expires_at: string;
+};
+export type PrintedForms = { count: number; first: string; last: string; password: string; files: { name: string; content: string }[] };
+export type RecordForm = { age_band: string; research_opt_in: boolean; teacher_visible: boolean };
+
+export const PARENT_BANDS = ['13-15', '16-17'] as const;
+export const ADULT_BANDS = ['18-19', '20-24', '25+'] as const;
+
 export const dash = {
   classes: () => api<ClassSummary[]>('/dash/classes'),
   /** Every student of a class the caller may see, page by page (100 at a time). */
@@ -166,12 +185,25 @@ export const dash = {
   flags: () => api<Flag[]>('/dash/flags'),
   resolveFlag: (flagId: string, csrf: string) =>
     api<{ id: string }>(`/dash/flags/${encodeURIComponent(flagId)}`, { method: 'PATCH', body: { resolved: true }, csrf }),
+  forms: (classId: string) => api<ConsentForm[]>(`/dash/classes/${encodeURIComponent(classId)}/consent-slips`),
+  printForms: (classId: string, count: number, kind: 'parent' | 'self', csrf: string) =>
+    api<PrintedForms>(`/dash/classes/${encodeURIComponent(classId)}/consent-slips`, { method: 'POST', body: { count, kind }, csrf }),
+  recordForm: (classId: string, serial: string, form: RecordForm, csrf: string) =>
+    api<ConsentForm>(`/dash/classes/${encodeURIComponent(classId)}/consent-slips/${encodeURIComponent(serial)}:record`, {
+      method: 'POST',
+      body: form,
+      csrf,
+    }),
   /** A plain link: the browser sends the session cookie and saves the file the API names. */
   exportUrl: (classId: string) => `${API_URL}/v1/dash/classes/${encodeURIComponent(classId)}/export.csv`,
 };
 
 // ------------------------------------------------------------------------------------------- routes
-export type Route = { page: 'classes' } | { page: 'class'; id: string } | { page: 'student'; id: string; classId: string | null };
+export type Route =
+  | { page: 'classes' }
+  | { page: 'class'; id: string }
+  | { page: 'forms'; id: string }
+  | { page: 'student'; id: string; classId: string | null };
 
 const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 
@@ -179,6 +211,8 @@ const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 export function parseRoute(hash: string): Route {
   const cls = new RegExp(`^#/class/(${UUID})$`).exec(hash);
   if (cls) return { page: 'class', id: cls[1] };
+  const forms = new RegExp(`^#/class/(${UUID})/forms$`).exec(hash);
+  if (forms) return { page: 'forms', id: forms[1] };
   const student = new RegExp(`^#/student/(${UUID})(?:[?]class=(${UUID}))?$`).exec(hash);
   if (student) return { page: 'student', id: student[1], classId: student[2] ?? null };
   return { page: 'classes' };
@@ -186,6 +220,7 @@ export function parseRoute(hash: string): Route {
 
 export function routeHash(route: Route): string {
   if (route.page === 'class') return `#/class/${route.id}`;
+  if (route.page === 'forms') return `#/class/${route.id}/forms`;
   if (route.page === 'student') return `#/student/${route.id}${route.classId ? `?class=${route.classId}` : ''}`;
   return '#/classes';
 }
@@ -198,4 +233,21 @@ export function daysSince(iso: string, now: Date = new Date()): number {
 /** Percentage, rounded, 0 when there is nobody. */
 export function percent(part: number, whole: number): number {
   return whole > 0 ? Math.round((100 * part) / whole) : 0;
+}
+
+/** The bands a form may take: Form A (parent) is for 13 to 17, Form C (adult student) for 18 and over. */
+export function bandsFor(kind: 'parent' | 'self'): readonly string[] {
+  return kind === 'parent' ? PARENT_BANDS : ADULT_BANDS;
+}
+
+/** A downloadable file from the base64 the API sends (an encrypted .xlsx). */
+export function fileUrl(content: string): string {
+  const bytes = Uint8Array.from(atob(content), (c) => c.charCodeAt(0));
+  const blob = new Blob([bytes], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+  return URL.createObjectURL(blob);
+}
+
+/** The password in groups as the API makes it (K7QP-M2XD-...); the last group is typed back to confirm. */
+export function lastGroup(password: string): string {
+  return password.split('-').pop() ?? '';
 }
