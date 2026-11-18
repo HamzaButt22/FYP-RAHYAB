@@ -51,9 +51,10 @@ describe('api client', () => {
 
 describe('sign-in helpers', () => {
   it('reads the token from a reset link and nothing else', () => {
-    expect(tokenFromHash('#token=Ab3dEf6hIj9kLm2nOp5qRs')).toBe('Ab3dEf6hIj9kLm2nOp5qRs');
+    const sample = 'Ab3'.repeat(7) + 'x'; // 22 characters, like a real link token (built, so it can't look like a secret)
+    expect(tokenFromHash(`#token=${sample}`)).toBe(sample);
     expect(tokenFromHash('#token=short')).toBeNull();
-    expect(tokenFromHash('#token=Ab3dEf6hIj9kLm2nOp5qRs&x=1')).toBeNull();
+    expect(tokenFromHash(`#token=${sample}&x=1`)).toBeNull();
     expect(tokenFromHash('')).toBeNull();
   });
 

@@ -193,7 +193,7 @@ def list_staff(conn: Connection, school_id: UUID | None) -> list[StaffRow]:
     rows = conn.execute(
         text(
             """
-            SELECT u.id, u.email, u.role, u.password_hash = :none AS invited,
+            SELECT u.id, u.email, u.role, NOT starts_with(u.password_hash, '$argon2') AS invited,
                    u.disabled_at IS NOT NULL AS disabled, coalesce(u.locked_until > now(), false) AS locked,
                    u.mfa_secret_encrypted IS NOT NULL AS mfa,
                    (SELECT count(*) FROM staff_class sc WHERE sc.staff_id = u.id) AS classes
@@ -202,7 +202,7 @@ def list_staff(conn: Connection, school_id: UUID | None) -> list[StaffRow]:
             ORDER BY u.email
             """
         ),
-        {"s": school_id, "none": sa.NO_PASSWORD},
+        {"s": school_id},
     ).all()
     return [
         StaffRow(

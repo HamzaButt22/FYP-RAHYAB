@@ -22,6 +22,7 @@ import hashlib
 import hmac
 import os
 import secrets
+import string
 from dataclasses import dataclass
 from typing import Annotated
 from urllib.parse import quote
@@ -55,7 +56,7 @@ NO_PASSWORD = "!"  # noqa: S105 - a marker that no password matches, not a passw
 _hasher = PasswordHasher(time_cost=3, memory_cost=64 * 1024, parallelism=1)
 # Checked when an email is unknown, so a wrong email takes as long as a wrong password.
 _DUMMY_HASH = _hasher.hash(secrets.token_urlsafe(16))
-_TOKEN_ALPHABET = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz"  # noqa: S105 - alphabet
+_TOKEN_ALPHABET = string.digits + string.ascii_uppercase + string.ascii_lowercase  # the 62 letters and digits
 _COMMON = frozenset(
     {
         "password1234",

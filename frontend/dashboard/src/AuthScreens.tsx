@@ -7,7 +7,7 @@
 import { useState, type FormEvent, type ReactNode } from 'react';
 
 import logo from '../../../design/brand/logo/svg/branch-light.svg';
-import { cleanCode, errorKey, groupKey, looksLikeEmail, staffAuth, waitMinutes, type Challenge, type Setup } from './api';
+import { ApiError, cleanCode, errorKey, groupKey, looksLikeEmail, staffAuth, waitMinutes, type Challenge, type Setup } from './api';
 import { useI18n } from './i18n';
 
 function Card({ title, children }: { title: string; children: ReactNode }) {
@@ -249,8 +249,7 @@ export function ResetPassword({ token, onSignIn, onForgot }: { token: string | n
       await staffAuth.confirmReset(token, password);
       setDone(true);
     } catch (err) {
-      const key = errorKey(err, 'new_password');
-      if (key === 'auth.errors.reset_link_invalid') setLinkBad(true);
+      if (err instanceof ApiError && err.code === 'reset_link_invalid') setLinkBad(true);
       setError(message(err, 'new_password'));
     } finally {
       setBusy(false);
