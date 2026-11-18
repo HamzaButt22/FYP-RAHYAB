@@ -23,8 +23,9 @@ from dataclasses import dataclass
 
 RIASEC = ("R", "I", "A", "S", "E", "C")
 WEIGHTS = {"interest": 0.55, "ability": 0.35, "marks": 0.10}
-# Provisional: on the Phi scale, a spread below 0.15 means all six interests lie within a narrow band.
-# Calibrated in the V1 simulation on the reference sample (SCIENTIFIC_BASIS.md V1); kept in scoring.json.
+# Provisional starting value, not yet calibrated (the V1 simulation and the pilot set it; SCIENTIFIC_BASIS.md):
+# on the Phi scale, a spread below 0.15 means all six interests lie within a narrow band. It only decides
+# whether interests count at all; whether a result is ranked early is recommend.RANK_MIN_DIFFERENTIATION.
 MIN_DIFFERENTIATION = 0.15
 
 

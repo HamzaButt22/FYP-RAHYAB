@@ -721,7 +721,7 @@ paths:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Problem' }
         '409':
-          description: '`insufficient_evidence`: more play is needed (FR-51). `errors[0].code` says why: `low_coverage`, `uncertain_interests` or `no_clear_pattern`'
+          description: '`insufficient_evidence`: more play is needed (FR-51). `errors[0].code` says why: `low_coverage`, `uncertain_interests`, `no_clear_pattern` or `inconsistent_choices` (repeated pairs answered differently too often; scoring.json confidence.interim_rules)'
           content:
             application/problem+json:
               schema: { $ref: '#/components/schemas/Problem' }

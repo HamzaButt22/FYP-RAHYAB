@@ -9,6 +9,11 @@ in a forced choice between two types (pair "R-S", picked "R"), the picked type w
 Every result made with this scorer is marked provisional. It reads the same inputs as the real scorer
 (the choices), so swapping it later changes no caller. Coverage follows pairs.json: every pair should be
 seen at least `each_pair_min` times.
+
+Repeated-pair agreement (FR-43): the game shows every pair twice (sides swapped). For each pair answered
+more than once, agreement counts how many of the later answers match that pair's most common answer:
+sum(max(a, b) - 1) / sum(n - 1) over those pairs. A consistent player is near 1; someone tapping at random
+is near 0.5. With fewer than MIN_REPEATED_PAIRS repeated pairs it is None (not enough to judge).
 """
 
 from __future__ import annotations
@@ -21,6 +26,7 @@ from statistics import NormalDist
 RIASEC = ("R", "I", "A", "S", "E", "C")
 PAIRS = tuple(f"{a}-{b}" for i, a in enumerate(RIASEC) for b in RIASEC[i + 1 :])  # the 15 pairs, R-I first
 EACH_PAIR_MIN = 2  # pairs.json coverage_targets.each_pair_min
+MIN_REPEATED_PAIRS = 8  # scoring.json confidence.interim_rules.min_repeated_pairs
 MODEL_ID = "m1-counts-2026.11.0"
 _NORMAL = NormalDist()
 
@@ -41,6 +47,8 @@ class InterestScores:
     coverage: float  # 0..1, share of the pair coverage target reached
     choices: int  # valid choices counted
     wins: dict[str, int] = field(default_factory=dict)  # how often each type was chosen ("Why this?")
+    repeated_pairs: int = 0  # pairs answered more than once
+    agreement: float | None = None  # repeated-pair agreement, 0..1; None when too few repeats
 
 
 def canonical_pair(pair: str) -> str | None:
@@ -56,6 +64,7 @@ def score(choices: Iterable[Choice]) -> InterestScores:
     wins = dict.fromkeys(RIASEC, 0)
     seen = dict.fromkeys(RIASEC, 0)
     per_pair = dict.fromkeys(PAIRS, 0)
+    picked_in_pair: dict[str, dict[str, int]] = {p: {} for p in PAIRS}
     counted = 0
     for c in choices:
         pair = canonical_pair(c.pair)
@@ -66,6 +75,7 @@ def score(choices: Iterable[Choice]) -> InterestScores:
         seen[b] += 1
         wins[c.picked] += 1
         per_pair[pair] += 1
+        picked_in_pair[pair][c.picked] = picked_in_pair[pair].get(c.picked, 0) + 1
         counted += 1
     theta: dict[str, float] = {}
     se: dict[str, float] = {}
@@ -74,4 +84,9 @@ def score(choices: Iterable[Choice]) -> InterestScores:
         theta[t] = _NORMAL.inv_cdf(p)
         se[t] = math.sqrt(p * (1.0 - p) / (seen[t] + 1)) / _NORMAL.pdf(theta[t])
     coverage = sum(min(n, EACH_PAIR_MIN) for n in per_pair.values()) / (EACH_PAIR_MIN * len(PAIRS))
-    return InterestScores(theta, se, seen, coverage, counted, wins)
+    repeated = [p for p in PAIRS if per_pair[p] >= 2]
+    agreement = None
+    if len(repeated) >= MIN_REPEATED_PAIRS:
+        same = sum(max(picked_in_pair[p].values()) - 1 for p in repeated)
+        agreement = same / sum(per_pair[p] - 1 for p in repeated)
+    return InterestScores(theta, se, seen, coverage, counted, wins, len(repeated), agreement)

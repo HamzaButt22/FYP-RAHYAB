@@ -1,6 +1,6 @@
 {
-  "version": "1.1.0",
-  "updated": "2026-11-15",
+  "version": "1.2.0",
+  "updated": "2026-11-18",
   "framework": "Scoring settings for models M1-M3 (GDD section 12)",
   "m1_interests": {
     "model": "One joint model: Thurstonian IRT for forced choices and the planner ranking block + graded response model for reaction taps (3 categories), all loading on the same six traits",
@@ -45,7 +45,7 @@
       },
       "min_differentiation": {
         "value": 0.15,
-        "status": "provisional; calibrated in the V1 simulation on the reference sample"
+        "status": "provisional starting value, not yet calibrated: the V1 simulation and the pilot set it (SCIENTIFIC_BASIS.md). It only decides whether interests count at all; whether a result is ranked before the extra week is decided by confidence.interim_rules.rank"
       }
     },
     "candidates": [
@@ -66,7 +66,8 @@
       "good": 0.55,
       "worth_a_look": 0.0,
       "status": "provisional cut points on the fit scale (0-1), set on the pilot together with confidence.delta; a band describes fit, never a probability",
-      "rule": "fit >= strong -> 'strong'; fit >= good -> 'good'; otherwise 'worth_a_look'"
+      "rule": "fit >= strong -> 'strong'; fit >= good -> 'good'; otherwise 'worth_a_look'",
+      "caps": "a low-confidence result shows at most 'good'; a result that opened only because of the extra week (FR-51) on thin evidence shows 'worth_a_look' on every card"
     },
     "plan_b": "For each of the top 3, the path outside the top 3 whose RIASEC profile correlates most with it (a related option); if every other path is in the top 3, the next-ranked path. Always at least one.",
     "reasons": "2-3 reason codes per card, from the stored contributions only: the student's top interest types that the path's profile shares, ability support when measured, and the doors the rules engine set. Codes, never text: the app words them in English."
@@ -76,7 +77,25 @@
     "low": "any key SE > .50 or coverage < 80%",
     "medium": "otherwise",
     "delta": "set on the pilot: the smallest margin at which the top-1 path stays top-1 in >= 90% of 200 bootstrap resamples of the student's own choices; bands describe stability, never probabilities",
-    "margin": "fit(top-1) - fit(top-4)"
+    "margin": "fit(top-1) - fit(top-4)",
+    "interim_rules": {
+      "applies_to": "results made with the interim counting scorer (m1-counts), i.e. every result until the Thurstonian IRT scorer exists",
+      "why": "The counting scorer's delta-method SE grows when a student picks a type every time (or never), so the SE rules above made clear students 'low' and random tapping 'medium'. A persona simulation (18 Nov 2026: 17 personas x 200 plays on the 30-slot schedule, plus random tapping) showed random tapping ranked 100% of the time, 98% 'medium', 70% 'strong'. Until the IRT scorer exists, the decisions use differentiation and repeated-pair agreement (FR-43) instead; SE is still stored.",
+      "agreement": "for pairs answered more than once: sum(max(a, b) - 1) / sum(n - 1); a consistent player is near 1, random tapping near 0.5",
+      "min_repeated_pairs": 8,
+      "rank": {
+        "min_differentiation": 0.5,
+        "min_agreement": 0.6,
+        "rule": "before the extra week, rank only when coverage >= 80%, differentiation >= min_differentiation and (agreement >= min_agreement or too few repeated pairs to judge); otherwise 409 insufficient_evidence with reason no_clear_pattern or inconsistent_choices"
+      },
+      "medium": {
+        "min_differentiation": 0.55,
+        "min_agreement": 0.7,
+        "rule": "'medium' needs coverage >= 80%, differentiation >= min_differentiation and a known agreement >= min_agreement; otherwise 'low'. 'high' is not given before the pilot"
+      },
+      "simulated_rates": "random tapping: ranked 11%, 'medium' 1%; consistent personas (noise 0.25): ranked 99%, 'medium' 82%; very noisy personas (noise 0.55): ranked 66%, 'medium' 25%",
+      "status": "provisional, from our own persona simulation (assumed response model, not real students); re-checked in V1 and set on the pilot"
+    }
   },
   "letter_reveal": {
     "source": "mean interest SE",
