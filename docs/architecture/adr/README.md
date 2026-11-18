@@ -20,6 +20,7 @@ Each file records one decision: the context, what we chose, the consequences and
 | [ADR-0014](ADR-0014-keep-one-monorepo-with-pnpm-workspaces.md) | Keep one monorepo with pnpm workspaces | Accepted (amended 11 Nov 2026: one pnpm project per app) | SRS §13.3 |
 | [ADR-0015](ADR-0015-sell-institutional-licences-and-individual-subscriptions.md) | Sell institutional licences and individual subscriptions | Accepted | SRS FR-107, FR-108 |
 | [ADR-0016](ADR-0016-english-only-interface.md) | English-only interface | Accepted | — |
+| [ADR-0017](ADR-0017-enforce-staff-data-scope-in-the-api-defer-row-level-security.md) | Enforce staff data scope in the API; defer Row-Level Security | Accepted | — |
 
 ## Template
 

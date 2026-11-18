@@ -4,7 +4,8 @@ Runs as the `jobs` database role (DATABASE_URL), which may only delete and read 
 Jobs so far (hourly): purge old rate-limit windows; delete profiles that never received consent within
 UNCONSENTED_DAYS (DATA_GOVERNANCE.md: nothing was ever uploaded for them, and the phone purges its local
 data after 14 days, FR-05); delete school-file password backups after SCHOOL_FILE_DAYS; delete ended staff
-sessions, used or expired staff links and old staff emails. Every 30 seconds: send queued staff emails
+sessions, used or expired staff links and old staff emails; raise and close the automatic teacher flags
+(`refresh_flags`, FR-73). Every 30 seconds: send queued staff emails
 (mail.py; MAIL_TRANSPORT, SMTP_URL, MAIL_FROM). Still to add: retention and deletion, monthly partitions
 (owner role), rescoring, O*NET cache refresh, nightly backup.
 """
@@ -32,6 +33,40 @@ MAIL_INTERVAL_S = 30
 STAFF_SESSION_KEEP_DAYS = 1  # ended sessions, kept a day for abuse reviews
 STAFF_LINK_KEEP_DAYS = 7  # used or expired reset and invite links (DATA_GOVERNANCE.md §3)
 MAIL_KEEP_DAYS = 3
+# Automatic teacher flags (FR-73). The rules are here so they can be changed in one place.
+NOT_STARTED_DAYS = 7  # joined this long ago and no week started
+STALLED_DAYS = 14  # started, not finished, and nothing played for this long
+HANDLED_QUIET_DAYS = 14  # a flag a teacher marked handled is not raised again for this long
+AUTO_FLAGS = ("not_started", "stalled", "low_confidence")
+
+# Which students have a reason for each automatic flag now. low_confidence ignores provisional results (the
+# interim m1-counts scorer marks every F1 result as low confidence, so it would flag everyone).
+_DUE = """
+    WITH s AS (
+      SELECT st.id, st.created_at,
+             EXISTS (SELECT 1 FROM game_run gr JOIN sitting si ON si.id = gr.sitting_id
+                     WHERE si.student_id = st.id AND NOT gr.practice) AS started,
+             coalesce((SELECT max(gr.week) FROM game_run gr JOIN sitting si ON si.id = gr.sitting_id
+                       WHERE si.student_id = st.id AND NOT gr.practice
+                         AND EXISTS (SELECT 1 FROM raw_event re
+                                     WHERE re.run_id = gr.id AND re.type = 'week_complete')), 0) AS week,
+             greatest(st.last_active_at, (SELECT max(si.started_at) FROM sitting si
+                                          WHERE si.student_id = st.id)) AS last_seen,
+             (SELECT r.confidence FROM recommendation r
+              WHERE r.student_id = st.id AND r.model_versions->>'irt' NOT LIKE 'm1-counts%'
+              ORDER BY r.created_at DESC LIMIT 1) AS confidence
+      FROM student st
+      WHERE st.archived_at IS NULL
+    ), due AS (
+      SELECT id, 'not_started' AS type FROM s
+      WHERE NOT started AND created_at < now() - make_interval(days => :ns)
+      UNION ALL
+      SELECT id, 'stalled' FROM s
+      WHERE started AND week < 4 AND last_seen < now() - make_interval(days => :st)
+      UNION ALL
+      SELECT id, 'low_confidence' FROM s WHERE confidence = 'low'
+    )
+"""
 
 
 def _stop(*_: object) -> None:
@@ -106,6 +141,46 @@ def purge_staff_auth(engine: Engine) -> tuple[int, int, int]:
             {"d": MAIL_KEEP_DAYS, "t": MAIL_TRIES},
         ).rowcount
     return int(sessions or 0), int(links or 0), int(emails or 0)
+
+
+def refresh_flags(engine: Engine) -> tuple[int, int]:
+    """Raises the automatic teacher flags whose reason holds now, and closes those whose reason is gone
+    (a student who started after all). A flag a teacher marked handled is not raised again for
+    HANDLED_QUIET_DAYS. Returns (raised, closed)."""
+    params = {
+        "ns": NOT_STARTED_DAYS,
+        "st": STALLED_DAYS,
+        "quiet": HANDLED_QUIET_DAYS,
+        "auto": list(AUTO_FLAGS),
+    }
+    with engine.begin() as conn:
+        closed = conn.execute(
+            text(
+                _DUE  # noqa: S608 - fixed SQL fragments only; every value is a bound parameter
+                + """
+                UPDATE flag f SET resolved_at = now()
+                WHERE f.resolved_at IS NULL AND f.type = ANY(:auto)
+                  AND NOT EXISTS (SELECT 1 FROM due d WHERE d.id = f.student_id AND d.type = f.type)
+                """
+            ),
+            params,
+        ).rowcount
+        raised = conn.execute(
+            text(
+                _DUE  # noqa: S608 - fixed SQL fragments only; every value is a bound parameter
+                + """
+                INSERT INTO flag (student_id, type)
+                SELECT d.id, d.type FROM due d
+                WHERE NOT EXISTS (
+                  SELECT 1 FROM flag f WHERE f.student_id = d.id AND f.type = d.type
+                    AND (f.resolved_at IS NULL
+                         OR (f.resolved_by IS NOT NULL
+                             AND f.resolved_at > now() - make_interval(days => :quiet))))
+                """
+            ),
+            params,
+        ).rowcount
+    return int(raised or 0), int(closed or 0)
 
 
 def send_outbox(engine: Engine, deliver: Callable[[EmailMessage], None], sender: str) -> tuple[int, int]:
@@ -185,6 +260,7 @@ def main(interval_s: int = 3600) -> None:
                 log.info(
                     "removed %d staff sessions, %d staff links, %d staff emails", *purge_staff_auth(engine)
                 )
+                log.info("teacher flags: %d raised, %d closed", *refresh_flags(engine))
             except Exception:  # keep the worker alive; the next run retries
                 log.exception("a purge failed")
             next_run = time.monotonic() + interval_s

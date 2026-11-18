@@ -11,7 +11,16 @@ from starlette.exceptions import HTTPException as StarletteHTTPException
 from rahyaab_api import __version__
 from rahyaab_api.db import make_engine
 from rahyaab_api.problems import FIELD_CODES, ProblemError, field_error, problem_response
-from rahyaab_api.routers import consents, events, health, profile, results, staff_auth, student_auth
+from rahyaab_api.routers import (
+    consents,
+    dashboard,
+    events,
+    health,
+    profile,
+    results,
+    staff_auth,
+    student_auth,
+)
 from rahyaab_api.settings import Settings, get_settings
 
 log = logging.getLogger("rahyaab.api")
@@ -75,6 +84,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(events.router, prefix="/v1")
     app.include_router(results.router, prefix="/v1")
     app.include_router(profile.router, prefix="/v1")
+    app.include_router(dashboard.router, prefix="/v1")
     return app
 
 

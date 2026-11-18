@@ -92,6 +92,31 @@ def test_parent_slip_grants_consent_once(api: TestClient, world: World) -> None:
         assert r.json() == second.json()  # the same generic error as a bad class code
 
 
+def test_tc_dash_03_the_teacher_box_on_the_form_grants_teacher_visibility(
+    api: TestClient, world: World
+) -> None:
+    # FR-78: a teacher sees a student only if the family ticked the teacher box on Form A (or the adult
+    # student did on Form C). Without the tick there is no teacher_visibility consent.
+    class_id, code = world.add_class()
+    ticked = api.post(URL, json=world.body(code, claim_code=world.add_slip(class_id, teacher=True))).json()
+    plain = api.post(URL, json=world.body(code, claim_code=world.add_slip(class_id))).json()
+    count = "SELECT count(*) FROM consent WHERE student_id = :i AND type = 'teacher_visibility'"
+    assert world.scalar(count, i=ticked["student_id"]) == 1
+    assert world.scalar(count, i=plain["student_id"]) == 0
+    adult_class, adult_code = world.add_class(grade=12)
+    adult = api.post(
+        URL,
+        json=world.body(
+            adult_code,
+            grade=12,
+            birth_year=2007,
+            birth_month=1,
+            claim_code=world.add_slip(adult_class, kind="self", band="18-19", teacher=True),
+        ),
+    ).json()
+    assert world.scalar(count, i=adult["student_id"]) == 1
+
+
 # --------------------------------------------------------------------------------------- age assurance
 def test_a_self_declared_adult_does_not_get_consent(api: TestClient, world: World) -> None:  # TC-AGE-01
     _, code = world.add_class(grade=10)

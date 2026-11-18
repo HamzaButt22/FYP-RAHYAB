@@ -1,4 +1,4 @@
--- Rahyaab PostgreSQL 16 schema, version 1.8 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
+-- Rahyaab PostgreSQL 16 schema, version 1.9 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
 -- v1.1 (2026-11-05): student.age_band and student.situation; self-consent; route and help flags (FR-99..104).
 -- v1.2 (2026-11-05): research_demographics (opt-in, separate role); staff password reset tokens.
 -- v1.3 (2026-11-07, review fixes): consent slips; item keyed by content version; quarantine linked to the
@@ -16,6 +16,9 @@
 -- v1.8 (2026-11-17): staff sign-in (FR-71, FR-106): staff_user.mfa_last_step stops a code being used twice;
 --   staff_session.mfa_pending_secret holds a new authenticator key until its first code is entered;
 --   password_reset.purpose tells an invite link from a reset link; email_outbox queues staff emails.
+-- v1.9 (2026-11-18): consent_slip.teacher_visibility records the teacher box on Forms A and C; a claimed
+--   slip with it ticked gives the student a 'teacher_visibility' consent (FR-78: staff see only those).
+--   The jobs worker may read sitting and game_run and write flag (automatic flags, FR-73).
 -- The migrations live in backend/api/migrations (Alembic): 0001 applies this file to an empty database and
 -- later revisions bring older databases up to date. This file is always the complete current design.
 -- Conventions: snake_case; UUID keys (UUIDv7 for events); timestamptz in UTC; no personal data
@@ -114,6 +117,7 @@ CREATE TABLE consent_slip (
   form_serial       text NOT NULL CHECK (length(form_serial) <= 20),   -- printed on the paper form
   claim_code_hash   text NOT NULL UNIQUE,               -- HMAC-SHA256 of the claim code (CODE_PEPPER)
   research_opt_in   boolean NOT NULL DEFAULT false,
+  teacher_visibility boolean NOT NULL DEFAULT false,   -- the teacher box was ticked on the signed form
   notice_version    text NOT NULL,
   created_at        timestamptz NOT NULL DEFAULT now(),  -- printed
   recorded_by       uuid,                               -- FK added below (staff_user is defined later)
@@ -594,10 +598,12 @@ GRANT SELECT, INSERT, UPDATE, DELETE ON guardian_contact TO guardian_rw;
 GRANT SELECT, DELETE ON student, raw_event, quarantine, trait_estimate, recommendation, share_link,
   note, flag, consent, consent_slip, otp_challenge, relink_code, staff_session, rate_limit, password_reset TO jobs;
 GRANT INSERT ON trait_estimate, recommendation, audit_log TO jobs;
+GRANT SELECT ON sitting, game_run TO jobs;              -- flags: who started, who stalled (FR-73)
+GRANT INSERT, UPDATE ON flag TO jobs;                   -- raises flags and closes them when the reason is gone
 GRANT SELECT, INSERT, UPDATE ON career, stream_career, model_version TO jobs;
 GRANT SELECT ON licence TO jobs;
-GRANT SELECT, DELETE ON school_file TO jobs;
-GRANT SELECT, UPDATE, DELETE ON email_outbox TO jobs;  -- sends staff emails, then deletes them           -- the API never reads school_file
+GRANT SELECT, DELETE ON school_file TO jobs;           -- the API never reads school_file
+GRANT SELECT, UPDATE, DELETE ON email_outbox TO jobs;  -- sends staff emails, then deletes them
 
 -- research_ro: never reads base tables directly; it gets de-identified views in a separate schema
 -- (created with the research export job) plus the opt-in demographics and panel labels.

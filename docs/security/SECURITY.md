@@ -274,8 +274,8 @@ An honest status for each check, so nobody mistakes a design for a working contr
 | Check | Rahyaab | Status |
 |---|---|---|
 | Protect admin routes | MFA session plus admin role; optional IP allowlist; no hidden routes (inventory test) | Staff sign-in with password + authenticator code, session cookie and CSRF check **built and tested** (TC-SEC-17, 20–23, 17 Nov 2026). Role checks on `/dash/*` and `/admin/*`: designed (no such routes yet) |
-| Server-side access checks | As 9.1 | Designed |
-| Row-Level Security | **Not yet in the design.** Access is enforced in the API and by table grants. PostgreSQL RLS on student-linked tables (keyed by school, set per request with `SET LOCAL`) would add a second wall if an API check is ever missed | **Gap: decide in an ADR with the first dashboard API (FYP-2)** |
+| Server-side access checks | As 9.1 | Dashboard **built and tested**: own classes only, consented students only, researchers refused, everything else 404, every read audited (TC-SEC-05, TC-DASH-02, TC-DASH-03) |
+| Row-Level Security | Access is enforced in the API, through one shared scope filter for every dashboard query, plus table grants. PostgreSQL RLS is **deferred** for the pilot (ADR-0017) and revisited before more than the pilot schools | **Decided** (ADR-0017, 18 Nov 2026) |
 | Verify email | Students give no email by design. Staff accounts exist only by admin invitation, and the invite link proves the address. (Parent phone OTP is post-MVP.) | Staff invite **built and tested** (`staff-add`, TC-SEC-23); parent OTP post-MVP |
 | Hash passwords | argon2id (64 MB, 3 iterations, parallelism 1), only for staff | **Built and tested** (`staff_auth.py`; the parameters are checked by a unit test) |
 | No auth tokens in local storage | App: Android Keystore via `expo-secure-store`. Dashboard: `HttpOnly` `__Host-` cookie; nothing in `localStorage` | App **built**. Dashboard **built and tested**: the session is only in the `__Host-rahyaab_session` cookie (HttpOnly, Secure, SameSite=Strict); the dashboard code never sees it and stores nothing (TC-SEC-17) |

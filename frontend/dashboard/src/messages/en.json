@@ -1,36 +1,28 @@
 {
   "nav": {
     "label": "Dashboard",
-    "classes": "Classes",
-    "students": "Students",
-    "reports": "Reports",
-    "school": "School",
-    "settings": "Settings"
+    "classes": "Classes"
   },
-  "demo": "Sample data. Your real classes will appear here in the next update.",
   "roster": {
     "title": "Class {{name}}",
     "export": "Download the list",
-    "invite": "Add students",
     "started": "Started the game",
-    "ready": "Blueprint ready",
+    "ready": "Results ready",
     "chat": "Worth a chat",
     "colStudent": "Student",
+    "colForm": "Form number",
     "colProgress": "Progress",
     "colPath": "Best-fit path",
     "colConfidence": "How sure",
-    "colNote": "Note",
+    "colFlags": "Worth a chat",
     "week": "Week {{n}} of {{total}}",
+    "notStarted": "Not started",
     "none": "Not yet",
-    "sure": "Fairly sure",
-    "unsure": "Not sure yet",
-    "mixed": "Mixed answers: have a chat",
-    "tableCaption": "Students in this class, with their progress and best-fit path"
-  },
-  "paths": {
-    "preEngineering": "Pre-Engineering",
-    "ics": "ICS (Computer Science)",
-    "preMedical": "Pre-Medical"
+    "tableCaption": "Students in this class, with their progress and best-fit path",
+    "notShown": "{{n}} more students are not shown: their family has not ticked the teacher box on the consent form, or the form is not back yet.",
+    "empty": "No students to show yet. A student appears here after joining with a signed consent form that has the teacher box ticked.",
+    "open": "Open {{nickname}}",
+    "notShownOne": "1 more student is not shown: their family has not ticked the teacher box on the consent form, or the form is not back yet."
   },
   "auth": {
     "staff": "Staff",
@@ -101,5 +93,98 @@
       "email": "Type your full email, like name@school.edu.pk.",
       "code": "Type the 6 digits from your app."
     }
+  },
+  "dash": {
+    "classesTitle": "Your classes",
+    "classCard": "Class {{name}}",
+    "students": "{{n}} students",
+    "startedPct": "{{pct}}% started",
+    "toCheck": "{{n}} to check",
+    "noClasses": "No classes yet. Ask your school's Rahyaab admin to add you to your classes.",
+    "attention": "Worth a chat",
+    "attentionNone": "Nothing to check right now.",
+    "attentionCaption": "Students worth a chat, with the reason and what to do",
+    "colFlag": "Reason",
+    "colStudent": "Student",
+    "colClass": "Class",
+    "colSince": "Since",
+    "colAction": "What to do",
+    "handled": "Mark as handled",
+    "handledLabel": "Mark {{flag}} for {{nickname}} as handled",
+    "today": "today",
+    "days": "{{n}} days",
+    "loading": "Loading…",
+    "error": "We couldn't load this. Check your internet and try again.",
+    "retry": "Try again",
+    "back": "Back to your classes",
+    "backToClass": "Back to class {{name}}"
+  },
+  "confidence": {
+    "high": "Sure",
+    "medium": "Fairly sure",
+    "low": "Not sure yet"
+  },
+  "fit": {
+    "strong": "Strong",
+    "good": "Good",
+    "worth_a_look": "Worth a look"
+  },
+  "flags": {
+    "not_started": {
+      "label": "Not started",
+      "action": "Joined over a week ago. Check they can open the app."
+    },
+    "stalled": {
+      "label": "Stopped playing",
+      "action": "No play for two weeks. Ask if something is in the way."
+    },
+    "low_confidence": {
+      "label": "Result not clear",
+      "action": "Talk it through. One more week may help."
+    },
+    "mixed_signals": {
+      "label": "Mixed answers",
+      "action": "Interests and strengths point different ways. Have a chat."
+    },
+    "quality": {
+      "label": "Rushed answers",
+      "action": "Some answers were very fast. Ask them to replay a week."
+    },
+    "route_question": {
+      "label": "Route question",
+      "action": "They looked at changing group. Talk about the options."
+    },
+    "help_requested": {
+      "label": "Asked for help",
+      "action": "They tapped “Ask your teacher”. Find a moment to talk."
+    },
+    "age_mismatch": {
+      "label": "Check age",
+      "action": "The age they typed differs from the register. Check the form."
+    }
+  },
+  "student": {
+    "print": "Print summary",
+    "form": "Form {{serial}}",
+    "ready": "Results ready",
+    "consent": {
+      "school_form": "Consent: school form",
+      "otp": "Consent: parent by phone",
+      "in_app": "Consent: in the app",
+      "self": "Consent: adult student"
+    },
+    "topPaths": "Top paths",
+    "interests": "Strongest interests",
+    "noResult": "No results yet. They appear after the student finishes the weeks.",
+    "provisional": "Early result: the scoring is still being finished, so treat this as a first look.",
+    "logged": "This view is logged. Use it to start a conversation, never to decide for the student."
+  },
+  "interest": {
+    "R": "Hands-on work",
+    "I": "Science",
+    "A": "Creative work",
+    "S": "Helping people",
+    "E": "Leading others",
+    "C": "Organising"
   }
 }
