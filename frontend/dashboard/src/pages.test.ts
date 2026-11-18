@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { daysSince, parseRoute, percent, routeHash } from './api';
+import { bandsFor, daysSince, lastGroup, parseRoute, percent, routeHash } from './api';
 import { lookup } from './i18n';
 
 const ID = '0b5e8a52-3f0e-4c4b-9d1a-2f6d7e8a9b01';
@@ -11,6 +11,8 @@ describe('dashboard addresses', () => {
     expect(parseRoute(`#/class/${ID}`)).toEqual({ page: 'class', id: ID });
     expect(parseRoute(`#/student/${ID}?class=${CLASS}`)).toEqual({ page: 'student', id: ID, classId: CLASS });
     expect(parseRoute(`#/student/${ID}`)).toEqual({ page: 'student', id: ID, classId: null });
+    expect(parseRoute(`#/class/${CLASS}/forms`)).toEqual({ page: 'forms', id: CLASS });
+    expect(routeHash({ page: 'forms', id: CLASS })).toBe(`#/class/${CLASS}/forms`);
     for (const route of [parseRoute(`#/class/${ID}`), parseRoute(`#/student/${ID}?class=${CLASS}`)]) {
       expect(parseRoute(routeHash(route))).toEqual(route);
     }
@@ -49,6 +51,25 @@ describe('dashboard text', () => {
       ...['strong', 'good', 'worth_a_look'].map((f) => `fit.${f}`),
       ...'RIASEC'.split('').map((code) => `interest.${code}`),
       ...['school_form', 'otp', 'in_app', 'self'].map((m) => `student.consent.${m}`),
+    ];
+    for (const key of keys) expect(lookup(key)).not.toBe(key);
+  });
+});
+
+describe('consent forms', () => {
+  it('offers only the bands each form allows', () => {
+    expect(bandsFor('parent')).toEqual(['13-15', '16-17']);
+    expect(bandsFor('self')).toEqual(['18-19', '20-24', '25+']);
+  });
+
+  it('asks for the last group of the password', () => {
+    expect(lastGroup('K7QP-M2XD-9RTV-H4NB-W8CA')).toBe('W8CA');
+  });
+
+  it('has words for every form kind and status', () => {
+    const keys = [
+      ...['parent', 'self'].map((k) => `forms.kind.${k}`),
+      ...['printed', 'recorded', 'claimed', 'expired'].map((s) => `forms.status.${s}`),
     ];
     for (const key of keys) expect(lookup(key)).not.toBe(key);
   });

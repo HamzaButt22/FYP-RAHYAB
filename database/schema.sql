@@ -1,4 +1,4 @@
--- Rahyaab PostgreSQL 16 schema, version 1.9 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
+-- Rahyaab PostgreSQL 16 schema, version 1.10 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
 -- v1.1 (2026-11-05): student.age_band and student.situation; self-consent; route and help flags (FR-99..104).
 -- v1.2 (2026-11-05): research_demographics (opt-in, separate role); staff password reset tokens.
 -- v1.3 (2026-11-07, review fixes): consent slips; item keyed by content version; quarantine linked to the
@@ -19,6 +19,8 @@
 -- v1.9 (2026-11-18): consent_slip.teacher_visibility records the teacher box on Forms A and C; a claimed
 --   slip with it ticked gives the student a 'teacher_visibility' consent (FR-78: staff see only those).
 --   The jobs worker may read sitting and game_run and write flag (automatic flags, FR-73).
+-- v1.10 (2026-11-18): teachers print consent forms from the dashboard, so the API may INSERT the sealed copy of
+--   each file's password into school_file; it still cannot read, change or delete it.
 -- The migrations live in backend/api/migrations (Alembic): 0001 applies this file to an empty database and
 -- later revisions bring older databases up to date. This file is always the complete current design.
 -- Conventions: snake_case; UUID keys (UUIDv7 for events); timestamptz in UTC; no personal data
@@ -603,6 +605,7 @@ GRANT INSERT, UPDATE ON flag TO jobs;                   -- raises flags and clos
 GRANT SELECT, INSERT, UPDATE ON career, stream_career, model_version TO jobs;
 GRANT SELECT ON licence TO jobs;
 GRANT SELECT, DELETE ON school_file TO jobs;           -- the API never reads school_file
+GRANT INSERT ON school_file TO api_rw;                 -- dashboard printing stores the sealed copy, write-only
 GRANT SELECT, UPDATE, DELETE ON email_outbox TO jobs;  -- sends staff emails, then deletes them
 
 -- research_ro: never reads base tables directly; it gets de-identified views in a separate schema

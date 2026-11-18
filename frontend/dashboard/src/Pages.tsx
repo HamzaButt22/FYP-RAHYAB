@@ -3,7 +3,7 @@
 // (/dash/*). The API decides who may be seen; this code only shows what it returns. A 401 (session ended)
 // goes back to sign-in. Only built pages are in the menu: no buttons that do nothing.
 
-import { useEffect, useState, type ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 
 import logo from '../../../design/brand/logo/svg/branch-light.svg';
 import {
@@ -18,49 +18,8 @@ import {
   type StudentSummary,
 } from './api';
 import { useI18n } from './i18n';
+import { Status, useLoad } from './load';
 import { useSession } from './session';
-
-// --------------------------------------------------------------------------------------- loading
-type Load<T> = { status: 'loading' } | { status: 'error' } | { status: 'ok'; data: T };
-
-/** Loads data for a page; a 401 means the session ended, so it goes back to sign-in. */
-function useLoad<T>(load: () => Promise<T>, key: string): [Load<T>, () => void] {
-  const { signedOut } = useSession();
-  const [state, setState] = useState<Load<T>>({ status: 'loading' });
-  const [attempt, setAttempt] = useState(0);
-  useEffect(() => {
-    let live = true;
-    load()
-      .then((data) => live && setState({ status: 'ok', data }))
-      .catch((err: unknown) => {
-        if (!live) return;
-        if (err instanceof ApiError && err.status === 401) signedOut();
-        else setState({ status: 'error' });
-      });
-    return () => {
-      live = false;
-    };
-    // `load` is a new function every render; `key` says when the data to load is different.
-  }, [key, attempt]);
-  const retry = () => {
-    setState({ status: 'loading' });
-    setAttempt((n) => n + 1);
-  };
-  return [state, retry];
-}
-
-function Status({ state, retry }: { state: Load<unknown>; retry: () => void }) {
-  const { t } = useI18n();
-  if (state.status === 'loading') return <p role="status">{t('dash.loading')}</p>;
-  return (
-    <div role="alert" className="card notice">
-      <p>{t('dash.error')}</p>
-      <button type="button" className="btn secondary" onClick={retry}>
-        {t('dash.retry')}
-      </button>
-    </div>
-  );
-}
 
 // ----------------------------------------------------------------------------------------- shell
 export function Shell({ children }: { children: ReactNode }) {
@@ -246,6 +205,9 @@ export function RosterPage({ classId }: { classId: string }) {
           <h1 className="h1">{t('roster.title', { name: cls.name })}</h1>
         </div>
         <div className="actions">
+          <a className="btn secondary" href={routeHash({ page: 'forms', id: classId })}>
+            {t('roster.forms')}
+          </a>
           <a className="btn secondary" href={dash.exportUrl(classId)}>
             {t('roster.export')}
           </a>

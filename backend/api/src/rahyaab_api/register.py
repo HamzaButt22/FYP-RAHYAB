@@ -242,6 +242,16 @@ def class_list_workbook(class_name: str, rows: list[dict[str, object]]) -> Workb
     return wb
 
 
+def encrypted_bytes(wb: Workbook, password: str) -> bytes:
+    """The workbook encrypted with `password` (AES, as Excel's "Encrypt with password"), in memory only."""
+    plain = io.BytesIO()
+    wb.save(plain)
+    plain.seek(0)
+    encrypted = io.BytesIO()
+    OOXMLFile(plain).encrypt(password, encrypted)
+    return encrypted.getvalue()
+
+
 def save_encrypted(wb: Workbook, folder: Path, name: str, password: str) -> Path:
     """Encrypts in memory and writes `name`.xlsx into `folder`. Never overwrites a file."""
     if not folder.is_dir():
@@ -249,11 +259,7 @@ def save_encrypted(wb: Workbook, folder: Path, name: str, password: str) -> Path
     path = folder / f"{name}.xlsx"
     if path.exists():
         raise FileExistsError(f"{path} already exists; move it away first")
-    plain = io.BytesIO()
-    wb.save(plain)
-    plain.seek(0)
-    encrypted = io.BytesIO()
-    OOXMLFile(plain).encrypt(password, encrypted)
+    data = encrypted_bytes(wb, password)
     with path.open("xb") as out:  # "x": fail rather than overwrite, even in a race
-        out.write(encrypted.getvalue())
+        out.write(data)
     return path

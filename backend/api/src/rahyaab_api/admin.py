@@ -93,13 +93,18 @@ CONFIRM_TRIES = 3
 
 
 class AdminError(Exception):
-    """A request the admin can fix (shown as one line, no traceback)."""
+    """A request the admin can fix (shown as one line, no traceback). `code` lets the dashboard API answer
+    with the right status (not_found, already_recorded, band_not_allowed, staff_not_allowed, invalid)."""
+
+    def __init__(self, message: str, code: str = "invalid") -> None:
+        super().__init__(message)
+        self.code = code
 
 
-def _audit(conn: Connection, action: str, obj: str) -> None:
+def _audit(conn: Connection, action: str, obj: str, actor: str = ACTOR) -> None:
     conn.execute(
         text("INSERT INTO audit_log (actor, action, object) VALUES (:a, :act, :o)"),
-        {"a": ACTOR, "act": action, "o": obj},
+        {"a": actor, "act": action, "o": obj},
     )
 
 
@@ -232,7 +237,13 @@ def _require_class(conn: Connection, class_id: UUID) -> None:
 
 # ------------------------------------------------------------------------------------- consent slips
 def print_slips(
-    conn: Connection, pepper: str, class_id: UUID, count: int, kind: str = "parent", notice: str = "2026-11"
+    conn: Connection,
+    pepper: str,
+    class_id: UUID,
+    count: int,
+    kind: str = "parent",
+    notice: str = "2026-11",
+    actor: str = ACTOR,
 ) -> list[tuple[str, str]]:
     """Numbered slips for the paper forms (Form A parent, Form C adult): [(serial, claim code)].
 
@@ -261,7 +272,7 @@ def print_slips(
             pepper,
         )
         slips.append((serial, code))
-    _audit(conn, "slips.print", f"class:{class_id}:{count}")
+    _audit(conn, "slips.print", f"class:{class_id}:{count}", actor)
     return slips
 
 
@@ -273,6 +284,7 @@ def record_slip(
     staff_id: UUID,
     research: bool = False,
     teacher: bool = False,
+    actor: str = ACTOR,
 ) -> None:
     """The signed form is back: the teacher copies the age band from the school's admission register, and
     whether the research and teacher boxes are ticked (FR-78: only then may staff see the student)."""
@@ -281,13 +293,13 @@ def record_slip(
         {"c": class_id, "s": serial},
     ).one_or_none()
     if slip is None:
-        raise AdminError(f"no slip {serial} in that class")
+        raise AdminError(f"no slip {serial} in that class", "not_found")
     if slip.recorded_at is not None:
-        raise AdminError(f"slip {serial} is already recorded")
+        raise AdminError(f"slip {serial} is already recorded", "already_recorded")
     allowed = PARENT_BANDS if slip.kind == "parent" else ADULT_BANDS
     if band not in allowed:
         form = "Form A (parent)" if slip.kind == "parent" else "Form C (adult)"
-        raise AdminError(f"{form} needs a register band of {', '.join(allowed)}")
+        raise AdminError(f"{form} needs a register band of {', '.join(allowed)}", "band_not_allowed")
     staff_ok = conn.execute(
         text(
             "SELECT 1 FROM staff_user st JOIN school_class c ON c.id = :c "
@@ -297,7 +309,7 @@ def record_slip(
         {"c": class_id, "by": staff_id},
     ).first()
     if staff_ok is None:
-        raise AdminError("--by must be an active staff member of this school")
+        raise AdminError("--by must be an active staff member of this school", "staff_not_allowed")
     conn.execute(
         text(
             "UPDATE consent_slip SET recorded_by = :by, recorded_at = now(), verified_age_band = :b, "
@@ -305,12 +317,18 @@ def record_slip(
         ),
         {"by": staff_id, "b": band, "r": research, "t": teacher, "id": slip.id},
     )
-    _audit(conn, "slip.record", f"slip:{slip.id}")
+    _audit(conn, "slip.record", f"slip:{slip.id}", actor)
 
 
 # ------------------------------------------------------------------------------------ file passwords
 def save_file_password(
-    conn: Connection, pepper: str, class_id: UUID, kind: str, files: list[Path], password: str
+    conn: Connection,
+    pepper: str,
+    class_id: UUID,
+    kind: str,
+    files: list[Path] | list[str],
+    password: str,
+    actor: str = ACTOR,
 ) -> UUID:
     """Keeps a sealed copy of a school-file password (register.seal_password). Returns the file id."""
     file_id = uuid4()
@@ -323,11 +341,11 @@ def save_file_password(
             "id": file_id,
             "c": class_id,
             "k": kind,
-            "n": ", ".join(f.name for f in files),
+            "n": ", ".join(f if isinstance(f, str) else f.name for f in files),
             "p": register.seal_password(password, pepper, file_id),
         },
     )
-    _audit(conn, "file.password_saved", f"school_file:{file_id}")
+    _audit(conn, "file.password_saved", f"school_file:{file_id}", actor)
     return file_id
 
 

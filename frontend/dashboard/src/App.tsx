@@ -10,6 +10,7 @@ import './app.css';
 import { ApiError, parseRoute, staffAuth, tokenFromHash, type Challenge, type Me, type Route } from './api';
 import { Forgot, ResetPassword, SignIn, TwoStep } from './AuthScreens';
 import { I18nProvider, useI18n } from './i18n';
+import { FormsPage } from './FormsPage';
 import { ClassesPage, RosterPage, Shell, StudentPage } from './Pages';
 import { SessionProvider } from './session';
 
@@ -106,6 +107,7 @@ function RoutedPage() {
     return () => window.removeEventListener('hashchange', follow);
   }, []);
   if (route.page === 'class') return <RosterPage key={route.id} classId={route.id} />;
+  if (route.page === 'forms') return <FormsPage key={`forms:${route.id}`} classId={route.id} />;
   if (route.page === 'student') return <StudentPage key={route.id} studentId={route.id} classId={route.classId} />;
   return <ClassesPage />;
 }

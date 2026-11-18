@@ -22,7 +22,8 @@
     "notShown": "{{n}} more students are not shown: their family has not ticked the teacher box on the consent form, or the form is not back yet.",
     "empty": "No students to show yet. A student appears here after joining with a signed consent form that has the teacher box ticked.",
     "open": "Open {{nickname}}",
-    "notShownOne": "1 more student is not shown: their family has not ticked the teacher box on the consent form, or the form is not back yet."
+    "notShownOne": "1 more student is not shown: their family has not ticked the teacher box on the consent form, or the form is not back yet.",
+    "forms": "Consent forms"
   },
   "auth": {
     "staff": "Staff",
@@ -186,5 +187,68 @@
     "S": "Helping people",
     "E": "Leading others",
     "C": "Organising"
+  },
+  "forms": {
+    "title": "Consent forms · Class {{name}}",
+    "intro": "Each paper form has a number. When a signed form comes back, record it here. The student can then join with the code on their slip.",
+    "back": "Back to class {{name}}",
+    "waiting": "Waiting to come back",
+    "recordedCount": "Recorded",
+    "claimedCount": "Student joined",
+    "none": "No forms printed for this class yet. Print some below.",
+    "caption": "The consent forms printed for this class and what happened to each",
+    "colForm": "Form number",
+    "colType": "Form",
+    "colStatus": "Status",
+    "colBand": "Age band",
+    "colResearch": "Research box",
+    "colTeacher": "Teacher box",
+    "colRecorded": "Recorded",
+    "colStudent": "Student",
+    "kind": {
+      "parent": "Form A (parent)",
+      "self": "Form C (adult)"
+    },
+    "status": {
+      "printed": "Waiting",
+      "recorded": "Recorded",
+      "claimed": "Student joined",
+      "expired": "Expired"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "hidden": "Not shown (no teacher box)",
+    "recordedOn": "{{date}} by {{who}}",
+    "record": "Record",
+    "recordLabel": "Record form {{serial}}",
+    "recordTitle": "Record form {{serial}}",
+    "recordHelp": "Copy these from the signed form. Take the age band from the school's admission register, not from the form or the student.",
+    "band": "Age band (from the admission register)",
+    "chooseBand": "Choose a band",
+    "researchBox": "The research box is ticked",
+    "teacherBox": "The teacher box is ticked",
+    "teacherBoxHelp": "Without this tick, the student never appears on your dashboard.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Form {{serial}} is recorded. The student can now join with the code on their slip.",
+    "already": "This form is already recorded.",
+    "bandRequired": "Choose the age band from the admission register.",
+    "bandWrong": "That age band does not fit this form. Form A is for ages 13 to 17, Form C for 18 and over.",
+    "print": {
+      "title": "Print new forms",
+      "help": "You get two files, locked with one password: the slips to print (each with a form number and a one-time code), and the class register to keep at school.",
+      "count": "How many forms",
+      "kind": "Which form",
+      "submit": "Make the files",
+      "countError": "Choose 1 to 60 forms.",
+      "done": "{{count}} forms, {{first}} to {{last}}.",
+      "password": "Password for both files",
+      "passwordHelp": "Write it down now. It is shown only once. If it is lost, your Rahyaab admin can give it again.",
+      "download": "Download {{name}}",
+      "confirm": "Type the last group of the password to show you wrote it down",
+      "confirmWrong": "That is not the last group. Check what you wrote down.",
+      "confirmed": "Thank you. Print the slips, then delete the slips file. Keep the register at school.",
+      "hide": "I wrote it down, hide the password"
+    }
   }
 }
