@@ -1,4 +1,4 @@
--- Rahyaab PostgreSQL 16 schema, version 1.7 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
+-- Rahyaab PostgreSQL 16 schema, version 1.8 (draft; the ERD in docs/architecture/diagrams/erd/ shows the same tables).
 -- v1.1 (2026-11-05): student.age_band and student.situation; self-consent; route and help flags (FR-99..104).
 -- v1.2 (2026-11-05): research_demographics (opt-in, separate role); staff password reset tokens.
 -- v1.3 (2026-11-07, review fixes): consent slips; item keyed by content version; quarantine linked to the
@@ -13,6 +13,9 @@
 --   never-consented archived profiles are deleted 30 days after archiving.
 -- v1.7 (2026-11-15): school_file keeps a sealed copy of each school-file password (AES-256-GCM, key derived
 --   from CODE_PEPPER outside the database), so a lost password can be given again; deleted after 400 days.
+-- v1.8 (2026-11-17): staff sign-in (FR-71, FR-106): staff_user.mfa_last_step stops a code being used twice;
+--   staff_session.mfa_pending_secret holds a new authenticator key until its first code is entered;
+--   password_reset.purpose tells an invite link from a reset link; email_outbox queues staff emails.
 -- The migrations live in backend/api/migrations (Alembic): 0001 applies this file to an empty database and
 -- later revisions bring older databases up to date. This file is always the complete current design.
 -- Conventions: snake_case; UUID keys (UUIDv7 for events); timestamptz in UTC; no personal data
@@ -418,6 +421,7 @@ CREATE TABLE staff_user (
   email                 text NOT NULL UNIQUE,
   password_hash         text NOT NULL,               -- argon2id
   mfa_secret_encrypted  bytea,                       -- null until TOTP enrolment is finished (first login)
+  mfa_last_step         bigint,                      -- the last 30-second step a code was used for (no replay)
   role                  text NOT NULL CHECK (role IN ('teacher', 'counsellor', 'school_admin', 'admin', 'researcher')),
   disabled_at           timestamptz,
   failed_logins         smallint NOT NULL DEFAULT 0,
@@ -484,7 +488,8 @@ CREATE TABLE research_demographics (
 CREATE TABLE password_reset (
   token_hash   text PRIMARY KEY,                     -- sha256 of a 128-bit single-use token
   staff_id     uuid NOT NULL REFERENCES staff_user (id) ON DELETE CASCADE,
-  expires_at   timestamptz NOT NULL,                 -- 30 minutes
+  purpose      text NOT NULL DEFAULT 'reset' CHECK (purpose IN ('reset', 'invite')),
+  expires_at   timestamptz NOT NULL,                 -- 30 minutes (reset) or 72 hours (invite from the admin)
   used_at      timestamptz
 );
 CREATE INDEX ON password_reset (staff_id);
@@ -516,12 +521,26 @@ CREATE TABLE staff_session (
   staff_id      uuid NOT NULL REFERENCES staff_user (id) ON DELETE CASCADE,
   token_hash    text NOT NULL UNIQUE,
   mfa_passed_at timestamptz,                          -- null while the TOTP step is pending
+  mfa_pending_secret bytea,                           -- first sign-in: the new authenticator key, sealed, until confirmed
   created_at    timestamptz NOT NULL DEFAULT now(),
   last_seen_at  timestamptz NOT NULL DEFAULT now(),   -- idle timeout 30 min
   expires_at    timestamptz NOT NULL,                 -- absolute 8 h
   revoked_at    timestamptz
 );
 CREATE INDEX ON staff_session (staff_id);
+
+-- Staff emails (invite, reset link, "your password was changed"), written by the API and sent by the jobs
+-- worker, so a reset request answers at once with the same timing whether or not the account exists.
+-- A row is deleted as soon as it is sent; unsent rows are deleted after 3 days. Only staff addresses.
+CREATE TABLE email_outbox (
+  id          uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  to_address  text NOT NULL CHECK (length(to_address) <= 254),
+  template    text NOT NULL CHECK (template IN ('staff_invite', 'staff_reset', 'staff_password_changed')),
+  link        text CHECK (length(link) <= 500),
+  attempts    smallint NOT NULL DEFAULT 0,
+  created_at  timestamptz NOT NULL DEFAULT now()
+);
+CREATE INDEX ON email_outbox (created_at);
 
 CREATE TABLE rate_limit (                             -- fixed-window counters, keyed e.g. 'join:code:<hash>'
   key           text NOT NULL,
@@ -563,6 +582,7 @@ GRANT SELECT, INSERT, UPDATE ON licence TO api_rw;      -- licences are never de
 GRANT SELECT ON blocked_device TO api_rw;               -- blocking is an admin action, never the API's
 GRANT SELECT ON content_pack, item, model_version, stream, eligibility_rule, career, stream_career TO api_rw;
 GRANT SELECT, INSERT ON consent, raw_event, quarantine, trait_estimate, recommendation, audit_log TO api_rw;
+GRANT INSERT ON email_outbox TO api_rw;                -- the API queues staff emails; only the jobs worker reads them
 GRANT UPDATE (withdrawn_at) ON consent TO api_rw;     -- withdrawal is the only change to a consent row
 GRANT INSERT ON research_demographics TO api_rw;       -- write-only for the API
 GRANT USAGE ON ALL SEQUENCES IN SCHEMA public TO api_rw, jobs;
@@ -576,7 +596,8 @@ GRANT SELECT, DELETE ON student, raw_event, quarantine, trait_estimate, recommen
 GRANT INSERT ON trait_estimate, recommendation, audit_log TO jobs;
 GRANT SELECT, INSERT, UPDATE ON career, stream_career, model_version TO jobs;
 GRANT SELECT ON licence TO jobs;
-GRANT SELECT, DELETE ON school_file TO jobs;           -- the API never reads school_file
+GRANT SELECT, DELETE ON school_file TO jobs;
+GRANT SELECT, UPDATE, DELETE ON email_outbox TO jobs;  -- sends staff emails, then deletes them           -- the API never reads school_file
 
 -- research_ro: never reads base tables directly; it gets de-identified views in a separate schema
 -- (created with the research export job) plus the opt-in demographics and panel labels.

@@ -1,0 +1,10 @@
+# Gitleaks findings checked by hand and confirmed not to be secrets. One line per finding:
+# <commit>:<file>:<rule>:<line>. Only add a line after checking the value; never ignore a whole file or rule.
+#
+# Commit 180c5ed (staff sign-in, PR #70); all three were rewritten in the next commit so they no longer match:
+# - the 62-character alphabet that reset tokens are drawn from (not a token itself);
+# - a comparison with the message key 'auth.errors.reset_link_invalid';
+# - a made-up 22-character test token in a unit test.
+180c5ed1f2a465f9993d9b8b9b4c339fe70127eb:backend/api/src/rahyaab_api/staff_auth.py:generic-api-key:58
+180c5ed1f2a465f9993d9b8b9b4c339fe70127eb:frontend/dashboard/src/AuthScreens.tsx:generic-api-key:253
+180c5ed1f2a465f9993d9b8b9b4c339fe70127eb:frontend/dashboard/src/api.test.ts:generic-api-key:54

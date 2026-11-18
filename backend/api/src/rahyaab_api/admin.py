@@ -33,6 +33,20 @@ Commands:
     limited-devices [--hours 24]               phones that hit the join limit (key hashes, for device-block)
     year-end       --school ID                 every class code of the school stops working (end of year)
 
+Staff accounts (staff_admin.py; nobody ever sees or sets someone else's password):
+    staff-add      --email --role teacher|counsellor|school_admin|admin|researcher [--school ID]
+                   [--class ID ...]            emails an invite link (72 hours) to choose a password
+    staff-invite   --staff ID                  a new invite link (the old one stops working)
+    staff-reset    --staff ID                  the password stops working now, every session ends, and a
+                                               reset link (30 minutes) is emailed
+    staff-disable  --staff ID                  cannot sign in; every session ends
+    staff-enable   --staff ID
+    staff-mfa-reset --staff ID                 lost phone: the next sign-in sets up a new authenticator
+                                               (check who is asking, in person or by phone, first)
+    staff-assign   --staff ID --class ID       staff see only their own classes (FR-78)
+    staff-unassign --staff ID --class ID
+    staff          [--school ID]               staff of a school (or the team accounts), with status
+
 File passwords: slips-print and students --out make one random password per run. It is shown on this
 screen only, never written to a file or log, so these commands refuse to run unless both input and output
 are a terminal. To finish, whoever runs it must type back the last group of the password: proof that it was
@@ -44,7 +58,9 @@ shows next to the nickname. The school keeps the paper list of which student got
 stores names or roll numbers, so a leaked database cannot name a child.
 
 Environment: DATABASE_URL (a role that may write these tables, for example the migrator) and CODE_PEPPER
-(the API's key for code hashes; it must be the same value the API uses). Every change is audit-logged.
+(the API's key for code hashes; it must be the same value the API uses). The staff commands also use
+DASHBOARD_URL (the dashboard's https address, for the links in emails; http://localhost:5173 if unset).
+Every change is audit-logged.
 """
 
 from __future__ import annotations
@@ -61,7 +77,7 @@ from uuid import UUID, uuid4
 from cryptography.exceptions import InvalidTag
 from sqlalchemy import Connection, create_engine, text
 
-from rahyaab_api import register
+from rahyaab_api import register, staff_admin
 from rahyaab_api.codes import MIN_PEPPER, code_hash, new_claim_code, new_class_code
 from rahyaab_api.ratelimit import digest
 
@@ -620,6 +636,20 @@ def _parser() -> argparse.ArgumentParser:
     s.add_argument("--hours", type=int, default=24)
     s = sub.add_parser("year-end")
     s.add_argument("--school", required=True, type=UUID)
+    s = sub.add_parser("staff-add")
+    s.add_argument("--email", required=True)
+    s.add_argument("--role", required=True, choices=staff_admin.ROLES)
+    s.add_argument("--school", type=UUID, help="needed for teacher, counsellor and school_admin")
+    s.add_argument("--class", dest="class_ids", type=UUID, action="append", default=[])
+    for name in ("staff-invite", "staff-reset", "staff-disable", "staff-enable", "staff-mfa-reset"):
+        s = sub.add_parser(name)
+        s.add_argument("--staff", required=True, type=UUID)
+    for name in ("staff-assign", "staff-unassign"):
+        s = sub.add_parser(name)
+        s.add_argument("--staff", required=True, type=UUID)
+        s.add_argument("--class", dest="class_id", required=True, type=UUID)
+    s = sub.add_parser("staff")
+    s.add_argument("--school", type=UUID, help="leave out for the team accounts (admin, researcher)")
     return p
 
 
@@ -636,7 +666,7 @@ def main(argv: list[str] | None = None) -> int:
     try:
         with engine.begin() as conn:
             _run(conn, pepper, args)
-    except AdminError as e:
+    except (AdminError, staff_admin.StaffAdminError) as e:
         print(f"error: {e}", file=sys.stderr)
         return 1
     finally:
@@ -779,6 +809,41 @@ def _run(conn: Connection, pepper: str, a: argparse.Namespace) -> None:
         print(
             f"{year_end(conn, a.school)} class codes stopped. Make new ones with class-add or class-rotate."
         )
+    elif a.command.startswith("staff"):
+        _run_staff(conn, a)
+
+
+def _run_staff(conn: Connection, a: argparse.Namespace) -> None:
+    dashboard = staff_admin.check_dashboard_url(os.environ.get("DASHBOARD_URL", "http://localhost:5173"))
+    emailed = "The email is sent by the jobs worker within a minute."
+    if a.command == "staff-add":
+        staff_id = staff_admin.add_staff(conn, a.email, a.role, a.school, a.class_ids, dashboard)
+        print(
+            f"staff id: {staff_id}\n"
+            f"An invite link (valid 72 hours) goes to {a.email.strip().lower()}. {emailed}"
+        )
+    elif a.command == "staff-invite":
+        staff_admin.invite_again(conn, a.staff, dashboard)
+        print(f"A new invite link was queued; the old one no longer works. {emailed}")
+    elif a.command == "staff-reset":
+        staff_admin.force_reset(conn, a.staff, dashboard)
+        print(f"The old password no longer works and every session ended. A reset link was queued. {emailed}")
+    elif a.command in ("staff-disable", "staff-enable"):
+        staff_admin.set_disabled(conn, a.staff, a.command == "staff-disable")
+        print("Disabled; every session ended." if a.command == "staff-disable" else "Enabled.")
+    elif a.command == "staff-mfa-reset":
+        staff_admin.reset_mfa(conn, a.staff)
+        print("Authenticator reset; every session ended. The next sign-in sets up a new one.")
+    elif a.command == "staff-assign":
+        staff_admin.assign_class(conn, a.staff, a.class_id)
+        print("Class assigned.")
+    elif a.command == "staff-unassign":
+        staff_admin.unassign_class(conn, a.staff, a.class_id)
+        print("Class removed.")
+    elif a.command == "staff":
+        for r in staff_admin.list_staff(conn, a.school):
+            mfa = "app set up" if r.mfa else "no app yet"
+            print(f"{r.id}  {r.email:<40} {r.role:<13} {r.status:<9} {mfa:<11} classes: {r.classes}")
 
 
 if __name__ == "__main__":

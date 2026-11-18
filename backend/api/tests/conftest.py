@@ -13,7 +13,7 @@ import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
 from sqlalchemy import Engine, create_engine  # noqa: E402
 from sqlalchemy.exc import OperationalError  # noqa: E402
-from support import ADMIN_URL, API_URL, PEPPER, SIGNING_KEY, World  # noqa: E402
+from support import ADMIN_URL, API_URL, MASTER_KEY_FILE, PEPPER, SIGNING_KEY, World  # noqa: E402
 
 from rahyaab_api.main import create_app  # noqa: E402
 from rahyaab_api.settings import Settings  # noqa: E402
@@ -36,7 +36,13 @@ def admin() -> Iterator[Engine]:
 @pytest.fixture(scope="module")
 def api(admin: Engine) -> Iterator[TestClient]:
     app = create_app(
-        Settings(app_env="test", database_url=API_URL, jwt_signing_key=SIGNING_KEY, code_pepper=PEPPER)
+        Settings(
+            app_env="test",
+            database_url=API_URL,
+            jwt_signing_key=SIGNING_KEY,
+            code_pepper=PEPPER,
+            data_key_wrapper_file=MASTER_KEY_FILE,
+        )
     )
     with TestClient(app) as c:
         yield c

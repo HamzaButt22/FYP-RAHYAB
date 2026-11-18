@@ -190,6 +190,11 @@ paths:
       tags: [auth]
       operationId: staffLogin
       summary: Staff email + password; returns an MFA challenge
+      description: >-
+        A wrong email and a wrong password get the same 401 (`sign_in_failed`) with the same timing. Limited to
+        5 per 15 minutes per email and 30 per IP; 5 wrong passwords in a row lock the account for 15 minutes,
+        doubling each time up to a day (429 with Retry-After). The challenge is valid for 10 minutes and is not
+        a session.
       security: []
       requestBody:
         required: true
@@ -197,6 +202,7 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               required: [email, password]
               properties:
                 email: { type: string, format: email, maxLength: 254 }
@@ -208,17 +214,26 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [mfa_challenge_id]
+                required: [mfa_challenge_id, mfa_setup_required]
                 properties:
                   mfa_challenge_id: { type: string }
+                  mfa_setup_required:
+                    type: boolean
+                    description: First sign-in; call /auth/staff/mfa/setup before /auth/staff/mfa
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
         '429': { $ref: '#/components/responses/TooManyRequests' }
 
-  /auth/staff/mfa:
+  /auth/staff/mfa/setup:
     post:
       tags: [auth]
-      operationId: staffMfa
-      summary: Complete staff login with a TOTP code; sets a SameSite=Strict session cookie
+      operationId: staffMfaSetup
+      summary: First sign-in only; a new authenticator key for this challenge (FR-71)
+      description: >-
+        Returns a 160-bit TOTP key (SHA-1, 6 digits, 30 seconds) to type or scan into an authenticator app. It
+        is kept, sealed, with the challenge until its first code is accepted by /auth/staff/mfa. Calling again
+        replaces it. Once an authenticator is set up this returns 409 (`mfa_already_set_up`); only an admin can
+        reset it.
       security: []
       requestBody:
         required: true
@@ -226,6 +241,46 @@ paths:
           application/json:
             schema:
               type: object
+              additionalProperties: false
+              required: [mfa_challenge_id]
+              properties:
+                mfa_challenge_id: { type: string }
+      responses:
+        '200':
+          description: The key, shown once
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [setup_key, otpauth_uri]
+                properties:
+                  setup_key: { type: string, pattern: '^[A-Z2-7]{32}$' }
+                  otpauth_uri: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '409':
+          description: '`mfa_already_set_up`'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/staff/mfa:
+    post:
+      tags: [auth]
+      operationId: staffMfa
+      summary: Complete staff login with a TOTP code; sets a SameSite=Strict session cookie
+      description: >-
+        One 30-second step either side is accepted, and a code is never accepted twice. Limited to 5 per 15
+        minutes per account and 30 per IP. The session lasts 8 hours, or 30 minutes without use, and gets a
+        new token (the challenge id never becomes the session).
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              additionalProperties: false
               required: [mfa_challenge_id, code]
               properties:
                 mfa_challenge_id: { type: string }
@@ -239,6 +294,41 @@ paths:
               schema: { type: string }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '429': { $ref: '#/components/responses/TooManyRequests' }
+
+  /auth/staff/me:
+    get:
+      tags: [auth]
+      operationId: staffMe
+      summary: Who is signed in, and the CSRF token to send as X-CSRF-Token on every change
+      security:
+        - staffSession: []
+      responses:
+        '200':
+          description: The signed-in staff member
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [email, role, school_id, csrf_token]
+                properties:
+                  email: { type: string }
+                  role: { type: string, enum: [teacher, counsellor, school_admin, admin, researcher] }
+                  school_id: { type: [string, 'null'], format: uuid }
+                  csrf_token: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+
+  /auth/staff/logout:
+    post:
+      tags: [auth]
+      operationId: staffLogout
+      summary: End this session and clear the cookie
+      security:
+        - staffSession: []
+          csrfToken: []
+      responses:
+        '204': { description: Signed out }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
 
   /auth/staff/password-reset:
     post:
@@ -258,7 +348,15 @@ paths:
               properties:
                 email: { type: string, format: email, maxLength: 254 }
       responses:
-        '202': { description: 'If an account exists, a single-use link valid for 30 minutes was emailed' }
+        '202':
+          description: 'If an account exists, a single-use link valid for 30 minutes was queued for email'
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message_key: { type: string, const: auth.reset.sent }
+        '422': { $ref: '#/components/responses/Unprocessable' }
         '429': { $ref: '#/components/responses/TooManyRequests' }
 
   /auth/staff/password-reset:confirm:
@@ -266,6 +364,10 @@ paths:
       tags: [auth]
       operationId: confirmStaffPasswordReset
       summary: Set a new password with a reset token; revokes all sessions; MFA still needed at next login
+      description: >-
+        Also used for invite links from the admin command (72 hours). The password must be 12 to 128
+        characters, not a common password and not contain the email name (422 on `new_password` with
+        `too_short`, `too_long`, `common` or `contains_email`). Limited to 10 per hour per IP.
       security: []
       requestBody:
         required: true

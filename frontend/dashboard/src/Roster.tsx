@@ -1,5 +1,5 @@
 // D-03 Teacher: class roster (design/screens/D-03-teacher-class-roster.html).
-// The data is a fixed sample until staff sign-in and the dashboard API exist; the page says so.
+// Shown after staff sign-in. The data is a fixed sample until the dashboard API exists; the page says so.
 
 import logo from '../../../design/brand/logo/svg/branch-light.svg';
 import { useI18n } from './i18n';
@@ -29,7 +29,7 @@ const SAMPLE = {
 
 const NAV = ['classes', 'students', 'reports', 'school', 'settings'] as const;
 
-export function Roster() {
+export function Roster({ email, onSignOut }: { email: string; onSignOut: () => void }) {
   const { t } = useI18n();
   return (
     <div className="layout">
@@ -45,6 +45,12 @@ export function Roster() {
             {t(`nav.${item}`)}
           </a>
         ))}
+        <div className="side-foot">
+          <p className="muted small">{t('auth.signedInAs', { email })}</p>
+          <button type="button" className="btn secondary" onClick={onSignOut}>
+            {t('auth.signOut')}
+          </button>
+        </div>
       </nav>
 
       <main className="main">

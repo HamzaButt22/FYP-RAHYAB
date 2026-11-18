@@ -30,6 +30,8 @@ class Settings(BaseSettings):
     # every issued code stop working, so rotate it only together with new codes (codes.py).
     code_pepper: str = ""
     data_key_wrapper_file: str = "/run/secrets/data_key_wrapper"
+    # Where staff emails point (invite and reset links): the dashboard's own address, no trailing slash.
+    dashboard_url: str = "http://localhost:5173"
 
     @field_validator("cors_allowed_origins", mode="before")
     @classmethod
@@ -53,6 +55,8 @@ class Settings(BaseSettings):
                 raise ValueError("DEBUG must be false in staging and production")
             if any(o == "*" or not o.startswith("https://") for o in self.cors_allowed_origins):
                 raise ValueError("CORS_ALLOWED_ORIGINS must be exact https origins")
+            if not self.dashboard_url.startswith("https://"):
+                raise ValueError("DASHBOARD_URL must be an https address")
 
 
 @lru_cache

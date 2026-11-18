@@ -10,6 +10,9 @@ COPY frontend/dashboard/package.json frontend/dashboard/pnpm-lock.yaml frontend/
 WORKDIR /repo/frontend/dashboard
 RUN pnpm install --frozen-lockfile
 COPY frontend/dashboard/ ./
+# The API the dashboard calls (src/api.ts). Staging builds pass --build-arg VITE_API_URL=https://staging.api.rahyaab.pk.
+ARG VITE_API_URL=https://api.rahyaab.pk
+ENV VITE_API_URL=$VITE_API_URL
 RUN pnpm build
 
 FROM caddy:2-alpine
