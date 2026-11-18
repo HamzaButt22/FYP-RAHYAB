@@ -2,12 +2,19 @@
 
 Pipeline for one student (class 9-10 for now; other class modes come in FYP-2):
 1. Interest scores from the forced choices (interests.py, provisional) and ability scores when measured.
-2. Evidence check (FR-51): too little play -> InsufficientEvidence, never a guessed ranking. After the
-   extra week (weeks_played >= 5) the result always opens, with low confidence.
+2. Evidence check (FR-51): too little play -> InsufficientEvidence, never a guessed ranking. Besides
+   coverage, the answers must show a clear pattern: differentiation >= RANK_MIN_DIFFERENTIATION and, when
+   pairs were repeated, repeated-pair agreement >= RANK_MIN_AGREEMENT. After the extra week
+   (weeks_played >= 5) the result always opens, with low confidence and every band "worth_a_look".
 3. Congruence fit for every path of the class (congruence.py), the top 3 in order.
 4. Per card: fit band, 2-3 reason codes from the contributions, doors from the rules engine, Plan B.
-5. Confidence from scoring.json: high needs the pilot's stability delta, so before the pilot it is at
-   most "medium"; any key SE > .50 or coverage < 80% makes it "low"; a provisional scorer caps it too.
+   A low-confidence result never shows "strong" (the band is capped at "good").
+5. Confidence (scoring.json confidence.interim_rules): high needs the pilot's stability delta, so before
+   the pilot it is at most "medium". With the interim counting scorer, "medium" needs coverage >= 80%,
+   differentiation >= MEDIUM_MIN_DIFFERENTIATION and agreement >= MEDIUM_MIN_AGREEMENT; anything else is
+   "low". The interim scorer's SE is not used for confidence: its delta-method SE grows when a student
+   answers a type the same way every time, so a clear student looked unsure and a random one looked sure
+   (persona simulation, 18 Nov 2026). The SE rule returns with the Thurstonian IRT scorer.
 6. input_hash: sha256 of the canonical inputs and every model version, so the same inputs always give the
    same stored result (RFC-0003, V7).
 """
@@ -23,9 +30,17 @@ from typing import Any
 from rahyaab_scoring import congruence, interests, rules
 from rahyaab_scoring.congruence import RIASEC
 
-M3_ID = "m3-congruence-2026.11.0"
+M3_ID = "m3-congruence-2026.11.1"  # .1: evidence and confidence rules corrected (migration 0010)
 SUPPORTED_GRADES = {9: "9-10", 10: "9-10"}
 MODE_FOR = {"9-10": "matric"}
+# Provisional cut-offs from the persona simulation of 18 Nov 2026 (scoring.json confidence.interim_rules):
+# random tapping passes the ranking check about 11% of the time and is "medium" about 1% of the time;
+# consistent players pass about 99%. Re-checked in V1 and set on the pilot.
+RANK_MIN_DIFFERENTIATION = 0.5
+RANK_MIN_AGREEMENT = 0.6
+MEDIUM_MIN_DIFFERENTIATION = 0.55
+MEDIUM_MIN_AGREEMENT = 0.7
+BAND_ORDER = ("worth_a_look", "good", "strong")
 
 
 class InsufficientEvidence(Exception):
@@ -81,12 +96,35 @@ def _evidence_problem(s: interests.InterestScores) -> str | None:
     return None
 
 
-def _confidence(s: interests.InterestScores) -> str:
-    if any(s.se[t] > 0.5 for t in RIASEC) or s.coverage < 0.8:
-        return "low"
+def _pattern_problem(s: interests.InterestScores, differentiation: float) -> str | None:
+    """No ranking before the extra week unless the answers show a clear, consistent pattern."""
+    if s.agreement is not None and s.agreement < RANK_MIN_AGREEMENT:
+        return "inconsistent_choices"
+    if differentiation < RANK_MIN_DIFFERENTIATION:
+        return "no_clear_pattern"
+    return None
+
+
+def _confidence(s: interests.InterestScores, differentiation: float) -> str:
     # "high" needs the stability delta set on the pilot (scoring.json confidence.delta). Until then, and
     # always with the provisional scorer, the honest ceiling is "medium".
-    return "medium"
+    if (
+        s.coverage >= 0.8
+        and differentiation >= MEDIUM_MIN_DIFFERENTIATION
+        and s.agreement is not None
+        and s.agreement >= MEDIUM_MIN_AGREEMENT
+    ):
+        return "medium"
+    return "low"
+
+
+def _capped(band: str, confidence: str, thin_evidence: bool) -> str:
+    """An extra-week result on thin evidence is only "worth a look"; low confidence never says "strong"."""
+    if thin_evidence:
+        return "worth_a_look"
+    if confidence == "low":
+        return min(band, "good", key=BAND_ORDER.index)
+    return band
 
 
 def _reasons(
@@ -150,14 +188,15 @@ def recommend(
     scores = interests.score(choices)
     provisional = True  # interests.MODEL_ID is the interim scorer
 
-    problem = _evidence_problem(scores)
+    differentiation = congruence.differentiation(scores.theta)
+    problem = _evidence_problem(scores) or _pattern_problem(scores, differentiation)
     after_extra_week = context.weeks_played >= 5
     if problem and not after_extra_week:
         raise InsufficientEvidence(problem, scores.coverage)
 
     m3 = scoring["m3_recommender"]
     min_diff = float(m3["congruence"]["min_differentiation"]["value"])
-    differentiated = congruence.is_differentiated(scores.theta, min_diff)
+    differentiated = differentiation >= min_diff
     fits = [
         congruence.path_fit(
             p["id"],
@@ -181,6 +220,8 @@ def recommend(
     student_phi = dict(zip(RIASEC, congruence.student_profile(scores.theta), strict=True))
     bands = m3["fit_bands"]
     ranked_ids = [f.path_id for f in ordered]
+    confidence = "low" if (problem or not differentiated) else _confidence(scores, differentiation)
+    thin_evidence = bool(problem) or not differentiated
 
     cards: list[dict[str, Any]] = []
     for f in top:
@@ -189,14 +230,13 @@ def recommend(
             {
                 "stream_id": f.path_id,
                 "fit": round(f.fit, 4),
-                "fit_band": fit_band(f.fit, bands),
+                "fit_band": _capped(fit_band(f.fit, bands), confidence, thin_evidence),
                 "reasons": _reasons(student_phi, profiles[f.path_id], f.contributions, doors),
                 "doors": [d.as_json() for d in doors],
                 "plan_b": _plan_b(f.path_id, [x.path_id for x in top], ranked_ids, profiles),
             }
         )
 
-    confidence = "low" if (problem or not differentiated) else _confidence(scores)
     versions = {"irt": interests.MODEL_ID, "m3": M3_ID, "rules": f"streams-{streams['version']}"}
     features = {
         "theta": {t: round(scores.theta[t], 4) for t in RIASEC},
@@ -205,7 +245,9 @@ def recommend(
         "choices": scores.choices,
         "chosen": dict(scores.wins),  # per type: chosen / offered, shown in "Why this?" (FR-56)
         "offered": dict(scores.comparisons),
-        "differentiation": round(congruence.differentiation(scores.theta), 4),
+        "differentiation": round(differentiation, 4),
+        "repeated_pairs": scores.repeated_pairs,
+        "agreement": None if scores.agreement is None else round(scores.agreement, 4),
         "weeks_played": context.weeks_played,
     }
     hash_input = {

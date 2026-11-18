@@ -39,8 +39,9 @@ STALLED_DAYS = 14  # started, not finished, and nothing played for this long
 HANDLED_QUIET_DAYS = 14  # a flag a teacher marked handled is not raised again for this long
 AUTO_FLAGS = ("not_started", "stalled", "low_confidence")
 
-# Which students have a reason for each automatic flag now. low_confidence ignores provisional results (the
-# interim m1-counts scorer marks every F1 result as low confidence, so it would flag everyone).
+# Which students have a reason for each automatic flag now. low_confidence ignores provisional results (from
+# the interim m1-counts scorer): its confidence rules are themselves interim (scoring.json
+# confidence.interim_rules), so they do not raise teacher flags until the IRT scorer exists.
 _DUE = """
     WITH s AS (
       SELECT st.id, st.created_at,
