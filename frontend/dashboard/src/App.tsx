@@ -1,15 +1,17 @@
 // The teacher and admin dashboard. Staff sign in first (FR-71): password, then a 6-digit code. The session
 // lives in an HttpOnly cookie the API sets; this code only asks GET /auth/staff/me who is signed in.
 // Invite and reset emails open /reset#token=...: the token is read once and removed from the address bar.
-// After sign-in: D-03 class roster, still with sample data until the dashboard API (FR-72..78) is built.
+// After sign-in: your classes (D-02), a class roster (D-03) and a student summary (D-04), chosen by the address
+// (#/classes, #/class/<id>, #/student/<id>), so the browser's Back button works.
 
 import { useEffect, useState } from 'react';
 
 import './app.css';
-import { ApiError, staffAuth, tokenFromHash, type Challenge, type Me } from './api';
+import { ApiError, parseRoute, staffAuth, tokenFromHash, type Challenge, type Me, type Route } from './api';
 import { Forgot, ResetPassword, SignIn, TwoStep } from './AuthScreens';
 import { I18nProvider, useI18n } from './i18n';
-import { Roster } from './Roster';
+import { ClassesPage, RosterPage, Shell, StudentPage } from './Pages';
+import { SessionProvider } from './session';
 
 type Screen =
   | { name: 'loading' }
@@ -74,13 +76,36 @@ function Dashboard() {
       return <ResetPassword token={screen.token} onSignIn={() => setScreen({ name: 'signIn' })} onForgot={() => setScreen({ name: 'forgot' })} />;
     case 'app': {
       const { me } = screen;
+      const signedOut = () => setScreen({ name: 'signIn' });
       const signOut = () => {
         staffAuth
           .logout(me.csrf_token)
           .catch(() => undefined) // signed out either way: the session may already have ended
-          .finally(() => setScreen({ name: 'signIn' }));
+          .finally(signedOut);
       };
-      return <Roster email={me.email} onSignOut={signOut} />;
+      return (
+        <SessionProvider value={{ me, signedOut, signOut }}>
+          <Shell>
+            <RoutedPage />
+          </Shell>
+        </SessionProvider>
+      );
     }
   }
+}
+
+/** The page the address names; follows Back and Forward. */
+function RoutedPage() {
+  const [route, setRoute] = useState<Route>(() => parseRoute(window.location.hash));
+  useEffect(() => {
+    const follow = () => {
+      setRoute(parseRoute(window.location.hash));
+      window.scrollTo(0, 0);
+    };
+    window.addEventListener('hashchange', follow);
+    return () => window.removeEventListener('hashchange', follow);
+  }, []);
+  if (route.page === 'class') return <RosterPage key={route.id} classId={route.id} />;
+  if (route.page === 'student') return <StudentPage key={route.id} studentId={route.id} classId={route.classId} />;
+  return <ClassesPage />;
 }

@@ -17,7 +17,8 @@ Commands:
     slips-print    --class ID --count N --out FOLDER [--kind parent|self] [--notice 2026-11]
                    writes two encrypted Excel files: the slip codes to print, and the class register
                    (form numbers filled in, checked columns for name, dates, band, research box)
-    slip-record    --class ID --serial A-0001 --band 13-15 --by STAFF_ID [--research]
+    slip-record    --class ID --serial A-0001 --band 13-15 --by STAFF_ID [--research] [--teacher-visible]
+                   (--teacher-visible: the teacher box is ticked; only then is the student on the dashboard)
     students       --class ID [--out FOLDER]   nickname, consent-form number, consent, joined, last seen
                    (--out also writes it as an encrypted Excel file, to match with the register)
     files          --class ID                  the encrypted files made for a class (file ids, dates)
@@ -265,9 +266,16 @@ def print_slips(
 
 
 def record_slip(
-    conn: Connection, class_id: UUID, serial: str, band: str, staff_id: UUID, research: bool = False
+    conn: Connection,
+    class_id: UUID,
+    serial: str,
+    band: str,
+    staff_id: UUID,
+    research: bool = False,
+    teacher: bool = False,
 ) -> None:
-    """The signed form is back: the teacher copies the age band from the school's admission register."""
+    """The signed form is back: the teacher copies the age band from the school's admission register, and
+    whether the research and teacher boxes are ticked (FR-78: only then may staff see the student)."""
     slip = conn.execute(
         text("SELECT id, kind, recorded_at FROM consent_slip WHERE class_id = :c AND form_serial = :s"),
         {"c": class_id, "s": serial},
@@ -293,9 +301,9 @@ def record_slip(
     conn.execute(
         text(
             "UPDATE consent_slip SET recorded_by = :by, recorded_at = now(), verified_age_band = :b, "
-            "research_opt_in = :r WHERE id = :id"
+            "research_opt_in = :r, teacher_visibility = :t WHERE id = :id"
         ),
-        {"by": staff_id, "b": band, "r": research, "id": slip.id},
+        {"by": staff_id, "b": band, "r": research, "t": teacher, "id": slip.id},
     )
     _audit(conn, "slip.record", f"slip:{slip.id}")
 
@@ -610,6 +618,7 @@ def _parser() -> argparse.ArgumentParser:
     s.add_argument("--band", required=True, choices=PARENT_BANDS + ADULT_BANDS)
     s.add_argument("--by", required=True, type=UUID, help="the teacher's staff id")
     s.add_argument("--research", action="store_true", help="the family ticked the research box")
+    s.add_argument("--teacher-visible", action="store_true", help="the teacher box is ticked on the form")
     s = sub.add_parser("students")
     s.add_argument("--class", dest="class_id", required=True, type=UUID)
     s.add_argument("--out", help="also write an encrypted Excel file into this existing folder")
@@ -733,7 +742,7 @@ def _run(conn: Connection, pepper: str, a: argparse.Namespace) -> None:
             raise
         print(f"File id {file_id}: if the password is lost, file-password --file {file_id} shows it again.")
     elif a.command == "slip-record":
-        record_slip(conn, a.class_id, a.serial, a.band, a.by, a.research)
+        record_slip(conn, a.class_id, a.serial, a.band, a.by, a.research, a.teacher_visible)
         print(f"slip {a.serial} recorded with register band {a.band}")
     elif a.command == "students":
         rows = list_students(conn, a.class_id)

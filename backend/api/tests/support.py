@@ -126,6 +126,7 @@ class World:
         kind: str = "parent",
         band: str | None = None,
         recorded: bool = True,
+        teacher: bool = False,
     ) -> str:
         """A printed consent slip; `recorded` = the signed form is back and the teacher copied the age band
         from the admission register (`band`, defaulting to 13-15 for Form A and 18-19 for Form C)."""
@@ -135,8 +136,8 @@ class World:
             conn.execute(
                 text(
                     "INSERT INTO consent_slip (class_id, kind, form_serial, claim_code_hash, "
-                    "research_opt_in, notice_version, recorded_by, recorded_at, verified_age_band, "
-                    "expires_at) VALUES (:c, :kind, :serial, :h, :r, '2026-11', :by, "
+                    "research_opt_in, teacher_visibility, notice_version, recorded_by, recorded_at, "
+                    "verified_age_band, expires_at) VALUES (:c, :kind, :serial, :h, :r, :t, '2026-11', :by, "
                     "CASE WHEN :rec THEN now() END, :band, "
                     "now() + CASE WHEN :exp THEN interval '-1 day' ELSE interval '60 days' END)"
                 ),
@@ -146,6 +147,7 @@ class World:
                     "serial": secrets.token_hex(4),
                     "h": stored(claim),
                     "r": research,
+                    "t": teacher,
                     "by": self.staff_id if recorded else None,
                     "rec": recorded,
                     "band": band if recorded else None,

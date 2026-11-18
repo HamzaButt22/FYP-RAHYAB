@@ -98,3 +98,104 @@ export function groupKey(key: string): string {
 export function looksLikeEmail(value: string): boolean {
   return /^[^@\s]{1,64}@[^@\s]{1,189}\.[^@\s]{2,63}$/.test(value.trim());
 }
+
+// ------------------------------------------------------------------------------------ dashboard calls
+export type ClassSummary = {
+  id: string;
+  school: string;
+  grade: number;
+  section: string;
+  name: string;
+  enrolled: number;
+  started: number;
+  blueprint_ready: number;
+  not_shown: number;
+  open_flags: number;
+};
+export type RosterRow = {
+  student_id: string;
+  nickname: string;
+  form_serial: string | null;
+  started: boolean;
+  week: number;
+  top_path_id: string | null;
+  top_path: string | null;
+  confidence: 'high' | 'medium' | 'low' | null;
+  flags: string[];
+};
+export type StudentSummary = {
+  roster: RosterRow;
+  class_name: string;
+  school: string;
+  consent_method: string | null;
+  recommendation: {
+    confidence: 'high' | 'medium' | 'low';
+    provisional: boolean;
+    created_at: string;
+    ranked: { stream_id: string; name: string; fit_band: string }[];
+  } | null;
+  top_interests: string[];
+};
+export type Flag = {
+  id: string;
+  student_id: string;
+  nickname: string;
+  class_id: string;
+  class_name: string;
+  type: string;
+  created_at: string;
+};
+
+export const dash = {
+  classes: () => api<ClassSummary[]>('/dash/classes'),
+  /** Every student of a class the caller may see, page by page (100 at a time). */
+  roster: async (classId: string): Promise<RosterRow[]> => {
+    const rows: RosterRow[] = [];
+    let cursor: string | null = null;
+    do {
+      const query: string = cursor ? `&cursor=${encodeURIComponent(cursor)}` : '';
+      const page: { items: RosterRow[]; next_cursor: string | null } = await api(
+        `/dash/classes/${encodeURIComponent(classId)}/roster?limit=100${query}`,
+      );
+      rows.push(...page.items);
+      cursor = page.next_cursor;
+    } while (cursor);
+    return rows;
+  },
+  summary: (studentId: string) => api<StudentSummary>(`/dash/students/${encodeURIComponent(studentId)}/summary`),
+  flags: () => api<Flag[]>('/dash/flags'),
+  resolveFlag: (flagId: string, csrf: string) =>
+    api<{ id: string }>(`/dash/flags/${encodeURIComponent(flagId)}`, { method: 'PATCH', body: { resolved: true }, csrf }),
+  /** A plain link: the browser sends the session cookie and saves the file the API names. */
+  exportUrl: (classId: string) => `${API_URL}/v1/dash/classes/${encodeURIComponent(classId)}/export.csv`,
+};
+
+// ------------------------------------------------------------------------------------------- routes
+export type Route = { page: 'classes' } | { page: 'class'; id: string } | { page: 'student'; id: string; classId: string | null };
+
+const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
+
+/** The page for an address hash like #/class/<id>; anything else is the class list. */
+export function parseRoute(hash: string): Route {
+  const cls = new RegExp(`^#/class/(${UUID})$`).exec(hash);
+  if (cls) return { page: 'class', id: cls[1] };
+  const student = new RegExp(`^#/student/(${UUID})(?:[?]class=(${UUID}))?$`).exec(hash);
+  if (student) return { page: 'student', id: student[1], classId: student[2] ?? null };
+  return { page: 'classes' };
+}
+
+export function routeHash(route: Route): string {
+  if (route.page === 'class') return `#/class/${route.id}`;
+  if (route.page === 'student') return `#/student/${route.id}${route.classId ? `?class=${route.classId}` : ''}`;
+  return '#/classes';
+}
+
+/** Whole days since an ISO date, never negative. */
+export function daysSince(iso: string, now: Date = new Date()): number {
+  return Math.max(0, Math.floor((now.getTime() - new Date(iso).getTime()) / 86_400_000));
+}
+
+/** Percentage, rounded, 0 when there is nobody. */
+export function percent(part: number, whole: number): number {
+  return whole > 0 ? Math.round((100 * part) / whole) : 0;
+}

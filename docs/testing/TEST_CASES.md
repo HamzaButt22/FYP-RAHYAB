@@ -167,7 +167,10 @@ Feature: Read aloud (FR-96)
 | TC-DASH-03 | Consented students only | Roster with one non-consented student | That student not listed | FR-78 | T-INT | A | 1 |
 | TC-DASH-04 | Small-cell suppression | Class distribution with one band of 3 students | Rule (FR-75, k = 5): any cell with 1–4 students shows "< 5"; if exactly one cell in a row or column is hidden, the next-smallest cell is hidden too, so it cannot be worked out from the total; totals are shown only when ≥ 5 | FR-75 | T-UNIT | A | 1 |
 | TC-DASH-05 | CSV export | Export the roster | UTF-8 BOM; no guardian contact; audit entry written | FR-77, FR-83 | T-INT | A | 1 |
-| TC-DASH-06 | CSRF | POST a note without `X-CSRF-Token` | `403` | NFR-69 | T-SEC | A | 1 |
+| TC-DASH-06 | CSRF | Make a change (mark a flag handled; later: add a note) without `X-CSRF-Token` | `403`; nothing changes | NFR-69 | T-SEC | A | 1 |
+| TC-DASH-07 | Roster content | Students who finished 4 weeks, 2 weeks and none; page with `limit=2` | Weeks done, top path by name, confidence, consent-form number, open flags; never a numeric fit; sorted by nickname with a working cursor; a bad cursor or `limit=101` → `422`; audit entry | FR-72, FR-54, FR-83 | T-INT | A | 1 |
+| TC-DASH-08 | Student summary | Open a consented student's summary, then one without teacher-visibility consent | Top paths with fit bands, strongest interests in order without numbers, consent method; audit entry; the other → `404` | FR-74, FR-78 | T-INT | A | 1 |
+| TC-DASH-09 | Automatic flags | A student who joined 8 days ago and never played; run the jobs twice; mark the flag handled; let the student play | One `not_started` flag (not two); handled flag leaves the list and is not raised again for 14 days; a flag whose reason is gone closes itself | FR-73 | T-INT | A | 1 |
 | TC-ADM-01 | Content pack signature | Upload a pack with a bad signature | `422`; not activated | RFC-0001 | T-INT | A | 1 |
 | TC-ADM-02 | Mid-week pack change | Activate a new pack while a student is mid-week | The week finishes on the old pack | RFC-0001 | T-E2E | A | 2 |
 

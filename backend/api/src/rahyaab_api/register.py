@@ -138,14 +138,15 @@ def register_workbook(school: str, class_name: str, serials: list[str], kind: st
             "Signed form back (date)",
             "Age band (from the admission register)",
             "Research box ticked",
+            "Teacher box ticked",
             "Notes",
         ],
-        [14, 28, 14, 16, 18, 22, 14, 36],
+        [14, 28, 14, 16, 18, 22, 14, 14, 36],
     )
     for serial in serials:
         ws.append([safe(serial)])
     last = len(serials) + 1
-    for row in ws.iter_rows(min_row=2, max_row=last, min_col=2, max_col=8):
+    for row in ws.iter_rows(min_row=2, max_row=last, min_col=2, max_col=9):
         for cell in row:
             cell.protection = Protection(locked=False)  # only the form numbers and headings are locked
     for row in ws.iter_rows(min_row=2, max_row=last, min_col=4, max_col=5):
@@ -191,13 +192,13 @@ def register_workbook(school: str, class_name: str, serials: list[str], kind: st
     )
     rule(
         DataValidation(type="list", formula1='"Yes,No"', allow_blank=True),
-        "G",
-        "Research box",
-        "Yes only if the family ticked the research box on the signed form.",
+        "GH",
+        "Research and teacher boxes",
+        "Yes only if that box is ticked on the signed form (research box in G, teacher box in H).",
     )
     rule(
         DataValidation(type="textLength", operator="lessThanOrEqual", formula1="200"),
-        "H",
+        "I",
         "Notes",
         "Up to 200 characters. No phone numbers or addresses.",
     )
@@ -212,7 +213,8 @@ def register_workbook(school: str, class_name: str, serials: list[str], kind: st
             "Rahyaab never receives it. The app and the class list show nicknames and form numbers only.",
             "1. When you hand out a form, type the student's name and the date next to its number.",
             "2. When the signed form is back, type the date, the age band from the admission register and",
-            "   whether the research box is ticked. Then record the slip in Rahyaab with the same band.",
+            "   whether the research and teacher boxes are ticked. Then record the slip in Rahyaab with the",
+            "   same band and boxes. Without the teacher box, the student never appears on your dashboard.",
             "3. To find who a nickname is, look up its form number (shown on the class list) in this sheet.",
             "4. Keep this file only on the school's computer. Its password is in the staff record book.",
             "   If the password is lost, the Rahyaab admin can give it again (every request is logged).",

@@ -59,7 +59,15 @@ def test_printed_slips_work_only_once_recorded(api: TestClient, world: World) ->
     assert [serial for serial, _ in slips] == ["A-0001", "A-0002", "A-0003"]
     (serial, claim), _, _ = slips
     assert api.post(URL, json=world.body(code, claim_code=claim)).status_code == 404  # not recorded yet
-    run(world.admin, admin.record_slip, class_id, serial, "13-15", world.staff_id, research=True)
+    run(
+        world.admin, admin.record_slip, class_id, serial, "13-15", world.staff_id, research=True, teacher=True
+    )
+    assert world.scalar(
+        "SELECT research_opt_in AND teacher_visibility FROM consent_slip "
+        "WHERE class_id = :c AND form_serial = :s",
+        c=class_id,
+        s=serial,
+    )
     joined = api.post(URL, json=world.body(code, claim_code=claim))
     assert joined.status_code == 201 and joined.json()["consent_state"] == "granted"
     more = run(world.admin, admin.print_slips, PEPPER, class_id, 1)

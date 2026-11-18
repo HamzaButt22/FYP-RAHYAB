@@ -1006,10 +1006,14 @@ paths:
       tags: [dashboard]
       operationId: listMyClasses
       summary: Classes the staff member can see
+      description: >-
+        Teachers and counsellors: their assigned classes. School admin: every class of their school. Platform
+        admin: every class. Researchers: 403. Who-sees-what is one shared check (ADR-0017).
       security:
         - staffSession: []
       responses:
         '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
         '200':
           description: Classes
           content:
@@ -1021,6 +1025,10 @@ paths:
       tags: [dashboard]
       operationId: getRoster
       summary: Roster of consented students with progress and flags (FR-72, FR-78)
+      description: >-
+        Only students whose parent (or adult self) consent and teacher-visibility consent are in force, not
+        archived. Sorted by nickname; `limit` 1 to 100 (25 by default), `cursor` from `next_cursor`. A class the
+        caller may not see answers 404. Audit-logged (`dash.roster`).
       security:
         - staffSession: []
       parameters:
@@ -1038,13 +1046,19 @@ paths:
                   - type: object
                     properties:
                       items: { type: array, items: { $ref: '#/components/schemas/RosterRow' } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
 
   /dash/classes/{classId}/export.csv:
     get:
       tags: [dashboard]
       operationId: exportRoster
       summary: CSV export (UTF-8 BOM), logged in the audit log (FR-77)
+      description: >-
+        Columns: Nickname, Form number, Started, Weeks done, Top path, How sure, Open flags. Cells that a
+        spreadsheet could run as a formula are prefixed with an apostrophe. No guardian contact.
       security:
         - staffSession: []
       parameters:
@@ -1055,7 +1069,9 @@ paths:
           content:
             text/csv:
               schema: { type: string }
+        '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
 
   /dash/students/{studentId}/summary:
     get:
@@ -1200,6 +1216,9 @@ paths:
       tags: [dashboard]
       operationId: resolveFlag
       summary: Mark a flag as handled
+      description: >-
+        Sets who handled it and when; audit-logged. The jobs worker does not raise the same automatic flag again
+        for 14 days. A flag of a student the caller may not see answers 404.
       security:
         - staffSession: []
           csrfToken: []
@@ -1976,37 +1995,69 @@ components:
 
     ClassSummary:
       type: object
+      description: >-
+        Counts cover only students the caller may see (both consents in force, not archived); `not_shown` counts
+        the other students of the class without saying who they are.
       properties:
         id: { type: string, format: uuid }
         school: { type: string }
         grade: { type: integer }
         section: { type: string }
-        started: { type: integer }
+        name: { type: string, description: 'grade-section, for example 9-B' }
         enrolled: { type: integer }
+        started: { type: integer }
         blueprint_ready: { type: integer }
+        not_shown: { type: integer }
+        open_flags: { type: integer }
 
     RosterRow:
       type: object
       properties:
         student_id: { type: string, format: uuid }
         nickname: { type: string }
-        week: { type: integer, minimum: 0, maximum: 4 }
-        top_path: { type: [string, 'null'] }
+        form_serial: { type: [string, 'null'], description: "The consent-form number, to match the school's paper register" }
+        started: { type: boolean }
+        week: { type: integer, minimum: 0, maximum: 4, description: The highest week finished (0 = none yet) }
+        top_path_id: { type: [string, 'null'] }
+        top_path: { type: [string, 'null'], description: The top path's name; never a numeric fit (FR-54) }
         confidence: { type: [string, 'null'], enum: [high, medium, low, null] }
-        flags: { type: array, items: { type: string } }
+        flags: { type: array, items: { type: string }, description: Open flag types }
 
     StudentSummary:
       type: object
       properties:
         roster: { $ref: '#/components/schemas/RosterRow' }
-        recommendation: { $ref: '#/components/schemas/Recommendation' }
+        class_name: { type: string }
+        school: { type: string }
+        consent_method: { type: [string, 'null'], enum: [school_form, otp, in_app, self, null] }
+        recommendation:
+          type: [object, 'null']
+          properties:
+            confidence: { type: string, enum: [high, medium, low] }
+            provisional: { type: boolean }
+            created_at: { type: string, format: date-time }
+            ranked:
+              type: array
+              items:
+                type: object
+                properties:
+                  stream_id: { type: string }
+                  name: { type: string }
+                  fit_band: { type: string }
+        top_interests:
+          type: array
+          items: { type: string, enum: [R, I, A, S, E, C] }
+          description: The student's strongest interest types in order, at most 3; no numbers
 
     Flag:
       type: object
       properties:
         id: { type: string, format: uuid }
         student_id: { type: string, format: uuid }
-        type: { type: string, enum: [not_started, stalled, mixed_signals, low_confidence, quality, route_question, help_requested] }
+        nickname: { type: string }
+        class_id: { type: string, format: uuid }
+        class_name: { type: string }
+        type: { type: string, enum: [not_started, stalled, mixed_signals, low_confidence, quality, route_question, help_requested, age_mismatch] }
         created_at: { type: string, format: date-time }
 
     AuditEntry:

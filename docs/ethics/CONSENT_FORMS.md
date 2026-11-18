@@ -117,6 +117,7 @@ Form no. `[serial]`  Child's class and section: ______  Parent or guardian name:
 The same content as Form B, in adult wording. It is printed with a serial number and a tear-off claim code, like Form A, and signed by the student. **The teacher records it only after checking in the admission register that the student is 18 or over**, and copies the band (18–19, 20–24 or 25+). A student's own statement of age is never enough (`docs/security/AGE_ASSURANCE.md`).
 
 ☐ I am 18 or older and agree to use Rahyaab as described in the privacy policy.
+☐ I agree that my class teacher or counsellor may see my progress, top paths and flags, and keep short follow-up notes. *(Added 18 Nov 2026: without it, an adult student never appears on the teacher dashboard, the same rule as the teacher box on Form A.)*
 ☐ (Optional) I agree that my de-identified data may be used for research. This box appears only if the ethics approval covers adults; otherwise adults use the app but are never included in research.
 
 ---

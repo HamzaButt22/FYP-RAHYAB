@@ -57,7 +57,8 @@ def test_the_register_checks_what_is_typed(tmp_path: Path) -> None:
     assert ws["A2"].protection.locked and not ws["B2"].protection.locked  # ... the rest can be typed
     rules = {str(dv.sqref): dv for dv in ws.data_validations.dataValidation}
     assert rules["F2:F3"].formula1 == '"13-15,16-17"'  # Form A: only minor bands
-    assert rules["G2:G3"].formula1 == '"Yes,No"'
+    assert rules["G2:G3 H2:H3"].formula1 == '"Yes,No"'  # research box, teacher box
+    assert ws["H1"].value == "Teacher box ticked" and not ws["I2"].protection.locked  # notes stay typeable
     assert rules["B2:B3"].type == "textLength" and rules["D2:D3 E2:E3"].type == "date"
     assert all(dv.showErrorMessage and dv.errorStyle == "stop" for dv in rules.values())
     adult = register.register_workbook("Test School", "12-A", ["C-0001"], "self")

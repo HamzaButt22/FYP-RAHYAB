@@ -403,7 +403,8 @@ def claim_slip(
             UPDATE consent_slip SET claimed_at = now()
             WHERE claim_code_hash = :h AND class_id = :c AND claimed_at IS NULL
               AND recorded_at IS NOT NULL AND expires_at > now()
-            RETURNING id, kind, verified_age_band, recorded_by, notice_version, research_opt_in
+            RETURNING id, kind, verified_age_band, recorded_by, notice_version, research_opt_in,
+                      teacher_visibility
             """
         ),
         {"h": code_hash(claim_code, pepper), "c": class_id},
@@ -446,7 +447,11 @@ def count_claim_failure(engine: Engine, class_id: UUID, subject: str) -> None:
 def _record_slip_consent(conn: Connection, student_id: UUID, slip: Row[tuple[object, ...]]) -> None:
     # Form A (kind 'parent') is a parent's consent; Form C (kind 'self') is an adult student's own consent.
     # Both are school forms recorded by a teacher: method 'school_form', with the slip and the teacher.
-    types = [slip.kind] + (["research"] if slip.research_opt_in else [])
+    types = (
+        [slip.kind]
+        + (["research"] if slip.research_opt_in else [])
+        + (["teacher_visibility"] if slip.teacher_visibility else [])
+    )
     for consent_type in types:
         conn.execute(
             text(
