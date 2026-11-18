@@ -22,7 +22,7 @@ import { Status, useLoad } from './load';
 import { useSession } from './session';
 
 // ----------------------------------------------------------------------------------------- shell
-export function Shell({ children }: { children: ReactNode }) {
+export function Shell({ active, children }: { active: 'classes' | 'school'; children: ReactNode }) {
   const { t } = useI18n();
   const { me, signOut } = useSession();
   return (
@@ -32,9 +32,22 @@ export function Shell({ children }: { children: ReactNode }) {
           <img src={logo} alt="" aria-hidden="true" width={26} height={26} />
           <span className="brand-word">rahyaab</span>
         </div>
-        <a className="nav on" href={routeHash({ page: 'classes' })}>
+        <a
+          className={active === 'classes' ? 'nav on' : 'nav'}
+          href={routeHash({ page: 'classes' })}
+          aria-current={active === 'classes' ? 'page' : undefined}
+        >
           {t('nav.classes')}
         </a>
+        {me.role === 'school_admin' ? (
+          <a
+            className={active === 'school' ? 'nav on' : 'nav'}
+            href={routeHash({ page: 'school' })}
+            aria-current={active === 'school' ? 'page' : undefined}
+          >
+            {t('nav.school')}
+          </a>
+        ) : null}
         <div className="side-foot">
           <p className="muted small">{t('auth.signedInAs', { email: me.email })}</p>
           <button type="button" className="btn secondary" onClick={signOut}>

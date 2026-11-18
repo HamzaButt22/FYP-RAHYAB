@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { bandsFor, daysSince, lastGroup, parseRoute, percent, routeHash } from './api';
+import { bandsFor, daysSince, lastGroup, parseRoute, percent, routeHash, validSection } from './api';
 import { lookup } from './i18n';
 
 const ID = '0b5e8a52-3f0e-4c4b-9d1a-2f6d7e8a9b01';
@@ -72,5 +72,27 @@ describe('consent forms', () => {
       ...['printed', 'recorded', 'claimed', 'expired'].map((s) => `forms.status.${s}`),
     ];
     for (const key of keys) expect(lookup(key)).not.toBe(key);
+  });
+});
+
+describe('school setup', () => {
+  it('has its own address', () => {
+    expect(parseRoute('#/school')).toEqual({ page: 'school' });
+    expect(routeHash({ page: 'school' })).toBe('#/school');
+  });
+
+  it('accepts the section names the API accepts', () => {
+    for (const ok of ['B', 'Blue', '9B', 'ABCDEFGH']) expect(validSection(ok)).toBe(true);
+    for (const bad of ['', 'TOO-LONG', 'ABCDEFGHI', 'B 2', 'B-1']) expect(validSection(bad)).toBe(false);
+  });
+
+  it('has words for every role, status and action', () => {
+    const keys = [
+      ...['teacher', 'counsellor', 'school_admin'].map((r) => `school.role.${r}`),
+      ...['active', 'invited', 'locked', 'disabled'].map((s) => `school.status.${s}`),
+      ...['disable', 'resetPassword', 'resetTwoStep'].map((a) => `school.confirm.${a}`),
+      ...['classes', 'disable', 'enable', 'resetPassword', 'resetTwoStep'].map((a) => `school.done.${a}`),
+    ];
+    for (const key of keys) expect(lookup(key, { email: 'x' })).not.toBe(key);
   });
 });

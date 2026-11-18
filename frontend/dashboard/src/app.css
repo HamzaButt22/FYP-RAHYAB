@@ -465,6 +465,25 @@ a.btn {
   word-break: break-all;
 }
 
+/* ------------------------------------------------------------------ school setup (D-09) */
+fieldset.checks {
+  margin: var(--space-2) 0 0;
+  padding: 0;
+  border: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--space-4);
+}
+fieldset.checks legend {
+  padding: 0;
+  margin-block-end: var(--space-1);
+  font-weight: 700;
+}
+.form-row .full {
+  flex-basis: 100%;
+  margin: 0;
+}
+
 /* Print summary (D-04): only the summary, on A4 portrait (FR-74). */
 @page {
   size: A4 portrait;

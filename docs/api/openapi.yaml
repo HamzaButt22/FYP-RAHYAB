@@ -1303,10 +1303,35 @@ paths:
         '404': { $ref: '#/components/responses/NotFound' }
 
   /admin/staff:
+    get:
+      tags: [admin]
+      operationId: listStaff
+      summary: Staff of the school with their classes and status (D-09)
+      description: >-
+        A school admin, for their own school (another school answers 404); a platform admin, for the school named by `school_id`; anyone else 403. Lists teachers, counsellors and school admins only; team accounts never appear.
+      security:
+        - staffSession: []
+      parameters:
+        - { in: query, name: school_id, schema: { type: string, format: uuid }, description: Platform admins only }
+      responses:
+        '200':
+          description: Staff
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/StaffAccount' } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
     post:
       tags: [admin]
       operationId: inviteStaff
-      summary: Invite a staff user; TOTP enrolment happens at their first login (school admins invite for their own school)
+      summary: Invite a teacher, counsellor or school admin; they choose their password from an emailed link
+      description: >-
+        A school admin, for their own school (another school answers 404); a platform admin, for the school named by `school_id`; anyone else 403. Only the roles teacher, counsellor and school_admin (422 on `role` otherwise): platform admin and
+        researcher accounts are made with the admin command only. Classes must belong to the school (422 on
+        `class_ids`). Nobody sees or sets the password; the invite link works once, for 72 hours, and two-step
+        sign-in is set up at the first sign-in. Audit-logged.
       security:
         - staffSession: []
           csrfToken: []
@@ -1321,24 +1346,38 @@ paths:
               properties:
                 email: { type: string, format: email, maxLength: 254 }
                 role: { type: string, enum: [teacher, counsellor, school_admin, admin, researcher] }
-                school_id: { type: string, format: uuid }
-                class_ids: { type: array, items: { type: string, format: uuid } }
+                school_id: { type: string, format: uuid, description: Platform admins only }
+                class_ids: { type: array, maxItems: 40, items: { type: string, format: uuid } }
       responses:
-        '201': { description: Invitation email queued }
+        '201':
+          description: Invitation email queued
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StaffAccount' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
+        '409':
+          description: '`email_taken`'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
         '422': { $ref: '#/components/responses/Unprocessable' }
 
   /admin/staff/{staffId}:
     patch:
       tags: [admin]
       operationId: updateStaff
-      summary: Change classes, disable the account or force a password reset
+      summary: Change classes, disable or enable, force a password reset, or reset two-step sign-in
+      description: >-
+        A school admin, for their own school (another school answers 404); a platform admin, for the school named by `school_id`; anyone else 403. `class_ids` replaces the person's classes. Disabling, a forced reset and a two-step reset end every
+        session; a forced reset makes the old password stop working and emails a reset link. Nobody can disable,
+        reset or reset the two-step of their own account (409 `not_on_yourself`). Each change is audit-logged.
       security:
         - staffSession: []
           csrfToken: []
       parameters:
         - { in: path, name: staffId, required: true, schema: { type: string, format: uuid } }
+        - { in: query, name: school_id, schema: { type: string, format: uuid }, description: Platform admins only }
       requestBody:
         required: true
         content:
@@ -1347,14 +1386,25 @@ paths:
               type: object
               additionalProperties: false
               properties:
-                class_ids: { type: array, items: { type: string, format: uuid } }
+                class_ids: { type: array, maxItems: 40, items: { type: string, format: uuid } }
                 disabled: { type: boolean }
-                force_password_reset: { type: boolean }
+                force_password_reset: { type: boolean, const: true }
+                reset_two_step: { type: boolean, const: true }
       responses:
-        '200': { description: Updated; sessions revoked when disabled or reset }
+        '200':
+          description: Updated
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/StaffAccount' }
         '401': { $ref: '#/components/responses/Unauthorized' }
         '403': { $ref: '#/components/responses/Forbidden' }
         '404': { $ref: '#/components/responses/NotFound' }
+        '409':
+          description: '`not_on_yourself`'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
 
   /admin/schools:
     post:
@@ -1374,10 +1424,33 @@ paths:
         '403': { $ref: '#/components/responses/Forbidden' }
 
   /admin/classes:
+    get:
+      tags: [admin]
+      operationId: listClasses
+      summary: Classes of the school and whether their code still works (codes are never shown again)
+      description: >-
+        A school admin, for their own school (another school answers 404); a platform admin, for the school named by `school_id`; anyone else 403.
+      security:
+        - staffSession: []
+      parameters:
+        - { in: query, name: school_id, schema: { type: string, format: uuid }, description: Platform admins only }
+      responses:
+        '200':
+          description: Classes
+          content:
+            application/json:
+              schema: { type: array, items: { $ref: '#/components/schemas/SchoolClass' } }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
     post:
       tags: [admin]
       operationId: createClass
-      summary: Create a class and its first code
+      summary: Add a class; its code is shown once (`Cache-Control` no-store)
+      description: >-
+        A school admin, for their own school (another school answers 404); a platform admin, for the school named by `school_id`; anyone else 403. The section is 1 to 8 letters or digits and is stored in capitals; a class that already exists
+        answers 409 `class_exists`. Audit-logged.
       security:
         - staffSession: []
           csrfToken: []
@@ -1387,44 +1460,58 @@ paths:
           application/json:
             schema:
               type: object
-              required: [school_id, grade, section]
+              additionalProperties: false
+              required: [grade, section]
               properties:
-                school_id: { type: string, format: uuid }
+                school_id: { type: string, format: uuid, description: Platform admins only }
                 grade: { type: integer, minimum: 8, maximum: 12 }
-                section: { type: string, maxLength: 8 }
+                section: { type: string, pattern: '^[A-Za-z0-9]{1,8}$' }
       responses:
-        '401': { $ref: '#/components/responses/Unauthorized' }
         '201':
           description: Created; the class code is shown once
           content:
             application/json:
-              schema:
-                type: object
-                properties:
-                  class_id: { type: string, format: uuid }
-                  class_code: { type: string, examples: ['RYB-4K2'] }
-                  expires_at: { type: string, format: date-time }
+              schema: { $ref: '#/components/schemas/NewClassCode' }
+        '401': { $ref: '#/components/responses/Unauthorized' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '409':
+          description: '`class_exists`'
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
 
   /admin/codes:rotate:
     post:
       tags: [admin]
       operationId: rotateClassCode
-      summary: Rotate a class code (old code stops working)
+      summary: A new class code; the old one stops working at once, joined students are not affected
+      description: >-
+        A school admin, for their own school (another school answers 404); a platform admin, for the school named by `school_id`; anyone else 403. The new code is shown once (`Cache-Control` no-store). Audit-logged.
       security:
         - staffSession: []
           csrfToken: []
+      parameters:
+        - { in: query, name: school_id, schema: { type: string, format: uuid }, description: Platform admins only }
       requestBody:
         required: true
         content:
           application/json:
             schema:
               type: object
+              additionalProperties: false
               required: [class_id]
               properties:
                 class_id: { type: string, format: uuid }
       responses:
+        '200':
+          description: The new code, shown once
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/NewClassCode' }
         '401': { $ref: '#/components/responses/Unauthorized' }
-        '200': { description: New code returned once }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
 
   /admin/content-packs:
     post:
@@ -2111,6 +2198,40 @@ components:
           type: array
           items: { type: string, enum: [R, I, A, S, E, C] }
           description: The student's strongest interest types in order, at most 3; no numbers
+
+    StaffAccount:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        email: { type: string }
+        role: { type: string, enum: [teacher, counsellor, school_admin] }
+        status: { type: string, enum: [active, invited, locked, disabled] }
+        two_step: { type: boolean, description: Whether an authenticator app is set up }
+        classes:
+          type: array
+          items:
+            type: object
+            properties:
+              id: { type: string, format: uuid }
+              name: { type: string, example: 9-B }
+        is_you: { type: boolean }
+
+    SchoolClass:
+      type: object
+      properties:
+        id: { type: string, format: uuid }
+        grade: { type: integer }
+        section: { type: string }
+        name: { type: string, example: 9-B }
+        code_expires_at: { type: string, format: date-time }
+        code_live: { type: boolean }
+
+    NewClassCode:
+      type: object
+      properties:
+        class_id: { type: string, format: uuid }
+        class_code: { type: string, examples: ['RYB-4K2'] }
+        expires_at: { type: string, format: date-time }
 
     ConsentForm:
       type: object

@@ -19,6 +19,7 @@ from rahyaab_api.routers import (
     health,
     profile,
     results,
+    school_setup,
     staff_auth,
     student_auth,
 )
@@ -87,6 +88,7 @@ def create_app(settings: Settings | None = None) -> FastAPI:
     app.include_router(profile.router, prefix="/v1")
     app.include_router(dashboard.router, prefix="/v1")
     app.include_router(consent_records.router, prefix="/v1")
+    app.include_router(school_setup.router, prefix="/v1")
     return app
 
 

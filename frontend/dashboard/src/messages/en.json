@@ -1,7 +1,8 @@
 {
   "nav": {
     "label": "Dashboard",
-    "classes": "Classes"
+    "classes": "Classes",
+    "school": "School and teachers"
   },
   "roster": {
     "title": "Class {{name}}",
@@ -249,6 +250,92 @@
       "confirmWrong": "That is not the last group. Check what you wrote down.",
       "confirmed": "Thank you. Print the slips, then delete the slips file. Keep the register at school.",
       "hide": "I wrote it down, hide the password"
+    }
+  },
+  "school": {
+    "title": "School and teachers",
+    "staffTitle": "Teachers and staff",
+    "staffCaption": "Staff of this school, their classes and whether they can sign in",
+    "colPerson": "Email",
+    "colRole": "Role",
+    "colClasses": "Classes",
+    "colTwoStep": "Two-step",
+    "colStatus": "Status",
+    "colActions": "Change",
+    "you": "(you)",
+    "role": {
+      "teacher": "Teacher",
+      "counsellor": "Counsellor",
+      "school_admin": "School admin"
+    },
+    "status": {
+      "active": "Active",
+      "invited": "Invited",
+      "locked": "Locked for now",
+      "disabled": "Disabled"
+    },
+    "twoStepOn": "On",
+    "twoStepOff": "Not set up",
+    "noClasses": "None",
+    "edit": "Change",
+    "editLabel": "Change {{email}}",
+    "editTitle": "Change {{email}}",
+    "classesFor": "Classes this person can see",
+    "save": "Save classes",
+    "close": "Close",
+    "disable": "Disable",
+    "enable": "Enable",
+    "resetPassword": "Reset password",
+    "resetTwoStep": "Reset two-step",
+    "confirm": {
+      "disable": "Disable {{email}}? They are signed out and cannot sign in until you enable them again.",
+      "resetPassword": "Reset the password of {{email}}? Their old password stops working now and they get an email with a link.",
+      "resetTwoStep": "Reset two-step sign-in for {{email}}? Do this only after you have checked, in person or by phone, that they lost their phone.",
+      "yes": "Yes, do it",
+      "no": "No, go back"
+    },
+    "done": {
+      "classes": "Classes saved.",
+      "disable": "Disabled. They are signed out.",
+      "enable": "Enabled. They can sign in again.",
+      "resetPassword": "Done. They will get an email to choose a new password.",
+      "resetTwoStep": "Done. At their next sign-in they set up their authenticator app again."
+    },
+    "selfNote": "You cannot disable or reset your own account. Ask another school admin.",
+    "invite": {
+      "title": "Invite someone",
+      "help": "They get an email with a link to choose their password. Nobody, not even you, sees or sets it.",
+      "email": "Their work email",
+      "role": "Role",
+      "classes": "Classes they can see",
+      "submit": "Send invite",
+      "sent": "Invite sent to {{email}}. The link works for 72 hours.",
+      "taken": "Someone already has an account with that email.",
+      "emailError": "Type a full email, like name@school.edu.pk."
+    },
+    "classesTitle": "Classes",
+    "classesCaption": "Classes of this school and whether their class code still works",
+    "colClass": "Class",
+    "colCode": "Class code",
+    "codeUntil": "Works until {{date}}",
+    "codeExpired": "Expired",
+    "newCode": "New code",
+    "newCodeLabel": "New code for class {{name}}",
+    "confirmNewCode": "Make a new code for class {{name}}? The old code stops working at once. Students who already joined are not affected.",
+    "add": {
+      "title": "Add a class",
+      "grade": "Class",
+      "section": "Section",
+      "sectionHelp": "Letters or numbers, up to 8, like B or Blue.",
+      "submit": "Add class",
+      "exists": "That class already exists.",
+      "sectionError": "Use 1 to 8 letters or numbers."
+    },
+    "code": {
+      "title": "Class code for {{name}}",
+      "help": "Write it on the board or give it to the students now. It is shown only once; if it is lost, make a new code.",
+      "until": "Works until {{date}}.",
+      "hide": "I wrote it down, hide the code"
     }
   }
 }

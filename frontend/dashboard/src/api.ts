@@ -162,6 +162,36 @@ export type ConsentForm = {
 export type PrintedForms = { count: number; first: string; last: string; password: string; files: { name: string; content: string }[] };
 export type RecordForm = { age_band: string; research_opt_in: boolean; teacher_visible: boolean };
 
+export type StaffRow = {
+  id: string;
+  email: string;
+  role: 'teacher' | 'counsellor' | 'school_admin';
+  status: 'active' | 'invited' | 'locked' | 'disabled';
+  two_step: boolean;
+  classes: { id: string; name: string }[];
+  is_you: boolean;
+};
+export type SchoolClass = { id: string; grade: number; section: string; name: string; code_expires_at: string; code_live: boolean };
+export type NewCode = { class_id: string; class_code: string; expires_at: string };
+export type StaffChange = { class_ids?: string[]; disabled?: boolean; force_password_reset?: true; reset_two_step?: true };
+
+export const school = {
+  staff: () => api<StaffRow[]>('/admin/staff'),
+  invite: (email: string, role: StaffRow['role'], classIds: string[], csrf: string) =>
+    api<StaffRow>('/admin/staff', { method: 'POST', body: { email, role, class_ids: classIds }, csrf }),
+  change: (staffId: string, change: StaffChange, csrf: string) =>
+    api<StaffRow>(`/admin/staff/${encodeURIComponent(staffId)}`, { method: 'PATCH', body: change, csrf }),
+  classes: () => api<SchoolClass[]>('/admin/classes'),
+  addClass: (grade: number, section: string, csrf: string) =>
+    api<NewCode>('/admin/classes', { method: 'POST', body: { grade, section }, csrf }),
+  newCode: (classId: string, csrf: string) => api<NewCode>('/admin/codes:rotate', { method: 'POST', body: { class_id: classId }, csrf }),
+};
+
+/** Section names as the API accepts them: 1 to 8 letters or digits. */
+export function validSection(section: string): boolean {
+  return /^[A-Za-z0-9]{1,8}$/.test(section.trim());
+}
+
 export const PARENT_BANDS = ['13-15', '16-17'] as const;
 export const ADULT_BANDS = ['18-19', '20-24', '25+'] as const;
 
@@ -203,6 +233,7 @@ export type Route =
   | { page: 'classes' }
   | { page: 'class'; id: string }
   | { page: 'forms'; id: string }
+  | { page: 'school' }
   | { page: 'student'; id: string; classId: string | null };
 
 const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
@@ -211,6 +242,7 @@ const UUID = '[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}';
 export function parseRoute(hash: string): Route {
   const cls = new RegExp(`^#/class/(${UUID})$`).exec(hash);
   if (cls) return { page: 'class', id: cls[1] };
+  if (hash === '#/school') return { page: 'school' };
   const forms = new RegExp(`^#/class/(${UUID})/forms$`).exec(hash);
   if (forms) return { page: 'forms', id: forms[1] };
   const student = new RegExp(`^#/student/(${UUID})(?:[?]class=(${UUID}))?$`).exec(hash);
@@ -221,6 +253,7 @@ export function parseRoute(hash: string): Route {
 export function routeHash(route: Route): string {
   if (route.page === 'class') return `#/class/${route.id}`;
   if (route.page === 'forms') return `#/class/${route.id}/forms`;
+  if (route.page === 'school') return '#/school';
   if (route.page === 'student') return `#/student/${route.id}${route.classId ? `?class=${route.classId}` : ''}`;
   return '#/classes';
 }

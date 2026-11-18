@@ -48,10 +48,10 @@ def check_dashboard_url(url: str) -> str:
     return url
 
 
-def _audit(conn: Connection, action: str, staff_id: UUID) -> None:
+def _audit(conn: Connection, action: str, staff_id: UUID, actor: str = ACTOR) -> None:
     conn.execute(
         text("INSERT INTO audit_log (actor, action, object) VALUES (:a, :act, :o)"),
-        {"a": ACTOR, "act": action, "o": f"staff:{staff_id}"},
+        {"a": actor, "act": action, "o": f"staff:{staff_id}"},
     )
 
 
@@ -91,7 +91,13 @@ def _send_link(conn: Connection, staff_id: UUID, email: str, purpose: str, dashb
 
 
 def add_staff(
-    conn: Connection, email: str, role: str, school_id: UUID | None, class_ids: list[UUID], dashboard_url: str
+    conn: Connection,
+    email: str,
+    role: str,
+    school_id: UUID | None,
+    class_ids: list[UUID],
+    dashboard_url: str,
+    actor: str = ACTOR,
 ) -> UUID:
     """A new staff account with no password, its classes, and an invite email. Returns the staff id."""
     email = email.strip().lower()
@@ -111,19 +117,19 @@ def add_staff(
         {"s": school_id if role in SCHOOL_ROLES else None, "e": email, "p": sa.NO_PASSWORD, "r": role},
     ).scalar_one()
     for class_id in class_ids:
-        assign_class(conn, staff_id, class_id)
+        assign_class(conn, staff_id, class_id, actor)
     _send_link(conn, staff_id, email, "invite", dashboard_url)
-    _audit(conn, "staff.add", staff_id)
+    _audit(conn, "staff.add", staff_id, actor)
     return staff_id
 
 
-def invite_again(conn: Connection, staff_id: UUID, dashboard_url: str) -> None:
+def invite_again(conn: Connection, staff_id: UUID, dashboard_url: str, actor: str = ACTOR) -> None:
     """A new invite link (the old one stops working), for a link that expired or never arrived."""
     _send_link(conn, staff_id, _email_of(conn, staff_id), "invite", dashboard_url)
-    _audit(conn, "staff.invite_again", staff_id)
+    _audit(conn, "staff.invite_again", staff_id, actor)
 
 
-def force_reset(conn: Connection, staff_id: UUID, dashboard_url: str) -> None:
+def force_reset(conn: Connection, staff_id: UUID, dashboard_url: str, actor: str = ACTOR) -> None:
     """The current password stops working now, every session ends, and a reset link is emailed."""
     email = _email_of(conn, staff_id)
     conn.execute(
@@ -131,10 +137,10 @@ def force_reset(conn: Connection, staff_id: UUID, dashboard_url: str) -> None:
     )
     _revoke_sessions(conn, staff_id)
     _send_link(conn, staff_id, email, "reset", dashboard_url)
-    _audit(conn, "staff.force_reset", staff_id)
+    _audit(conn, "staff.force_reset", staff_id, actor)
 
 
-def set_disabled(conn: Connection, staff_id: UUID, disabled: bool) -> None:
+def set_disabled(conn: Connection, staff_id: UUID, disabled: bool, actor: str = ACTOR) -> None:
     _email_of(conn, staff_id)
     conn.execute(
         text("UPDATE staff_user SET disabled_at = CASE WHEN :d THEN now() ELSE NULL END WHERE id = :id"),
@@ -142,10 +148,10 @@ def set_disabled(conn: Connection, staff_id: UUID, disabled: bool) -> None:
     )
     if disabled:
         _revoke_sessions(conn, staff_id)
-    _audit(conn, "staff.disable" if disabled else "staff.enable", staff_id)
+    _audit(conn, "staff.disable" if disabled else "staff.enable", staff_id, actor)
 
 
-def reset_mfa(conn: Connection, staff_id: UUID) -> None:
+def reset_mfa(conn: Connection, staff_id: UUID, actor: str = ACTOR) -> None:
     """For a lost or replaced phone: the authenticator is forgotten, every session ends, and the next
     sign-in sets up a new one. Check who is asking before running this (in person or by phone)."""
     _email_of(conn, staff_id)
@@ -154,10 +160,10 @@ def reset_mfa(conn: Connection, staff_id: UUID) -> None:
         {"id": staff_id},
     )
     _revoke_sessions(conn, staff_id)
-    _audit(conn, "staff.mfa_reset", staff_id)
+    _audit(conn, "staff.mfa_reset", staff_id, actor)
 
 
-def assign_class(conn: Connection, staff_id: UUID, class_id: UUID) -> None:
+def assign_class(conn: Connection, staff_id: UUID, class_id: UUID, actor: str = ACTOR) -> None:
     """Only classes of the staff member's own school (FR-78)."""
     same_school = conn.execute(
         text(
@@ -174,17 +180,17 @@ def assign_class(conn: Connection, staff_id: UUID, class_id: UUID) -> None:
     )
     conn.execute(
         text("INSERT INTO audit_log (actor, action, object) VALUES (:a, 'staff.assign_class', :o)"),
-        {"a": ACTOR, "o": f"staff:{staff_id}:class:{class_id}"},
+        {"a": actor, "o": f"staff:{staff_id}:class:{class_id}"},
     )
 
 
-def unassign_class(conn: Connection, staff_id: UUID, class_id: UUID) -> None:
+def unassign_class(conn: Connection, staff_id: UUID, class_id: UUID, actor: str = ACTOR) -> None:
     conn.execute(
         text("DELETE FROM staff_class WHERE staff_id = :s AND class_id = :c"), {"s": staff_id, "c": class_id}
     )
     conn.execute(
         text("INSERT INTO audit_log (actor, action, object) VALUES (:a, 'staff.unassign_class', :o)"),
-        {"a": ACTOR, "o": f"staff:{staff_id}:class:{class_id}"},
+        {"a": actor, "o": f"staff:{staff_id}:class:{class_id}"},
     )
 
 
