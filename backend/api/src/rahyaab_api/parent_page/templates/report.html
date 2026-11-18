@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% block content %}
+<main id="report" data-child="{{ nickname }}">
+  <p class="muted">Family report</p>
+  <h1>{{ nickname }}'s paths that fit best right now</h1>
+
+  <ol class="paths">
+    {% for card in cards %}
+    <li class="card">
+      <h2>{{ card.name }} <span class="band">{{ card.band }}</span></h2>
+      {% if card.reasons %}
+      <ul class="reasons">
+        {% for reason in card.reasons %}<li>{{ reason }}</li>{% endfor %}
+      </ul>
+      {% endif %}
+      {% if card.plan_b %}<p><b>Plan B:</b> {{ card.plan_b }}</p>{% endif %}
+      {% if card.cost %}<p class="small">{{ card.cost }}</p>{% endif %}
+    </li>
+    {% endfor %}
+  </ol>
+  {% if not cards | selectattr("cost") | list %}
+  <p class="small muted">Ask the school about costs and how many students get a place. We only show figures that have a source and a date.</p>
+  {% endif %}
+
+  <section class="card talk" aria-labelledby="talk-title">
+    <h2 id="talk-title">Talk about it together</h2>
+    <ul>
+      {% for q in questions %}<li>{{ q }}</li>{% endfor %}
+    </ul>
+  </section>
+
+  <p class="muted small">Based on {{ weeks }} weeks of play · {{ confidence }} · a starting point, not a verdict.</p>
+  {% if provisional %}
+  <p class="muted small">This is an early result: the scoring is still being finished, so treat it as a first look.</p>
+  {% endif %}
+
+  <section class="save" id="save" hidden>
+    <button type="button" id="save-button">Save to this phone</button>
+    <p class="muted small">Only on this phone, so you can switch between your children's reports. Anyone using this phone could open it.</p>
+  </section>
+</main>
+{% endblock %}

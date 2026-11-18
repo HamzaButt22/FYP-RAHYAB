@@ -157,6 +157,8 @@ Feature: Read aloud (FR-96)
 | TC-SHARE-06 | Stored result only | Change the model version, then open an old link | Shows the stored result; no recomputation | RFC-0004 | T-INT | A | 2 |
 | TC-SHARE-07 | Neutral preview | Paste the link in WhatsApp | Open Graph preview has no child data | RFC-0004 | T-PRIV | M | 1 |
 | TC-SHARE-08 | Several children on one parent phone | Open two children's links; choose "Save to this phone" on both; capture traffic with mitmproxy as in TC-PRIV-01 | P-01b switcher lists both; no request body, URL or header carries another child's token, nickname or id (each request carries only its own link's token); "Remove" deletes the entry; default is not to save | FR-105 | T-PRIV | A | 2 |
+| TC-SHARE-09 | Links only for your own result, after consent | Make a link to another student's result, to an unknown result, with `scope: consent`, without consent, without a token | `404`, `404`, `422` (parent consent by phone is post-MVP), `403 consent_required`, `401` | FR-66, NFR-42 | T-SEC-05 | A | 1 |
+| TC-SHARE-10 | The report in plain English | Open a report link | The nickname, every top path by name with its fit band, reasons in words, Plan B, talk-together questions, "a starting point, not a verdict"; no numeric fit; a cost or entry figure only with its source and date, otherwise "Ask the school"; the view is counted | FR-67, FR-68, FR-54 | T-INT | A | 1 |
 
 ### 2.6 Dashboard and admin
 

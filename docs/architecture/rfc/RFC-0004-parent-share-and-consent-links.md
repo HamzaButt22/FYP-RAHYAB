@@ -68,6 +68,24 @@ The phone number goes into `guardian_contact`, encrypted and in a separate role.
 4. When the student joins, they enter the class code and the claim code (or, if the form comes back later, the claim code alone on the consent screen: `POST /consents:claim`). Only a recorded slip can be claimed. The server creates the `consent` row bound to the new pseudonymous profile (`method=school_form`, type `parent` or `self`, with `slip_id` and `recorded_by`) and stores the register's age band, which wins over the student's own answer (`docs/security/AGE_ASSURANCE.md`).
 5. A slip can be claimed once; unclaimed slips expire after 60 days. A spot check by a second staff member (5 forms per class) is recorded in the audit log.
 
+## As built (18 Nov 2026)
+
+`backend/api/src/rahyaab_api/routers/share_links.py` (the student's links), `routers/parent.py` and
+`parent_page/` (the page, Jinja2 with autoescape, ADR-0008). Tests: TC-SHARE-01 to 10, TC-SEC-13.
+
+- Report links only. The consent page (P-02, parent OTP) is post-MVP (MVP.md), so `scope: consent` answers 422.
+- Links are served from `PARENT_LINK_BASE`, for now the API host (`https://api.rahyaab.pk/p/<token>`), so no
+  new domain or certificate is needed; a shorter `rahyaab.pk/p/…` address is one setting and a proxy rule later.
+- The block after guessing uses fixed 15-minute windows, so it lasts up to 15 minutes, not exactly 15.
+- A withdrawn consent or an archived student makes the link answer the same 410 page.
+- "Listen" uses the browser's own voice (Web Speech API) only; there is no recorded-audio fallback yet. Without
+  speech support the button is not shown.
+- Entry odds and costs (FR-68) appear only from `streams.json` with a source and a date; no path has them yet,
+  so the page says to ask the school. The talk-together questions are draft copy for the content review.
+- The page loads the design tokens (`/p/static/tokens.css`), so it follows the phone's light or dark setting.
+- Not built: the PDF (`/p/{token}.pdf`, FR-69), the app's Share with family screen (S-14, next PR), and the
+  retention job that deletes expired links (FR-84).
+
 ## Security, privacy and accessibility
 
 - Opening a link by itself reveals only the nickname and the results the student chose to share. The student can hide task strengths before sharing.

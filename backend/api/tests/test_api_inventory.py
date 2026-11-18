@@ -51,6 +51,7 @@ def test_tc_sec_04_every_route_is_in_the_openapi_contract() -> None:
             database_url="postgresql+psycopg://u:p@h/d",
             cors_allowed_origins=["https://dashboard.example.pk"],
             dashboard_url="https://dashboard.example.pk",
+            parent_link_base="https://rahyaab.example.pk",
         )
     )
     served = {(shape(path.removeprefix(PREFIX)), m) for path, m in served_routes(app.routes)}

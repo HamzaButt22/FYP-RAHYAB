@@ -916,6 +916,11 @@ paths:
       tags: [sharing]
       operationId: createShareLink
       summary: Create a parent link (token shown once; only its hash is stored)
+      description: >-
+        Only `report` links for now: parent consent by phone (`consent`, P-02) is post-MVP and answers 422 on
+        `scope`. The result must be one of the caller's own (another student's result, or none, answers 404), and
+        parent or adult self consent must be in force (403 `consent_required`). The token is 22 characters from 62;
+        the link lasts 30 days and always shows the result it was made for. At most 20 links a day per student.
       requestBody:
         required: true
         content:
@@ -935,6 +940,10 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/ShareLink' }
+        '403': { $ref: '#/components/responses/Forbidden' }
+        '404': { $ref: '#/components/responses/NotFound' }
+        '422': { $ref: '#/components/responses/Unprocessable' }
+        '429': { $ref: '#/components/responses/TooManyRequests' }
 
   /share-links/{linkId}:
     delete:
@@ -952,6 +961,13 @@ paths:
       tags: [parent]
       operationId: viewParentReport
       summary: Parent report page (P-01), server-rendered, in plain English
+      description: >-
+        Built from the stored result the link was made for. An unknown, expired or revoked link, withdrawn
+        consent or an archived student all get the same 410 page. Headers on every response: a strict CSP with no
+        inline script or style, `X-Frame-Options: DENY`, `Referrer-Policy: no-referrer`, `Cache-Control: no-store`,
+        `X-Robots-Tag: noindex`; no CORS headers. The Open Graph preview names no child. 30 requests a minute per
+        address; after 20 unknown tokens in 10 minutes the address gets 429 with `Retry-After: 900`. Served from
+        `PARENT_LINK_BASE` (the API host for now).
       security: []
       servers:
         - url: https://rahyaab.pk
@@ -963,7 +979,34 @@ paths:
           content:
             text/html:
               schema: { type: string }
-        '410': { description: Link expired or revoked }
+        '410':
+          description: Link unknown, expired or revoked (one page for all)
+          content:
+            text/html:
+              schema: { type: string }
+        '429':
+          description: Too many pages from this address, or too many unknown links
+          content:
+            text/html:
+              schema: { type: string }
+
+  /p/static/{name}:
+    get:
+      tags: [parent]
+      operationId: parentPageAsset
+      summary: The family page's stylesheet, script and design tokens (no data; cacheable)
+      security: []
+      parameters:
+        - { in: path, name: name, required: true, schema: { type: string, enum: [parent.css, parent.js, tokens.css] } }
+      responses:
+        '200':
+          description: The file
+          content:
+            text/css:
+              schema: { type: string }
+            text/javascript:
+              schema: { type: string }
+        '404': { description: No such file }
 
   /p/{token}.pdf:
     get:

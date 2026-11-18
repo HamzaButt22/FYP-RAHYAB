@@ -12,4 +12,5 @@
 !database/schema.sql
 !design/game/frameworks/streams.json
 !design/game/frameworks/scoring.json
+!design/tokens/tokens.css
 **/__pycache__

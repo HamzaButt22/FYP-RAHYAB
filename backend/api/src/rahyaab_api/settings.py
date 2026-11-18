@@ -32,6 +32,8 @@ class Settings(BaseSettings):
     data_key_wrapper_file: str = "/run/secrets/data_key_wrapper"
     # Where staff emails point (invite and reset links): the dashboard's own address, no trailing slash.
     dashboard_url: str = "http://localhost:5173"
+    # Where family links point (RFC-0004): the address that serves /p/<token>, no trailing slash.
+    parent_link_base: str = "http://localhost:8000"
 
     @field_validator("cors_allowed_origins", mode="before")
     @classmethod
@@ -57,6 +59,8 @@ class Settings(BaseSettings):
                 raise ValueError("CORS_ALLOWED_ORIGINS must be exact https origins")
             if not self.dashboard_url.startswith("https://"):
                 raise ValueError("DASHBOARD_URL must be an https address")
+            if not self.parent_link_base.startswith("https://"):
+                raise ValueError("PARENT_LINK_BASE must be an https address")
 
 
 @lru_cache

@@ -31,6 +31,9 @@ patches:
       - op: replace
         path: /data/DASHBOARD_URL
         value: https://dashboard.rahyaab.pk
+      - op: replace
+        path: /data/PARENT_LINK_BASE
+        value: https://api.rahyaab.pk
   - target: { kind: HorizontalPodAutoscaler, name: api }
     patch: |-
       - op: replace

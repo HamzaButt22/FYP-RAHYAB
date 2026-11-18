@@ -23,6 +23,8 @@ COPY --from=build /app/backend /app/backend
 COPY database/schema.sql /app/database/schema.sql
 # streams.json and scoring.json: the rules and scoring settings the results use (routers/results.py)
 COPY design/game/frameworks/streams.json design/game/frameworks/scoring.json /app/design/game/frameworks/
+# The design tokens the family page uses for its colours (routers/parent.py, /p/static/tokens.css)
+COPY design/tokens/tokens.css /app/design/tokens/tokens.css
 USER 10001
 EXPOSE 8000
 HEALTHCHECK --interval=15s --timeout=3s --retries=3 \

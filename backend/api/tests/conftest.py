@@ -4,6 +4,7 @@ The app module builds its app at import time, so the environment is set before a
 """
 
 import os
+import secrets
 
 os.environ.setdefault("APP_ENV", "test")
 
@@ -11,7 +12,7 @@ from collections.abc import Iterator  # noqa: E402
 
 import pytest  # noqa: E402
 from fastapi.testclient import TestClient  # noqa: E402
-from sqlalchemy import Engine, create_engine  # noqa: E402
+from sqlalchemy import Engine, create_engine, text  # noqa: E402
 from sqlalchemy.exc import OperationalError  # noqa: E402
 from support import ADMIN_URL, API_URL, MASTER_KEY_FILE, PEPPER, SIGNING_KEY, World  # noqa: E402
 
@@ -54,3 +55,21 @@ def world(admin: Engine) -> Iterator[World]:
     w = World(admin)
     yield w
     w.cleanup()
+
+
+@pytest.fixture
+def pack(admin: Engine) -> Iterator[str]:
+    """A throwaway content pack for runs that tests insert directly (results, sharing)."""
+    pack_id = f"test-{secrets.token_hex(4)}"
+    with admin.begin() as conn:
+        conn.execute(
+            text(
+                "INSERT INTO content_pack (id, class_mode, min_app, sha256, signature, manifest, size_bytes, "
+                "storage_uri) VALUES (:id, 'matric', '0.1.0', 'x', 'x', '{}', 1, 'test://none')"
+            ),
+            {"id": pack_id},
+        )
+    yield pack_id
+    with admin.begin() as conn:
+        conn.execute(text("DELETE FROM game_run WHERE content_version = :p"), {"p": pack_id})
+        conn.execute(text("DELETE FROM content_pack WHERE id = :p"), {"p": pack_id})

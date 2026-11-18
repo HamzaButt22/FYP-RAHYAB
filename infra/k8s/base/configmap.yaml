@@ -8,6 +8,7 @@ data:
   ACCESS_TOKEN_MINUTES: "15"
   CORS_ALLOWED_ORIGINS: https://dashboard.staging.rahyaab.pk
   DASHBOARD_URL: https://dashboard.staging.rahyaab.pk
+  PARENT_LINK_BASE: https://staging.api.rahyaab.pk
   MAIL_FROM: Rahyaab <no-reply@rahyaab.pk>
   MAIL_TRANSPORT: smtp
   POSTGRES_DB: rahyaab
