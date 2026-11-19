@@ -47,8 +47,13 @@ export function patchJson<T>(path: string, body: unknown, options: Options = {})
   });
 }
 
+/** DELETE: success is usually `204 No Content`, so `data` is null. */
+export function deleteJson(path: string, options: Options = {}): Promise<ApiResult<null>> {
+  return request<null>('DELETE', path, undefined, options);
+}
+
 async function request<T>(
-  method: 'GET' | 'POST' | 'PATCH',
+  method: 'GET' | 'POST' | 'PATCH' | 'DELETE',
   path: string,
   body: unknown,
   options: Options

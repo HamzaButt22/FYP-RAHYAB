@@ -90,11 +90,14 @@ export function whyFor(e: Evidence, streamId: string): Why {
   };
 }
 
-/** A translation key and its parameters; list parameters are joined by the caller in the right language. */
+/** A translation key and its parameters; list parameters are joined by the caller in the right language.
+ * `lists` holds translation keys; `paths` holds path ids, which the caller names from streams.json, the same
+ * names the parent page uses (TC-SHARE-13). */
 export interface Phrase {
   key: string;
   params?: Record<string, string>;
   lists?: Record<string, string[]>;
+  paths?: Record<string, string[]>;
 }
 
 const KNOWN_REASONS = new Set(['interest_match', 'ability_support', 'keeps_doors_open', 'path_strength']);
@@ -103,8 +106,9 @@ export function reasonPhrase(reason: Reason): Phrase | null {
   if (!KNOWN_REASONS.has(reason.code)) return null; // a code from a newer server: skip it, never show raw text
   const lists: Record<string, string[]> = {};
   if (reason.types?.length) lists.types = reason.types.map((t) => `results.type.${t}`);
-  if (reason.doors?.length) lists.doors = reason.doors.map((d) => `door.${d}`);
-  return { key: `results.reason.${reason.code}`, lists };
+  const phrase: Phrase = { key: `results.reason.${reason.code}`, lists };
+  if (reason.doors?.length) phrase.paths = { doors: [...reason.doors] }; // a door is a class 11-12 path
+  return phrase;
 }
 
 /** What to say about a door: its state, then any note, route or "check with your board". */

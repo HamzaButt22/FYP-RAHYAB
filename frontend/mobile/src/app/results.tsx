@@ -12,6 +12,8 @@ import { Button } from '@/components/Button';
 import { Header } from '@/components/Header';
 import { ListenButton } from '@/components/ListenButton';
 import { joinList } from '@/i18n/joinList';
+import { STREAMS } from '@/library/data';
+import { pathName } from '@/library/library';
 import { Screen } from '@/components/Screen';
 import {
   bandDots,
@@ -36,15 +38,23 @@ function useTx(): Translate {
   return t as unknown as Translate;
 }
 
+/** A path's one name from streams.json, the same the stream page and the parent page show (TC-SHARE-13). */
+function usePathLabel() {
+  const tx = useTx();
+  return useCallback((id: string) => pathName(STREAMS, id) ?? tx(`stream.${id}`, { defaultValue: id }), [tx]);
+}
+
 function useSay() {
   const tx = useTx();
+  const pathLabel = usePathLabel();
   return useCallback(
     (p: Phrase) => {
       const lists: Record<string, string> = {};
       for (const [name, keys] of Object.entries(p.lists ?? {})) lists[name] = joinList(keys.map((k) => tx(k)), tx('results.and'));
+      for (const [name, ids] of Object.entries(p.paths ?? {})) lists[name] = joinList(ids.map(pathLabel), tx('results.and'));
       return tx(p.key, { ...p.params, ...lists });
     },
-    [tx]
+    [tx, pathLabel]
   );
 }
 
@@ -93,18 +103,18 @@ export default function ResultsScreen() {
 
 function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId: string }) {
   const { t } = useTranslation();
-  const tx = useTx();
   const say = useSay();
+  const pathLabel = usePathLabel();
   const { colors } = useTheme();
   const [why, setWhy] = useState<Evidence | null | 'open'>(null);
   const dots = bandDots(card.fit_band);
   // Read aloud (FR-96): the path, its fit, the reasons and the doors, as sentences.
   const spoken = [
-    `${rank}. ${tx(`stream.${card.stream_id}`, { defaultValue: card.stream_id })}.`,
+    `${rank}. ${pathLabel(card.stream_id)}.`,
     `${t(`results.band.${card.fit_band}`)}.`,
     ...card.reasons.map((r) => reasonPhrase(r)).flatMap((p) => (p ? [`${say(p)}.`] : [])),
-    ...card.doors.map((d) => `${tx(d.label_key, { defaultValue: d.to })}: ${say(doorPhrases(d)[0])}.`),
-    ...card.plan_b.map((id) => `${t('results.planB', { name: tx(`stream.${id}`, { defaultValue: id }) })}.`),
+    ...card.doors.map((d) => `${pathLabel(d.to)}: ${say(doorPhrases(d)[0])}.`),
+    ...card.plan_b.map((id) => `${t('results.planB', { name: pathLabel(id) })}.`),
   ].join(' ');
 
   const toggleWhy = () => {
@@ -119,11 +129,11 @@ function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId
   return (
     <View
       style={[styles.card, { backgroundColor: colors.surface, borderColor: colors.border }]}
-      accessibilityLabel={`${rank}. ${tx(`stream.${card.stream_id}`)}, ${t(`results.band.${card.fit_band}`)}`}
+      accessibilityLabel={`${rank}. ${pathLabel(card.stream_id)}, ${t(`results.band.${card.fit_band}`)}`}
     >
       <View style={styles.titleRow}>
         <AppText variant="heading" accessibilityRole="header" style={styles.grow}>
-          {tx(`stream.${card.stream_id}`, { defaultValue: card.stream_id })}
+          {pathLabel(card.stream_id)}
         </AppText>
         <ListenButton id={`card:${card.stream_id}`} text={spoken} />
       </View>
@@ -153,7 +163,7 @@ function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId
             const [state, ...more] = doorPhrases(d);
             return (
               <View key={d.to}>
-                <AppText>{`${tx(d.label_key, { defaultValue: d.to })}: ${say(state)}`}</AppText>
+                <AppText>{`${pathLabel(d.to)}: ${say(state)}`}</AppText>
                 {more.map((p) => (
                   <AppText key={p.key} variant="caption" color="muted">
                     {say(p)}
@@ -167,7 +177,7 @@ function Card({ card, rank, resultId }: { card: PathCard; rank: number; resultId
 
       {card.plan_b.map((id) => (
         <AppText key={id} color="secondaryText">
-          {t('results.planB', { name: tx(`stream.${id}`, { defaultValue: id }) })}
+          {t('results.planB', { name: pathLabel(id) })}
         </AppText>
       ))}
 

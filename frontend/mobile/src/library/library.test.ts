@@ -12,6 +12,7 @@ import {
   levelForGrade,
   missingFacts,
   nextSteps,
+  pathName,
   pathsAt,
   similarPaths,
   topTypes,
@@ -31,6 +32,18 @@ function has(key: string): boolean {
 
 test('the app carries an up-to-date copy of streams.json (run `pnpm streams` after changing it)', () => {
   assert.equal(bundled, source);
+});
+
+test('TC-SHARE-13 the app names every path exactly as the parent page does (streams.json name)', () => {
+  // backend/api/src/rahyaab_api/routers/parent.py path_names(): {id: name} over every level's paths
+  const names: Record<string, string> = {};
+  for (const level of Object.values(JSON.parse(source).by_class) as { paths: { id: string; name: string }[] }[]) {
+    for (const p of level.paths) names[p.id] = p.name;
+  }
+  assert.ok(Object.keys(names).length > 20);
+  for (const [id, name] of Object.entries(names)) assert.equal(pathName(data, id), name, id);
+  assert.equal(pathName(data, 'nursing_diploma_early'), names.nursing_diploma_early);
+  assert.equal(pathName(data, 'from_a_newer_server'), null);
 });
 
 test('each class opens on the choice it makes next', () => {
@@ -76,9 +89,14 @@ test('doors carry their state, and a door resting only on unverified rules says 
   );
   assert.equal(doorsFor(data, 'a_level')[0].checkWithSchool, true); // IBCC equivalence is unverified
   assert.deepEqual(doorsFor(data, 'general_science'), []);
+});
+
+test('TC-SHARE-13 every door is a path with a name, so the phone and the parent page name it the same', () => {
   for (const d of Object.keys(data.doors.by_path).flatMap((id) => doorsFor(data, id))) {
-    assert.ok(has(d.labelKey), `en.json is missing ${d.labelKey}`);
+    assert.equal(d.name, pathName(data, d.to), d.to);
+    assert.ok(d.name, `door ${d.to} is not a path in streams.json`);
   }
+  assert.equal(doorsFor(data, 'pre_engineering')[0].name, findPath(data, 'engineering')!.path.name);
 });
 
 test('every label the library screens show exists in en.json', () => {
