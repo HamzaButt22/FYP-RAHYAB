@@ -30,6 +30,10 @@ DEV_PW = "change-me-locally"  # local development only; never used outside your 
 def run(cmd: list[str], cwd: Path = ROOT, stdin: bytes | None = None, check: bool = True) -> int:
     print(f"\n$ {' '.join(cmd)}   (in {cwd.relative_to(ROOT) if cwd != ROOT else '.'})", flush=True)
     exe = shutil.which(cmd[0])  # resolves pnpm.cmd / npx.cmd on Windows
+    if sys.platform == "win32" and exe and not Path(exe).suffix:
+        # Python 3.12+ can return an extensionless file first (Docker Desktop ships a 'docker' shell script
+        # next to docker.exe); Windows can't run it, so prefer the PATHEXT match.
+        exe = next(filter(None, (shutil.which(cmd[0] + ext) for ext in (".exe", ".cmd", ".bat"))), exe)
     result = subprocess.run([exe or cmd[0], *cmd[1:]], cwd=cwd, input=stdin)
     if check and result.returncode != 0:
         sys.exit(result.returncode)
