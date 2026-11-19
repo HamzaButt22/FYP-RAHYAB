@@ -96,7 +96,7 @@ export default function StreamScreen() {
           )}
           {doors.map((d) => (
             <View key={d.to}>
-              <AppText>{`${tx(d.labelKey)}: ${tx(`results.doorState.${d.state}`)}`}</AppText>
+              <AppText>{`${d.name}: ${tx(`results.doorState.${d.state}`)}`}</AppText>
               {d.checkWithSchool ? (
                 <AppText variant="caption" color="muted">
                   {tx('results.checkWithBoard')}

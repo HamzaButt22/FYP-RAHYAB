@@ -99,6 +99,20 @@ def test_tc_share_09_links_only_for_your_own_stored_result_after_consent(
     assert api.post(LINKS, json={"scope": "report", "recommendation_id": result["id"]}).status_code == 401
 
 
+def test_tc_share_11_twenty_links_a_day_then_the_app_says_try_tomorrow(
+    api: TestClient, world: World, pack: str
+) -> None:
+    s, result = with_result(api, world, pack)
+    for _ in range(20):
+        make_link(api, s, result["id"])
+    r = api.post(LINKS, json={"scope": "report", "recommendation_id": result["id"]}, headers=s.headers)
+    # the app maps 429 to "You made a lot of links today. Try again tomorrow." (share.ts, TC-SHARE-11)
+    assert r.status_code == 429 and r.json()["code"] == "rate_limited" and int(r.headers["retry-after"]) > 0
+    assert len(api.get(LINKS, headers=s.headers).json()) == 20  # the refused one was not stored
+    other, other_result = with_result(api, world, pack, prefer="SEACIR")
+    assert make_link(api, other, other_result["id"])["url"]  # the limit is per student, not for everyone
+
+
 def test_tc_share_02_revoked_expired_and_unknown_links_look_the_same(
     api: TestClient, world: World, pack: str
 ) -> None:

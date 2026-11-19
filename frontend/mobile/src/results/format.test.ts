@@ -30,6 +30,14 @@ test('reasons become translation keys with their lists', () => {
   assert.equal(reasonPhrase({ code: 'from_a_newer_server' } as never), null);
 });
 
+test('TC-SHARE-13 a door in a reason is a path id, named from streams.json like the parent page', () => {
+  assert.deepEqual(reasonPhrase({ code: 'keeps_doors_open', doors: ['medicine', 'engineering'] }), {
+    key: 'results.reason.keeps_doors_open',
+    lists: {},
+    paths: { doors: ['medicine', 'engineering'] },
+  });
+});
+
 test('doors say their state, then the board check, note and route', () => {
   const door: Door = {
     to: 'medicine', label_key: 'door.medicine', state: 'extra_step', gates: ['x'], verification: 'unverified',
@@ -47,7 +55,7 @@ test('every key the result screen can show exists in en.json', () => {
     'results.confidenceLabel', 'results.sources', 'results.doorsTitle', 'results.retry', 'results.loading',
     'results.state.more_play', 'results.state.more_play_body', 'results.state.consent', 'results.state.not_supported',
     'results.state.offline', 'results.state.signed_out', 'results.state.error', 'results.and', 'home.seePaths',
-    'door.medicine', 'door.engineering', 'results.checkWithBoard',
+    'results.checkWithBoard',
     'results.aboutPath', 'results.whyCount', 'results.whyChoices', 'results.whyTop', 'results.whyPath',
     ...['strong', 'good', 'worth_a_look'].map((b) => `results.band.${b}`),
     ...['high', 'medium', 'low'].map((c) => `results.confidence.${c}`),

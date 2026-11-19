@@ -12,9 +12,11 @@ interface Props {
   kind?: 'primary' | 'text';
   disabled?: boolean;
   accessibilityHint?: string;
+  /** When the visible label alone is not enough, e.g. which item a "Turn off" button is for. */
+  accessibilityLabel?: string;
 }
 
-export function Button({ label, onPress, kind = 'primary', disabled = false, accessibilityHint }: Props) {
+export function Button({ label, onPress, kind = 'primary', disabled = false, accessibilityHint, accessibilityLabel }: Props) {
   const { colors } = useTheme();
   const primary = kind === 'primary';
   return (
@@ -22,6 +24,7 @@ export function Button({ label, onPress, kind = 'primary', disabled = false, acc
       accessibilityRole="button"
       accessibilityState={{ disabled }}
       accessibilityHint={accessibilityHint}
+      accessibilityLabel={accessibilityLabel}
       disabled={disabled}
       onPress={onPress}
       style={({ pressed }) => [

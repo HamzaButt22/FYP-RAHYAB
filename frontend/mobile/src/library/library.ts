@@ -73,6 +73,12 @@ export function findPath(data: StreamsData, id: string): { path: LibraryPath; le
   return null;
 }
 
+/** A path's one name, from streams.json, as the parent page shows it (TC-SHARE-13); null for an id this
+ * copy does not know (a newer server), so the caller can fall back. */
+export function pathName(data: StreamsData, id: string): string | null {
+  return findPath(data, id)?.path.name ?? null;
+}
+
 /** The interest types a path suits most, strongest first. */
 export function topTypes(path: LibraryPath, n = 3): InterestType[] {
   return [...TYPES].sort((a, b) => path.riasec[b] - path.riasec[a]).slice(0, n);
@@ -116,15 +122,16 @@ export function nextSteps(data: StreamsData, path: LibraryPath): NextStep[] {
   });
 }
 
-/** The doors a class 9-10 path keeps open or closes, with whether the rule still needs checking. */
+/** The doors a class 9-10 path keeps open or closes, with whether the rule still needs checking. A door's
+ * destination is a class 11-12 path, so it carries that path's name, as the parent page shows it. */
 export function doorsFor(
   data: StreamsData,
   id: string,
-): { to: string; labelKey: string; state: DoorState; checkWithSchool: boolean }[] {
+): { to: string; name: string; state: DoorState; checkWithSchool: boolean }[] {
   const verification = new Map(data.gates.map((g) => [g.id, g.verification]));
   return (data.doors.by_path[id] ?? []).map((d) => ({
     to: d.to,
-    labelKey: data.doors.destinations[d.to]?.label_key ?? d.to,
+    name: pathName(data, d.to) ?? d.to,
     state: d.state,
     // A door resting only on unverified rules is never stated as a rule (streams.json doors description).
     checkWithSchool: d.gates.length > 0 && d.gates.every((g) => verification.get(g) === 'unverified'),

@@ -159,8 +159,53 @@
     "takeBreak": "Take a break"
   },
   "family": {
-    "title": "Family",
-    "body": "You will share your Blueprint with your family from here."
+    "title": "Share with family",
+    "help": "Make a link so your family can see your paths. You can turn a link off at any time.",
+    "lead": "This is what your family will see when they open your link.",
+    "loading": "Getting your paths…",
+    "previewTitle": "Family report",
+    "previewPaths": "Your top paths",
+    "previewPath": "{{name}}: {{band}}",
+    "previewPlanB": "Plan B: {{list}}",
+    "previewMore": "They will also see why each path fits you, and questions to talk about together. They will see your nickname, not your real name.",
+    "expires": "A link works for 30 days.",
+    "make": "Make a link",
+    "makeHint": "Makes a new link to your latest paths.",
+    "making": "Making your link…",
+    "newTitle": "Your new link",
+    "newBody": "You can see this link only now. Copy it or send it to your family.",
+    "copy": "Copy link",
+    "copyHint": "Puts the link on your phone, ready to paste.",
+    "copied": "Link copied.",
+    "send": "Send the link",
+    "sendHint": "Choose WhatsApp or another app.",
+    "shareMessage": "Here are my Rahyaab paths. Let's talk about them together: {{url}}",
+    "linksTitle": "Your links",
+    "noLinks": "You have not made a link yet.",
+    "turnOff": "Turn off",
+    "turnOffLabel": "Turn off family link {{n}}",
+    "turnOffHint": "The link stops working at once.",
+    "confirmTitle": "Turn off this link?",
+    "confirmBody": "Anyone with this link will not see your paths any more. You can make a new link later.",
+    "confirmKeep": "Keep it",
+    "retry": "Try again",
+    "consentAction": "Add your family's OK",
+    "playAction": "Go to Home",
+    "link": {
+      "label": "Family link {{n}}",
+      "active": "Days left: {{days}}",
+      "expired": "Expired",
+      "revoked": "Turned off",
+      "views": "Times opened: {{times}}"
+    },
+    "problem": {
+      "no_result": "Play first. When your paths are ready, you can share them here.",
+      "consent": "Sharing opens once your family says OK.",
+      "offline": "No internet. Sharing needs a connection.",
+      "rate_limited": "You made a lot of links today. Try again tomorrow.",
+      "signed_out": "Please join your class again.",
+      "error": "Something went wrong. Try again."
+    }
   },
   "you": {
     "title": "You",
@@ -337,10 +382,6 @@
       "signed_out": "Please join your class again.",
       "error": "Something went wrong. Try again."
     }
-  },
-  "door": {
-    "medicine": "Medicine (MBBS, BDS)",
-    "engineering": "Engineering"
   },
   "stream": {
     "pre_medical": "FSc Pre-Medical",
