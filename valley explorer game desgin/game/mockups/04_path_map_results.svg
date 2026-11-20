@@ -1,0 +1,40 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="760" viewBox="0 0 360 760" font-family="Arial, Helvetica, sans-serif">
+  <!-- Concept mockup: Path Map results screen (top of scroll). Original artwork (design proposal v1.0). -->
+  <rect width="360" height="760" fill="#F6EFE3"/>
+  <text x="20" y="38" font-size="20" font-weight="800" fill="#1F2A2E">Your Path Map</text>
+  <!-- map -->
+  <rect x="16" y="54" width="328" height="250" rx="16" fill="#EFE2C6" stroke="#C9A97E" stroke-width="2"/>
+  <path d="M30 70 h300 v220 h-300z" fill="none" stroke="#D8C6A3" stroke-dasharray="4 6"/>
+  <path d="M60 280 C 90 250, 70 220, 110 205 S 170 200, 175 170 S 230 150, 210 120 S 260 90, 300 80" fill="none" stroke="#D9822B" stroke-width="5" stroke-linecap="round" stroke-dasharray="1 0"/>
+  <g fill="#1F7A6D" stroke="#FFFFFF" stroke-width="2">
+    <circle cx="60" cy="280" r="9"/><circle cx="92" cy="236" r="9"/><circle cx="110" cy="205" r="9"/><circle cx="160" cy="196" r="9"/><circle cx="175" cy="170" r="9"/><circle cx="220" cy="140" r="9"/><circle cx="240" cy="104" r="9"/><circle cx="300" cy="80" r="9"/>
+  </g>
+  <g font-size="9" fill="#FFFFFF" text-anchor="middle" font-weight="700"><text x="60" y="283">1</text><text x="92" y="239">2</text><text x="110" y="208">3</text><text x="160" y="199">4</text><text x="175" y="173">5</text><text x="220" y="143">6</text><text x="240" y="107">7</text><text x="300" y="83">8</text></g>
+  <path d="M250 270 q20 -30 60 -20" stroke="#6FB3D2" stroke-width="10" fill="none" opacity="0.6"/>
+  <!-- traveller + chakor at the end -->
+  <circle cx="300" cy="58" r="0"/>
+  <!-- section: what you enjoyed -->
+  <rect x="16" y="318" width="328" height="190" rx="16" fill="#FFFFFF"/>
+  <text x="32" y="346" font-size="16" font-weight="800" fill="#1F2A2E">What you enjoyed</text>
+  <text x="32" y="366" font-size="12" fill="#52626A">The kinds of work you chose most often today.</text>
+  <text x="32" y="394" font-size="14" font-weight="700" fill="#1F2A2E">1. Investigating</text>
+  <rect x="32" y="402" width="296" height="8" rx="4" fill="#E9D3A8"/><rect x="32" y="402" width="240" height="8" rx="4" fill="#4F86C2"/>
+  <text x="32" y="424" font-size="11" fill="#52626A">You tested water and plants and found out why.</text>
+  <text x="32" y="450" font-size="14" font-weight="700" fill="#1F2A2E">2. Organising</text>
+  <rect x="32" y="458" width="296" height="8" rx="4" fill="#E9D3A8"/><rect x="32" y="458" width="180" height="8" rx="4" fill="#3F9283"/>
+  <text x="32" y="480" font-size="11" fill="#52626A">You sorted cargo and filed the visitor forms.</text>
+  <text x="32" y="500" font-size="11" fill="#52626A">…</text>
+  <!-- section: how you usually are -->
+  <rect x="16" y="518" width="328" height="150" rx="16" fill="#FFFFFF"/>
+  <text x="32" y="546" font-size="16" font-weight="800" fill="#1F2A2E">How you usually are</text>
+  <text x="32" y="566" font-size="12" fill="#52626A">From your own journal answers.</text>
+  <text x="32" y="592" font-size="13" font-weight="700" fill="#1F2A2E">Organising and finishing tasks</text>
+  <text x="32" y="610" font-size="12" fill="#1F2A2E">You like order and getting your tasks done.</text>
+  <text x="32" y="636" font-size="13" font-weight="700" fill="#1F2A2E">Staying calm</text>
+  <text x="32" y="654" font-size="12" fill="#1F2A2E">You usually stay calm and relaxed.</text>
+  <!-- bottom bar -->
+  <rect x="0" y="680" width="360" height="80" fill="#F6EFE3"/>
+  <rect x="16" y="690" width="160" height="52" rx="16" fill="#FFFFFF" stroke="#E4D9C6" stroke-width="2"/><text x="96" y="721" font-size="14" font-weight="700" fill="#1F2A2E" text-anchor="middle">See pathways</text>
+  <rect x="184" y="690" width="160" height="52" rx="16" fill="#1F7A6D"/><text x="264" y="721" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle">Back to RahYaab</text>
+  <text x="180" y="756" font-size="9" fill="#52626A" text-anchor="middle">Concept mockup — not final art</text>
+</svg>
