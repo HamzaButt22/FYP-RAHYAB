@@ -1,0 +1,31 @@
+{
+  "model_name": "RIASEC-ExploratoryInterestProfile",
+  "model_version": "riasec-0.3-prototype",
+  "is_validated": false,
+  "disclaimer": "Exploratory interest estimate from three short game levels. The mapping from activities to Holland (RIASEC) categories and every weight here are design assumptions, not validated values. It describes which kinds of activities the student chose and stayed with during the game. It is not a career test and not a measure of ability. Use it to start a conversation, never to make a decision about a student.",
+  "categories": { "R": "Realistic", "I": "Investigative", "A": "Artistic", "S": "Social", "E": "Enterprising", "C": "Conventional" },
+  "levels": {
+    "crossroads_caravan": { "weight": 0.5, "name": "Crossroads Caravan", "selection_cap": 5 },
+    "career_workshop": { "weight": 0.5, "name": "The Makers' Workshop", "selection_cap": 3 },
+    "park_mission": { "weight": 0.5, "name": "Riverside Park Day", "selection_cap": 3 }
+  },
+  "component_weights": { "preference": 0.6, "engagement": 0.4, "completion": 0.0, "performance": 0.0 },
+  "preference": { "normalise_by_opportunity": true, "share_cap": 0.4, "role_vote_weight": 0.5 },
+  "engagement": {
+    "weights": { "optional": 0.35, "bonus": 0.2, "persist": 0.15, "dwell": 0.1, "revisit": 0.2 },
+    "dwell_ratio_cap": 1.5
+  },
+  "min_selections_per_level": 3,
+  "flat_profile_range": 15.0,
+  "agreement": { "consistent_min_corr": 0.5 },
+  "top_n": 3,
+  "tasks": {
+    "wheel_workshop": { "R": 1.0 }, "lantern_riddle": { "I": 1.0 }, "mural_wall": { "A": 1.0 },
+    "fireside_circle": { "S": 1.0 }, "market_square": { "E": 1.0 }, "ledger_tower": { "C": 1.0 },
+    "repair_pump": { "R": 1.0 }, "plant_lab": { "I": 1.0 }, "poster_studio": { "A": 1.0 },
+    "teach_timetable": { "S": 1.0 }, "open_day_stall": { "E": 1.0 }, "sort_records": { "C": 1.0 },
+    "park_repair": { "R": 1.0 }, "park_survey": { "I": 1.0 }, "park_design": { "A": 1.0 },
+    "park_volunteers": { "S": 1.0 }, "park_sponsors": { "E": 1.0 }, "park_permits": { "C": 1.0 }
+  },
+  "roles": { "builder": "R", "researcher": "I", "designer": "A", "helper": "S", "organiser": "E", "recordkeeper": "C" }
+}
