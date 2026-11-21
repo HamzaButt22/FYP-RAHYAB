@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="760" viewBox="0 0 360 760" font-family="Arial, Helvetica, sans-serif">
+  <!-- Concept mockup: Rahwali Town hub, portrait. Original artwork for Valley Explorer (design proposal v1.0). -->
+  <rect width="360" height="760" fill="#F6EFE3"/>
+  <!-- HUD -->
+  <rect x="0" y="0" width="360" height="56" fill="#FFFFFF"/>
+  <rect x="10" y="10" width="36" height="36" rx="10" fill="#D7EDE8"/>
+  <rect x="21" y="19" width="5" height="18" rx="2" fill="#145A50"/><rect x="30" y="19" width="5" height="18" rx="2" fill="#145A50"/>
+  <text x="56" y="25" font-size="15" font-weight="700" fill="#1F2A2E">Rahwali Town</text>
+  <text x="56" y="43" font-size="12" fill="#52626A">Next: Makers' Hall</text>
+  <circle cx="232" cy="28" r="10" fill="#E3B23C"/><text x="246" y="33" font-size="14" font-weight="700" fill="#1F2A2E">86</text>
+  <text x="276" y="33" font-size="14" font-weight="700" fill="#1F2A2E">★ 3</text>
+  <rect x="312" y="10" width="38" height="36" rx="10" fill="#D7EDE8"/>
+  <path d="M320 20 l7 -3 l8 3 l7 -3 v18 l-7 3 l-8 -3 l-7 3z" fill="none" stroke="#145A50" stroke-width="2"/>
+  <!-- world -->
+  <rect x="0" y="56" width="360" height="504" fill="#8FC195"/>
+  <!-- river -->
+  <path d="M250 56 C 290 160, 230 260, 300 360 S 330 520, 360 560 L360 56z" fill="#6FB3D2"/>
+  <path d="M268 120 q8 -4 16 0 M286 220 q8 -4 16 0 M300 330 q8 -4 16 0 M322 450 q8 -4 16 0" stroke="#FFFFFF" stroke-width="2" fill="none" opacity="0.7"/>
+  <!-- paths -->
+  <path d="M40 560 L 40 420 L 180 420 L 180 250 L 230 250" stroke="#E9D3A8" stroke-width="34" fill="none" stroke-linejoin="round"/>
+  <path d="M180 420 L 180 560" stroke="#E9D3A8" stroke-width="34" fill="none"/>
+  <!-- glow on next objective path -->
+  <path d="M180 420 L 180 330 L 110 330" stroke="#F3C089" stroke-width="8" fill="none" stroke-dasharray="10 8" stroke-linecap="round"/>
+  <!-- trees -->
+  <g fill="#5E9B6E"><circle cx="20" cy="90" r="18"/><circle cx="58" cy="76" r="16"/><circle cx="330" cy="560" r="0"/><circle cx="24" cy="300" r="16"/><circle cx="300" cy="520" r="14"/><circle cx="230" cy="520" r="16"/></g>
+  <g fill="#7A5A3A"><rect x="18" y="104" width="4" height="10"/><rect x="56" y="88" width="4" height="10"/><rect x="22" y="312" width="4" height="10"/></g>
+  <!-- Makers' Hall building -->
+  <rect x="62" y="270" width="96" height="60" rx="4" fill="#C9A97E"/>
+  <path d="M54 274 L110 238 L166 274z" fill="#8A5A3B"/>
+  <rect x="98" y="300" width="24" height="30" fill="#5E3B22"/>
+  <rect x="70" y="282" width="20" height="14" fill="#F6EFE3"/><rect x="130" y="282" width="20" height="14" fill="#F6EFE3"/>
+  <rect x="60" y="222" width="100" height="18" rx="9" fill="#FFFFFF"/><text x="110" y="235" font-size="11" font-weight="700" fill="#1F2A2E" text-anchor="middle">Makers' Hall</text>
+  <!-- objective marker -->
+  <circle cx="110" cy="200" r="14" fill="#D9822B"/><text x="110" y="206" font-size="18" font-weight="900" fill="#2B1A08" text-anchor="middle">!</text>
+  <!-- Workshop (done, stamped) -->
+  <rect x="200" y="380" width="70" height="44" rx="4" fill="#B8A07E"/>
+  <path d="M194 384 L235 360 L276 384z" fill="#7A5A3A"/>
+  <circle cx="260" cy="368" r="11" fill="#2E7D4F"/><path d="M254 368 l4 4 l8 -8" stroke="#FFFFFF" stroke-width="3" fill="none"/>
+  <!-- fountain -->
+  <circle cx="180" cy="470" r="22" fill="#D9D2C2"/><circle cx="180" cy="470" r="14" fill="#6FB3D2"/>
+  <!-- curiosity spot (sundial) -->
+  <circle cx="232" cy="300" r="7" fill="#9AA8B5"/><path d="M232 300 l0 -9" stroke="#1F2A2E" stroke-width="2"/>
+  <!-- feather -->
+  <path d="M150 520 q10 -16 16 -2 q-8 4 -16 2z" fill="#C2563A"/>
+  <!-- NPC Rabia near hall -->
+  <circle cx="60" cy="372" r="9" fill="#D39B6E"/><path d="M51 366 q9 -12 18 0z" fill="#3F9283"/><rect x="52" y="380" width="16" height="18" rx="4" fill="#9A7B5E"/>
+  <!-- player -->
+  <ellipse cx="180" cy="438" rx="12" ry="4" fill="#000" opacity="0.15"/>
+  <circle cx="180" cy="412" r="11" fill="#D39B6E"/><path d="M168 410 q12 -18 24 0 v6 q-12 -6 -24 0z" fill="#2F7F9E"/>
+  <rect x="170" y="422" width="20" height="16" rx="5" fill="#2F7F9E"/>
+  <!-- Chakor -->
+  <ellipse cx="160" cy="434" rx="8" ry="6" fill="#B7A48C"/><circle cx="153" cy="429" r="4" fill="#B7A48C"/><path d="M150 429 l-3 1 l3 1z" fill="#C2563A"/>
+  <!-- object label -->
+  <rect x="128" y="384" width="104" height="18" rx="9" fill="#FFFFFF" opacity="0.92"/><text x="180" y="397" font-size="11" fill="#1F2A2E" text-anchor="middle">Rahyaab (you)</text>
+  <!-- controls band -->
+  <rect x="0" y="560" width="360" height="200" fill="#F6EFE3"/>
+  <g fill="#1F7A6D">
+    <rect x="66" y="582" width="56" height="56" rx="14"/>
+    <rect x="8" y="640" width="56" height="56" rx="14"/><rect x="124" y="640" width="56" height="56" rx="14"/>
+    <rect x="66" y="698" width="56" height="56" rx="14"/>
+  </g>
+  <g fill="#FFFFFF" font-size="22" font-weight="900" text-anchor="middle">
+    <text x="94" y="618">▲</text><text x="94" y="734">▼</text><text x="36" y="676">◀</text><text x="152" y="676">▶</text>
+  </g>
+  <circle cx="276" cy="668" r="58" fill="#D9822B" stroke="#F3C089" stroke-width="4"/>
+  <text x="276" y="664" font-size="17" font-weight="900" fill="#2B1A08" text-anchor="middle">Enter</text>
+  <text x="276" y="684" font-size="12" font-weight="700" fill="#2B1A08" text-anchor="middle">Makers' Hall</text>
+  <text x="180" y="752" font-size="9" fill="#52626A" text-anchor="middle">Concept mockup — not final art</text>
+</svg>
