@@ -1,0 +1,51 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="360" height="760" viewBox="0 0 360 760" font-family="Arial, Helvetica, sans-serif">
+  <!-- Concept mockup: Pathfinder's Journal page at a rest spot. Original artwork (design proposal v1.0). -->
+  <rect width="360" height="760" fill="#2F3E46"/>
+  <!-- dim world behind: aqueduct wall -->
+  <rect x="0" y="0" width="360" height="760" fill="#9AA8B5" opacity="0.35"/>
+  <!-- notebook -->
+  <rect x="16" y="40" width="328" height="680" rx="14" fill="#7A5A3A"/>
+  <rect x="26" y="50" width="308" height="660" rx="10" fill="#FFFBF2"/>
+  <g stroke="#E8DCC4" stroke-width="1"><line x1="40" y1="250" x2="320" y2="250"/><line x1="40" y1="280" x2="320" y2="280"/></g>
+  <!-- stop stamp -->
+  <circle cx="290" cy="92" r="26" fill="none" stroke="#1F7A6D" stroke-width="3"/><text x="290" y="88" font-size="9" fill="#1F7A6D" text-anchor="middle" font-weight="700">PATTERN</text><text x="290" y="100" font-size="9" fill="#1F7A6D" text-anchor="middle" font-weight="700">GATE</text>
+  <!-- Mehr line -->
+  <circle cx="62" cy="96" r="22" fill="#D7EDE8"/><circle cx="62" cy="92" r="10" fill="#C99A6E"/><path d="M52 88 q10 -12 20 0" fill="#F2F2F2"/><path d="M55 96 q7 8 14 0 q-2 7 -7 8 q-5 -1 -7 -8z" fill="#F2F2F2"/>
+  <text x="94" y="88" font-size="13" fill="#1F2A2E">How much is each sentence</text>
+  <text x="94" y="106" font-size="13" fill="#1F2A2E">like you? No right answers.</text>
+  <!-- progress dots -->
+  <circle cx="160" cy="150" r="6" fill="#1F7A6D"/><circle cx="180" cy="150" r="6" fill="#D9822B"/><circle cx="200" cy="150" r="6" fill="#D8C6A3"/>
+  <!-- statement -->
+  <text x="180" y="205" font-size="21" font-weight="700" fill="#1F2A2E" text-anchor="middle">I have difficulty understanding</text>
+  <text x="180" y="233" font-size="21" font-weight="700" fill="#1F2A2E" text-anchor="middle">abstract ideas.</text>
+  <text x="180" y="268" font-size="12" fill="#52626A" text-anchor="middle">Abstract ideas are ideas you cannot touch,</text>
+  <text x="180" y="284" font-size="12" fill="#52626A" text-anchor="middle">like fairness, time or infinity.</text>
+  <!-- speaker replay -->
+  <circle cx="318" cy="210" r="0"/>
+  <!-- answers -->
+  <g font-size="15" fill="#1F2A2E">
+    <rect x="40" y="306" width="280" height="52" rx="14" fill="#FFFFFF" stroke="#E4D9C6" stroke-width="2"/><text x="132" y="338">Not like me at all</text>
+    <rect x="40" y="366" width="280" height="52" rx="14" fill="#FFFFFF" stroke="#E4D9C6" stroke-width="2"/><text x="132" y="398">Not much like me</text>
+    <rect x="40" y="426" width="280" height="52" rx="14" fill="#FFFFFF" stroke="#E4D9C6" stroke-width="2"/><text x="132" y="458">In between</text>
+    <rect x="40" y="486" width="280" height="52" rx="14" fill="#FFFFFF" stroke="#E4D9C6" stroke-width="2"/><text x="132" y="518">A bit like me</text>
+    <rect x="40" y="546" width="280" height="52" rx="14" fill="#FFFFFF" stroke="#E4D9C6" stroke-width="2"/><text x="132" y="578">Very much like me</text>
+  </g>
+  <g fill="#E4D9C6">
+    <circle cx="56" cy="332" r="5"/><circle cx="70" cy="332" r="5"/><circle cx="84" cy="332" r="5"/><circle cx="98" cy="332" r="5"/><circle cx="112" cy="332" r="5"/>
+    <circle cx="56" cy="392" r="5"/><circle cx="70" cy="392" r="5"/><circle cx="84" cy="392" r="5"/><circle cx="98" cy="392" r="5"/><circle cx="112" cy="392" r="5"/>
+    <circle cx="56" cy="452" r="5"/><circle cx="70" cy="452" r="5"/><circle cx="84" cy="452" r="5"/><circle cx="98" cy="452" r="5"/><circle cx="112" cy="452" r="5"/>
+    <circle cx="56" cy="512" r="5"/><circle cx="70" cy="512" r="5"/><circle cx="84" cy="512" r="5"/><circle cx="98" cy="512" r="5"/><circle cx="112" cy="512" r="5"/>
+    <circle cx="56" cy="572" r="5"/><circle cx="70" cy="572" r="5"/><circle cx="84" cy="572" r="5"/><circle cx="98" cy="572" r="5"/><circle cx="112" cy="572" r="5"/>
+  </g>
+  <g fill="#1F7A6D">
+    <circle cx="56" cy="332" r="5"/>
+    <circle cx="56" cy="392" r="5"/><circle cx="70" cy="392" r="5"/>
+    <circle cx="56" cy="452" r="5"/><circle cx="70" cy="452" r="5"/><circle cx="84" cy="452" r="5"/>
+    <circle cx="56" cy="512" r="5"/><circle cx="70" cy="512" r="5"/><circle cx="84" cy="512" r="5"/><circle cx="98" cy="512" r="5"/>
+    <circle cx="56" cy="572" r="5"/><circle cx="70" cy="572" r="5"/><circle cx="84" cy="572" r="5"/><circle cx="98" cy="572" r="5"/><circle cx="112" cy="572" r="5"/>
+  </g>
+  <text x="180" y="638" font-size="15" font-weight="700" fill="#1F7A6D" text-anchor="middle">Skip this sentence</text>
+  <!-- read aloud -->
+  <rect x="134" y="660" width="92" height="30" rx="15" fill="#D7EDE8"/><text x="180" y="680" font-size="12" font-weight="700" fill="#145A50" text-anchor="middle">🔊 Read aloud</text>
+  <text x="180" y="740" font-size="9" fill="#FFFFFF" text-anchor="middle">Concept mockup — not final art</text>
+</svg>
