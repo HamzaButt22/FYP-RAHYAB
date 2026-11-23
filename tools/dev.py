@@ -5,6 +5,7 @@
 Local stack (Docker):  setup, db, migrate, roles, seed, reset, up, down, logs
 Admin (local database): admin <command> ...   e.g. python tools/dev.py admin --help
 Checks:                test, lint, check (everything CI runs that works offline)
+Browser tests:         e2e (Playwright against the running stack; start it first with `up`)
 
 VS Code runs these through Terminal -> Run Task (see .vscode/tasks.json).
 """
@@ -218,12 +219,52 @@ def check() -> None:
     run([sys.executable, "tools/docs_audit.py"])
     run([sys.executable, "tools/check_streams.py"])
     run([sys.executable, "tools/check_names.py"])
+    _pnpm("e2e", "install", "--frozen-lockfile")
+    _pnpm("e2e", "typecheck")
+    if api_is_up():
+        e2e()
+    else:
+        print("\nbrowser tests skipped: the API is not running (start it with `python tools/dev.py up`)")
     if shutil.which("kubectl"):
         for overlay in ("staging", "production"):
             print(f"\n$ kubectl kustomize infra/k8s/overlays/{overlay}", flush=True)
             subprocess.run(["kubectl", "kustomize", f"infra/k8s/overlays/{overlay}"], cwd=ROOT, check=True,
                            stdout=subprocess.DEVNULL)
     print("\nall local checks passed")
+
+
+def api_is_up(url: str = "http://localhost:8000/v1/health") -> bool:
+    import urllib.request
+
+    try:
+        with urllib.request.urlopen(url, timeout=3) as answer:  # noqa: S310 - the local API only
+            return bool(answer.status == 200)
+    except OSError:
+        return False
+
+
+def e2e_seed() -> None:
+    """Synthetic data for the browser tests (tools/e2e_seed.py). Playwright runs this before every suite."""
+    env = {**os.environ, "PYTHONUTF8": "1"}
+    env.setdefault("DATABASE_URL", f"postgresql+psycopg://rahyaab_admin:{DEV_PW}@127.0.0.1:5432/rahyaab")
+    if not env.get("CODE_PEPPER"):
+        setup()
+        env["CODE_PEPPER"] = env_value("CODE_PEPPER")
+    exe = shutil.which("uv") or "uv"
+    code = subprocess.run([exe, "run", "python", str(ROOT / "tools" / "e2e_seed.py")], cwd=ROOT / "backend" / "api",
+                          env=env).returncode
+    if code:
+        sys.exit(code)
+
+
+def e2e() -> None:
+    """The Playwright browser tests (frontend/e2e) against the API on :8000 and the dashboard dev server."""
+    if not api_is_up():
+        sys.exit("The API is not answering on http://localhost:8000. Start the stack: python tools/dev.py up")
+    _pnpm("dashboard", "install", "--frozen-lockfile")
+    _pnpm("e2e", "install", "--frozen-lockfile")
+    _pnpm("e2e", "exec", "playwright", "install", "--only-shell", "chromium")
+    _pnpm("e2e", "test")
 
 
 def admin(args: list[str]) -> None:
@@ -239,7 +280,7 @@ def admin(args: list[str]) -> None:
                             env=env).returncode)
 
 
-COMMANDS = {f.__name__: f for f in (setup, db, migrate, roles, seed, reset, up, down, logs, test, lint, check)}
+COMMANDS = {f.__name__: f for f in (setup, db, migrate, roles, seed, reset, up, down, logs, test, lint, check, e2e, e2e_seed)}
 
 if __name__ == "__main__":
     if len(sys.argv) >= 2 and sys.argv[1] == "admin":

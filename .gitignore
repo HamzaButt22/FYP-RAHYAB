@@ -35,6 +35,8 @@ htmlcov/
 coverage.xml
 junit*.xml
 playwright-report/
+# browser-test seed output: synthetic data and a random local password (frontend/e2e)
+frontend/e2e/.state/
 test-results/
 .maestro/screenshots/
 
