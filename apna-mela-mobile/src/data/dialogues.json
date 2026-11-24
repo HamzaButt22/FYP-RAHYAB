@@ -1,0 +1,111 @@
+{
+  "_meta": {"note": "All in-game story text. {name} is replaced with the player's nickname (or 'Volunteer'). Speakers: karim, zain, hira, bilal, sara, hudhud. Characters never recommend a stall or praise one kind of choice over another."},
+  "story": [
+    {"panel": "story/panel_gate.png", "caption": "Gulshan Model School has a big day coming. The annual Apna Mela opens in just five days!"},
+    {"panel": "story/panel_karim.png", "caption": "But the banner is torn, the stalls are empty and Ustad Karim needs volunteers. Fast."},
+    {"panel": "story/panel_neem.png", "caption": "Then a hoopoe with tiny golden spectacles flutters down from the old neem tree…"},
+    {"panel": "story/panel_closeup.png", "caption": "\"Five days, six stalls, one mela,\" says Hudhud. \"Let's discover what makes you shine!\""}
+  ],
+  "days": {
+    "1": {
+      "title": "Banner Down!", "buddy": "zain", "scene": "backgrounds/bg_school_day.png",
+      "morning": [
+        {"speaker": "karim", "expr": "talk", "pose": "point", "text": "Good morning, everyone! I am Ustad Karim, and this year I am in charge of our Apna Mela."},
+        {"speaker": "karim", "expr": "worried", "pose": "idle", "text": "Our banner is torn and we have six empty stalls. So, {name}, you are now an official Mela Volunteer!"},
+        {"speaker": "zain", "expr": "happy", "pose": "wave", "text": "Hey, that means us! I'm Zain. I'll show you around today."},
+        {"speaker": "zain", "expr": "talk", "pose": "point", "text": "Every stall has a Job Board full of jobs from the mela committee. Pick any three stalls a day and lend a hand!"},
+        {"speaker": "zain", "expr": "smile", "pose": "idle", "text": "There are no wrong choices. Just do what sounds good to you."}
+      ],
+      "map_tip": "Pick any stall. There's no wrong one!",
+      "evening": [
+        {"speaker": "hudhud", "expr": "talk", "text": "Oop-oop! Good evening, {name}. I am Hudhud. I have watched every mela here since before the Ferris wheel first squeaked."},
+        {"speaker": "hudhud", "expr": "smile", "text": "Shall I keep a little diary of your week? It is just between us. Two quick questions each night."}
+      ],
+      "teaser": "Hira has a very long list…"
+    },
+    "2": {
+      "title": "The Big List", "buddy": "hira", "scene": "backgrounds/bg_school_day.png",
+      "morning": [
+        {"speaker": "karim", "expr": "talk", "pose": "idle", "text": "Day two! Hira, our committee head, has something to show you."},
+        {"speaker": "hira", "expr": "worried", "pose": "idle", "text": "Hi {name}, I'm Hira. This is my checklist. It has forty things on it. Forty!"},
+        {"speaker": "hira", "expr": "think", "pose": "think", "text": "And look at those clouds… Okay. Breathe. We'll take it one stall at a time."},
+        {"speaker": "hira", "expr": "smile", "pose": "point", "text": "You choose where we go. I'll tick things off!"}
+      ],
+      "map_tip": "Rain or not, the jobs won't wait!",
+      "evening": [
+        {"speaker": "hudhud", "expr": "talk", "text": "The rain never came, and Hira's list is mostly done. Let me open the diary, {name}."}
+      ],
+      "teaser": "Bilal and the big stage"
+    },
+    "3": {
+      "title": "Stage Fright", "buddy": "bilal", "scene": "backgrounds/bg_school_day.png",
+      "morning": [
+        {"speaker": "karim", "expr": "happy", "pose": "point", "text": "The stage frame has arrived! And Bilal will give the opening announcement on Mela Day."},
+        {"speaker": "bilal", "expr": "happy", "pose": "wave", "text": "Hi {name}! I'm Bilal. Who needs a microphone when you have lungs like mine?"},
+        {"speaker": "bilal", "expr": "worried", "pose": "idle", "text": "…Okay, maybe I'm a little nervous. Let's keep busy. Busy is good."}
+      ],
+      "map_tip": "The whole mela needs hands today.",
+      "evening": [
+        {"speaker": "hudhud", "expr": "talk", "text": "Bilal practised his lines on me three times. I gave him a standing ovation. With one foot."}
+      ],
+      "teaser": "Sara and her camera"
+    },
+    "4": {
+      "title": "Picture Perfect", "buddy": "sara", "scene": "backgrounds/bg_school_day.png",
+      "morning": [
+        {"speaker": "karim", "expr": "talk", "pose": "idle", "text": "New volunteers have joined us, and Sara is our official mela photographer!"},
+        {"speaker": "sara", "expr": "happy", "pose": "wave", "text": "Hey {name}! I'm Sara. Smile! No, a real smile! Perfect."},
+        {"speaker": "sara", "expr": "talk", "pose": "point", "text": "I'm taking a photo at every stall for the Mela Board. Lead the way!"}
+      ],
+      "map_tip": "Strike a pose at every stall!",
+      "evening": [
+        {"speaker": "hudhud", "expr": "talk", "text": "Tomorrow is the big day, {name}. The whole board is filling up with your photos."}
+      ],
+      "teaser": "MELA DAY!"
+    },
+    "5": {
+      "title": "Mela Day!", "buddy": "karim", "scene": "backgrounds/bg_menu_dusk.png",
+      "morning": [
+        {"speaker": "karim", "expr": "happy", "pose": "wave", "text": "Open the gates! Families are arriving, the Ferris wheel is turning and the chaat smells wonderful."},
+        {"speaker": "karim", "expr": "talk", "pose": "point", "text": "Today I will walk with you myself, {name}. Three more stalls, and then the closing ceremony!"}
+      ],
+      "map_tip": "Families are here. Let's go!",
+      "evening": [
+        {"speaker": "hudhud", "expr": "talk", "text": "What a day! Before the closing ceremony, one last page of the diary."}
+      ],
+      "teaser": "The closing ceremony"
+    }
+  },
+  "arrivals": {
+    "zain":  {"karigar": "Smell that sawdust! Let's see what needs building.", "jugnu": "Flasks, a telescope AND a volcano. Science is loud!", "rangmahal": "So many colours! Careful, the paint is still wet.", "madad": "This is where lost kids and lost keys end up. Let's see what's needed.", "chatkhara": "Chaat! Focus, Zain, focus… let's check the Job Board.", "hisaab": "Tickets, ledgers and a very serious cash box."},
+    "hira":  {"karigar": "The workshop is on my list three times. Let's see!", "jugnu": "The science tent! I love how tidy the flasks are.", "rangmahal": "The art stall looks amazing already. Let's check the board.", "madad": "The help desk keeps everyone safe. What's on the board?", "chatkhara": "The chaat stall! Item twenty-two on my list.", "hisaab": "The ticket office. Let's see what jobs are pinned up."},
+    "bilal": {"karigar": "Hammers! Very loud. I approve.", "jugnu": "If the volcano erupts, I'm hiding behind you.", "rangmahal": "Do you think they'd paint my face like a tiger?", "madad": "The help desk has cold water. Best stall. For now.", "chatkhara": "I am only here for the job. Not the chaat. Mostly.", "hisaab": "So many tickets. Imagine if they were samosas."},
+    "sara":  {"karigar": "Great light in the workshop! Let's see the jobs.", "jugnu": "Click! The telescope looks so cool in photos.", "rangmahal": "This whole stall is a photo. Let's check the board.", "madad": "Click! The help desk team is the friendliest.", "chatkhara": "Steam from the pot makes the best photos!", "hisaab": "Ticket rolls make a fun picture. What's on the board?"},
+    "karim": {"karigar": "Ah, the workshop. Every mela stands on good wood.", "jugnu": "The science tent. Curiosity is the first lamp.", "rangmahal": "The Colour Palace. Wonderful.", "madad": "The help desk. A mela is only as good as its welcome.", "chatkhara": "The chaat corner! Listen to that crowd.", "hisaab": "The ticket office. Every rupee in its place."}
+  },
+  "board_prompt": "The Job Board has today's jobs. Tap it to start!",
+  "reactions": ["Got it!", "Noted!", "Okay, let's go!", "Sounds good!", "Alright!", "Fair enough!", "On to the next!"],
+  "visit_complete": ["That's a wrap here!", "Great work at this stall!", "Done and dusted!", "This stall is ready!"],
+  "after_visit_map": ["Where to next?", "Pick another stall!", "One more stop?"],
+  "all_visits_done": "All three stalls done! Off to the evening.",
+  "diary_closing": "Noted in the diary. Goodnight, {name}!",
+  "closing": [
+    {"speaker": "karim", "expr": "happy", "pose": "wave", "text": "Dear families, students and volunteers… what a mela!"},
+    {"speaker": "bilal", "expr": "happy", "pose": "wave", "text": "And the announcer did NOT faint! Thank you, thank you."},
+    {"speaker": "karim", "expr": "talk", "pose": "point", "text": "Every stall stood strong because each volunteer brought something different."},
+    {"speaker": "karim", "expr": "happy", "pose": "idle", "text": "{name}, Hudhud tells me there is a special page waiting for you. Lights, please!"}
+  ],
+  "reveal_intro": [
+    {"speaker": "hudhud", "expr": "talk", "text": "All week I wrote down the jobs you chose and the ones you loved."},
+    {"speaker": "hudhud", "expr": "happy", "text": "Here is what lit you up the most at this mela. Your Mela Code!"}
+  ],
+  "ending": "Well done, {name}! Thank you for volunteering at Apna Mela.",
+  "howto": [
+    {"title": "The mela map", "text": "Each day, choose three different stalls to help at. Any stall, any order. You can visit a stall again on another day.", "image": "backgrounds/bg_mela_map.png"},
+    {"title": "Job Board jobs", "text": "Tap the Job Board and pick the job you would enjoy most. There are no wrong answers.", "image": "cards/job_a01.png"},
+    {"title": "Loving it?", "text": "After each job, tap the hearts to show how much you enjoyed it.", "image": "ui/heart_full.png"},
+    {"title": "Twists", "text": "Little surprises happen at the mela. Choose the answer that sounds most like you.", "image": "characters/portrait_hira_worried.png"},
+    {"title": "Hudhud's diary", "text": "Each night Hudhud asks two quick questions. Go with your first honest answer.", "image": "characters/portrait_hudhud_smile.png"},
+    {"title": "Mela lights", "text": "Every answer lights a bulb on the Mela Board. Finish all five days to light all 100!", "image": "ui/diya.png"}
+  ]
+}

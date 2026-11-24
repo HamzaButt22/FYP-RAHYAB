@@ -1,0 +1,15 @@
+{
+  "characters": {
+    "hudhud": {"name": "Hudhud", "role": "Your guide and diary keeper", "color": "yellow", "sprite": "hudhud", "poses": ["idle", "fly"]},
+    "zain":   {"name": "Zain", "role": "Your friend, Day 1 buddy", "color": "orange", "sprite": "zain", "poses": ["idle", "wave", "point", "think"]},
+    "hira":   {"name": "Hira", "role": "Head of the mela committee, Day 2 buddy", "color": "blue", "sprite": "hira", "poses": ["idle", "wave", "point", "think"]},
+    "bilal":  {"name": "Bilal", "role": "Stage announcer, Day 3 buddy", "color": "green", "sprite": "bilal", "poses": ["idle", "wave", "point", "think"]},
+    "sara":   {"name": "Sara", "role": "Mela photographer, Day 4 buddy", "color": "purple", "sprite": "sara", "poses": ["idle", "wave", "point", "think"]},
+    "karim":  {"name": "Ustad Karim", "role": "Teacher in charge of the mela", "color": "teal", "sprite": "karim", "poses": ["idle", "point", "wave"]}
+  },
+  "expressions": ["smile", "happy", "talk", "wow", "think", "worried"],
+  "avatars": [
+    {"id": 0, "label": "Volunteer 1"}, {"id": 1, "label": "Volunteer 2"}, {"id": 2, "label": "Volunteer 3"}, {"id": 3, "label": "Volunteer 4"},
+    {"id": 4, "label": "Volunteer 5"}, {"id": 5, "label": "Volunteer 6"}, {"id": 6, "label": "Volunteer 7"}, {"id": 7, "label": "Volunteer 8"}
+  ]
+}

@@ -1,0 +1,488 @@
+{
+  "_meta": {
+    "status": "DRAFT wording from ASSESSMENT_DESIGN.md - requires method-owner review and piloting",
+    "source": "docs/design/ASSESSMENT_DESIGN.md"
+  },
+  "cards": [
+    {
+      "id": "H01",
+      "day": 1,
+      "domain": "B-E",
+      "scenario": "A big crowd arrives at the stall all at once.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Jump to the front and greet them"
+        },
+        {
+          "pole": "L",
+          "text": "Get things ready behind the counter"
+        }
+      ]
+    },
+    {
+      "id": "H02",
+      "day": 1,
+      "domain": "B-O",
+      "scenario": "Ustad Karim says you can decorate the stall any way you like.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Try a bold new idea nobody has done before"
+        },
+        {
+          "pole": "L",
+          "text": "Use the design that worked well last year"
+        }
+      ]
+    },
+    {
+      "id": "H03",
+      "day": 1,
+      "domain": "B-A",
+      "scenario": "Bilal used the paint you were saving.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Let it go, he probably needed it"
+        },
+        {
+          "pole": "L",
+          "text": "Tell him he should have asked first"
+        }
+      ]
+    },
+    {
+      "id": "H04",
+      "day": 1,
+      "domain": "B-O",
+      "scenario": "A visitor offers you a snack flavour you've never heard of.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Try it right away, just to find out"
+        },
+        {
+          "pole": "L",
+          "text": "Stick with a flavour you already like"
+        }
+      ]
+    },
+    {
+      "id": "H05",
+      "day": 1,
+      "domain": "B-C",
+      "scenario": "You get a list of ten jobs to finish before lunch.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Plan the order first, then start"
+        },
+        {
+          "pole": "L",
+          "text": "Jump in and sort it out as you go"
+        }
+      ]
+    },
+    {
+      "id": "H06",
+      "day": 1,
+      "domain": "B-N",
+      "scenario": "The stall plan suddenly changes.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Feel a bit stressed by the change"
+        },
+        {
+          "pole": "L",
+          "text": "Just roll with it"
+        }
+      ]
+    },
+    {
+      "id": "H07",
+      "day": 2,
+      "domain": "B-E",
+      "scenario": "It's lunch break.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Eat with a big group from other stalls"
+        },
+        {
+          "pole": "L",
+          "text": "Eat quietly with one good friend"
+        }
+      ]
+    },
+    {
+      "id": "H08",
+      "day": 2,
+      "domain": "B-O",
+      "scenario": "You get a free half hour during setup.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Wander to stalls you know nothing about"
+        },
+        {
+          "pole": "L",
+          "text": "Hang out at the stall you already know well"
+        }
+      ]
+    },
+    {
+      "id": "H09",
+      "day": 2,
+      "domain": "B-A",
+      "scenario": "The team votes for a plan you don't like.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Go along with it to keep everyone happy"
+        },
+        {
+          "pole": "L",
+          "text": "Argue for your plan before agreeing"
+        }
+      ]
+    },
+    {
+      "id": "H10",
+      "day": 2,
+      "domain": "B-C",
+      "scenario": "The banner is done, but one corner looks a bit messy.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Fix it until it's neat"
+        },
+        {
+          "pole": "L",
+          "text": "It looks fine from far away, so move on"
+        }
+      ]
+    },
+    {
+      "id": "H11",
+      "day": 2,
+      "domain": "B-C",
+      "scenario": "Ustad Karim needs the stock count by tomorrow.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Do it today so it's finished"
+        },
+        {
+          "pole": "L",
+          "text": "Do it tomorrow morning, there's time"
+        }
+      ]
+    },
+    {
+      "id": "H12",
+      "day": 2,
+      "domain": "B-N",
+      "scenario": "Dark clouds are gathering over the mela ground.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Keep checking the sky, a bit worried"
+        },
+        {
+          "pole": "L",
+          "text": "Shrug: whatever happens, happens"
+        }
+      ]
+    },
+    {
+      "id": "H13",
+      "day": 3,
+      "domain": "B-E",
+      "scenario": "Someone needs to make an announcement on the mic.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Volunteer to do it yourself"
+        },
+        {
+          "pole": "L",
+          "text": "Help someone else write it"
+        }
+      ]
+    },
+    {
+      "id": "H14",
+      "day": 3,
+      "domain": "B-O",
+      "scenario": "Hira shows you a book of old Pakistani folk art.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Spend time imagining new patterns from it"
+        },
+        {
+          "pole": "L",
+          "text": "Pick a pattern that looks good and move on"
+        }
+      ]
+    },
+    {
+      "id": "H15",
+      "day": 3,
+      "domain": "B-A",
+      "scenario": "Another stall asks to borrow your extension cord.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Lend it right away"
+        },
+        {
+          "pole": "L",
+          "text": "Check that you won't need it first"
+        }
+      ]
+    },
+    {
+      "id": "H16",
+      "day": 3,
+      "domain": "B-E",
+      "scenario": "After a long day the team is going out for chai.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Go along, more time together sounds fun"
+        },
+        {
+          "pole": "L",
+          "text": "Head home to recharge"
+        }
+      ]
+    },
+    {
+      "id": "H17",
+      "day": 3,
+      "domain": "B-C",
+      "scenario": "Your table is covered in paint, tape and paper.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Tidy up before the next job"
+        },
+        {
+          "pole": "L",
+          "text": "Keep going and tidy up at the end"
+        }
+      ]
+    },
+    {
+      "id": "H18",
+      "day": 3,
+      "domain": "B-N",
+      "scenario": "You make a small mistake in front of everyone.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Keep thinking about it for a while"
+        },
+        {
+          "pole": "L",
+          "text": "Laugh it off and move on"
+        }
+      ]
+    },
+    {
+      "id": "H19",
+      "day": 4,
+      "domain": "B-E",
+      "scenario": "New volunteers have just joined.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Go and introduce yourself to everyone"
+        },
+        {
+          "pole": "L",
+          "text": "Wait until they come over to you"
+        }
+      ]
+    },
+    {
+      "id": "H20",
+      "day": 4,
+      "domain": "B-O",
+      "scenario": "The team is choosing a theme for the stage.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Suggest something unusual, like 'a mela on the moon'"
+        },
+        {
+          "pole": "L",
+          "text": "Suggest a classic theme everyone will recognise"
+        }
+      ]
+    },
+    {
+      "id": "H21",
+      "day": 4,
+      "domain": "B-A",
+      "scenario": "A visitor is rude about your stall.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Stay polite and kind"
+        },
+        {
+          "pole": "L",
+          "text": "Tell them firmly that it isn't okay"
+        }
+      ]
+    },
+    {
+      "id": "H22",
+      "day": 4,
+      "domain": "B-A",
+      "scenario": "A friend wants the same job you wanted.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Let them have it"
+        },
+        {
+          "pole": "L",
+          "text": "Suggest you decide fairly, like taking turns"
+        }
+      ]
+    },
+    {
+      "id": "H23",
+      "day": 4,
+      "domain": "B-C",
+      "scenario": "You promised to bring string from home tomorrow.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Set a reminder so you don't forget"
+        },
+        {
+          "pole": "L",
+          "text": "Trust yourself to remember in the morning"
+        }
+      ]
+    },
+    {
+      "id": "H24",
+      "day": 4,
+      "domain": "B-N",
+      "scenario": "Tomorrow is the big mela day.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "You'll probably lie awake thinking about it tonight"
+        },
+        {
+          "pole": "L",
+          "text": "You'll sleep easily tonight"
+        }
+      ]
+    },
+    {
+      "id": "H25",
+      "day": 5,
+      "domain": "B-E",
+      "scenario": "The stall is quiet for a while.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Call out to passers-by to come and see"
+        },
+        {
+          "pole": "L",
+          "text": "Enjoy the calm and tidy up"
+        }
+      ]
+    },
+    {
+      "id": "H26",
+      "day": 5,
+      "domain": "B-O",
+      "scenario": "Bilal asks, \"Why do people love melas so much?\"",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Enjoy thinking it through together"
+        },
+        {
+          "pole": "L",
+          "text": "Say \"for the food!\" and get back to work"
+        }
+      ]
+    },
+    {
+      "id": "H27",
+      "day": 5,
+      "domain": "B-A",
+      "scenario": "A younger student makes a mistake on the price chart.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Fix it quietly so they don't feel bad"
+        },
+        {
+          "pole": "L",
+          "text": "Point it out so they learn for next time"
+        }
+      ]
+    },
+    {
+      "id": "H28",
+      "day": 5,
+      "domain": "B-N",
+      "scenario": "The judges arrive an hour early!",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Your heart races and you worry it isn't ready"
+        },
+        {
+          "pole": "L",
+          "text": "Stay calm, it's ready enough"
+        }
+      ]
+    },
+    {
+      "id": "H29",
+      "day": 5,
+      "domain": "B-C",
+      "scenario": "The rule says stalls close at 6 o'clock.",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Pack up right on time"
+        },
+        {
+          "pole": "L",
+          "text": "Finish what you're doing, even if it runs late"
+        }
+      ]
+    },
+    {
+      "id": "H30",
+      "day": 5,
+      "domain": "B-N",
+      "scenario": "Ustad Karim says, \"Come and see me later.\"",
+      "options": [
+        {
+          "pole": "H",
+          "text": "Wonder what you did wrong"
+        },
+        {
+          "pole": "L",
+          "text": "Assume it's nothing serious"
+        }
+      ]
+    }
+  ]
+}

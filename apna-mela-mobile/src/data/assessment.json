@@ -1,0 +1,17 @@
+{
+  "riasec": {
+    "status": "PROVISIONAL display rule from ASSESSMENT_DESIGN.md 3.6 - replace or approve by the methodology owner",
+    "sources": ["what_picks", "loved_ratings", "stall_choices"],
+    "rank_by": ["picks", "loved_mean", "stall_visits"],
+    "top_n": 3,
+    "bar_metric": "picks",
+    "tie_display": "slash"
+  },
+  "bigfive": {
+    "status": "RESEARCH ONLY - experimental, never displayed to students, teachers or parents, never used for career ideas",
+    "how_scoring": "count_high_pole",
+    "diary_scoring": "only when data/diary_cards.json 'scored' is true and each item has domain + reverse",
+    "requires_consent": true
+  },
+  "lights": {"per_item": 1, "per_day_complete": 4, "total": 100}
+}

@@ -1,0 +1,988 @@
+{
+  "_meta": {
+    "status": "DRAFT wording from ASSESSMENT_DESIGN.md - requires method-owner review and piloting",
+    "source": "docs/design/ASSESSMENT_DESIGN.md"
+  },
+  "cards": [
+    {
+      "id": "W01",
+      "day": 1,
+      "type_triple": "RIA",
+      "options": [
+        {
+          "key": "act.R.01",
+          "text": "Fix the wobbly stall table",
+          "done_text": "You steadied the wobbly table!",
+          "image": "cards/job_r01.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.I.01",
+          "text": "Test which kite shape flies highest",
+          "done_text": "You tested the kite shapes!",
+          "image": "cards/job_i01.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.A.01",
+          "text": "Paint the big welcome banner",
+          "done_text": "You painted the welcome banner!",
+          "image": "cards/job_a01.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W02",
+      "day": 1,
+      "type_triple": "RIS",
+      "options": [
+        {
+          "key": "act.R.02",
+          "text": "Build a kite frame from bamboo sticks",
+          "done_text": "You built a bamboo kite frame!",
+          "image": "cards/job_r02.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.I.02",
+          "text": "Find out why the lights keep flickering",
+          "done_text": "You found the flickering-light problem!",
+          "image": "cards/job_i02.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.01",
+          "text": "Help lost children find their families",
+          "done_text": "You helped lost children find their families!",
+          "image": "cards/job_s01.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W03",
+      "day": 1,
+      "type_triple": "AEC",
+      "options": [
+        {
+          "key": "act.A.10",
+          "text": "Write a short poem for the opening ceremony",
+          "done_text": "You wrote a poem for the opening!",
+          "image": "cards/job_a10.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.09",
+          "text": "Persuade the principal to keep the mela open later",
+          "done_text": "You asked the principal about staying open later!",
+          "image": "cards/job_e09.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.09",
+          "text": "Make a neat price chart for the stall",
+          "done_text": "You made a neat price chart!",
+          "image": "cards/job_c09.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W04",
+      "day": 1,
+      "type_triple": "SEC",
+      "options": [
+        {
+          "key": "act.S.10",
+          "text": "Help two classmates sort out a disagreement",
+          "done_text": "You helped your classmates sort things out!",
+          "image": "cards/job_s10.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.10",
+          "text": "Start a mini business selling bookmarks",
+          "done_text": "You started a bookmark business!",
+          "image": "cards/job_e10.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.10",
+          "text": "File the permission slips in order",
+          "done_text": "You filed the permission slips!",
+          "image": "cards/job_c10.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W05",
+      "day": 2,
+      "type_triple": "RIE",
+      "options": [
+        {
+          "key": "act.R.03",
+          "text": "Hang up the string lights safely",
+          "done_text": "You hung the string lights!",
+          "image": "cards/job_r03.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.I.03",
+          "text": "Test which cup keeps chai hot longest",
+          "done_text": "You tested the chai cups!",
+          "image": "cards/job_i03.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.01",
+          "text": "Convince visitors to try the chaat",
+          "done_text": "You got visitors to try the chaat!",
+          "image": "cards/job_e01.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W06",
+      "day": 2,
+      "type_triple": "RIC",
+      "options": [
+        {
+          "key": "act.R.04",
+          "text": "Oil the creaky wheels of the Ferris wheel",
+          "done_text": "You oiled the Ferris wheel!",
+          "image": "cards/job_r04.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.I.04",
+          "text": "Figure out why one cooler melts ice faster",
+          "done_text": "You worked out the melting-ice mystery!",
+          "image": "cards/job_i04.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.01",
+          "text": "Count and record the ticket money",
+          "done_text": "You counted and recorded the ticket money!",
+          "image": "cards/job_c01.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W07",
+      "day": 2,
+      "type_triple": "ASE",
+      "options": [
+        {
+          "key": "act.A.08",
+          "text": "Paint faces for the little kids",
+          "done_text": "You painted faces for the kids!",
+          "image": "cards/job_a08.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.08",
+          "text": "Help a new student make friends",
+          "done_text": "You helped a new student make friends!",
+          "image": "cards/job_s08.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.08",
+          "text": "Host the closing ceremony",
+          "done_text": "You hosted the closing ceremony!",
+          "image": "cards/job_e08.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W08",
+      "day": 2,
+      "type_triple": "ASC",
+      "options": [
+        {
+          "key": "act.A.09",
+          "text": "Arrange flowers and lights into a display",
+          "done_text": "You arranged the flower display!",
+          "image": "cards/job_a09.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.09",
+          "text": "Guide a visitor in a wheelchair around the mela",
+          "done_text": "You guided a visitor around the mela!",
+          "image": "cards/job_s09.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.08",
+          "text": "Type up the list of prize winners",
+          "done_text": "You typed up the prize winners!",
+          "image": "cards/job_c08.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W09",
+      "day": 3,
+      "type_triple": "RAS",
+      "options": [
+        {
+          "key": "act.R.05",
+          "text": "Hammer together the ticket booth",
+          "done_text": "You hammered the ticket booth together!",
+          "image": "cards/job_r05.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.A.02",
+          "text": "Make up a catchy jingle for the mela",
+          "done_text": "You made up a mela jingle!",
+          "image": "cards/job_a02.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.02",
+          "text": "Teach younger students a new game",
+          "done_text": "You taught the younger students a game!",
+          "image": "cards/job_s02.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W10",
+      "day": 3,
+      "type_triple": "RAE",
+      "options": [
+        {
+          "key": "act.R.06",
+          "text": "Plant marigolds along the entrance path",
+          "done_text": "You planted marigolds by the entrance!",
+          "image": "cards/job_r06.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.A.03",
+          "text": "Design the mela's logo",
+          "done_text": "You designed the mela logo!",
+          "image": "cards/job_a03.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.02",
+          "text": "Lead the team that sets up the stage",
+          "done_text": "You led the stage team!",
+          "image": "cards/job_e02.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W11",
+      "day": 3,
+      "type_triple": "ISC",
+      "options": [
+        {
+          "key": "act.I.09",
+          "text": "Solve the mystery of the missing raffle tickets",
+          "done_text": "You solved the raffle-ticket mystery!",
+          "image": "cards/job_i09.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.07",
+          "text": "Explain the science show to little kids",
+          "done_text": "You explained the science show to little kids!",
+          "image": "cards/job_s07.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.06",
+          "text": "Check every stall against the supplies list",
+          "done_text": "You checked every stall's supplies!",
+          "image": "cards/job_c06.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W12",
+      "day": 3,
+      "type_triple": "IEC",
+      "options": [
+        {
+          "key": "act.I.10",
+          "text": "Check the weather data and predict rain",
+          "done_text": "You made a rain prediction!",
+          "image": "cards/job_i10.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.07",
+          "text": "Come up with a plan to sell more tickets",
+          "done_text": "You made a plan to sell more tickets!",
+          "image": "cards/job_e07.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.07",
+          "text": "Label and organise the lost-and-found",
+          "done_text": "You organised the lost-and-found!",
+          "image": "cards/job_c07.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W13",
+      "day": 4,
+      "type_triple": "RAC",
+      "options": [
+        {
+          "key": "act.R.07",
+          "text": "Put up the tent poles and ropes",
+          "done_text": "You put up the tent poles!",
+          "image": "cards/job_r07.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.A.04",
+          "text": "Decorate the stall in truck-art style",
+          "done_text": "You decorated in truck-art style!",
+          "image": "cards/job_a04.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.02",
+          "text": "Make a duty schedule for all volunteers",
+          "done_text": "You made the volunteer schedule!",
+          "image": "cards/job_c02.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W14",
+      "day": 4,
+      "type_triple": "RSE",
+      "options": [
+        {
+          "key": "act.R.08",
+          "text": "Fix a flat tyre at the bicycle stand",
+          "done_text": "You fixed the flat tyre!",
+          "image": "cards/job_r08.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.03",
+          "text": "Welcome guests and show them around",
+          "done_text": "You welcomed the guests!",
+          "image": "cards/job_s03.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.03",
+          "text": "Pitch the mela to a local shop for sponsorship",
+          "done_text": "You pitched the mela to a local shop!",
+          "image": "cards/job_e03.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W15",
+      "day": 4,
+      "type_triple": "IAC",
+      "options": [
+        {
+          "key": "act.I.07",
+          "text": "Investigate why the plants by the gate are wilting",
+          "done_text": "You investigated the wilting plants!",
+          "image": "cards/job_i07.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.A.07",
+          "text": "Take creative photos for the mela board",
+          "done_text": "You took creative photos!",
+          "image": "cards/job_a07.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.05",
+          "text": "Fill in the expense sheet carefully",
+          "done_text": "You filled in the expense sheet!",
+          "image": "cards/job_c05.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W16",
+      "day": 4,
+      "type_triple": "ISE",
+      "options": [
+        {
+          "key": "act.I.08",
+          "text": "Work out how the water filter cleans water",
+          "done_text": "You figured out the water filter!",
+          "image": "cards/job_i08.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.06",
+          "text": "Calm a nervous friend before their stage show",
+          "done_text": "You calmed your nervous friend!",
+          "image": "cards/job_s06.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.06",
+          "text": "Bargain for a better price on paper plates",
+          "done_text": "You bargained for the paper plates!",
+          "image": "cards/job_e06.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W17",
+      "day": 5,
+      "type_triple": "RSC",
+      "options": [
+        {
+          "key": "act.R.09",
+          "text": "Set up the speakers and cables",
+          "done_text": "You set up the speakers!",
+          "image": "cards/job_r09.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.04",
+          "text": "Help an elderly visitor find a seat",
+          "done_text": "You helped a visitor find a seat!",
+          "image": "cards/job_s04.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.03",
+          "text": "Keep the stock list of plates and cups",
+          "done_text": "You updated the stock list!",
+          "image": "cards/job_c03.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W18",
+      "day": 5,
+      "type_triple": "REC",
+      "options": [
+        {
+          "key": "act.R.10",
+          "text": "Carve wooden name plates for the stalls",
+          "done_text": "You carved the name plates!",
+          "image": "cards/job_r10.png",
+          "weights": {
+            "R": 1,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.04",
+          "text": "Announce events on the microphone",
+          "done_text": "You announced the events!",
+          "image": "cards/job_e04.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.C.04",
+          "text": "Sort the raffle tickets by number",
+          "done_text": "You sorted the raffle tickets!",
+          "image": "cards/job_c04.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 1
+          }
+        }
+      ]
+    },
+    {
+      "id": "W19",
+      "day": 5,
+      "type_triple": "IAS",
+      "options": [
+        {
+          "key": "act.I.05",
+          "text": "Run the volcano experiment for the science tent",
+          "done_text": "You ran the volcano experiment!",
+          "image": "cards/job_i05.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.A.05",
+          "text": "Write a short funny skit for the stage",
+          "done_text": "You wrote a funny skit!",
+          "image": "cards/job_a05.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.S.05",
+          "text": "Assist the school nurse at the first-aid corner",
+          "done_text": "You helped at the first-aid corner!",
+          "image": "cards/job_s05.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 1,
+            "E": 0,
+            "C": 0
+          }
+        }
+      ]
+    },
+    {
+      "id": "W20",
+      "day": 5,
+      "type_triple": "IAE",
+      "options": [
+        {
+          "key": "act.I.06",
+          "text": "Explain moon craters through the telescope",
+          "done_text": "You explained the moon craters!",
+          "image": "cards/job_i06.png",
+          "weights": {
+            "R": 0,
+            "I": 1,
+            "A": 0,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.A.06",
+          "text": "Play the dhol for the opening",
+          "done_text": "You played the dhol!",
+          "image": "cards/job_a06.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 1,
+            "S": 0,
+            "E": 0,
+            "C": 0
+          }
+        },
+        {
+          "key": "act.E.05",
+          "text": "Run the stall and make the big decisions",
+          "done_text": "You ran the stall!",
+          "image": "cards/job_e05.png",
+          "weights": {
+            "R": 0,
+            "I": 0,
+            "A": 0,
+            "S": 0,
+            "E": 1,
+            "C": 0
+          }
+        }
+      ]
+    }
+  ]
+}
