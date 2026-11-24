@@ -1,0 +1,109 @@
+{
+  "_meta": {
+    "note": "RIASEC code is hidden from the player. Map positions are in 1280x720 logical pixels (tent sprite 187x167)."
+  },
+  "stalls": [
+    {
+      "id": "karigar",
+      "name": "Builders' Workshop",
+      "short": "Workshop",
+      "tagline": "Build it. Fix it.",
+      "color": "orange",
+      "riasec": "R",
+      "bg": "stalls/bg_stall_karigar.png",
+      "tent": "stalls/tent_karigar.png",
+      "icon": "stalls/icon_karigar.png",
+      "map": [
+        167,
+        153
+      ],
+      "ambient": "sawdust",
+      "description": "Bamboo, planks and a toolbox. This is where the mela gets built."
+    },
+    {
+      "id": "jugnu",
+      "name": "Firefly Science Tent",
+      "short": "Science Tent",
+      "tagline": "Ask why. Find out.",
+      "color": "blue",
+      "riasec": "I",
+      "bg": "stalls/bg_stall_jugnu.png",
+      "tent": "stalls/tent_jugnu.png",
+      "icon": "stalls/icon_jugnu.png",
+      "map": [
+        373,
+        73
+      ],
+      "ambient": "bubbles",
+      "description": "Bubbling flasks, a telescope and a very patient volcano."
+    },
+    {
+      "id": "rangmahal",
+      "name": "Colour Palace Art Stall",
+      "short": "Art Stall",
+      "tagline": "Make it beautiful.",
+      "color": "purple",
+      "riasec": "A",
+      "bg": "stalls/bg_stall_rangmahal.png",
+      "tent": "stalls/tent_rangmahal.png",
+      "icon": "stalls/icon_rangmahal.png",
+      "map": [
+        740,
+        73
+      ],
+      "ambient": "sparkles",
+      "description": "Paint pots, an easel and truck-art panels in every colour."
+    },
+    {
+      "id": "madad",
+      "name": "Helping Hands Desk",
+      "short": "Help Desk",
+      "tagline": "Help people out.",
+      "color": "green",
+      "riasec": "S",
+      "bg": "stalls/bg_stall_madad.png",
+      "tent": "stalls/tent_madad.png",
+      "icon": "stalls/icon_madad.png",
+      "map": [
+        947,
+        153
+      ],
+      "ambient": "hearts",
+      "description": "First aid, cold water, lost-and-found and a friendly welcome."
+    },
+    {
+      "id": "chatkhara",
+      "name": "Chaat Corner",
+      "short": "Chaat Corner",
+      "tagline": "Sell it. Run it.",
+      "color": "red",
+      "riasec": "E",
+      "bg": "stalls/bg_stall_chatkhara.png",
+      "tent": "stalls/tent_chatkhara.png",
+      "icon": "stalls/icon_chatkhara.png",
+      "map": [
+        220,
+        360
+      ],
+      "ambient": "steam",
+      "description": "Chana chaat, gol gappay and the busiest counter at the mela."
+    },
+    {
+      "id": "hisaab",
+      "name": "Ticket Office",
+      "short": "Ticket Office",
+      "tagline": "Count it. Sort it.",
+      "color": "teal",
+      "riasec": "C",
+      "bg": "stalls/bg_stall_hisaab.png",
+      "tent": "stalls/tent_hisaab.png",
+      "icon": "stalls/icon_hisaab.png",
+      "map": [
+        893,
+        360
+      ],
+      "ambient": "tickets",
+      "description": "Ticket rolls, ledgers and the cash box. Every rupee counted."
+    }
+  ]
+}

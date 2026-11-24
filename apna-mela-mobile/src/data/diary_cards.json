@@ -1,0 +1,22 @@
+{
+  "_meta": {
+    "status": "PROVISIONAL - neutral reflection statements used until the approved Big Five instrument items are supplied (ASSESSMENT_DESIGN.md section 5). These items are saved (with research consent) but NOT scored.",
+    "instrument_id": null,
+    "how_to_replace": "Replace 'text' with the approved item wording in the instrument's order, set 'scored': true and fill 'domain' and 'reverse' from the instrument manual, and update 'scale' if the instrument uses different labels."
+  },
+  "prompt": "How true is this for you?",
+  "scale": ["Not at all true", "A little true", "Somewhat true", "Mostly true", "Very true"],
+  "scored": false,
+  "items": [
+    {"id": "D01", "day": 1, "text": "I enjoyed my first day as a mela volunteer.", "domain": null, "reverse": null},
+    {"id": "D02", "day": 1, "text": "I felt comfortable talking with new people today.", "domain": null, "reverse": null},
+    {"id": "D03", "day": 2, "text": "I liked how my jobs were planned today.", "domain": null, "reverse": null},
+    {"id": "D04", "day": 2, "text": "I felt calm when plans changed today.", "domain": null, "reverse": null},
+    {"id": "D05", "day": 3, "text": "I enjoyed working together with my team today.", "domain": null, "reverse": null},
+    {"id": "D06", "day": 3, "text": "I came up with some of my own ideas today.", "domain": null, "reverse": null},
+    {"id": "D07", "day": 4, "text": "I felt proud of something I did today.", "domain": null, "reverse": null},
+    {"id": "D08", "day": 4, "text": "I helped someone today without being asked.", "domain": null, "reverse": null},
+    {"id": "D09", "day": 5, "text": "Mela Day felt exciting to me.", "domain": null, "reverse": null},
+    {"id": "D10", "day": 5, "text": "I would like to volunteer at a mela again.", "domain": null, "reverse": null}
+  ]
+}

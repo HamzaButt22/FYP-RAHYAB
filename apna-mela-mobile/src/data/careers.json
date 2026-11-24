@@ -1,0 +1,103 @@
+{
+  "_meta": {
+    "status": "PLACEHOLDER career ideas from the design mockups - must be replaced or approved by a school counsellor (ASSESSMENT_DESIGN.md 3.6)."
+  },
+  "types": {
+    "R": {
+      "name": "Doer",
+      "term": "Realistic",
+      "colour": "orange",
+      "icon": "stalls/icon_karigar.png",
+      "summary": "building and fixing things",
+      "explain": "Doers enjoy hands-on work: building, repairing, using tools and machines, and being active, often outdoors. They like seeing a real, finished result.",
+      "careers": [
+        "Civil engineer",
+        "Electrician",
+        "Mechanical technician",
+        "Architect technologist",
+        "Agriculture specialist",
+        "Pilot"
+      ]
+    },
+    "I": {
+      "name": "Thinker",
+      "term": "Investigative",
+      "colour": "blue",
+      "icon": "stalls/icon_jugnu.png",
+      "summary": "figuring out how things work",
+      "explain": "Thinkers enjoy asking questions, testing ideas, solving puzzles and finding out why things happen. They like science, data and discovering new things.",
+      "careers": [
+        "Doctor",
+        "Pharmacist",
+        "Data scientist",
+        "Lab researcher",
+        "Software developer",
+        "Environmental scientist"
+      ]
+    },
+    "A": {
+      "name": "Creator",
+      "term": "Artistic",
+      "colour": "purple",
+      "icon": "stalls/icon_rangmahal.png",
+      "summary": "making things beautiful",
+      "explain": "Creators enjoy imagining, designing, writing, performing and making things look and sound good. They like freedom to try their own ideas.",
+      "careers": [
+        "Graphic designer",
+        "Architect",
+        "Textile designer",
+        "Journalist",
+        "Animator",
+        "Musician"
+      ]
+    },
+    "S": {
+      "name": "Helper",
+      "term": "Social",
+      "colour": "green",
+      "icon": "stalls/icon_madad.png",
+      "summary": "helping people",
+      "explain": "Helpers enjoy working with people: teaching, caring, listening and making others feel welcome. They like jobs where they can make a difference to someone.",
+      "careers": [
+        "Teacher",
+        "Nurse",
+        "Psychologist",
+        "Social worker",
+        "Physiotherapist",
+        "Counsellor"
+      ]
+    },
+    "E": {
+      "name": "Persuader",
+      "term": "Enterprising",
+      "colour": "red",
+      "icon": "stalls/icon_chatkhara.png",
+      "summary": "leading and making things happen",
+      "explain": "Persuaders enjoy leading teams, convincing people, starting projects and making decisions. They like a bit of challenge and action.",
+      "careers": [
+        "Entrepreneur",
+        "Marketing manager",
+        "Lawyer",
+        "Event manager",
+        "Sales manager",
+        "Politician"
+      ]
+    },
+    "C": {
+      "name": "Organiser",
+      "term": "Conventional",
+      "colour": "teal",
+      "icon": "stalls/icon_hisaab.png",
+      "summary": "keeping things organised",
+      "explain": "Organisers enjoy clear plans, neat records, numbers and making sure everything is in its place. They like knowing things are done properly.",
+      "careers": [
+        "Accountant",
+        "Banker",
+        "Office manager",
+        "Data analyst",
+        "Librarian",
+        "Logistics coordinator"
+      ]
+    }
+  }
+}
