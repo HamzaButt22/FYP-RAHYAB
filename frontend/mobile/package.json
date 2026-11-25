@@ -23,7 +23,7 @@
     "inkjs": "^2.4.0",
     "lucide-react-native": "^1.77.0",
     "react": "19.3.0",
-    "react-i18next": "^18.0.1",
+    "react-i18next": "^18.0.3",
     "react-native": "0.88.1",
     "react-native-safe-area-context": "~5.11.1",
     "react-native-screens": "~4.30.1",
