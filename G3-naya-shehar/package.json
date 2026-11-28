@@ -1,0 +1,72 @@
+{
+  "name": "naya-shehar",
+  "version": "1.0.0",
+  "main": "expo-router/entry",
+  "dependencies": {
+    "@expo-google-fonts/baloo-2": "^0.4.2",
+    "@expo-google-fonts/nunito": "^0.4.2",
+    "@expo/metro-runtime": "~58.0.17",
+    "expo": "~58.1.0",
+    "expo-audio": "~58.0.12",
+    "expo-constants": "~58.0.16",
+    "expo-crypto": "~58.0.9",
+    "expo-font": "~58.0.12",
+    "expo-haptics": "~58.0.8",
+    "expo-linking": "~58.0.17",
+    "expo-navigation-bar": "~58.0.4",
+    "expo-network": "~58.0.6",
+    "expo-router": "~58.0.33",
+    "expo-screen-orientation": "~58.0.4",
+    "expo-speech": "~58.0.4",
+    "expo-splash-screen": "~58.0.15",
+    "expo-sqlite": "~58.0.18",
+    "expo-status-bar": "~58.0.5",
+    "expo-system-ui": "~58.0.7",
+    "react": "19.3.0",
+    "react-dom": "^19.3.0",
+    "react-native": "0.88.1",
+    "react-native-gesture-handler": "~3.3.0",
+    "react-native-reanimated": "^4.7.1",
+    "react-native-safe-area-context": "~5.11.1",
+    "react-native-screens": "~4.30.1",
+    "react-native-svg": "^15.16.0",
+    "react-native-web": "^0.21.4",
+    "react-native-worklets": "^0.13.0"
+  },
+  "devDependencies": {
+    "@types/jest": "^30.0.0",
+    "@types/react": "~19.3.0",
+    "@types/sql.js": "^1.16.1",
+    "jest": "^30.5.2",
+    "jest-expo": "~58.0.16",
+    "sql.js": "^1.17.0",
+    "typescript": "~6.0.3"
+  },
+  "scripts": {
+    "start": "expo start",
+    "android": "expo run:android",
+    "ios": "expo run:ios",
+    "web": "expo start --web",
+    "test": "jest",
+    "typecheck": "tsc --noEmit",
+    "export:android": "expo export --platform android",
+    "validate:content": "jest tests/content",
+    "export:web": "expo export --platform web --output-dir dist-web"
+  },
+  "private": true,
+  "jest": {
+    "preset": "jest-expo",
+    "testMatch": [
+      "<rootDir>/tests/**/*.test.ts?(x)"
+    ],
+    "setupFiles": [
+      "<rootDir>/tests/setup.ts"
+    ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!((jest-)?react-native|@react-native(-community)?)|expo(nent)?|@expo(nent)?/.*|@expo-google-fonts/.*|react-navigation|@react-navigation/.*|react-native-svg|react-native-reanimated|react-native-worklets)"
+    ],
+    "moduleNameMapper": {
+      "^@/(.*)$": "<rootDir>/src/$1"
+    }
+  }
+}

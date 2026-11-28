@@ -1,0 +1,11 @@
+{
+  "name": "naya-shehar-e2e",
+  "private": true,
+  "description": "Headless-Chrome playthrough of the web preview. Kept separate so the app has no test-only dependencies.",
+  "scripts": {
+    "build-web": "cd .. && npx expo export --platform web --output-dir dist-web",
+    "serve": "python3 serve.py ../dist-web 8081",
+    "play": "node e2e.js http://127.0.0.1:8081 ./screens"
+  },
+  "dependencies": { "puppeteer-core": "^24.0.0" }
+}

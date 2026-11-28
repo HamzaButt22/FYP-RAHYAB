@@ -1,0 +1,15 @@
+{
+  "name": "naya-shehar-dashboard",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Teacher dashboard and upload API for Naya Shehar results",
+  "main": "src/server.js",
+  "engines": { "node": ">=22.13" },
+  "scripts": {
+    "start": "node src/server.js",
+    "test": "node --test test/*.test.js"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}
